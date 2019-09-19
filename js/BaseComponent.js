@@ -120,7 +120,6 @@ BaseComponent.prototype.removeStyle = function (key) {
  */
 BaseComponent.prototype.handleStyle = function (key, value) {
     var functionName = 'handleStyle' + key.substr(0, 1).toUpperCase() + key.substr(1);
-    console.log(key, value);
     
     if (this[functionName]) this[functionName](value);
     else

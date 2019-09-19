@@ -57,7 +57,7 @@ RelativeAnchor.prototype.HALIGN_ACEPT_STYLE = {
 
 RelativeAnchor.prototype.VALIGN_ACEPT_STYLE = {
     top: { top: true, bottom: false, height: true },
-    right: { top: false, bottom: true, height: true },
+    bottom: { top: false, bottom: true, height: true },
     center: { top: false, bottom: false, height: true },
     fixed: { top: true, bottom: true, height: false }
 }
