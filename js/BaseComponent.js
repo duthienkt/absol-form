@@ -24,17 +24,17 @@ BaseComponent.prototype.parent = null;
 
 BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
-BaseComponent.prototype.preInit = function(){};
+BaseComponent.prototype.preInit = function () { };
 
 BaseComponent.prototype.onCreated = function () {
-    for (var key in this.attributes){
+    for (var key in this.attributes) {
         this.handleAttribute(key, this.attributes[key]);
     }
- };
+};
 
-BaseComponent.prototype.onAttached = function (parent) { 
+BaseComponent.prototype.onAttached = function (parent) {
     //reset style after attach anchor
-    for (var key in this.style){
+    for (var key in this.style) {
         this.handleStyle(key, this.style[key]);
     }
 };
@@ -102,7 +102,7 @@ BaseComponent.prototype.removeAttribute = function (key) {
 
 BaseComponent.prototype.handleAttribute = function (key, value) {
     var functionName = 'handleAttribute' + key.substr(0, 1).toUpperCase() + key.substr(1);
-    
+
     if (this[functionName]) this[functionName](value);
     else
         throw new Error("Not implement this." + functionName + '(value)!');
@@ -128,7 +128,7 @@ BaseComponent.prototype.removeStyle = function (key) {
  */
 BaseComponent.prototype.handleStyle = function (key, value) {
     var functionName = 'handleStyle' + key.substr(0, 1).toUpperCase() + key.substr(1);
-    
+
     if (this[functionName]) this[functionName](value);
     else
         throw new Error("Not implement this." + functionName + '(value)!');
@@ -172,7 +172,7 @@ BaseComponent.prototype.handleStyleWidth = function (value) {
         this.anchor.setWidth(value);
 };
 
-BaseComponent.prototype.handleStyleHeight= function (value) {
+BaseComponent.prototype.handleStyleHeight = function (value) {
     if (this.anchor)
         this.anchor.setHeight(value)
 };

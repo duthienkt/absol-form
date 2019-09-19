@@ -9,7 +9,7 @@ var $ = AComp.$;
 function RelativeAnchor() {
     this.hAlign = this.HALIGN_VALUE[0];
     this.vAlign = this.VALIGN_VALUE[0];
-    
+
     this.viewBinding = {};
     this.childNode = null;
     this.view = this.render();
@@ -51,14 +51,14 @@ RelativeAnchor.prototype.VALIGN_CLASS_NAMES = {
 RelativeAnchor.prototype.HALIGN_ACEPT_STYLE = {
     left: { left: true, right: false, width: true },
     right: { left: false, right: true, width: true },
-    center: { left: false, right: false, width: true },
+    center: { left: false, right: false, width: false },// component nedd set height
     fixed: { left: true, right: true, width: false }
 }
 
 RelativeAnchor.prototype.VALIGN_ACEPT_STYLE = {
     top: { top: true, bottom: false, height: true },
     bottom: { top: false, bottom: true, height: true },
-    center: { top: false, bottom: false, height: true },
+    center: { top: false, bottom: false, height: false },// component nedd set height
     fixed: { top: true, bottom: true, height: false }
 }
 
@@ -66,7 +66,6 @@ RelativeAnchor.prototype.VALIGN_ACEPT_STYLE = {
 RelativeAnchor.prototype.TOP_CLASS_NAME = 'as-relative-anchor-box';
 
 RelativeAnchor.prototype.render = function () {
-
     var layout = {
         class: [this.TOP_CLASS_NAME, this.HALIGN_CLASS_NAMES[this.hAlign], this.VALIGN_CLASS_NAMES[this.vAlign]]
     };
@@ -125,7 +124,7 @@ RelativeAnchor.prototype.setVAlign = function (value) {
         this.view.clearChild();
         this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
         this.$containter = this.view;
-        
+
         if (this.childNode) {
             this.$containter.addChild(this.childNode.view);
         }
@@ -146,6 +145,10 @@ RelativeAnchor.prototype.setVAlign = function (value) {
             this.$containter.addChild(this.childNode.view);
         }
     }
+    this.updateStyle();
+};
+
+RelativeAnchor.prototype.updateStyle = function () {
     for (var key in this.VALIGN_ACEPT_STYLE[this.vAlign]) {
         if (this.VALIGN_ACEPT_STYLE[this.vAlign][key]) {
             this.view.addStyle(key, this['_' + key] + 'px');
@@ -155,6 +158,7 @@ RelativeAnchor.prototype.setVAlign = function (value) {
         }
     }
 };
+
 
 RelativeAnchor.prototype.setLeft = function (value) {
     this.left = value;
@@ -189,13 +193,13 @@ RelativeAnchor.prototype.setTop = function (value) {
 
 RelativeAnchor.prototype.setWidth = function (value) {
     this.width = value;
-    //must set width in componet, not anchor
-   
+    //must set width in component, not anchor
+
 };
 
 RelativeAnchor.prototype.setHeight = function (value) {
     this.height = value;
-    //must set height in componet, not anchor
+    //must set height in component, not anchor
 };
 
 
