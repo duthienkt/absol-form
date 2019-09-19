@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF8" />
+  <style>
+    .as-relative-layout {
+      border: solid 1px black;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="./absol/absol_form.js"></script>
+  <script>
+    var mAssembler = new absol.form.Assembler();
+    mAssembler.addComponent('RelativeLayout', absol.form.RelativeLayout);
+    mAssembler.addComponent('DateInput', absol.form.DateInput);
+    mAssembler.addComponent('TextInput', absol.form.TextInput);
+
+    var mForm = mAssembler.build({
+      tag: 'RelativeLayout',
+      style: {
+        width: 600,
+        height: 400
+      },
+      children: [
+        {
+          tag: 'DateInput',
+          style: {
+            vAlign: 'center',
+            hAlign: 'center'
+          },
+          attributes: {
+            value: new Date(2019, 10, 20)
+          },
+          events: {
+            change: function (value, sender) {
+              log
+            }
+          }
+        }
+      ]
+    });
+    document.body.appendChild(mForm.view);
+  </script>
+</body>
+
+</html>
