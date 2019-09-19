@@ -2,13 +2,11 @@ import EventEmitter from 'absol/src/HTML5/EventEmitter';
 
 function BaseComponent() {
     EventEmitter.call(this);
-    this.tag = "BaseComponent";
     this.attributes = {};
     this.children = [];// <> childData
     this.style = {};
     this.events = {};
-    this.parent = null;
-    this.anchor = null;
+    this.preInit();
     this.view = this.render();
     this.view.classList.add(this.BASE_COMPONENT_CLASS_NAME);
     this.onCreated();
@@ -20,9 +18,19 @@ BaseComponent.prototype.BASE_COMPONENT_CLASS_NAME = 'as-base-component';
 
 BaseComponent.prototype.constructor = BaseComponent;
 
+BaseComponent.prototype.tag = "BaseComponent";
+BaseComponent.prototype.anchor = null;
+BaseComponent.prototype.parent = null;
+
 BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
-BaseComponent.prototype.onCreated = function () { };
+BaseComponent.prototype.preInit = function(){};
+
+BaseComponent.prototype.onCreated = function () {
+    for (var key in this.attributes){
+        this.handleAttribute(key, this.attributes[key]);
+    }
+ };
 
 BaseComponent.prototype.onAttached = function (parent) { 
     //reset style after attach anchor
