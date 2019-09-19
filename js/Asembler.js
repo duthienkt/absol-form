@@ -6,7 +6,7 @@ function Assembler() {
 
 Assembler.prototype.build = function (data) {
     var construction = this.constructions[data.tag];
-    if (construction == undefined) throw new Error("undefined construction");
+    if (construction == undefined) throw new Error("undefined construction "+ data.tag);
     var res = new construction();
 
     var style = data.style;
