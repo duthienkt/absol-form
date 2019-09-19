@@ -172,7 +172,7 @@ RelativeAnchor.prototype.setRight = function (value) {
 
 
 
-RelativeAnchor.prototype.setBotton = function (value) {
+RelativeAnchor.prototype.setBottom = function (value) {
     this.bottom = value;
     if (this.VALIGN_ACEPT_STYLE[this.vAlign].bottom) {
         this.view.addStyle('bottom', value + 'px');
