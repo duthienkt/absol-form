@@ -3,6 +3,9 @@ import EventEmitter from 'absol/src/HTML5/EventEmitter';
 function BaseComponent() {
     EventEmitter.call(this);
     this.attributes = {};
+    /**
+     * @type {Array<BaseComponent}
+     */
     this.children = [];// <> childData
     this.style = {};
     this.events = {};
