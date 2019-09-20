@@ -61,7 +61,9 @@
     right: 0;
 }
 
-.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>* {
+.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-base-component,
+.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-center-table,
+.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-center-table>.as-center-cell>.as-base-component {
     width: 100%;
 }
 
@@ -118,10 +120,14 @@
     vertical-align: middle;
 }
 
+
 .as-relative-layout>.as-relative-anchor-box.as-valign-center.as-halign-center>.as-center-table {
-    width:  100%;
+    width: 100%;
 }
 
-.as-base-component{
+/* .as-relative-layout>.as-relative-anchor-box. */
+
+
+.as-base-component {
     pointer-events: all;
 }

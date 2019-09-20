@@ -49,15 +49,15 @@ RelativeAnchor.prototype.VALIGN_CLASS_NAMES = {
 };
 
 RelativeAnchor.prototype.HALIGN_ACEPT_STYLE = {
-    left: { left: true, right: false, width: true },
-    right: { left: false, right: true, width: true },
+    left: { left: true, right: false, width: false },
+    right: { left: false, right: true, width: false },
     center: { left: false, right: false, width: false },// component nedd set height
     fixed: { left: true, right: true, width: false }
 }
 
 RelativeAnchor.prototype.VALIGN_ACEPT_STYLE = {
-    top: { top: true, bottom: false, height: true },
-    bottom: { top: false, bottom: true, height: true },
+    top: { top: true, bottom: false, height: false },
+    bottom: { top: false, bottom: true, height: false },
     center: { top: false, bottom: false, height: false },// component nedd set height
     fixed: { top: true, bottom: true, height: false }
 }
@@ -114,6 +114,7 @@ RelativeAnchor.prototype.setHAlign = function (value) {
     this.view.removeClass(this.HALIGN_CLASS_NAMES[this.hAlign]);
     this.hAlign = value;
     this.view.addClass(this.HALIGN_CLASS_NAMES[this.hAlign]);
+    this.updateHAlignStyle();
 };
 
 RelativeAnchor.prototype.setVAlign = function (value) {
@@ -145,13 +146,25 @@ RelativeAnchor.prototype.setVAlign = function (value) {
             this.$containter.addChild(this.childNode.view);
         }
     }
-    this.updateStyle();
+    this.updateVAlignStyle();
 };
 
-RelativeAnchor.prototype.updateStyle = function () {
+RelativeAnchor.prototype.updateVAlignStyle = function () {
     for (var key in this.VALIGN_ACEPT_STYLE[this.vAlign]) {
         if (this.VALIGN_ACEPT_STYLE[this.vAlign][key]) {
-            this.view.addStyle(key, this['_' + key] + 'px');
+            this.view.addStyle(key, this[key] + 'px');
+        }
+        else {
+            this.view.removeStyle(key);
+        }
+    }
+};
+
+
+RelativeAnchor.prototype.updateHAlignStyle = function () {
+    for (var key in this.HALIGN_ACEPT_STYLE[this.hAlign]) {
+        if (this.HALIGN_ACEPT_STYLE[this.hAlign][key]) {
+            this.view.addStyle(key, this[key] + 'px');
         }
         else {
             this.view.removeStyle(key);
