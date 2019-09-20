@@ -1,0 +1,72 @@
+.as-resize-box {
+    position: absolute;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.as-resize-box-body {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    box-sizing: border-box;
+    border: solid 2px rgb(32, 150, 218);
+    cursor: move;
+}
+
+
+.as-resize-box-dot {
+    position: absolute;
+    width: 0.4em;
+    height: 0.4em;
+    background:  rgb(32, 150, 218);
+
+}
+
+.as-resize-box-dot.left-top {
+    top: -0.2em;
+    left: -0.2em;
+    cursor: nw-resize;
+}
+
+.as-resize-box-dot.left-bottom {
+    bottom: -0.2em;
+    left: -0.2em;
+    cursor: sw-resize;
+}
+
+.as-resize-box-dot.left{
+    top: calc(50% - 0.2em);
+    left: -0.2em;
+    cursor: w-resize;
+}
+
+.as-resize-box-dot.top {
+    top: -0.2em;
+    left: calc(50% - 0.2em);
+    cursor: n-resize;
+}
+
+.as-resize-box-dot.bottom {
+    bottom: -0.2em;
+    left: calc(50% - 0.2em);
+    cursor: s-resize;
+}
+
+.as-resize-box-dot.right-top {
+    top: -0.2em;
+    right: -0.2em;
+    cursor: ne-resize;
+}
+
+.as-resize-box-dot.right-bottom {
+    bottom: -0.2em;
+    right: -0.2em;
+    cursor: se-resize;
+}
+
+
+.as-resize-box-dot.right {
+    top: calc(50% - 0.2em);
+    right: -0.2em;
+    cursor: e-resize;
+}
