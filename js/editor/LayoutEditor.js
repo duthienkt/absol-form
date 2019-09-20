@@ -71,7 +71,7 @@ LayoutEditor.prototype.ev_clickForceground = function (event) {
 
 LayoutEditor.prototype.activeComponent = function (comp) {
     this._activeCompnent = comp;
-    this.updateResizeBox()
+    this.updateResizeBox();
 };
 
 LayoutEditor.prototype.updateResizeBox = function () {
@@ -99,6 +99,7 @@ LayoutEditor.prototype.updateResizeBox = function () {
 
 
 LayoutEditor.prototype.updateSize = function () {
+    this.updateResizeBox();
 };
 
 
