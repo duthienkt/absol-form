@@ -1,4 +1,4 @@
-import BaseComponent from "../BaseComponent";
+import BaseComponent from "../core/BaseComponent";
 import AComp from "absol-acomp";
 
 var _ = AComp._;
