@@ -1,0 +1,51 @@
+.as-layout-editor {
+    position: relative;
+}
+
+
+.as-layout-editor-v-align-line,
+.as-layout-editor-h-align-line {
+    position: absolute;
+
+}
+
+
+.as-layout-editor-h-align-line {
+    left: 0;
+    right: 0;
+    border-top: dashed 1px rgba(59, 154, 209, 0.753);
+}
+
+.as-layout-editor-v-align-line {
+    top: 0;
+    bottom: 0;
+    border-left: dashed 1px rgba(59, 154, 209, 0.753);
+}
+
+
+.as-layout-editor-layout-contaner>.as-relative-layout {
+    width: 100%;
+    height: 100%;
+}
+
+.as-layout-editor-background,
+.as-layout-editor-layout-contaner,
+.as-layout-editor-forceground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.as-layout-editor-background{
+    z-index: 0;
+}
+
+.as-layout-editor-layout-contaner{
+    z-index: 1;
+}
+
+.as-layout-editor-forceground{
+    z-index: 2;
+}
