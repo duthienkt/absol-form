@@ -17,6 +17,15 @@ RelativeLayout.prototype.constructor = RelativeLayout;
 RelativeLayout.prototype.TOP_CLASS_NAME = 'as-relative-layout';
 RelativeLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
+RelativeLayout.prototype.preInit = function(){
+    this.style.vAlign = 'fixed';
+    this.style.hAlign = 'fixed';
+    this.style.left = 0;
+    this.style.right = 0;
+    this.style.top = 0;
+    this.style.bottom = 0;
+};
+
 RelativeLayout.prototype.getAnchorBoxConstructor = function () {
     return RelativeAnchor;
 };
