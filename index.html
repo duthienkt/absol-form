@@ -4,45 +4,47 @@
 <head>
   <meta charset="UTF8" />
   <style>
-    .as-relative-layout {
-      border: solid 1px black;
-    }
+
   </style>
 </head>
 
 <body>
   <script src="./absol/absol_form.js"></script>
   <script>
-    var mAssembler = new absol.form.Assembler();
-    mAssembler.addComponent('RelativeLayout', absol.form.RelativeLayout);
-    mAssembler.addComponent('DateInput', absol.form.DateInput);
-    mAssembler.addComponent('TextInput', absol.form.TextInput);
-
-    var mForm = mAssembler.build({
+    var layoutEditor = new absol.form.LayoutEditor();
+    layoutEditor.addConstructor(absol.form.TextInput);
+    layoutEditor.getView().addStyle({ width: 'calc(100vw - 20px)', height: 'calc(100vh - 20px)', border: 'solid 1px black' }).addTo(document.body);
+    layoutEditor.start();
+    layoutEditor.setData({
       tag: 'RelativeLayout',
-      style: {
-        width: 600,
-        height: 400
-      },
       children: [
         {
-          tag: 'DateInput',
+          tag: 'TextInput',
           style: {
-            vAlign: 'center',
-            hAlign: 'center'
+            top: 10,
+            left: 20,
+            hAlign: 'left'
+
           },
           attributes: {
-            value: new Date(2019, 10, 20)
+            value: "HELLO"
+          }
+        },
+        {
+          tag: 'TextInput',
+          style: {
+            top: 10,
+            right: 20,
+            hAlign: 'right'
+
           },
-          events: {
-            change: function (value, sender) {
-              log
-            }
+          attributes: {
+            value: "WORD"
           }
         }
       ]
     });
-    document.body.appendChild(mForm.view);
+
   </script>
 </body>
 
