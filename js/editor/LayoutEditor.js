@@ -63,15 +63,20 @@ LayoutEditor.prototype.ev_clickForceground = function (event) {
     visit(this.rootLayout);
 
     if (hitComponent) {
-        this.setActiveComponent(hitComponent);
+        this.activeComponent(hitComponent);
     }
 
 
 };
 
-LayoutEditor.prototype.setActiveComponent = function (comp) {
+LayoutEditor.prototype.activeComponent = function (comp) {
+    this._activeCompnent = comp;
+    this.updateResizeBox()
+};
+
+LayoutEditor.prototype.updateResizeBox = function () {
+    var comp = this._activeCompnent;
     if (comp) {
-        this._activeCompnent = comp;
         if (comp != this.rootLayout) {
             var bound = this.$view.getBoundingClientRect();
             var compBound = comp.view.getBoundingClientRect();
