@@ -15,6 +15,8 @@ ScalableComponent.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'le
 
 
 ScalableComponent.prototype.preInit = function () {
+    this.hAlign = 'left';
+    this.vAlign = 'top'
     this.style.left = 0;
     this.style.right = 0;
     this.style.top = 0;

@@ -1,29 +1,26 @@
-import BaseComponent from "../core/BaseComponent";
 import RelativeAnchor from "../anchors/RelativeAnchor";
 import Fcore from "../core/FCore";
+import ScalableComponent from "../core/ScalableComponent";
 
 var _ = Fcore._;
 
 
 
 function RelativeLayout() {
-    BaseComponent.call(this);
+    ScalableComponent.call(this);
     
 }
 
-Object.defineProperties(RelativeLayout.prototype, Object.getOwnPropertyDescriptors(BaseComponent.prototype));
+Object.defineProperties(RelativeLayout.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
 RelativeLayout.prototype.constructor = RelativeLayout;
 
 RelativeLayout.prototype.TOP_CLASS_NAME = 'as-relative-layout';
 RelativeLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
 RelativeLayout.prototype.preInit = function(){
+    ScalableComponent.prototype.preInit.call(this);
     this.style.vAlign = 'fixed';
     this.style.hAlign = 'fixed';
-    this.style.left = 0;
-    this.style.right = 0;
-    this.style.top = 0;
-    this.style.bottom = 0;
 };
 
 RelativeLayout.prototype.getAnchorBoxConstructor = function () {
@@ -34,14 +31,6 @@ RelativeLayout.prototype.render = function () {
     return _({ class: this.TOP_CLASS_NAME });
 };
 
-
-RelativeLayout.prototype.handleStyleWidth = function(value){
-    this.view.addStyle('width', value +'px');
-};
-
-RelativeLayout.prototype.handleStyleHeight = function(value){
-    this.view.addStyle('height', value +'px');
-};
 
 RelativeLayout.prototype.handleAddChild = function(child, index){
     var anchor = new RelativeAnchor();
