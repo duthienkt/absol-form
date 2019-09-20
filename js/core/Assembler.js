@@ -1,12 +1,12 @@
 function Assembler() {
-    this.constructions = {
+    this.constructors = {
 
     };
 };
 
 Assembler.prototype.build = function (data) {
-    var construction = this.constructions[data.tag];
-    if (construction == undefined) throw new Error("undefined construction "+ data.tag);
+    var construction = this.constructors[data.tag];
+    if (construction == undefined) throw new Error("undefined construction " + data.tag);
     var res = new construction();
 
     var style = data.style;
@@ -39,13 +39,38 @@ Assembler.prototype.build = function (data) {
 
 };
 
+Assembler.prototype.addConstructor = function (arg0, arg1) {
+    if (typeof arg0 == 'function') {
+        var name = arg0.prototype.tag || arg0.name;
+        this.constructors[name] = arg0;
+    }
+    else if (typeof arg0 == 'string') {
+        this.constructors[arg0] = arg1;
+    }
+    else {
+        throw new Error('Invalid params');
+    }
+};
+
+Assembler.prototype.removeConstructor = function (arg0, arg1) {
+    if (typeof arg0 == 'function') {
+        var name = arg0.prototype.tag || arg0.name;
+        this.constructors[name] = undefined;
+        delete this.constructors[name];
+    }
+    else if (typeof arg0 == 'string' && (this.constructors[arg0] == arg1 || arg1 == undefined)) {
+        delete this.constructors[arg0];
+    }
+};
+
+
+
 Assembler.prototype.addComponent = function (name, construction) {
-    this.constructions[name] = construction;
+    this.addConstructor(name, construction);
 };
 
 Assembler.prototype.removeComponent = function (name, construction) {
-    this.constructions[name] = undefined;
-    delete this.constructions[name];
+    this.removeConstructor(name, construction);
 };
 
 export default Assembler;
