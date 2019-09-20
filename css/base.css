@@ -12,6 +12,7 @@
 
 .as-relative-layout>.as-relative-anchor-box {
     position: absolute;
+    z-index: 1;
 }
 
 

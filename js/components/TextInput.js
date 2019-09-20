@@ -10,10 +10,10 @@ function TextInput() {
 Object.defineProperties(TextInput.prototype, Object.getOwnPropertyDescriptors(BaseComponent.prototype));
 TextInput.prototype.constructor = TextInput;
 
+TextInput.prototype.tag = "TextInput";
 TextInput.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'left', 'right', 'top', 'bottom'];
 TextInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 TextInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
-
 
 
 TextInput.prototype.onCreated = function () {
