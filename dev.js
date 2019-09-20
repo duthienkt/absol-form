@@ -1,7 +1,7 @@
 import form from '.';
-import AComp from 'absol-acomp';
+import Fcore from './js/core/FCore';
 
 window.absol = window.absol || {};
 window.absol.form = form;
-window.absol._ = window.absol._ || AComp._;
-window.absol.$ = window.absol._ || AComp.$;
+window.absol._ = window.absol._ || Fcore._;
+window.absol.$ = window.absol._ || Fcore.$;

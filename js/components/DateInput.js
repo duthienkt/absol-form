@@ -1,7 +1,8 @@
 import BaseComponent from "../core/BaseComponent";
-import AComp from "absol-acomp";
+import Fcore from "../core/FCore";
 
-var _ = AComp._;
+
+var _ = Fcore._;
 
 function DateInput() {
     BaseComponent.call(this);

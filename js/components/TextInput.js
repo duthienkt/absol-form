@@ -1,7 +1,7 @@
 import BaseComponent from "../core/BaseComponent";
-import AComp from "absol-acomp";
+import Fcore from "../core/FCore";
 
-var _ = AComp._;
+var _ = Fcore._;
 
 function TextInput() {
     BaseComponent.call(this);
@@ -15,6 +15,14 @@ TextInput.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'left', 'ri
 TextInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 TextInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
+TextInput.prototype.preInit = function () {
+    this.style.left = 0;
+    this.style.right = 0;
+    this.style.top = 0;
+    this.style.bottom = 0;
+    this.style.height = 30;
+    this.style.width = 69;
+};
 
 TextInput.prototype.onCreated = function () {
     var self = this;
@@ -33,13 +41,38 @@ TextInput.prototype.render = function () {
 
 TextInput.prototype.handleStyleWidth = function (value) {
     BaseComponent.prototype.handleStyleWidth.call(this, this.value);
-    this.view.addStyle('width', value + 'px')
+    if (this.style.hAlign != 'center')
+        this.view.addStyle('width', value + 'px');
 };
 
 TextInput.prototype.handleStyleHeight = function (value) {
     BaseComponent.prototype.handleStyleWidth.call(this, this.value);
-    this.view.addStyle('height', value + 'px');
+    if (this.style.vAlign != 'center')
+        this.view.addStyle('height', value + 'px');
 };
+
+
+TextInput.prototype.handleStyleHAlign = function (value) {
+    BaseComponent.prototype.handleStyleHAlign.call(this, value);
+    if (value == 'center') {
+        this.view.addStyle('width', this.style.width + 'px')
+    }
+    else {
+        this.view.removeStyle('width');
+    }
+};
+
+
+TextInput.prototype.handleStyleVAlign = function (value) {
+    BaseComponent.prototype.handleStyleVAlign.call(this, value);
+    if (value == 'center') {
+        this.view.addStyle('height', this.style.width + 'px')
+    }
+    else {
+        this.view.removeStyle('height');
+    }
+};
+
 
 TextInput.prototype.handleAttributeValue = function (value) {
     this.view.value = value;

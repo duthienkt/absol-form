@@ -1,8 +1,8 @@
 import BaseComponent from "../core/BaseComponent";
-import AComp from 'absol-acomp';
 import RelativeAnchor from "../anchors/RelativeAnchor";
+import Fcore from "../core/FCore";
 
-var _ = AComp._;
+var _ = Fcore._;
 
 
 
