@@ -29,13 +29,13 @@ ScalableComponent.prototype.preInit = function () {
 
 ScalableComponent.prototype.handleStyleWidth = function (value) {
     BaseComponent.prototype.handleStyleWidth.call(this, this.value);
-    if (this.style.hAlign != 'center')
+    if (this.style.hAlign != 'fixed')
         this.view.addStyle('width', value + 'px');
 };
 
 ScalableComponent.prototype.handleStyleHeight = function (value) {
     BaseComponent.prototype.handleStyleWidth.call(this, this.value);
-    if (this.style.vAlign != 'center')
+    if (this.style.vAlign != 'fixed')
         this.view.addStyle('height', value + 'px');
 };
 
