@@ -9,6 +9,7 @@ import '../dom/HLine';
 import '../dom/VLine';
 import '../dom/HRuler';
 import '../dom/VRuler';
+import QuickMenu from 'absol-acomp/js/QuickMenu';
 
 
 var _ = Fcore._;
@@ -19,6 +20,8 @@ function LayoutEditor() {
     Assembler.call(this);
     this.addConstructor('RelativeLayout', RelativeLayout);
     this.rootLayout = null;
+    this.snapshots = [];
+    this.snapshotsIndex = 0;
 }
 
 
@@ -33,7 +36,13 @@ LayoutEditor.prototype.getView = function () {
         class: 'as-layout-editor',
         child: ['.as-layout-editor-background',
             '.as-layout-editor-layout-contaner',
-            '.as-layout-editor-forceground',
+            {
+                class: 'as-layout-editor-forceground',
+                extendEvent: 'contextmenu',
+                on: {
+                    contextmenu: this.ev_contextMenuForceGround.bind(this)
+                }
+            },
             {
                 class: 'as-layout-editor-hrule-container',
                 child: 'hruler'
@@ -41,6 +50,9 @@ LayoutEditor.prototype.getView = function () {
             {
                 class: 'as-layout-editor-vrule-container',
                 child: 'vruler'
+            },
+            {
+                class: 'as-layout-editor-new-component-menu-trigger'
             }
         ]
     });
@@ -51,6 +63,13 @@ LayoutEditor.prototype.getView = function () {
         self.updateSize();
     }).addTo(this.$view);
 
+    this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
+    this.$componentMenuTrigger = $('.as-layout-editor-new-component-menu-trigger', this.$view)
+        .on('click', this.getMenuComponentItems.bind(this), true);//to update
+    this._componentMenuOption = QuickMenu.showWhenClick(this.$componentMenuTrigger, {
+        items: this.getMenuComponentItems()
+    }, 'auto', this.ev_menuComponent.bind(this));
+
     this.$layoutCtn = $('.as-layout-editor-layout-contaner', this.$view);
     this.$background = $('.as-layout-editor-background', this.$view);
     this.$forceground = $('.as-layout-editor-forceground', this.$view)
@@ -59,7 +78,6 @@ LayoutEditor.prototype.getView = function () {
     this.$resizeBox = _('resizebox')
         .on('beginmove', this.ev_beginMove.bind(this))
         .on('moving', this.ev_moving.bind(this));
-
     this.$leftAlignLine = _('hline');
     this.$rightAlignLine = _('hline');
 
@@ -81,8 +99,6 @@ LayoutEditor.prototype.ev_beginMove = function (event) {
         style0: Object.assign({}, this._activatedCompnent.style),
         comp: this._activatedCompnent
     };
-
-
 };
 
 
@@ -180,8 +196,91 @@ LayoutEditor.prototype.ev_clickForceground = function (event) {
     if (hitComponent) {
         this.activeComponent(hitComponent);
     }
+};
 
 
+
+LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
+    this.ev_clickForceground(event);
+    var self = this;
+    var activatedComponent = this._activatedCompnent;
+    if (activatedComponent) {
+        if (activatedComponent == this.rootLayout) {
+            event.showContextMenu({
+                items: [
+                    {
+                        text: 'New',
+                        icon: 'span.mdi.mdi-plus',
+                        cmd: 'new'
+                        // items: self.getMenuComponentItems()
+                    },
+                    {
+                        icon: 'span.mdi.mdi-eraser',
+                        text: 'Clear',
+                        cmd: 'clear'
+                    }
+                ]
+            }, function (menuEvent) {
+                var cmd = menuEvent.menuItem.cmd;
+                switch (cmd) {
+                    case 'clear': self.clearRootLayout(); break;
+                    case 'new': setTimeout(self.$componentMenuTrigger.click.bind(self.$componentMenuTrigger), 10); break;
+                }
+            });
+        }
+        else {
+            event.showContextMenu({
+                items: [
+                    {
+                        text: 'Edit Attributes',
+                        icon: 'span.mdi.mdi-table-edit',
+                        cmd: 'attributes-edit'
+                        // items: self.getMenuComponentItems()
+                    },
+                    {
+                        text: 'Edit Style',
+                        icon: 'span.mdi.mdi-square-edit-outline',
+                        cmd: 'style-edit'
+                        // items: self.getMenuComponentItems()
+                    },
+                    {
+                        icon: 'span.mdi.mdi-delete-variant',
+                        text: 'Delete',
+                        cmd: 'delete',
+                        extendStyle:{
+                            color:'red'
+                        }
+                    }
+                ]
+            }, function (menuEvent) {
+                var cmd = menuEvent.menuItem.cmd;
+                switch (cmd) {
+                    case 'delete': 
+                    activatedComponent.parent.removeChild(activatedComponent);
+                    self.activeComponent(undefined);
+                        break;
+                    case 'attributes-edit': break;
+                }
+            });
+
+        }
+    }
+};
+
+
+
+
+LayoutEditor.prototype.ev_menuComponent = function (item) {
+    var componentConstructor = item.componentConstructor;
+    var newComponent = new componentConstructor();
+    this.rootLayout.addChild(newComponent);
+    this.activeComponent(newComponent);
+};
+
+LayoutEditor.prototype.clearRootLayout = function () {
+    this._activatedCompnent = undefined;
+    this.rootLayout.clearChild();
+    this.updateAnchor();
 };
 
 LayoutEditor.prototype.activeComponent = function (comp) {
@@ -320,6 +419,22 @@ LayoutEditor.prototype.getData = function (data) {
 };
 
 
-
+LayoutEditor.prototype.getMenuComponentItems = function () {
+    var self = this;
+    this._menuComponentItems = this._menuComponentItems || [];
+    this._menuComponentItems.splice(0, this._menuComponentItems.length);
+    var items = Object.keys(this.constructors).map(function (key) {
+        var constructor = self.constructors[key];
+        return {
+            text: key,
+            icon: constructor.prototype.menuIcon,
+            cmd: 'component',
+            componentConstructor: constructor,
+            componentTag: key
+        }
+    });
+    this._menuComponentItems.push.apply(this._menuComponentItems, items);
+    return this._menuComponentItems;
+}
 
 export default LayoutEditor;

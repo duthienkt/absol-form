@@ -40,33 +40,41 @@
     overflow: hidden;
 }
 
-.as-layout-editor-background{
+.as-layout-editor-background {
     z-index: 0;
 }
 
-.as-layout-editor-layout-contaner{
+.as-layout-editor-layout-contaner {
     z-index: 1;
 }
 
-.as-layout-editor-forceground{
+.as-layout-editor-forceground {
     z-index: 2;
 }
 
 
-.as-layout-editor-hrule-container{
+.as-layout-editor-hrule-container {
     position: absolute;
     bottom: 100%;
     left: 0;
     right: 0;
 }
 
-.as-layout-editor-vrule-container{
+.as-layout-editor-vrule-container {
     position: absolute;
     right: 100%;
     top: 0;
     bottom: 0;
 }
 
-.as-layout-editor-vrule-container>.as-vruler{
+.as-layout-editor-vrule-container>.as-vruler {
     height: 100%;
+}
+
+.as-layout-editor-new-component-menu-trigger {
+    position: absolute;
+    width: 1.5em;
+    height: 1.5em;
+    top: -1.5em;
+    left: -1.5em;
 }
