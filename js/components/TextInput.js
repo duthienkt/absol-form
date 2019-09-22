@@ -11,6 +11,8 @@ Object.defineProperties(TextInput.prototype, Object.getOwnPropertyDescriptors(Sc
 TextInput.prototype.constructor = TextInput;
 
 TextInput.prototype.tag = "TextInput";
+TextInput.prototype.menuIcon = "span.mdi.mdi-textbox";
+
 TextInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 TextInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
