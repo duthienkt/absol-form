@@ -42,7 +42,7 @@ ScalableComponent.prototype.handleStyleHeight = function (value) {
 
 ScalableComponent.prototype.handleStyleHAlign = function (value) {
     BaseComponent.prototype.handleStyleHAlign.call(this, value);
-    if (value == 'center') {
+    if (value != 'fixed') {
         this.view.addStyle('width', this.style.width + 'px')
     }
     else {
@@ -53,14 +53,24 @@ ScalableComponent.prototype.handleStyleHAlign = function (value) {
 
 ScalableComponent.prototype.handleStyleVAlign = function (value) {
     BaseComponent.prototype.handleStyleVAlign.call(this, value);
-    if (value == 'center') {
-        this.view.addStyle('height', this.style.width + 'px')
+    if (value != 'fixed') {
+        this.view.addStyle('height', this.style.height + 'px')
     }
     else {
         this.view.removeStyle('height');
     }
 };
 
+
+ScalableComponent.prototype.getAceptStyleNames = function () {
+    var ac = this.anchor.getAceptStyleNames();
+    if (this.style.vAlign != 'fixed')
+        ac.height = true;
+
+    if (this.style.hAlign != 'fixed')
+        ac.width = true;
+
+};
 
 
 export default ScalableComponent;
