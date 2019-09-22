@@ -130,4 +130,5 @@
 
 .as-base-component {
     pointer-events: all;
+    box-sizing: border-box;
 }
