@@ -14,6 +14,9 @@ function RelativeLayout() {
 Object.defineProperties(RelativeLayout.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
 RelativeLayout.prototype.constructor = RelativeLayout;
 
+RelativeLayout.prototype.tag = 'RelativeLayout';
+RelativeLayout.prototype.menuIcon = 'span.mdi.mdi-relative-scale';
+
 RelativeLayout.prototype.TOP_CLASS_NAME = 'as-relative-layout';
 RelativeLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
@@ -36,6 +39,12 @@ RelativeLayout.prototype.handleAddChild = function(child, index){
     var anchor = new RelativeAnchor();
     this.view.addChild(anchor.view);
     anchor.attachChild(child);
+};
+
+RelativeLayout.prototype.handleRemoveChild = function(child, index){
+    var anchor = child.anchor;
+    anchor.detachChild();
+    anchor.view.remove();
 };
 
 export default RelativeLayout;
