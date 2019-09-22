@@ -106,10 +106,22 @@ LayoutEditor.prototype.ev_moving = function (event) {
 
     if (movingData.aceptStyleNames.width) {
         if (movingData.option.left) {
-            movingData.comp.setStyle('width', movingData.style0.width - movingData.dx);
+            if (!movingData.aceptStyleNames.left && !movingData.aceptStyleNames.right) {
+                movingData.comp.setStyle('width', Math.max(0, movingData.style0.width - movingData.dx * 2));
+                //center align
+            }
+            else {
+                movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx));
+            }
         }
         if (movingData.option.right) {
-            movingData.comp.setStyle('width', movingData.style0.width + movingData.dx);
+            if (!movingData.aceptStyleNames.left && !movingData.aceptStyleNames.right) {
+                movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx * 2));
+                //center align
+            }
+            else {
+                movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx));
+            }
         }
     }
 
@@ -124,10 +136,20 @@ LayoutEditor.prototype.ev_moving = function (event) {
 
     if (movingData.aceptStyleNames.height) {
         if (movingData.option.top) {
-            movingData.comp.setStyle('height', movingData.style0.height - movingData.dy);
+            if (!movingData.aceptStyleNames.top && !movingData.aceptStyleNames.bottom) {
+                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy * 2));
+            }
+            else {
+                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy));
+            }
         }
         if (movingData.option.bottom) {
-            movingData.comp.setStyle('height', movingData.style0.height + movingData.dy);
+            if (!movingData.aceptStyleNames.top && !movingData.aceptStyleNames.bottom) {
+                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy * 2));
+            }
+            else {
+                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy));
+            }
         }
     }
 
