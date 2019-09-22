@@ -221,13 +221,20 @@ BaseComponent.prototype.handleAddChild = function (child, index) {
 
 BaseComponent.prototype.removeChild = function (child) {
     var childIndex = this.children.indexOf(child);
-    if (childIndex <= 0) return false;
+    if (childIndex < 0) return false;
     this.children.splice(childIndex, 1);
     this.handleRemoveChild(child, childIndex);
     child.parent = undefined;
     child.onDetached(this);
     return true;
 };
+
+BaseComponent.prototype.clearChild = function(){
+    while (this.children.length > 0){
+        this.removeChild(this.children[0]);
+    }
+};
+
 
 BaseComponent.prototype.handleRemoveChild = function (child, index) {
     throw new Error("Not implement!");
