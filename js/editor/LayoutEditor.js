@@ -2,8 +2,14 @@ import Context from 'absol/src/AppPattern/Context';
 import Assembler from '../core/Assembler';
 import RelativeLayout from '../layouts/RelativeLayout';
 import Dom from 'absol/src/HTML5/Dom';
+
 import Fcore from '../core/FCore';
 import '../dom/ResizeBox';
+import '../dom/HLine';
+import '../dom/VLine';
+import '../dom/HRuler';
+import '../dom/VRuler';
+
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -27,7 +33,15 @@ LayoutEditor.prototype.getView = function () {
         class: 'as-layout-editor',
         child: ['.as-layout-editor-background',
             '.as-layout-editor-layout-contaner',
-            '.as-layout-editor-forceground'
+            '.as-layout-editor-forceground',
+            {
+                class: 'as-layout-editor-hrule-container',
+                child: 'hruler'
+            },
+            {
+                class: 'as-layout-editor-vrule-container',
+                child: 'vruler'
+            }
         ]
     });
     var self = this;
@@ -42,11 +56,90 @@ LayoutEditor.prototype.getView = function () {
     this.$forceground = $('.as-layout-editor-forceground', this.$view)
         .on('click', this.ev_clickForceground.bind(this));
 
-    this.$resizeBox = _('resizebox');
+    this.$resizeBox = _('resizebox')
+        .on('beginmove', this.ev_beginMove.bind(this))
+        .on('moving', this.ev_moving.bind(this));
+
+    this.$leftAlignLine = _('hline');
+    this.$rightAlignLine = _('hline');
+
+    this.$topAlignLine = _('vline');
+    this.$bottomAlignLine = _('vline');
+
     return this.$view;
 };
 
+LayoutEditor.prototype.ev_beginMove = function (event) {
+    var bound = this.$forceground.getBoundingClientRect();
+    this._movingStateData = {
+        x0: event.clientX - bound.left,
+        y0: event.clientY - bound.top,
+        dx: 0,
+        dy: 0,
+        option: event.option,
+        aceptStyleNames: this._activatedCompnent.getAceptStyleNames(),
+        style0: Object.assign({}, this._activatedCompnent.style),
+        comp: this._activatedCompnent
+    };
+
+
+};
+
+
+LayoutEditor.prototype.ev_moving = function (event) {
+    var movingData = this._movingStateData;
+
+    var bound = this.$forceground.getBoundingClientRect();
+    var x = event.clientX - bound.left;
+    var y = event.clientY - bound.top;
+    movingData.dx = x - movingData.x0;
+    movingData.dy = y - movingData.y0;
+    //TODO; size may be invalid
+    if (movingData.aceptStyleNames.left && (movingData.option.left || movingData.option.body)) {
+        movingData.comp.setStyle('left', movingData.style0.left + movingData.dx);
+    }
+
+
+    if (movingData.aceptStyleNames.right && (movingData.option.right || movingData.option.body)) {
+        movingData.comp.setStyle('right', movingData.style0.right - movingData.dx);
+    }
+
+    if (movingData.aceptStyleNames.width) {
+        if (movingData.option.left) {
+            movingData.comp.setStyle('width', movingData.style0.width - movingData.dx);
+        }
+        if (movingData.option.right) {
+            movingData.comp.setStyle('width', movingData.style0.width + movingData.dx);
+        }
+    }
+
+    if (movingData.aceptStyleNames.top && (movingData.option.top || movingData.option.body)) {
+        movingData.comp.setStyle('top', movingData.style0.top + movingData.dy);
+    }
+
+    if (movingData.aceptStyleNames.bottom && (movingData.option.bottom || movingData.option.body)) {
+
+        movingData.comp.setStyle('bottom', movingData.style0.bottom - movingData.dy);
+    }
+
+    if (movingData.aceptStyleNames.height) {
+        if (movingData.option.top) {
+            movingData.comp.setStyle('height', movingData.style0.height - movingData.dy);
+        }
+        if (movingData.option.bottom) {
+            movingData.comp.setStyle('height', movingData.style0.height + movingData.dy);
+        }
+    }
+
+    this.updateAnchorPosition();
+};
+
+LayoutEditor.prototype.ev_endMoving = function (event) {
+    this._movingStateData = undefined;
+}
+
 LayoutEditor.prototype.ev_clickForceground = function (event) {
+    if (event.target != this.$forceground) return;
     var hitComponent;
     function visit(node) {
 
@@ -70,36 +163,101 @@ LayoutEditor.prototype.ev_clickForceground = function (event) {
 };
 
 LayoutEditor.prototype.activeComponent = function (comp) {
-    this._activeCompnent = comp;
-    this.updateResizeBox();
+    this._activatedCompnent = comp;
+    this.updateAnchor();
 };
 
-LayoutEditor.prototype.updateResizeBox = function () {
-    var comp = this._activeCompnent;
-    if (comp) {
-        if (comp != this.rootLayout) {
-            var bound = this.$view.getBoundingClientRect();
-            var compBound = comp.view.getBoundingClientRect();
-            this.$resizeBox.addStyle({
-                left: compBound.left - bound.left - 1 + 'px',
-                top: compBound.top - bound.top - 1 + 'px',
-                width: compBound.width + 2 + 'px',
-                height: compBound.height + 2 + 'px'
-            }).addTo(this.$forceground);
+LayoutEditor.prototype.updateAnchor = function () {
+    var comp = this._activatedCompnent;
+    if (comp && comp != this.rootLayout) {
+        this.$resizeBox.addTo(this.$forceground);
+
+        var anchorAceptStyle = comp.anchor.getAceptStyleNames();
+        if (anchorAceptStyle.top) {
+            this.$topAlignLine.addTo(this.$forceground)
         }
         else {
-            this.$resizeBox.remove();
+            this.$topAlignLine.remove();
+        }
+
+        if (anchorAceptStyle.bottom) {
+            this.$bottomAlignLine.addTo(this.$forceground);
+        }
+        else {
+            this.$bottomAlignLine.remove();
+        }
+
+        if (anchorAceptStyle.left) {
+            this.$leftAlignLine.addTo(this.$forceground);
+        }
+        else {
+            this.$leftAlignLine.remove();
+        }
+
+        if (anchorAceptStyle.right) {
+            this.$rightAlignLine.addTo(this.$forceground);
+        }
+        else {
+            this.$rightAlignLine.remove();
         }
     }
     else {
         this.$resizeBox.remove();
+        this.$leftAlignLine.remove();
+        this.$rightAlignLine.remove();
+        this.$topAlignLine.remove();
+        this.$bottomAlignLine.remove();
+    }
+    this.updateAnchorPosition();
+};
+
+
+LayoutEditor.prototype.updateAnchorPosition = function () {
+    var comp = this._activatedCompnent;
+    if (comp && comp != this.rootLayout) {
+        var bound = this.$layoutCtn.getBoundingClientRect();
+        var compBound = comp.view.getBoundingClientRect();
+        this.$resizeBox.addStyle({
+            left: compBound.left - bound.left + 'px',
+            top: compBound.top - bound.top + 'px',
+            width: compBound.width + 'px',
+            height: compBound.height + 'px'
+        }).addTo(this.$forceground);
+
+        if (this.$leftAlignLine.parentNode)
+            this.$leftAlignLine.addStyle({
+                left: '0',
+                width: compBound.left - bound.left + 'px',
+                top: compBound.top - bound.top + compBound.height / 2 + 'px',
+            });
+
+        if (this.$rightAlignLine.parentNode)
+            this.$rightAlignLine.addStyle({
+                right: '0',
+                width: bound.right - compBound.right + 'px',
+                top: compBound.top - bound.top + compBound.height / 2 + 'px',
+            });
+
+
+        if (this.$topAlignLine.parentNode)
+            this.$topAlignLine.addStyle({
+                top: '0',
+                height: compBound.top - bound.top + 'px',
+                left: compBound.left - bound.left + compBound.width / 2 + 'px',
+            });
+        if (this.$bottomAlignLine.parentNode)
+            this.$bottomAlignLine.addStyle({
+                bottom: '0',
+                height: bound.bottom - compBound.bottom + 'px',
+                left: compBound.left - bound.left + compBound.width / 2 + 'px',
+            });
     }
 };
 
 
 
 LayoutEditor.prototype.updateSize = function () {
-    this.updateResizeBox();
+    this.updateAnchorPosition();
 };
 
 

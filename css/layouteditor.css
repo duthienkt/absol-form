@@ -1,5 +1,6 @@
 .as-layout-editor {
     position: relative;
+    box-sizing: border-box;
 }
 
 
@@ -36,6 +37,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    overflow: hidden;
 }
 
 .as-layout-editor-background{
@@ -48,4 +50,23 @@
 
 .as-layout-editor-forceground{
     z-index: 2;
+}
+
+
+.as-layout-editor-hrule-container{
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+}
+
+.as-layout-editor-vrule-container{
+    position: absolute;
+    right: 100%;
+    top: 0;
+    bottom: 0;
+}
+
+.as-layout-editor-vrule-container>.as-vruler{
+    height: 100%;
 }
