@@ -69,7 +69,7 @@ ScalableComponent.prototype.getAceptStyleNames = function () {
 
     if (this.style.hAlign != 'fixed')
         ac.width = true;
-
+    return ac;
 };
 
 
