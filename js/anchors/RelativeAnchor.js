@@ -102,11 +102,11 @@ RelativeAnchor.prototype.attachChild = function (child) {
     this.$containter.addChild(child.view);
 };
 
-RelativeAnchor.prototype.dettachChild = function () {
+RelativeAnchor.prototype.detachChild = function () {
     if (this.childNode) {
         this.childNode.view.remove();
+        this.childNode.anchor = null;
         this.childNode = null;
-        this.childNode._anchorBox = null;
     }
     else
         throw new Error("Nothing to detach");
