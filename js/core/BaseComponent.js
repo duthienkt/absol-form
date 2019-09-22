@@ -17,11 +17,13 @@ function BaseComponent() {
 
 Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 
-BaseComponent.prototype.BASE_COMPONENT_CLASS_NAME = 'as-base-component';
 
 BaseComponent.prototype.constructor = BaseComponent;
-
 BaseComponent.prototype.tag = "BaseComponent";
+BaseComponent.prototype.menuIcon = "span.mdi.mdi-package-variant-closed";
+
+BaseComponent.prototype.BASE_COMPONENT_CLASS_NAME = 'as-base-component';
+
 BaseComponent.prototype.anchor = null;
 BaseComponent.prototype.parent = null;
 
