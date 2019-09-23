@@ -9,8 +9,11 @@ import DateInput from './js/components/DateInput'
 import BaseComponent from './js/core/BaseComponent'
 import LayoutEditor from './js/editor/LayoutEditor'
 import Fcore from './js/core/FCore'
+import FormEditor from './js/editor/FormEditor'
+
 
 export default {
+    FormEditor: FormEditor,
     LayoutEditor: LayoutEditor,
     RelativeAnchor:RelativeAnchor,
     BaseComponent: BaseComponent,
