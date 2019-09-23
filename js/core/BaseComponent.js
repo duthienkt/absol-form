@@ -65,7 +65,7 @@ BaseComponent.prototype.getData = function () {
 
     if (attributeKeys.length > 0) {
         data.attributes = attributeKeys.reduce(function (ac, key) {
-            ac[key] = elf.attributes[key];
+            ac[key] = self.attributes[key];
             return ac;
         }, {});
     }
@@ -76,14 +76,14 @@ BaseComponent.prototype.getData = function () {
 
     if (styleKeys.length > 0) {
         data.style = styleKeys.reduce(function (ac, key) {
-            ac[key] = elf.style[key];
+            ac[key] = self.style[key];
             return ac;
         }, {});
     }
 
-    if (children.length > 0) {
+    if (this.children.length > 0) {
         data.children = this.children.map(function (child) {
-            return children.getData();
+            return child.getData();
         });
     }
 
