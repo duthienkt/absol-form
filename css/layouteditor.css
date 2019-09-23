@@ -33,10 +33,11 @@
 .as-layout-editor-layout-contaner,
 .as-layout-editor-forceground {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 1.7em;
+    left: 1.7;
     right: 0;
     bottom: 0;
+    background: red;
     overflow: hidden;
 }
 
@@ -55,20 +56,25 @@
 
 .as-layout-editor-hrule-container {
     position: absolute;
-    bottom: 100%;
-    left: 0;
+    top: 0;
+    left: 1.7em;
     right: 0;
+    height: 1.5em;
 }
 
 .as-layout-editor-vrule-container {
     position: absolute;
-    right: 100%;
-    top: 0;
+    left: 0;
+    top: 1.7em;
     bottom: 0;
+    width: 1.5em;
 }
 
-.as-layout-editor-vrule-container>.as-vruler {
+.as-layout-editor-vrule-container>.as-vruler,
+.as-layout-editor-hrule-container>.as-hruler
+ {
     height: 100%;
+    width: 100%;
 }
 
 .as-layout-editor-new-component-menu-trigger {

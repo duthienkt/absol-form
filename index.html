@@ -6,124 +6,147 @@
   <title>FormEditor</title>
   <link rel="stylesheet" href="//cdn.materialdesignicons.com/4.4.95/css/materialdesignicons.min.css">
   <style>
+    html, body, :root{
+      padding: 0;
+      margin: 0;
+      /* height: 100%; */
+      height: 99.1%;
+      width: 100%;
+      border: none;
+    }
 
+    .form-editor-container {
+      margin: 10px;
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+      box-sizing: border-box;
+    }
+
+    .form-editor-container>.as-form-editor {
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
 
 <body>
   <script src="./absol/absol_form.js?"></script>
+  <div class="form-editor-container"></div>
   <script>
-    var layoutEditor = new absol.form.LayoutEditor();
-    layoutEditor.addConstructor(absol.form.TextInput);
-    layoutEditor.addConstructor(absol.form.DateInput);
-    layoutEditor.getView().addStyle({
-      width: 'calc(100vw - 40px)', height: 'calc(100vh - 40px)', border: 'solid 1px black',
-      'margin-top': '30px', 'margin-left': '30px'
-    }).addTo(document.body);
-    layoutEditor.start();
-    layoutEditor.setData({
-      tag: 'RelativeLayout',
-      children: [
-        {
-          tag: 'TextInput',
-          style: {
-            top: 10,
-            left: 20,
-            width: 160,
-            height: 40,
-            hAlign: 'left'
+    var mFormEditor = new absol.form.FormEditor();
+    mFormEditor.getView().addTo(absol.$('.form-editor-container'));
+    mFormEditor.start();
+  </script><script>
+    // var layoutEditor = new absol.form.LayoutEditor();
+    // layoutEditor.addConstructor(absol.form.TextInput);
+    // layoutEditor.addConstructor(absol.form.DateInput);
+    // layoutEditor.getView().addStyle({
+    //   width: 'calc(100vw - 40px)', height: 'calc(100vh - 40px)', border: 'solid 1px black',
+    //   'margin-top': '30px', 'margin-left': '30px'
+    // }).addTo(document.body);
+    // layoutEditor.start();
+    // layoutEditor.setData({
+    //   tag: 'RelativeLayout',
+    //   children: [
+    //     {
+    //       tag: 'TextInput',
+    //       style: {
+    //         top: 10,
+    //         left: 20,
+    //         width: 160,
+    //         height: 40,
+    //         hAlign: 'left'
 
-          },
-          attributes: {
-            value: "align: left, top"
-          }
-        },
-        {
-          tag: 'TextInput',
-          style: {
-            top: 10,
-            right: 20,
-            hAlign: 'right',
-            vAlign: 'top'
+    //       },
+    //       attributes: {
+    //         value: "align: left, top"
+    //       }
+    //     },
+    //     {
+    //       tag: 'TextInput',
+    //       style: {
+    //         top: 10,
+    //         right: 20,
+    //         hAlign: 'right',
+    //         vAlign: 'top'
 
-          },
-          attributes: {
-            value: "align: right, top"
-          }
-        },
+    //       },
+    //       attributes: {
+    //         value: "align: right, top"
+    //       }
+    //     },
 
-        {
-          tag: 'TextInput',
-          style: {
-            right: 80,
-            left: 90,
-            bottom: 100,
-            top: 300,
-            hAlign: 'fixed',
-            vAlign: 'fixed'
+    //     {
+    //       tag: 'TextInput',
+    //       style: {
+    //         right: 80,
+    //         left: 90,
+    //         bottom: 100,
+    //         top: 300,
+    //         hAlign: 'fixed',
+    //         vAlign: 'fixed'
 
-          },
-          attributes: {
-            value: "fixed parent's width, height"
-          }
-        },
-        {
-          tag: 'TextInput',
-          style: {
-            right: 20,
-            left: 10,
-            bottom: 10,
-            height: 80,
-            hAlign: 'fixed',
-            vAlign: 'bottom'
+    //       },
+    //       attributes: {
+    //         value: "fixed parent's width, height"
+    //       }
+    //     },
+    //     {
+    //       tag: 'TextInput',
+    //       style: {
+    //         right: 20,
+    //         left: 10,
+    //         bottom: 10,
+    //         height: 80,
+    //         hAlign: 'fixed',
+    //         vAlign: 'bottom'
 
-          },
-          attributes: {
-            value: "fixed parent's width; align: bottom"
-          }
-        },
-        {
-          tag: 'TextInput',
-          style: {
-            bottom: 400,
-            right: 20,
-            width: 400,
-            height: 100,
-            hAlign: 'right',
-            vAlign: 'bottom'
+    //       },
+    //       attributes: {
+    //         value: "fixed parent's width; align: bottom"
+    //       }
+    //     },
+    //     {
+    //       tag: 'TextInput',
+    //       style: {
+    //         bottom: 400,
+    //         right: 20,
+    //         width: 400,
+    //         height: 100,
+    //         hAlign: 'right',
+    //         vAlign: 'bottom'
 
-          },
-          attributes: {
-            value: "align: right, bottom"
-          }
-        },
-        {
-          tag: 'DateInput',
-          style: {
-            vAlign: 'top',
-            top: 100,
-            hAlign: 'center',
-            width: 200
-          },
-          attributes: {
-            value: new Date(2019, 9, 20)
-          }
-        },
-        {
-          tag: 'TextInput',
-          style: {
-            vAlign: 'center',
-            height: 200,
-            hAlign: 'center',
-            width: 200
-          },
-          attributes: {
-            value: "align: center, center"
-          }
-        }
-      ]
-    });
-
+    //       },
+    //       attributes: {
+    //         value: "align: right, bottom"
+    //       }
+    //     },
+    //     {
+    //       tag: 'DateInput',
+    //       style: {
+    //         vAlign: 'top',
+    //         top: 100,
+    //         hAlign: 'center',
+    //         width: 200
+    //       },
+    //       attributes: {
+    //         value: new Date(2019, 9, 20)
+    //       }
+    //     },
+    //     {
+    //       tag: 'TextInput',
+    //       style: {
+    //         vAlign: 'center',
+    //         height: 200,
+    //         hAlign: 'center',
+    //         width: 200
+    //       },
+    //       attributes: {
+    //         value: "align: center, center"
+    //       }
+    //     }
+    //   ]
+    // });
   </script>
 </body>
 

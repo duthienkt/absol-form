@@ -17,7 +17,6 @@
 
 .as-form-editor-left-site-container {
     position: absolute;
-    background: gray;
     left: 0;
     top: 0;
     bottom: 0;
@@ -35,12 +34,10 @@
 
 .as-form-editor-editor-space-container {
     position: absolute;
-    background: gray;
-    left: 16em;
+    left: 16.2em;
     top: 0;
     bottom: 0;
-    right: 16em;
-    background: royalblue;
+    right: 16.2em;
 }
 
 .as-form-editor-resizer.vertical.right-site {
@@ -49,9 +46,18 @@
 
 .as-form-editor-right-site-container {
     position: absolute;
-    background: gray;
     right: 0;
     top: 0;
     bottom: 0;
     width: 16em;
+}
+
+.as-form-editor-right-site-container>.as-form-editor-right-site {
+    width: 100%;
+    height: 100%;
+}
+
+.as-form-editor-editor-space-container> .as-layout-editor{
+    width: 100%;
+    height: 100%;
 }

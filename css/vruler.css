@@ -6,6 +6,7 @@
     margin: -1px;
     overflow: hidden;
     font-family: courier, "courier new", monospace;
+    box-sizing: content-box;
 }
 
 
@@ -14,6 +15,7 @@
     right: 0;
     width: 25%;
     border-top: solid 1px rgb(17, 48, 43);
+    box-sizing: border-box;
 
 }
 

@@ -4,6 +4,7 @@ import Draggable from 'absol-acomp/js/Draggable';
 
 import '../../css/formeditor.css';
 import Fcore from '../core/FCore';
+import LayoutEditor from './LayoutEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -13,11 +14,12 @@ function FormEditor() {
     this.style = {
         leftSizeWidth: 16,//em
         leftSizeMinWidth: 10,
-        
+
         rightSizeWidth: 16,//em
         rightSizeMinWidth: 10,
 
     };
+    this.mLayoutEditor = new LayoutEditor();
 }
 
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
@@ -32,12 +34,60 @@ FormEditor.prototype.getView = function () {
         child: [
             {
                 class: 'as-form-editor-left-site-container',
+                child: {
+                    tag: 'tabview',
+                    class: ['xp-tiny', 'as-form-editor-left-site'],
+                    child: [
+                        {
+                            tag: 'tabframe',
+                            attr: {
+                                name: 'Form',
+                                id: 'tab-form',
+                            }
+                        },
+                        {
+                            tag: 'tabframe',
+                            attr: {
+                                name: 'Compnoent',
+                                id: 'tab-component',
+                            }
+                        }
+                    ]
+                }
             },
             {
                 class: 'as-form-editor-editor-space-container'
             },
             {
                 class: 'as-form-editor-right-site-container',
+                child: {
+                    tag: 'tabview',
+                    class: ['xp-tiny', 'as-form-editor-right-site'],
+                    child: [
+                        {
+                            tag: 'tabframe',
+                            attr: {
+                                name: 'Format',
+                                id: 'tab-format',
+                            }
+                        },
+                        {
+                            tag: 'tabframe',
+                            attr: {
+                                name: 'Event',
+                                id: 'tab-event',
+                            }
+                        },
+                        {
+                            tag: 'tabframe',
+                            attr: {
+                                name: 'All',
+                                id: 'tab-all',
+                            }
+                        }
+                    ]
+                }
+
             },
 
             '.as-form-editor-resizer.vertical.left-site',
@@ -48,6 +98,7 @@ FormEditor.prototype.getView = function () {
     this.$leftSiteCtn = $('.as-form-editor-left-site-container', this.$view);
     this.$rightSiteCtn = $('.as-form-editor-right-site-container', this.$view);
     this.$editorSpaceCtn = $('.as-form-editor-editor-space-container', this.$view);
+    this.$editorSpaceCtn.addChild(this.mLayoutEditor.getView());
 
     this.$leftSiteResizer = Draggable($('.as-form-editor-resizer.vertical.left-site', this.$view))
         .on('predrag', this.ev_preDragLeftResizer.bind(this))
@@ -94,7 +145,7 @@ FormEditor.prototype.ev_dragLeftResizer = function (event) {
 
     this.style.leftSizeWidth = Math.max(this.style.leftSizeMinWidth, Math.min(this._dragLeftMovingDate.bound.width / 3 / this._dragLeftMovingDate.fontSize, newWidth));
     this.$leftSiteCtn.addStyle('width', this.style.leftSizeWidth + 'em');
-    this.$editorSpaceCtn.addStyle('left', this.style.leftSizeWidth + 'em');
+    this.$editorSpaceCtn.addStyle('left', this.style.leftSizeWidth + 0.2 + 'em');
     window.dispatchEvent(new Event('resize'));
 };
 
@@ -131,7 +182,7 @@ FormEditor.prototype.ev_dragRightResizer = function (event) {
 
     this.style.rightSizeWidth = Math.max(this.style.rightSizeMinWidth, Math.min(this._dragRightMovingDate.bound.width / 3 / this._dragRightMovingDate.fontSize, newWidth));
     this.$rightSiteCtn.addStyle('width', this.style.rightSizeWidth + 'em');
-    this.$editorSpaceCtn.addStyle('right', this.style.rightSizeWidth + 'em');
+    this.$editorSpaceCtn.addStyle('right', this.style.rightSizeWidth + 0.2 + 'em');
     window.dispatchEvent(new Event('resize'));
 };
 

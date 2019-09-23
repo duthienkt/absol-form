@@ -34,55 +34,64 @@ LayoutEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
         class: 'as-layout-editor',
-        child: ['.as-layout-editor-background',
-            '.as-layout-editor-layout-contaner',
-            {
-                class: 'as-layout-editor-forceground',
-                extendEvent: 'contextmenu',
-                on: {
-                    contextmenu: this.ev_contextMenuForceGround.bind(this)
-                }
-            },
-            {
-                class: 'as-layout-editor-hrule-container',
-                child: 'hruler'
-            },
+        child: [
             {
                 class: 'as-layout-editor-vrule-container',
                 child: 'vruler'
             },
             {
-                class: 'as-layout-editor-new-component-menu-trigger'
+                class: 'as-layout-editor-hrule-container',
+                child: 'hruler'
             }
+            // '.as-layout-editor-background',
+            //     '.as-layout-editor-layout-contaner',
+            //     {
+            //         class: 'as-layout-editor-forceground',
+            //         extendEvent: 'contextmenu',
+            //         on: {
+            //             contextmenu: this.ev_contextMenuForceGround.bind(this)
+            //         }
+            //     },
+            //     {
+            //         class: 'as-layout-editor-hrule-container',
+            //         child: 'hruler'
+            //     },
+            //     {
+            //         class: 'as-layout-editor-vrule-container',
+            //         child: 'vruler'
+            //     },
+            //     {
+            //         class: 'as-layout-editor-new-component-menu-trigger'
+            //     }
         ]
     });
-    var self = this;
-    this.$attachHook = _('attachhook').on('error', function () {
-        this.updateSize = self.updateSize.bind(self);
-        Dom.addToResizeSystem(this);
-        self.updateSize();
-    }).addTo(this.$view);
+    // var self = this;
+    // this.$attachHook = _('attachhook').on('error', function () {
+    //     this.updateSize = self.updateSize.bind(self);
+    //     Dom.addToResizeSystem(this);
+    //     self.updateSize();
+    // }).addTo(this.$view);
 
-    this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
-    this.$componentMenuTrigger = $('.as-layout-editor-new-component-menu-trigger', this.$view)
-        .on('click', this.getMenuComponentItems.bind(this), true);//to update
-    this._componentMenuOption = QuickMenu.showWhenClick(this.$componentMenuTrigger, {
-        items: this.getMenuComponentItems()
-    }, 'auto', this.ev_menuComponent.bind(this));
+    // this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
+    // this.$componentMenuTrigger = $('.as-layout-editor-new-component-menu-trigger', this.$view)
+    //     .on('click', this.getMenuComponentItems.bind(this), true);//to update
+    // this._componentMenuOption = QuickMenu.showWhenClick(this.$componentMenuTrigger, {
+    //     items: this.getMenuComponentItems()
+    // }, 'auto', this.ev_menuComponent.bind(this));
 
-    this.$layoutCtn = $('.as-layout-editor-layout-contaner', this.$view);
-    this.$background = $('.as-layout-editor-background', this.$view);
-    this.$forceground = $('.as-layout-editor-forceground', this.$view)
-        .on('click', this.ev_clickForceground.bind(this));
+    // this.$layoutCtn = $('.as-layout-editor-layout-contaner', this.$view);
+    // this.$background = $('.as-layout-editor-background', this.$view);
+    // this.$forceground = $('.as-layout-editor-forceground', this.$view)
+    //     .on('click', this.ev_clickForceground.bind(this));
 
-    this.$resizeBox = _('resizebox')
-        .on('beginmove', this.ev_beginMove.bind(this))
-        .on('moving', this.ev_moving.bind(this));
-    this.$leftAlignLine = _('hline');
-    this.$rightAlignLine = _('hline');
+    // this.$resizeBox = _('resizebox')
+    //     .on('beginmove', this.ev_beginMove.bind(this))
+    //     .on('moving', this.ev_moving.bind(this));
+    // this.$leftAlignLine = _('hline');
+    // this.$rightAlignLine = _('hline');
 
-    this.$topAlignLine = _('vline');
-    this.$bottomAlignLine = _('vline');
+    // this.$topAlignLine = _('vline');
+    // this.$bottomAlignLine = _('vline');
 
     return this.$view;
 };
@@ -247,17 +256,17 @@ LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
                         icon: 'span.mdi.mdi-delete-variant',
                         text: 'Delete',
                         cmd: 'delete',
-                        extendStyle:{
-                            color:'red'
+                        extendStyle: {
+                            color: 'red'
                         }
                     }
                 ]
             }, function (menuEvent) {
                 var cmd = menuEvent.menuItem.cmd;
                 switch (cmd) {
-                    case 'delete': 
-                    activatedComponent.parent.removeChild(activatedComponent);
-                    self.activeComponent(undefined);
+                    case 'delete':
+                        activatedComponent.parent.removeChild(activatedComponent);
+                        self.activeComponent(undefined);
                         break;
                     case 'attributes-edit': break;
                 }
