@@ -19,6 +19,7 @@ function VRuler() {
 
     res.$lines = [];
     res.$numbers = [];
+    this.$mesureTarget = undefined;
     res._viewingNumberCount = 0;
     res._viewingLineCount = 0;
     res._spacing = 10;
@@ -27,10 +28,39 @@ function VRuler() {
 }
 
 
+VRuler.prototype.mesureElement = function (elt) {
+    if (typeof elt == "string") elt = $(elt);
+    this.$mesureTarget = elt;
+};
+
+
 VRuler.prototype.update = function () {
     var fontSize = this.getFontSize();
+    var mesureBound;
     var bound = this.getBoundingClientRect();
-    var lineCount = Math.floor((bound.height - 2) / this._spacing) + 1;//2 is border-size
+    var contentBound = {
+        left: bound.left + 1,
+        right: bound.right - 1,
+        top: bound.top + 1,
+        bottom: bound.bottom - 1,
+        width: bound.width - 2,
+        height: bound.height - 2
+    };
+    if (this.$mesureTarget) {
+        mesureBound = this.$mesureTarget.getBoundingClientRect();
+    }
+    else {
+        mesureBound = contentBound;
+    }
+
+    var topOfset = (mesureBound.top - contentBound.top) % this._spacing;
+    if (topOfset < 0) topOfset += this._spacing;
+
+
+    var lineIndexOfset = Math.round((contentBound.top - mesureBound.top + topOfset) / this._spacing);
+
+    var lineCount = Math.floor((contentBound.height - topOfset) / this._spacing) + 1;
+
     while (this.$lines.length < lineCount) {
         this.$lines.push(_('.as-vruler-line'));
     }
@@ -38,13 +68,13 @@ VRuler.prototype.update = function () {
     var lineElt;
     for (i = 0; i < lineCount; ++i) {
         lineElt = this.$lines[i];
-        if (i % this._major == 0) {
+        if ((i + lineIndexOfset) % this._major == 0) {
             lineElt.addClass('major');
         }
         else {
             lineElt.removeClass('major');
         }
-        lineElt.addStyle('top', this._spacing * i - 0.5 + 'px');
+        lineElt.addStyle('top', topOfset + this._spacing * i - 0.5 + 'px');
     }
 
     while (this._viewingLineCount < lineCount) {
@@ -55,20 +85,25 @@ VRuler.prototype.update = function () {
         this.$lines[--this._viewingLineCount].remove();
     }
 
-    var numberCount = Math.floor(lineCount / this.major);
+    var numberCount = Math.floor((lineCount + lineIndexOfset - 1) / this._major) - Math.ceil(lineIndexOfset / this._major) + 1;
+
     while (this.$numbers.length < numberCount) {
         this.$numbers.push(_('.as-vruler-major-number'));
     }
     var numberElt;
     var number;
+    var majorTopOfset = topOfset;
+    if (lineIndexOfset > 0) {
+        majorTopOfset += (this._major - lineIndexOfset % this._spacing) * this._spacing;
+    }
     for (i = 0; i < numberCount; ++i) {
-        number = i * this._spacing * this._major;
+        number = (Math.ceil(lineIndexOfset / this._major) + i) * this._spacing * this._major;
         numberElt = this.$numbers[i];
         if (numberElt.__cacheNumber__ != number) {
             numberElt.__cacheNumber__ = number;
             numberElt.innerHTML = number + '';
         }
-        numberElt.addStyle('top', this._major * this._spacing * i - 0.7 * 0.5 * fontSize + 'px')
+        numberElt.addStyle('top', majorTopOfset + this._major * i * this._spacing - 0.7 * 0.5 * fontSize + 'px')
     }
 
     while (this._viewingNumberCount < numberCount) {
