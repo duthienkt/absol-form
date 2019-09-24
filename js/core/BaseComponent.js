@@ -169,17 +169,7 @@ BaseComponent.prototype.handleStyleTop = function (value) {
 
 BaseComponent.prototype.handleStyleBottom = function (value) {
     if (this.anchor)
-        this.anchor.setBottom(value)
-};
-
-BaseComponent.prototype.handleStyleWidth = function (value) {
-    if (this.anchor)
-        this.anchor.setWidth(value);
-};
-
-BaseComponent.prototype.handleStyleHeight = function (value) {
-    if (this.anchor)
-        this.anchor.setHeight(value)
+        this.anchor.setBottom(value);
 };
 
 

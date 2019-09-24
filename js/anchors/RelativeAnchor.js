@@ -49,17 +49,17 @@ RelativeAnchor.prototype.VALIGN_CLASS_NAMES = {
 };
 
 RelativeAnchor.prototype.HALIGN_ACEPT_STYLE_NAMES = {
-    left: { left: true, right: false, width: false },
-    right: { left: false, right: true, width: false },
-    center: { left: false, right: false, width: false },// component nedd set height
-    fixed: { left: true, right: true, width: false }
+    left: { left: true, right: false },
+    right: { left: false, right: true },
+    center: { left: false, right: false },// component nedd set height
+    fixed: { left: true, right: true }
 };
 
 RelativeAnchor.prototype.VALIGN_ACEPT_STYLE_NAMES = {
-    top: { top: true, bottom: false, height: false },
-    bottom: { top: false, bottom: true, height: false },
-    center: { top: false, bottom: false, height: false },// component nedd set height
-    fixed: { top: true, bottom: true, height: false }
+    top: { top: true, bottom: false},
+    bottom: { top: false, bottom: true},
+    center: { top: false, bottom: false},// component nedd set height
+    fixed: { top: true, bottom: true}
 };
 
 
