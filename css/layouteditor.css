@@ -51,7 +51,7 @@
 }
 
 
-.as-layout-editor-forceground-container{
+.as-layout-editor-forceground-container {
     position: absolute;
     left: 0;
     right: 0;
@@ -72,7 +72,7 @@
     z-index: 2;
 }
 
-.as-layout-editor-forceground{
+.as-layout-editor-forceground {
     width: 100%;
     height: 100%;
     position: relative;
@@ -110,4 +110,8 @@
     height: 1.5em;
     top: -1.5em;
     left: -1.5em;
+}
+
+.as-layout-editor.mode-interact .as-layout-editor-forceground-container {
+    visibility: hidden;
 }
