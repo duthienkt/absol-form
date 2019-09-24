@@ -5,7 +5,7 @@
     border: solid 1px black;
     overflow: hidden;
     font-family: courier, "courier new", monospace;
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 
 
