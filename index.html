@@ -35,122 +35,171 @@
   <script src="./absol/absol_form.js?"></script>
   <div class="form-editor-container"></div>
   <script>
-    var data = JSON.parse(localStorage.getItem('form-data') || 'false');
+    //\"([^\s]+)\"\s*:
+    //\n$1 :
+    var data = false && JSON.parse(localStorage.getItem('form-data') || 'false');
     if (!data) {
       data = {
-        tag: 'RelativeLayout',
+        tag: "RelativeLayout",
         style: {
-          width: 900,
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
           height: 800,
-          hAlign: 'left',
-          vAlign: 'top'
+          width: 900,
+          vAlign: "top",
+          hAlign: "left"
         },
-        children: [
-          {
-            tag: 'TextInput',
-            style: {
-              top: 10,
-              left: 20,
-              width: 160,
-              height: 40,
-              hAlign: 'left'
-
-            },
-            attributes: {
-              value: "align: left, top"
-            }
+        children: [{
+          tag: "TextInput",
+          attributes: {
+            value: "align: left, top"
           },
-          {
-            tag: 'TextInput',
-            style: {
-              top: 10,
-              right: 20,
-              hAlign: 'right',
-              vAlign: 'top'
-
-            },
-            attributes: {
-              value: "align: right, top"
-            }
-          },
-
-          {
-            tag: 'TextInput',
-            style: {
-              right: 80,
-              left: 90,
-              bottom: 100,
-              top: 300,
-              hAlign: 'fixed',
-              vAlign: 'fixed'
-
-            },
-            attributes: {
-              value: "fixed parent's width, height"
-            }
-          },
-          {
-            tag: 'TextInput',
-            style: {
-              right: 20,
-              left: 10,
-              bottom: 10,
-              height: 80,
-              hAlign: 'fixed',
-              vAlign: 'bottom'
-
-            },
-            attributes: {
-              value: "fixed parent's width; align: bottom"
-            }
-          },
-          {
-            tag: 'TextInput',
-            style: {
-              bottom: 400,
-              right: 20,
-              width: 400,
-              height: 100,
-              hAlign: 'right',
-              vAlign: 'bottom'
-
-            },
-            attributes: {
-              value: "align: right, bottom"
-            }
-          },
-          {
-            tag: 'DateInput',
-            style: {
-              vAlign: 'top',
-              top: 100,
-              hAlign: 'center',
-              width: 200
-            },
-            attributes: {
-              value: new Date(2019, 9, 20)
-            }
-          },
-          {
-            tag: 'TextInput',
-            style: {
-              vAlign: 'center',
-              height: 200,
-              hAlign: 'center',
-              width: 200
-            },
-            attributes: {
-              value: "align: center, center"
-            }
+          style: {
+            left: 95,
+            right: 0,
+            top: 10,
+            bottom: 0,
+            height: 30,
+            width: 252,
+            hAlign: "left"
           }
-        ]
+        }, {
+          tag: "Label",
+          attributes: {
+            text: "label-text"
+          },
+          style: {
+            left: 23,
+            top: 19,
+            bottom: 0,
+            hAlign: "left"
+          }
+        }, {
+          tag: "Label",
+          attributes: {
+            text: "label-text-center"
+          },
+          style: {
+            left: 400,
+            right: 0,
+            top: 28,
+            bottom: 0,
+            hAlign: "center"
+          }
+        }, {
+          tag: "NumberInput",
+          attributes: {
+            value: 9911
+          },
+          style: {
+            left: 26,
+            right: 0,
+            top: 65,
+            bottom: 0,
+            height: 40,
+            width: 312,
+            hAlign: "left"
+          }
+        }, {
+          tag: "TextInput",
+          attributes: {
+            value: "align: right, top"
+          },
+          style: {
+            left: 0,
+            right: 36,
+            top: 23,
+            bottom: 0,
+            height: 36,
+            width: 332,
+            hAlign: "right",
+            vAlign: "top"
+          }
+        }, {
+          tag: "TextArea",
+          attributes: {
+            value: "fixed parent's width, height"
+          },
+          style: {
+            left: 66,
+            right: 104,
+            top: 158,
+            bottom: 550,
+            height: 30,
+            width: 69,
+            hAlign: "fixed",
+            vAlign: "fixed"
+          }
+        }, {
+          tag: "TextInput",
+          attributes: {
+            value: "fixed parent's width; align: bottom"
+          },
+          style: {
+            left: 132,
+            right: 167,
+            top: 0,
+            bottom: 10,
+            height: 129,
+            width: 69,
+            hAlign: "fixed",
+            vAlign: "bottom"
+          }
+        }, {
+          tag: "TextInput",
+          attributes: {
+            value: "align: right, bottom"
+          },
+          style: {
+            left: 0,
+            right: 20,
+            top: 0,
+            bottom: 304,
+            height: 196,
+            width: 304,
+            hAlign: "right",
+            vAlign: "bottom"
+          }
+        }, {
+          tag: "DateInput",
+          attributes: {
+            value: "2019-10-19T17:00:00.000Z"
+          },
+          style: {
+            left: 0,
+            right: 0,
+            top: 100,
+            bottom: 0,
+            height: 30,
+            width: 200,
+            vAlign: "top",
+            hAlign: "center"
+          }
+        }, {
+          tag: "TextInput",
+          attributes: {
+            value: "align: center, center"
+          },
+          style: {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            height: 200,
+            width: 200,
+            vAlign: "center",
+            hAlign: "center"
+          }
+        }]
       };
     }
     var mFormEditor = new absol.form.FormEditor();
     mFormEditor.getView().addTo(absol.$('.form-editor-container'));
     mFormEditor.start();
     mFormEditor.setData(data);
-    mFormEditor.on('change', function(){
+    mFormEditor.on('change', function () {
       localStorage.setItem('form-data', JSON.stringify(this.getData()));
     });
 

@@ -10,6 +10,9 @@ import DateInput from '../components/DateInput';
 import TextInput from '../components/TextInput';
 import RelativeLayout from '../layouts/RelativeLayout';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
+import NumberInput from '../components/NumberInput';
+import Label from '../components/Label';
+import TextArea from '../components/TextArea';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -30,7 +33,10 @@ function FormEditor() {
 
     this.mLayoutEditor.addComponent(DateInput);
     this.mLayoutEditor.addComponent(TextInput);
+    this.mLayoutEditor.addComponent(TextArea);
     this.mLayoutEditor.addComponent(RelativeLayout);
+    this.mLayoutEditor.addComponent(NumberInput);
+    this.mLayoutEditor.addComponent(Label);
 
     this.mLayoutEditor.on('change', function (event) {
         self.emit('change', Object.assign({ formEditor: self }, event), this);
@@ -72,7 +78,7 @@ FormEditor.prototype.getComponentsTree = function () {
                         tag: 'exptree',
                         props: {
                             name: "RelativeLayout",
-                            icon:RelativeLayout.prototype.menuIcon
+                            icon: RelativeLayout.prototype.menuIcon
                         }
                     }
                 ]
@@ -99,6 +105,46 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "TextInput",
                             icon: TextInput.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "TextArea",
+                            icon: TextArea.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "NumberInput",
+                            icon: NumberInput.prototype.menuIcon
+                        }
+                    }
+                ]
+            },
+            {
+                tag: 'exptree',
+                props: {
+                    name: "static",
+                    status:'open'
+                },
+                on: {
+                    press: toggleGroup
+                },
+                child: [
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "Label",
+                            icon: Label.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "Text",
+                            icon: 'span.mdi.mdi-format-color-text'
                         }
                     }
                 ]
@@ -130,6 +176,7 @@ FormEditor.prototype.getView = function () {
                         },
                         {
                             tag: 'tabframe',
+                            class: 'absol-bscroller',
                             attr: {
                                 name: 'Component',
                                 id: 'tab-component',
