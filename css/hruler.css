@@ -3,7 +3,6 @@
     position: relative;
     height: 1.5em;
     border: solid 1px black;
-    margin: -1px;
     overflow: hidden;
     font-family: courier, "courier new", monospace;
     box-sizing: content-box;
