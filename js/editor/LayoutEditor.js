@@ -10,6 +10,7 @@ import '../dom/VLine';
 import '../dom/HRuler';
 import '../dom/VRuler';
 import QuickMenu from 'absol-acomp/js/QuickMenu';
+import EventEmitter from 'absol/src/HTML5/EventEmitter';
 
 
 var _ = Fcore._;
@@ -18,16 +19,33 @@ var $ = Fcore.$;
 function LayoutEditor() {
     Context.call(this);
     Assembler.call(this);
+    EventEmitter.call(this);
     this.addConstructor('RelativeLayout', RelativeLayout);
     this.rootLayout = null;
     this.snapshots = [];
     this.snapshotsIndex = 0;
+    this._changeCommited = true;
 }
 
 
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(Assembler.prototype));
+Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 LayoutEditor.prototype.constructor = LayoutEditor;
+
+
+LayoutEditor.prototype.notifyChanged = function () {
+    this._changeCommited = false;
+};
+
+
+LayoutEditor.prototype.commitChanged = function () {
+    if (!this._changeCommited) {
+        //todo something
+        this.emit('change', { type: 'change', layoutEditor: this }, this);
+    }
+
+};
 
 
 LayoutEditor.prototype.getView = function () {
@@ -104,7 +122,8 @@ LayoutEditor.prototype.getView = function () {
 
     this.$resizeBox = _('resizebox')
         .on('beginmove', this.ev_beginMove.bind(this))
-        .on('moving', this.ev_moving.bind(this));
+        .on('moving', this.ev_moving.bind(this))
+        .on('endmove', this.ev_endMoving.bind(this));
     this.$leftAlignLine = _('hline');
     this.$rightAlignLine = _('hline');
 
@@ -115,6 +134,8 @@ LayoutEditor.prototype.getView = function () {
 };
 
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
+    // console.log('.');
+    
     this.updateRuler();
 };
 
@@ -145,11 +166,13 @@ LayoutEditor.prototype.ev_moving = function (event) {
     //TODO; size may be invalid
     if (movingData.aceptStyleNames.left && (movingData.option.left || movingData.option.body)) {
         movingData.comp.setStyle('left', movingData.style0.left + movingData.dx);
+        this.notifyChanged();
     }
 
 
     if (movingData.aceptStyleNames.right && (movingData.option.right || movingData.option.body)) {
         movingData.comp.setStyle('right', movingData.style0.right - movingData.dx);
+        this.notifyChanged();
     }
 
     if (movingData.aceptStyleNames.width) {
@@ -161,6 +184,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx));
             }
+            this.notifyChanged();
         }
         if (movingData.option.right) {
             if (!movingData.aceptStyleNames.left && !movingData.aceptStyleNames.right) {
@@ -170,16 +194,18 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx));
             }
+            this.notifyChanged();
         }
     }
 
     if (movingData.aceptStyleNames.top && (movingData.option.top || movingData.option.body)) {
         movingData.comp.setStyle('top', movingData.style0.top + movingData.dy);
+        this.notifyChanged();
     }
 
     if (movingData.aceptStyleNames.bottom && (movingData.option.bottom || movingData.option.body)) {
-
         movingData.comp.setStyle('bottom', movingData.style0.bottom - movingData.dy);
+        this.notifyChanged();
     }
 
     if (movingData.aceptStyleNames.height) {
@@ -190,6 +216,8 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy));
             }
+            this.notifyChanged();
+
         }
         if (movingData.option.bottom) {
             if (!movingData.aceptStyleNames.top && !movingData.aceptStyleNames.bottom) {
@@ -198,6 +226,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy));
             }
+            this.notifyChanged();
         }
     }
 
@@ -206,6 +235,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
 
 LayoutEditor.prototype.ev_endMoving = function (event) {
     this._movingStateData = undefined;
+    this.commitChanged();
 }
 
 LayoutEditor.prototype.ev_clickForceground = function (event) {
@@ -399,12 +429,6 @@ LayoutEditor.prototype.updateAnchorPosition = function () {
             });
 
         if (this.$bottomAlignLine.parentNode)
-        console.log({
-            bottom: compBound.bottom - bound.top + 'px',
-            height: comp.style.bottom + 'px',
-            left: compBound.left - bound.left + compBound.width / 2 + 'px',
-        });
-        
             this.$bottomAlignLine.addStyle({
                 top: compBound.bottom - bound.top + 'px',
                 height: comp.style.bottom + 'px',
@@ -455,6 +479,8 @@ LayoutEditor.prototype.setData = function (data) {
     this.rootLayout = visit(data);
     this.$layoutCtn.addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
+    this.$vruler.mesureElement(this.rootLayout.view);
+    this.$hruler.mesureElement(this.rootLayout.view);
 };
 
 

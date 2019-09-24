@@ -9,12 +9,15 @@ import Dom from 'absol/src/HTML5/Dom';
 import DateInput from '../components/DateInput';
 import TextInput from '../components/TextInput';
 import RelativeLayout from '../layouts/RelativeLayout';
+import EventEmitter from 'absol/src/HTML5/EventEmitter';
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 function FormEditor() {
     Context.call(this);
+    EventEmitter.call(this);
+    var self = this;
     this.style = {
         leftSizeWidth: 16,//em
         leftSizeMinWidth: 10,
@@ -24,15 +27,86 @@ function FormEditor() {
 
     };
     this.mLayoutEditor = new LayoutEditor();
+
     this.mLayoutEditor.addComponent(DateInput);
     this.mLayoutEditor.addComponent(TextInput);
     this.mLayoutEditor.addComponent(RelativeLayout);
+
+    this.mLayoutEditor.on('change', function (event) {
+        self.emit('change', Object.assign({ formEditor: self }, event), this);
+    });
 }
 
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
+Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 FormEditor.prototype.constructor = FormEditor;
 
+FormEditor.prototype.getComponentsTree = function () {
+    if (this.$compsExpTree) return this.$compExpTree;
 
+    function toggleGroup() {
+        this.status = { open: 'close', close: 'open' }[this.status]
+    }
+
+    this.$compsExpTree = _({
+        tag: 'exptree',
+        props: {
+            name: 'all',
+            status: 'open'
+        },
+        on: {
+            press: toggleGroup
+        },
+        child: [
+            {
+                tag: 'exptree',
+                props: {
+                    name: 'layouts',
+                    status: 'open'
+                },
+                on: {
+                    press: toggleGroup
+                },
+                child: [
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "RelativeLayout",
+                            icon:RelativeLayout.prototype.menuIcon
+                        }
+                    }
+                ]
+            },
+            {
+                tag: 'exptree',
+                props: {
+                    name: 'inputs',
+                    status: 'open'
+                },
+                on: {
+                    press: toggleGroup
+                },
+                child: [
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "DateInput",
+                            icon: DateInput.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "TextInput",
+                            icon: TextInput.prototype.menuIcon
+                        }
+                    }
+                ]
+            }
+        ]
+    })
+    return this.$compsExpTree;
+};
 
 FormEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -52,14 +126,24 @@ FormEditor.prototype.getView = function () {
                                 name: 'Form',
                                 id: 'tab-form',
                             }
+
                         },
                         {
                             tag: 'tabframe',
                             attr: {
                                 name: 'Component',
                                 id: 'tab-component',
+                            },
+                            child: this.getComponentsTree()
+                        },
+                        {
+                            tag: 'tabframe',
+                            attr: {
+                                name: 'Outline',
+                                id: 'tab-outline',
                             }
-                        }
+
+                        },
                     ]
                 }
             },

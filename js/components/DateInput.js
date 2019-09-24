@@ -21,17 +21,22 @@ DateInput.prototype.render = function () {
     return _('calendarinput');
 };
 
-DateInput.prototype.onCreated = function(){
+DateInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
-    this.view.on('change', function(event){
+    this.view.on('change', function (event) {
         self.emit('change', this.value, self);
     });
 };
 
 
-DateInput.prototype.handleAttributeValue = function(value){
-    this.view.value = value;
+DateInput.prototype.handleAttributeValue = function (value) {
+    if (value instanceof Date)
+        this.view.value = value;
+    else {
+        this.attributes.value = new Date(value);
+        this.view.value = this.attributes.value;
+    }
 };
 
 export default DateInput;
