@@ -1,5 +1,7 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
+import '../../css/component.css';
+
 
 var _ = Fcore._;
 
