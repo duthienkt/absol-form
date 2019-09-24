@@ -9,7 +9,6 @@ import '../dom/HLine';
 import '../dom/VLine';
 import '../dom/HRuler';
 import '../dom/VRuler';
-import QuickMenu from 'absol-acomp/js/QuickMenu';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 
 
@@ -25,6 +24,7 @@ function LayoutEditor() {
     this.snapshots = [];
     this.snapshotsIndex = 0;
     this._changeCommited = true;
+    this.mode = 'design';
 }
 
 
@@ -33,6 +33,11 @@ Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 LayoutEditor.prototype.constructor = LayoutEditor;
 
+LayoutEditor.prototype.MODE_VALUE = ['design', 'interact'];
+LayoutEditor.prototype.MODE_CLASS_NAMES = {
+    design: 'mode-design',
+    interact: 'mode-interact'
+};
 
 LayoutEditor.prototype.notifyChanged = function () {
     this._changeCommited = false;
@@ -51,7 +56,7 @@ LayoutEditor.prototype.commitChanged = function () {
 LayoutEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
-        class: 'as-layout-editor',
+        class: ['as-layout-editor'].concat([this.MODE_CLASS_NAMES[this.mode]]),
         child: [
             {
                 class: 'as-layout-editor-vrule-container',
@@ -70,7 +75,11 @@ LayoutEditor.prototype.getView = function () {
                     class: 'as-layout-editor-space',
                     child: [
                         {
-                            class: 'as-layout-editor-layout-container'
+                            class: 'as-layout-editor-layout-container',
+                            extendEvent: 'contextmenu',
+                            on: {
+                                contextmenu: this.ev_contextMenuLayout.bind(this)
+                            }
                         },
                         {
                             class: 'as-layout-editor-forceground-container',
@@ -78,9 +87,6 @@ LayoutEditor.prototype.getView = function () {
                             extendEvent: 'contextmenu',
                             on: {
                                 contextmenu: this.ev_contextMenuForceGround.bind(this)
-                            },
-                            style: {
-                                'background-color': 'rgb(100,1, 0, 0.03)'
                             }
                         }
                     ]
@@ -134,8 +140,6 @@ LayoutEditor.prototype.getView = function () {
 };
 
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
-    // console.log('.');
-    
     this.updateRuler();
 };
 
@@ -280,6 +284,11 @@ LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
                         icon: 'span.mdi.mdi-eraser',
                         text: 'Clear',
                         cmd: 'clear'
+                    },
+                    {
+                        text: "Interact Mode",
+                        cmd: 'interact',
+                        icon: "span.mdi.mdi-android-auto.mdi-rotate-90"
                     }
                 ]
             }, function (menuEvent) {
@@ -287,6 +296,7 @@ LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
                 switch (cmd) {
                     case 'clear': self.clearRootLayout(); break;
                     case 'new': setTimeout(self.$componentMenuTrigger.click.bind(self.$componentMenuTrigger), 10); break;
+                    case 'interact': self.setMode('interact'); break;
                 }
             });
         }
@@ -327,6 +337,25 @@ LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
 
         }
     }
+};
+
+
+LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
+    var self = this;
+    event.showContextMenu({
+        items: [
+            {
+                text: 'Design Mode',
+                icon: 'span.mdi.mdi-pencil-box-multiple-outline',
+                cmd: 'design'
+            }
+        ]
+    }, function (menuEvent) {
+        var cmd = menuEvent.menuItem.cmd;
+        switch (cmd) {
+            case 'design': self.setMode('design'); break;
+        }
+    });
 };
 
 
@@ -453,6 +482,7 @@ LayoutEditor.prototype.setData = function (data) {
     var self = this;
     function visit(node) {
         var constructor = self.constructors[node.tag];
+        if (!constructor) throw new Error(node.tag +' constructor not found!');
         var comp = new constructor();
 
         var style = node.style;
@@ -506,6 +536,17 @@ LayoutEditor.prototype.getMenuComponentItems = function () {
     });
     this._menuComponentItems.push.apply(this._menuComponentItems, items);
     return this._menuComponentItems;
-}
+};
+
+LayoutEditor.prototype.setMode = function (mode) {
+    if (this.MODE_VALUE.indexOf(mode) < 0 || this.mode == mode) return;
+    if (this.$view){
+        this.$view.removeClass(this.MODE_CLASS_NAMES[this.mode])
+        .addClass(this.MODE_CLASS_NAMES[mode]);
+
+    }
+    this.mode = mode;
+};
+
 
 export default LayoutEditor;
