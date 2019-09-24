@@ -1,3 +1,7 @@
-.as-base-component> label{
+.as-base-component label {
     white-space: nowrap;
+}
+
+.as-base-component textarea {
+    resize: none;
 }
