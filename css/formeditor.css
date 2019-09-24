@@ -11,7 +11,7 @@
 .as-form-editor-resizer.vertical {
     top: 0;
     bottom: 0;
-    width: 14px;
+    width: 0.4em;
     cursor: w-resize;
 }
 
@@ -29,7 +29,7 @@
 }
 
 .as-form-editor-resizer.vertical.left-site {
-    left: calc(16em - 7px);
+    left: calc(16em - 0.2em);
 }
 
 .as-form-editor-editor-space-container {
@@ -41,7 +41,7 @@
 }
 
 .as-form-editor-resizer.vertical.right-site {
-    right: calc(16em - 7px);
+    right: calc(16em - 0.2em);
 }
 
 .as-form-editor-right-site-container {

@@ -42,59 +42,82 @@ LayoutEditor.prototype.getView = function () {
             {
                 class: 'as-layout-editor-hrule-container',
                 child: 'hruler'
+            },
+            {
+                class: 'as-layout-editor-background-container'
+            },
+            {
+                class: ["as-layout-editor-space-container", 'absol-bscroller'],
+                child: {
+                    class: 'as-layout-editor-space',
+                    child: [
+                        {
+                            class: 'as-layout-editor-layout-container'
+                        },
+                        {
+                            class: 'as-layout-editor-forceground-container',
+                            child: '.as-layout-editor-forceground',
+                            extendEvent: 'contextmenu',
+                            on: {
+                                contextmenu: this.ev_contextMenuForceGround.bind(this)
+                            },
+                            style: {
+                                'background-color': 'rgb(100,1, 0, 0.03)'
+                            }
+                        }
+                    ]
+                }
             }
-            // '.as-layout-editor-background',
-            //     '.as-layout-editor-layout-contaner',
-            //     {
-            //         class: 'as-layout-editor-forceground',
-            //         extendEvent: 'contextmenu',
-            //         on: {
-            //             contextmenu: this.ev_contextMenuForceGround.bind(this)
-            //         }
-            //     },
-            //     {
-            //         class: 'as-layout-editor-hrule-container',
-            //         child: 'hruler'
-            //     },
-            //     {
-            //         class: 'as-layout-editor-vrule-container',
-            //         child: 'vruler'
-            //     },
-            //     {
-            //         class: 'as-layout-editor-new-component-menu-trigger'
-            //     }
         ]
     });
-    // var self = this;
-    // this.$attachHook = _('attachhook').on('error', function () {
-    //     this.updateSize = self.updateSize.bind(self);
-    //     Dom.addToResizeSystem(this);
-    //     self.updateSize();
-    // }).addTo(this.$view);
 
-    // this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
+
+    var self = this;
+    this.$attachHook = _('attachhook').on('error', function () {
+        this.updateSize = self.updateSize.bind(self);
+        Dom.addToResizeSystem(this);
+        self.updateSize();
+    }).addTo(this.$view);
+
+    this.$hruler = $('hruler', this.$view);
+    this.$hruler.mesureElement($('.as-relative-layout', this.$view));
+    this.$spaceCtn = $('.as-layout-editor-space-container', this.$view)
+        .on('scroll', this.ev_layoutCtnScroll.bind(this));
+
+    this.$vruler = $('vruler', this.$view);
+    this.$vruler.mesureElement($('.as-relative-layout', this.$view));
+
+    this.$layoutCtn = $('.as-layout-editor-layout-container', this.$view);
+
+    this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
+
     // this.$componentMenuTrigger = $('.as-layout-editor-new-component-menu-trigger', this.$view)
     //     .on('click', this.getMenuComponentItems.bind(this), true);//to update
     // this._componentMenuOption = QuickMenu.showWhenClick(this.$componentMenuTrigger, {
     //     items: this.getMenuComponentItems()
     // }, 'auto', this.ev_menuComponent.bind(this));
 
-    // this.$layoutCtn = $('.as-layout-editor-layout-contaner', this.$view);
+
     // this.$background = $('.as-layout-editor-background', this.$view);
-    // this.$forceground = $('.as-layout-editor-forceground', this.$view)
-    //     .on('click', this.ev_clickForceground.bind(this));
+    this.$forceground = $('.as-layout-editor-forceground', this.$view)
+        .on('click', this.ev_clickForceground.bind(this));
 
-    // this.$resizeBox = _('resizebox')
-    //     .on('beginmove', this.ev_beginMove.bind(this))
-    //     .on('moving', this.ev_moving.bind(this));
-    // this.$leftAlignLine = _('hline');
-    // this.$rightAlignLine = _('hline');
+    this.$resizeBox = _('resizebox')
+        .on('beginmove', this.ev_beginMove.bind(this))
+        .on('moving', this.ev_moving.bind(this));
+    this.$leftAlignLine = _('hline');
+    this.$rightAlignLine = _('hline');
 
-    // this.$topAlignLine = _('vline');
-    // this.$bottomAlignLine = _('vline');
+    this.$topAlignLine = _('vline');
+    this.$bottomAlignLine = _('vline');
 
     return this.$view;
 };
+
+LayoutEditor.prototype.ev_layoutCtnScroll = function () {
+    this.updateRuler();
+};
+
 
 LayoutEditor.prototype.ev_beginMove = function (event) {
     var bound = this.$forceground.getBoundingClientRect();
@@ -304,7 +327,7 @@ LayoutEditor.prototype.updateAnchor = function () {
 
         var anchorAceptStyle = comp.anchor.getAceptStyleNames();
         if (anchorAceptStyle.top) {
-            this.$topAlignLine.addTo(this.$forceground)
+            this.$topAlignLine.addTo(this.$forceground);
         }
         else {
             this.$topAlignLine.remove();
@@ -345,7 +368,7 @@ LayoutEditor.prototype.updateAnchor = function () {
 LayoutEditor.prototype.updateAnchorPosition = function () {
     var comp = this._activatedCompnent;
     if (comp && comp != this.rootLayout) {
-        var bound = this.$layoutCtn.getBoundingClientRect();
+        var bound = this.$forceground.getBoundingClientRect();
         var compBound = comp.view.getBoundingClientRect();
         this.$resizeBox.addStyle({
             left: compBound.left - bound.left + 'px',
@@ -356,38 +379,49 @@ LayoutEditor.prototype.updateAnchorPosition = function () {
 
         if (this.$leftAlignLine.parentNode)
             this.$leftAlignLine.addStyle({
-                left: '0',
-                width: compBound.left - bound.left + 'px',
+                left: compBound.left - bound.left - comp.style.left + 'px',
+                width: comp.style.left + 'px',
                 top: compBound.top - bound.top + compBound.height / 2 + 'px',
             });
 
         if (this.$rightAlignLine.parentNode)
             this.$rightAlignLine.addStyle({
-                right: '0',
-                width: bound.right - compBound.right + 'px',
+                left: compBound.right - bound.left + 'px',
+                width: comp.style.right + 'px',
                 top: compBound.top - bound.top + compBound.height / 2 + 'px',
             });
 
-
         if (this.$topAlignLine.parentNode)
             this.$topAlignLine.addStyle({
-                top: '0',
-                height: compBound.top - bound.top + 'px',
+                top: compBound.top - bound.top - comp.style.top + 'px',
+                height: comp.style.top + 'px',
                 left: compBound.left - bound.left + compBound.width / 2 + 'px',
             });
+
         if (this.$bottomAlignLine.parentNode)
+        console.log({
+            bottom: compBound.bottom - bound.top + 'px',
+            height: comp.style.bottom + 'px',
+            left: compBound.left - bound.left + compBound.width / 2 + 'px',
+        });
+        
             this.$bottomAlignLine.addStyle({
-                bottom: '0',
-                height: bound.bottom - compBound.bottom + 'px',
+                top: compBound.bottom - bound.top + 'px',
+                height: comp.style.bottom + 'px',
                 left: compBound.left - bound.left + compBound.width / 2 + 'px',
             });
     }
 };
 
 
+LayoutEditor.prototype.updateRuler = function () {
+    this.$hruler.update();
+    this.$vruler.update();
+};
 
 LayoutEditor.prototype.updateSize = function () {
-    this.updateAnchorPosition();
+    this.updateRuler();
+    // this.updateAnchorPosition();
 };
 
 
@@ -420,11 +454,13 @@ LayoutEditor.prototype.setData = function (data) {
 
     this.rootLayout = visit(data);
     this.$layoutCtn.addChild(this.rootLayout.view);
+    this.rootLayout.onAttached(this);
 };
 
 
 LayoutEditor.prototype.getData = function (data) {
-
+    if (this.rootLayout) return this.rootLayout.getData();
+    return null;
 };
 
 

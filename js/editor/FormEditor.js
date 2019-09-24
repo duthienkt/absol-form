@@ -5,6 +5,10 @@ import Draggable from 'absol-acomp/js/Draggable';
 import '../../css/formeditor.css';
 import Fcore from '../core/FCore';
 import LayoutEditor from './LayoutEditor';
+import Dom from 'absol/src/HTML5/Dom';
+import DateInput from '../components/DateInput';
+import TextInput from '../components/TextInput';
+import RelativeLayout from '../layouts/RelativeLayout';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -20,6 +24,9 @@ function FormEditor() {
 
     };
     this.mLayoutEditor = new LayoutEditor();
+    this.mLayoutEditor.addComponent(DateInput);
+    this.mLayoutEditor.addComponent(TextInput);
+    this.mLayoutEditor.addComponent(RelativeLayout);
 }
 
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
@@ -29,6 +36,7 @@ FormEditor.prototype.constructor = FormEditor;
 
 FormEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
+    var self = this;
     this.$view = _({
         class: 'as-form-editor',
         child: [
@@ -48,7 +56,7 @@ FormEditor.prototype.getView = function () {
                         {
                             tag: 'tabframe',
                             attr: {
-                                name: 'Compnoent',
+                                name: 'Component',
                                 id: 'tab-component',
                             }
                         }
@@ -95,6 +103,11 @@ FormEditor.prototype.getView = function () {
 
         ]
     });
+
+    this.$attachhook = _('attachook').addTo(this.$view).on('error', function () {
+        Dom.addToResizeSystem(this);
+        this.updateSize = this.updateSize || self.ev_resize.bind(this);
+    });
     this.$leftSiteCtn = $('.as-form-editor-left-site-container', this.$view);
     this.$rightSiteCtn = $('.as-form-editor-right-site-container', this.$view);
     this.$editorSpaceCtn = $('.as-form-editor-editor-space-container', this.$view);
@@ -110,9 +123,16 @@ FormEditor.prototype.getView = function () {
         .on('enddrag', this.ev_endDragRightResizer.bind(this))
         .on('drag', this.ev_dragRightResizer.bind(this));
 
+
     return this.$view;
 };
 
+
+
+
+FormEditor.prototype.ev_resize = function () {
+
+};
 
 FormEditor.prototype.ev_preDragLeftResizer = function (event) {
     this.$leftSiteResizer.addStyle({
@@ -129,7 +149,7 @@ FormEditor.prototype.ev_preDragLeftResizer = function (event) {
 
 FormEditor.prototype.ev_endDragLeftResizer = function (event) {
     this.$leftSiteResizer.addStyle({
-        left: 'calc(' + this.style.leftSizeWidth + 'em - 7px)'
+        left: 'calc(' + this.style.leftSizeWidth + 'em - 0.2em)'
     }).removeStyle('width');
     this._dragLeftMovingDate = undefined;
     delete this._dragLeftMovingDate;
@@ -166,7 +186,7 @@ FormEditor.prototype.ev_preDragRightResizer = function (event) {
 
 FormEditor.prototype.ev_endDragRightResizer = function (event) {
     this.$rightSiteResizer.addStyle({
-        right: 'calc(' + this.style.rightSizeWidth + 'em - 7px)'
+        right: 'calc(' + this.style.rightSizeWidth + 'em - 0.2em)'
     }).removeStyle('width');
     this._dragRightMovingDate = undefined;
     delete this._dragRightMovingDate;
@@ -187,6 +207,13 @@ FormEditor.prototype.ev_dragRightResizer = function (event) {
 };
 
 
+FormEditor.prototype.setData = function (data) {
+    this.mLayoutEditor.setData(data);
+};
 
+
+FormEditor.prototype.getData = function () {
+    return this.mLayoutEditor.getData();
+}
 
 export default FormEditor;

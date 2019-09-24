@@ -24,22 +24,41 @@
 }
 
 
-.as-layout-editor-layout-contaner>.as-relative-layout {
-    width: 100%;
-    height: 100%;
-}
 
-.as-layout-editor-background,
-.as-layout-editor-layout-contaner,
-.as-layout-editor-forceground {
+.as-layout-editor-space-container {
     position: absolute;
-    top: 1.7em;
-    left: 1.7;
+    top: 1.5em;
+    left: 1.5em;
     right: 0;
     bottom: 0;
-    background: red;
-    overflow: hidden;
 }
+
+.as-layout-editor-space {
+    display: inline-block;
+    position: relative;
+}
+
+
+.as-layout-editor-layout-container {
+    padding: 0.4em;
+    display: inline-block;
+}
+
+.as-layout-editor-layout-container>.as-relative-layout {
+    -webkit-box-shadow: 1px 1px 15px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 1px 1px 15px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 1px 1px 15px 0px rgba(0, 0, 0, 0.75);
+}
+
+
+.as-layout-editor-forceground-container{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
 
 .as-layout-editor-background {
     z-index: 0;
@@ -49,30 +68,38 @@
     z-index: 1;
 }
 
-.as-layout-editor-forceground {
+.as-layout-editor-forceground-container {
     z-index: 2;
+}
+
+.as-layout-editor-forceground{
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
 
 .as-layout-editor-hrule-container {
     position: absolute;
     top: 0;
-    left: 1.7em;
+    left: 1.5em;
     right: 0;
     height: 1.5em;
+    z-index: 1;
 }
 
 .as-layout-editor-vrule-container {
     position: absolute;
     left: 0;
-    top: 1.7em;
+    top: 1.5em;
     bottom: 0;
     width: 1.5em;
+    z-index: 2;
+
 }
 
 .as-layout-editor-vrule-container>.as-vruler,
-.as-layout-editor-hrule-container>.as-hruler
- {
+.as-layout-editor-hrule-container>.as-hruler {
     height: 100%;
     width: 100%;
 }
