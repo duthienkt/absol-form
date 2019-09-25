@@ -1,4 +1,9 @@
-
-.as-base-component textarea {
+textarea.as-base-component {
     resize: none;
+}
+
+
+.absol-selectmenu.as-base-component .absol-selectmenu-holder-item {
+    top: calc(50% - 10px);
+    bottom: calc(50% - 10px);
 }
