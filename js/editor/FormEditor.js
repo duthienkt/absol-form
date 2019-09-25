@@ -13,6 +13,10 @@ import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import NumberInput from '../components/NumberInput';
 import Label from '../components/Label';
 import TextArea from '../components/TextArea';
+import CheckBox from '../components/Checkbox';
+import Radio from '../components/Radio';
+import ComboBox from '../components/ComboBox';
+import Text from '../components/Text';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -37,6 +41,10 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(RelativeLayout);
     this.mLayoutEditor.addComponent(NumberInput);
     this.mLayoutEditor.addComponent(Label);
+    this.mLayoutEditor.addComponent(CheckBox);
+    this.mLayoutEditor.addComponent(Radio);
+    this.mLayoutEditor.addComponent(ComboBox);
+    this.mLayoutEditor.addComponent(Text);
 
     this.mLayoutEditor.on('change', function (event) {
         self.emit('change', Object.assign({ formEditor: self }, event), this);
@@ -119,6 +127,27 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "NumberInput",
                             icon: NumberInput.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "ComboBox",
+                            icon: ComboBox.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "Radio",
+                            icon: Radio.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "CheckBox",
+                            icon: CheckBox.prototype.menuIcon
                         }
                     }
                 ]
