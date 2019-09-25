@@ -1,15 +1,16 @@
 import Fcore from "../core/FCore";
 
 import '../../css/component.css';
-import ScalelessComponent from "../core/ScalelessComponent";
+import ScalableComponent from "../core/ScalableComponent";
 
 var _ = Fcore._;
+var $ = Fcore.$;
 
 function Label() {
-    ScalelessComponent.call(this);
+    ScalableComponent.call(this);
 }
 
-Object.defineProperties(Label.prototype, Object.getOwnPropertyDescriptors(ScalelessComponent.prototype));
+Object.defineProperties(Label.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
 Label.prototype.constructor = Label;
 
 Label.prototype.tag = "Label";
@@ -20,17 +21,36 @@ Label.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
 
 Label.prototype.onCreated = function () {
-    ScalelessComponent.prototype.onCreated.call(this);
+    this.$label = $('label', this.view);
+    this.$cell = $('.as-comp-label-cell', this.view);
+    ScalableComponent.prototype.onCreated.call(this);
 };
 
 Label.prototype.render = function () {
-    return  _('label');
+    return _({
+        class: 'as-comp-label',
+
+        child: {
+            class: 'as-comp-label-cell',
+            child: {
+                tag: 'label'
+            }
+        }
+    });
+};
+
+Label.prototype.handleStyleTextHAlign = function (value) {
+    this.view.addStyle('text-align', value);
+};
+
+Label.prototype.handleStyleTextVAlign = function (value) {
+    if (value == 'center') value = 'middle';
+    this.$cell.addStyle('vertical-align', value);
 };
 
 
-
 Label.prototype.handleAttributeText = function (value) {
-    this.view.clearChild().addChild(_({ text: value }))
+    this.$label.clearChild().addChild(_({ text: value }))
 };
 
 export default Label;

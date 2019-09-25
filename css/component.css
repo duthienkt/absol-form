@@ -1,7 +1,15 @@
-.as-base-component label {
-    white-space: nowrap;
-}
 
 .as-base-component textarea {
     resize: none;
+}
+
+.as-comp-label ,
+.as-relative-layout>.as-relative-anchor-box.as-halign-center>.as-base-component{
+    display: inline-table;
+}
+
+.as-comp-label-cell
+ {
+    display: table-cell;
+    width: 100%;
 }
