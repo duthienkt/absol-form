@@ -127,8 +127,21 @@
 }
 
 
-
 .as-base-component {
     pointer-events: all;
     box-sizing: border-box;
+}
+
+.as-base-component textarea {
+    resize: none;
+}
+
+.as-component-content-scaleless,
+.as-relative-layout>.as-relative-anchor-box.as-halign-center>.as-component-content-scaleless {
+    display: inline-table;
+}
+
+.as-component-content-scaleless-cell {
+    display: table-cell;
+    width: 100%;
 }
