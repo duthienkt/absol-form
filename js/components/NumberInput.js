@@ -1,5 +1,6 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
+import { getCaretPosition } from "absol/src/HTML5/Text";
 
 var _ = Fcore._;
 
@@ -28,9 +29,10 @@ NumberInput.prototype.onCreated = function () {
     var self = this;
     this.view.on('keyup', function () {
         var lastValue = self.attributes.value;
+        var cValue = parseFloat(this.value);
         if (this.value != lastValue) {
-            self.attributes.value = this.value;
-            self.emit('change', this.value, self);
+            self.attributes.value = cValue;
+            self.emit('change', cValue, self);
         }
     }).on("paste", function (e) {
         e.preventDefault();
@@ -48,8 +50,9 @@ NumberInput.prototype.onCreated = function () {
     }).on('keydown', function (event) {
         var key = event.key;
         if (key && key.length == 1) {
-            if (key.match(/[0-9\.]/)) {
+            if (key.match(/[0-9.\-\+]/)) {
                 if (key == '.' && this.value.indexOf('.') >= 0) event.preventDefault();
+                if ((key == '+' || key == '-') && (this.value.indexOf('+') >= 0 || this.value.indexOf('-') >= 0 || getCaretPosition(this) > 0)) event.preventDefault();
             }
             else event.preventDefault();
         }
@@ -57,7 +60,7 @@ NumberInput.prototype.onCreated = function () {
 };
 
 NumberInput.prototype.render = function () {
-    return _('input[type="number"]');
+    return _('input[type="text"]');
 };
 
 
