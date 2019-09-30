@@ -1,6 +1,7 @@
 import Fcore from "../core/FCore";
 import '../../css/resizebox.css';
 import OOP from "absol/src/HTML5/OOP";
+import EventEmitter from "absol/src/HTML5/EventEmitter";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -35,6 +36,7 @@ function ResizeBox() {
 ResizeBox.eventHandler = {};
 
 ResizeBox.eventHandler.mouseDownBody = function (event) {
+    if (EventEmitter.isMouseRight(event)) return;
     event.preventDefault();
     this._optionNames = event.target.attr('class').match(/body|left|top|right|bottom/g);
     var option =  this._optionNames.reduce(function (ac, key) {
