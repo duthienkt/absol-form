@@ -11,8 +11,8 @@
   "author": "Pham Quoc Du Thien",
   "license": "ISC",
   "dependencies": {
-    "absol": "^1.8.9",
-    "absol-acomp": "^0.5.3"
+    "absol": "^1.8.11",
+    "absol-acomp": "^0.5.10"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
