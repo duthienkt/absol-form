@@ -49,8 +49,8 @@ ScalelessComponent.prototype.handleStyleVAlign = function (value) {
 };
 
 
-ScalelessComponent.prototype.getAceptStyleNames = function () {
-    var ac = this.anchor.getAceptStyleNames();
+ScalelessComponent.prototype.getAcceptStyle = function () {
+    var ac = this.anchor.getAcceptStyle();
     delete ac.height;
     delete ac.width;
     return ac;

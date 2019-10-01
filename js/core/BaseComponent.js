@@ -244,6 +244,8 @@ BaseComponent.prototype.removeEvent = function (key) {
 };
 
 
-
+BaseComponent.prototype.getAcceptStyle = function(){
+    return {};
+};
 
 export default BaseComponent;

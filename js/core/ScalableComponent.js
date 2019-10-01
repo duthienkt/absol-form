@@ -60,8 +60,8 @@ ScalableComponent.prototype.handleStyleVAlign = function (value) {
 };
 
 
-ScalableComponent.prototype.getAceptStyleNames = function () {
-    var ac = this.anchor.getAceptStyleNames();
+ScalableComponent.prototype.getAcceptStyle = function () {
+    var ac = this.anchor.getAcceptStyle();
     if (this.style.vAlign != 'fixed')
         ac.height = true;
 

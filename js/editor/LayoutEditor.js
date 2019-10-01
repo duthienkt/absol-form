@@ -115,14 +115,6 @@ LayoutEditor.prototype.getView = function () {
 
     this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
 
-    // this.$componentMenuTrigger = $('.as-layout-editor-new-component-menu-trigger', this.$view)
-    //     .on('click', this.getMenuComponentItems.bind(this), true);//to update
-    // this._componentMenuOption = QuickMenu.showWhenClick(this.$componentMenuTrigger, {
-    //     items: this.getMenuComponentItems()
-    // }, 'auto', this.ev_menuComponent.bind(this));
-
-
-    // this.$background = $('.as-layout-editor-background', this.$view);
     this.$forceground = $('.as-layout-editor-forceground', this.$view)
         .on('click', this.ev_clickForceground.bind(this));
 
@@ -152,7 +144,7 @@ LayoutEditor.prototype.ev_beginMove = function (event) {
         dx: 0,
         dy: 0,
         option: event.option,
-        aceptStyleNames: this._activatedCompnent.getAceptStyleNames(),
+        acceptStyle: this._activatedCompnent.getAcceptStyle(),
         style0: Object.assign({}, this._activatedCompnent.style),
         comp: this._activatedCompnent
     };
@@ -168,20 +160,20 @@ LayoutEditor.prototype.ev_moving = function (event) {
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
     //TODO; size may be invalid
-    if (movingData.aceptStyleNames.left && (movingData.option.left || movingData.option.body)) {
+    if (movingData.acceptStyle.left && (movingData.option.left || movingData.option.body)) {
         movingData.comp.setStyle('left', movingData.style0.left + movingData.dx);
         this.notifyChanged();
     }
 
 
-    if (movingData.aceptStyleNames.right && (movingData.option.right || movingData.option.body)) {
+    if (movingData.acceptStyle.right && (movingData.option.right || movingData.option.body)) {
         movingData.comp.setStyle('right', movingData.style0.right - movingData.dx);
         this.notifyChanged();
     }
 
-    if (movingData.aceptStyleNames.width) {
+    if (movingData.acceptStyle.width) {
         if (movingData.option.left) {
-            if (!movingData.aceptStyleNames.left && !movingData.aceptStyleNames.right) {
+            if (!movingData.acceptStyle.left && !movingData.acceptStyle.right) {
                 movingData.comp.setStyle('width', Math.max(0, movingData.style0.width - movingData.dx * 2));
                 //center align
             }
@@ -191,7 +183,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
             this.notifyChanged();
         }
         if (movingData.option.right) {
-            if (!movingData.aceptStyleNames.left && !movingData.aceptStyleNames.right) {
+            if (!movingData.acceptStyle.left && !movingData.acceptStyle.right) {
                 movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx * 2));
                 //center align
             }
@@ -202,19 +194,19 @@ LayoutEditor.prototype.ev_moving = function (event) {
         }
     }
 
-    if (movingData.aceptStyleNames.top && (movingData.option.top || movingData.option.body)) {
+    if (movingData.acceptStyle.top && (movingData.option.top || movingData.option.body)) {
         movingData.comp.setStyle('top', movingData.style0.top + movingData.dy);
         this.notifyChanged();
     }
 
-    if (movingData.aceptStyleNames.bottom && (movingData.option.bottom || movingData.option.body)) {
+    if (movingData.acceptStyle.bottom && (movingData.option.bottom || movingData.option.body)) {
         movingData.comp.setStyle('bottom', movingData.style0.bottom - movingData.dy);
         this.notifyChanged();
     }
 
-    if (movingData.aceptStyleNames.height) {
+    if (movingData.acceptStyle.height) {
         if (movingData.option.top) {
-            if (!movingData.aceptStyleNames.top && !movingData.aceptStyleNames.bottom) {
+            if (!movingData.acceptStyle.top && !movingData.acceptStyle.bottom) {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy * 2));
             }
             else {
@@ -224,7 +216,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
 
         }
         if (movingData.option.bottom) {
-            if (!movingData.aceptStyleNames.top && !movingData.aceptStyleNames.bottom) {
+            if (!movingData.acceptStyle.top && !movingData.acceptStyle.bottom) {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy * 2));
             }
             else {
@@ -377,6 +369,7 @@ LayoutEditor.prototype.clearRootLayout = function () {
 LayoutEditor.prototype.activeComponent = function (comp) {
     this._activatedCompnent = comp;
     this.updateAnchor();
+    this.emit('activecomponent', { target: this, component: comp }, this);
 };
 
 LayoutEditor.prototype.updateAnchor = function () {
@@ -384,29 +377,29 @@ LayoutEditor.prototype.updateAnchor = function () {
     if (comp && comp != this.rootLayout) {
         this.$resizeBox.addTo(this.$forceground);
 
-        var anchorAceptStyle = comp.anchor.getAceptStyleNames();
-        if (anchorAceptStyle.top) {
+        var anchorAcceptStyle = comp.anchor.getAcceptStyle();
+        if (anchorAcceptStyle.top) {
             this.$topAlignLine.addTo(this.$forceground);
         }
         else {
             this.$topAlignLine.remove();
         }
 
-        if (anchorAceptStyle.bottom) {
+        if (anchorAcceptStyle.bottom) {
             this.$bottomAlignLine.addTo(this.$forceground);
         }
         else {
             this.$bottomAlignLine.remove();
         }
 
-        if (anchorAceptStyle.left) {
+        if (anchorAcceptStyle.left) {
             this.$leftAlignLine.addTo(this.$forceground);
         }
         else {
             this.$leftAlignLine.remove();
         }
 
-        if (anchorAceptStyle.right) {
+        if (anchorAcceptStyle.right) {
             this.$rightAlignLine.addTo(this.$forceground);
         }
         else {
@@ -482,7 +475,7 @@ LayoutEditor.prototype.setData = function (data) {
     var self = this;
     function visit(node) {
         var constructor = self.constructors[node.tag];
-        if (!constructor) throw new Error(node.tag +' constructor not found!');
+        if (!constructor) throw new Error(node.tag + ' constructor not found!');
         var comp = new constructor();
 
         var style = node.style;
@@ -540,9 +533,9 @@ LayoutEditor.prototype.getMenuComponentItems = function () {
 
 LayoutEditor.prototype.setMode = function (mode) {
     if (this.MODE_VALUE.indexOf(mode) < 0 || this.mode == mode) return;
-    if (this.$view){
+    if (this.$view) {
         this.$view.removeClass(this.MODE_CLASS_NAMES[this.mode])
-        .addClass(this.MODE_CLASS_NAMES[mode]);
+            .addClass(this.MODE_CLASS_NAMES[mode]);
 
     }
     this.mode = mode;

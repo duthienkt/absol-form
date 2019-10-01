@@ -48,14 +48,14 @@ RelativeAnchor.prototype.VALIGN_CLASS_NAMES = {
     fixed: 'as-valign-fixed'
 };
 
-RelativeAnchor.prototype.HALIGN_ACEPT_STYLE_NAMES = {
+RelativeAnchor.prototype.HALIGN_ACCEPT_STYLE_NAMES = {
     left: { left: true, right: false },
     right: { left: false, right: true },
     center: { left: false, right: false },// component nedd set height
     fixed: { left: true, right: true }
 };
 
-RelativeAnchor.prototype.VALIGN_ACEPT_STYLE_NAMES = {
+RelativeAnchor.prototype.VALIGN_ACCEPT_STYLE_NAMES = {
     top: { top: true, bottom: false},
     bottom: { top: false, bottom: true},
     center: { top: false, bottom: false},// component nedd set height
@@ -63,8 +63,8 @@ RelativeAnchor.prototype.VALIGN_ACEPT_STYLE_NAMES = {
 };
 
 
-RelativeAnchor.prototype.getAceptStyleNames = function () {
-    return Object.assign({}, this.VALIGN_ACEPT_STYLE_NAMES[this.vAlign], this.HALIGN_ACEPT_STYLE_NAMES[this.hAlign]);
+RelativeAnchor.prototype.getAcceptStyle = function () {
+    return Object.assign({}, this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign], this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign]);
 }
 
 RelativeAnchor.prototype.TOP_CLASS_NAME = 'as-relative-anchor-box';
@@ -154,8 +154,8 @@ RelativeAnchor.prototype.setVAlign = function (value) {
 };
 
 RelativeAnchor.prototype.updateVAlignStyle = function () {
-    for (var key in this.VALIGN_ACEPT_STYLE_NAMES[this.vAlign]) {
-        if (this.VALIGN_ACEPT_STYLE_NAMES[this.vAlign][key]) {
+    for (var key in this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign]) {
+        if (this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign][key]) {
             this.view.addStyle(key, this[key] + 'px');
         }
         else {
@@ -166,8 +166,8 @@ RelativeAnchor.prototype.updateVAlignStyle = function () {
 
 
 RelativeAnchor.prototype.updateHAlignStyle = function () {
-    for (var key in this.HALIGN_ACEPT_STYLE_NAMES[this.hAlign]) {
-        if (this.HALIGN_ACEPT_STYLE_NAMES[this.hAlign][key]) {
+    for (var key in this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign]) {
+        if (this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign][key]) {
             this.view.addStyle(key, this[key] + 'px');
         }
         else {
@@ -179,14 +179,14 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
 
 RelativeAnchor.prototype.setLeft = function (value) {
     this.left = value;
-    if (this.HALIGN_ACEPT_STYLE_NAMES[this.hAlign].left) {
+    if (this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign].left) {
         this.view.addStyle('left', value + 'px');
     }
 };
 
 RelativeAnchor.prototype.setRight = function (value) {
     this.right = value;
-    if (this.HALIGN_ACEPT_STYLE_NAMES[this.hAlign].right) {
+    if (this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign].right) {
         this.view.addStyle('right', value + 'px');
     }
 };
@@ -195,14 +195,14 @@ RelativeAnchor.prototype.setRight = function (value) {
 
 RelativeAnchor.prototype.setBottom = function (value) {
     this.bottom = value;
-    if (this.VALIGN_ACEPT_STYLE_NAMES[this.vAlign].bottom) {
+    if (this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign].bottom) {
         this.view.addStyle('bottom', value + 'px');
     }
 };
 
 RelativeAnchor.prototype.setTop = function (value) {
     this.top = value;
-    if (this.VALIGN_ACEPT_STYLE_NAMES[this.vAlign].top) {
+    if (this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign].top) {
         this.view.addStyle('top', value + 'px');
     }
 };
