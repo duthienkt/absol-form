@@ -17,6 +17,7 @@ import CheckBox from '../components/Checkbox';
 import Radio from '../components/Radio';
 import ComboBox from '../components/ComboBox';
 import Text from '../components/Text';
+import SelectBox from '../components/SelectBox';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -44,6 +45,7 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(CheckBox);
     this.mLayoutEditor.addComponent(Radio);
     this.mLayoutEditor.addComponent(ComboBox);
+    this.mLayoutEditor.addComponent(SelectBox);
     this.mLayoutEditor.addComponent(Text);
 
     this.mLayoutEditor.on('change', function (event) {
@@ -106,6 +108,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "DateInput",
                             icon: DateInput.prototype.menuIcon
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'DateInput' })
                         }
                     },
                     {
@@ -113,6 +118,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "TextInput",
                             icon: TextInput.prototype.menuIcon
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'TextInput' })
                         }
                     },
                     {
@@ -120,6 +128,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "TextArea",
                             icon: TextArea.prototype.menuIcon
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'TextArea' })
                         }
                     },
                     {
@@ -127,6 +138,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "NumberInput",
                             icon: NumberInput.prototype.menuIcon
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'NumberInput', attributes: { value: 0 } })
                         }
                     },
                     {
@@ -134,6 +148,13 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "ComboBox",
                             icon: ComboBox.prototype.menuIcon
+                        }
+                    },
+                    {
+                        tag: 'exptree',
+                        props: {
+                            name: "SelectBox",
+                            icon: SelectBox.prototype.menuIcon
                         }
                     },
                     {
@@ -156,7 +177,7 @@ FormEditor.prototype.getComponentsTree = function () {
                 tag: 'exptree',
                 props: {
                     name: "static",
-                    status:'open'
+                    status: 'open'
                 },
                 on: {
                     press: toggleGroup
@@ -374,6 +395,16 @@ FormEditor.prototype.setData = function (data) {
 
 FormEditor.prototype.getData = function () {
     return this.mLayoutEditor.getData();
-}
+};
+
+
+FormEditor.prototype.addComponent = function (data) {
+    var newComponent = this.mLayoutEditor.build(data);
+    if (this.mLayoutEditor.rootLayout)
+        this.mLayoutEditor.rootLayout.addChild(newComponent);
+
+};
+
+
 
 export default FormEditor;

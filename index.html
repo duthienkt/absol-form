@@ -37,7 +37,7 @@
   <script>
     //\"([^\s]+)\"\s*:
     //\n$1 :
-    var data = false && JSON.parse(localStorage.getItem('form-data') || 'false');
+    var data = true && JSON.parse(localStorage.getItem('form-data') || 'false');
     if (!data) {
       data = {
         tag: "RelativeLayout",
@@ -142,7 +142,8 @@
               width: 312,
               hAlign: "left"
             }
-          }, {
+          }, 
+          {
             tag: "ComboBox",
             attributes: {
               value: "align: right, top"
@@ -161,7 +162,28 @@
               list:Array(10).fill(0).map(function(u, i){ return {text:'item '+ i, value:i}}),
               value: 3
             }
-          }, {
+          },
+          {
+            tag: "SelectBox",
+            attributes: {
+              value: "align: right, top"
+            },
+            style: {
+              left: 0,
+              right: 36,
+              top: 63,
+              bottom: 0,
+              height: 36,
+              width: 332,
+              hAlign: "right",
+              vAlign: "top"
+            },
+            attributes: {
+              list:Array(10).fill(0).map(function(u, i){ return {text:'item '+ i, value:i}}),
+              value: [3]
+            }
+          },
+           {
             tag: "TextArea",
             attributes: {
               value: "fixed parent's width, height"
