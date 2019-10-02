@@ -28,7 +28,10 @@ FModel.prototype.getAttributeDescriptor = function (name) {
  */
 FModel.prototype.setAttribute = function (name, value) {
     var functionName = 'setAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1);
-    var res = this[functionName] && this[functionName].call(this, value);
+    var res = value;
+    if (this[functionName]){
+        res = this[functionName].call(this, value);
+    }
     if (res === undefined) {
         delete this.attributes[name];
     }

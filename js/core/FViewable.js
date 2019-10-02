@@ -32,7 +32,10 @@ FViewable.prototype.getStyleDescriptor = function (name) {
  */
 FViewable.prototype.setStyle = function (name, value) {
     var functionName = 'setStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
-    var res = this[functionName] && this[functionName].call(this, value);
+    var res = value;
+    if (this[functionName]) {
+        res = this[functionName].call(this, value);
+    }
     if (res === undefined) {
         delete this.style[name];
     }
