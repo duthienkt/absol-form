@@ -5,6 +5,10 @@ function FNode() {
      * @type {FNode}
      */
     this.parent = null;
+
+    /**
+     * @type {Array<FNode>}
+     */
     this.children = [];
 }
 
