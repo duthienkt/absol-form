@@ -1,4 +1,5 @@
 import Fcore from "../core/FCore";
+import FViewable from "../core/FViewable";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -7,16 +8,29 @@ var $ = Fcore.$;
  * AnchorBox only has on child node
  */
 function RelativeAnchor() {
-    this.hAlign = this.HALIGN_VALUE[0];
-    this.vAlign = this.VALIGN_VALUE[0];
-
-    this.viewBinding = {};
+    FViewable.call(this);
+    this.style.hAlign = this.HALIGN_VALUE[0];
+    this.style.vAlign = this.VALIGN_VALUE[0];
+    this.style.left = 0;
+    this.style.right = 0;
+    this.style.top = 0;
+    this.style.bottom = 0;
     this.childNode = null;
+
+    //for quick binding render
+    this.viewBinding = {};
+
+    this.onCreate();
     this.view = this.render();
-    this.created();
+    this.onCreated();
 }
 
-RelativeAnchor.prototype.created = function () {
+Object.defineProperties(RelativeAnchor.prototype, Object.getOwnPropertyDescriptors(FViewable.prototype));
+RelativeAnchor.prototype.construtor = RelativeAnchor;
+
+RelativeAnchor.prototype.onCreate = function () {/* NOOP */ }
+
+RelativeAnchor.prototype.onCreated = function () {
     for (var key in this.viewBinding) {
         this[key] = $(this.viewBinding[key], this.view);
     }
@@ -25,14 +39,6 @@ RelativeAnchor.prototype.created = function () {
 RelativeAnchor.prototype.VALIGN_VALUE = ['top', 'bottom', 'center', 'fixed'];
 RelativeAnchor.prototype.HALIGN_VALUE = ['left', 'right', 'center'];
 
-RelativeAnchor.prototype.hAlign = RelativeAnchor.prototype.HALIGN_VALUE[0];
-RelativeAnchor.prototype.vAlign = RelativeAnchor.prototype.VALIGN_VALUE[0];
-RelativeAnchor.prototype.left = 0;
-RelativeAnchor.prototype.right = 0;
-RelativeAnchor.prototype.top = 0;
-RelativeAnchor.prototype.bottom = 0;
-RelativeAnchor.prototype.width = 0;
-RelativeAnchor.prototype.height = 0;
 
 RelativeAnchor.prototype.HALIGN_CLASS_NAMES = {
     left: 'as-halign-left',
@@ -48,34 +54,163 @@ RelativeAnchor.prototype.VALIGN_CLASS_NAMES = {
     fixed: 'as-valign-fixed'
 };
 
-RelativeAnchor.prototype.HALIGN_ACCEPT_STYLE_NAMES = {
-    left: { left: true, right: false },
-    right: { left: false, right: true },
-    center: { left: false, right: false },// component nedd set height
-    fixed: { left: true, right: true }
-};
 
-RelativeAnchor.prototype.VALIGN_ACCEPT_STYLE_NAMES = {
-    top: { top: true, bottom: false},
-    bottom: { top: false, bottom: true},
-    center: { top: false, bottom: false},// component nedd set height
-    fixed: { top: true, bottom: true}
+
+RelativeAnchor.prototype.getAcceptsStyleNames = function () {
+    return ['hAlign', 'vAlign', 'left', 'right', 'top', 'bottom'];
 };
 
 
-RelativeAnchor.prototype.getAcceptStyle = function () {
-    return Object.assign({}, this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign], this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign]);
-}
+RelativeAnchor.prototype.getStyleHAlignDescriptor = function () {
+    return {
+        type: 'emnum',
+        values: ['left', 'right', 'center', 'fixed'],
+        disabled: false
+    }
+};
+
+RelativeAnchor.prototype.getStyleVAlignDescriptor = function () {
+    return {
+        type: 'emnum',
+        values: ['top', 'bottom', 'center', 'fixed'],
+        disabled: false
+    }
+};
+
+
+RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
+    return {
+        type: 'number',
+        min: 0,
+        max: Infinity,
+        disabled: this.style.hAlign != 'center'
+    };
+};
+
+
+RelativeAnchor.prototype.getStyleRightDescriptor = function () {
+    return {
+        type: 'number',
+        min: 0,
+        max: Infinity,
+        disabled: this.style.hAlign != 'center'
+    };
+};
+
+
+RelativeAnchor.prototype.getStyleTopDescriptor = function () {
+    return {
+        type: 'number',
+        min: 0,
+        max: Infinity,
+        disabled: this.style.vAlign != 'center'
+    };
+};
+
+
+RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
+    return {
+        type: 'number',
+        min: 0,
+        max: Infinity,
+        disabled: this.style.vAlign != 'center'
+    };
+};
+
+
+
+RelativeAnchor.prototype.setStyleHAlign = function (value) {
+    if (this.style.hAlign == value) return value;
+    if (!this.HALIGN_VALUE.includes(value)) value = this.HALIGN_VALUE[0];
+    this.view.removeClass(this.HALIGN_CLASS_NAMES[this.style.hAlign]);
+    this.style.hAlign = value;
+    this.view.addClass(this.HALIGN_CLASS_NAMES[this.style.hAlign]);
+    this.updateHAlignStyle();
+    return value;
+};
+
+
+
+RelativeAnchor.prototype.setStyleVAlign = function (value) {
+    if (this.style.vAlign == value) return value;
+    if (!this.VALIGN_VALUE.includes(value)) value = this.VALIGN_VALUE[0];
+
+    this.view.removeClass(this.VALIGN_CLASS_NAMES[this.style.vAlign]);
+    if (this.style.vAlign == 'center') {
+        this.view.clearChild();
+        this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
+        this.$containter = this.view;
+
+        if (this.childNode) {
+            this.$containter.addChild(this.childNode.view);
+        }
+    }
+
+    this.style.vAlign = value;
+    this.view.addClass(this.VALIGN_CLASS_NAMES[this.style.vAlign]);
+    if (this.style.vAlign == 'center') {
+        this.view.clearChild();
+        this.view.addChild(_({
+            class: 'as-center-table',
+            child: '.as-center-cell'
+        }
+        ));
+        this.viewBinding.$containter = '.as-center-cell';
+        this.$containter = $(this.viewBinding.$containter, this.view);
+        if (this.childNode) {
+            this.$containter.addChild(this.childNode.view);
+        }
+    }
+    this.updateVAlignStyle();
+    return value;
+};
+
+RelativeAnchor.prototype.setStyleLeft = function (value) {
+    value = Math.max(value, 0);
+    if (this.style.hAlign != 'center') {
+        this.view.addStyle('left', value + 'px');
+    }
+    return value;
+};
+
+
+
+RelativeAnchor.prototype.setStyleRight = function (value) {
+    value = Math.max(value, 0);
+    if (this.style.hAlign != 'center') {
+        this.view.addStyle('right', value + 'px');
+    }
+    return value;
+};
+
+RelativeAnchor.prototype.setStyleTop = function (value) {
+    value = Math.max(value, 0);
+    if (this.style.vAlign != 'center') {
+        this.view.addStyle('top', value + 'px');
+    }
+    return value;
+};
+
+
+RelativeAnchor.prototype.setStyleBottom = function (value) {
+    value = Math.max(value, 0);
+    if (this.style.vAlign != 'center') {
+        this.view.addStyle('bottom', value + 'px');
+    }
+    return value;
+};
+
+
 
 RelativeAnchor.prototype.TOP_CLASS_NAME = 'as-relative-anchor-box';
 
 RelativeAnchor.prototype.render = function () {
     var layout = {
-        class: [this.TOP_CLASS_NAME, this.HALIGN_CLASS_NAMES[this.hAlign], this.VALIGN_CLASS_NAMES[this.vAlign]]
+        class: [this.TOP_CLASS_NAME, this.HALIGN_CLASS_NAMES[this.style.hAlign], this.VALIGN_CLASS_NAMES[this.style.vAlign]]
     };
 
     this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
-    if (this.vAlign == 'center') {
+    if (this.style.vAlign == 'center') {
         layout.child = {
             class: 'as-center-table',
             child: 'as-center-cell'
@@ -93,13 +228,14 @@ RelativeAnchor.prototype.attachChild = function (child) {
     if (this.childNode) {
         this.childNode.view.remove();
         this.childNode = null;
-        this.childNode._anchorBox = null;
+        this.childNode.anchor = null;
     }
 
-    if (child._anchorBox) throw new Error("Detach anchorBox first");
+    if (child.anchor) throw new Error("Detach anchorBox first");
     this.childNode = child;
     child.anchor = this;
     this.$containter.addChild(child.view);
+    child.onAnchorAttached();
 };
 
 RelativeAnchor.prototype.detachChild = function () {
@@ -113,49 +249,24 @@ RelativeAnchor.prototype.detachChild = function () {
 };
 
 
-RelativeAnchor.prototype.setHAlign = function (value) {
-    if (this.hAlign == value) return;
-    this.view.removeClass(this.HALIGN_CLASS_NAMES[this.hAlign]);
-    this.hAlign = value;
-    this.view.addClass(this.HALIGN_CLASS_NAMES[this.hAlign]);
-    this.updateHAlignStyle();
+
+RelativeAnchor.prototype.HALIGN_ACCEPT_STYLE = {
+    left: { left: true, right: false },
+    right: { left: false, right: true },
+    center: { left: false, right: false },// component need set height
+    fixed: { left: true, right: true }
 };
 
-RelativeAnchor.prototype.setVAlign = function (value) {
-    if (this.vAlign == value) return;
-
-    this.view.removeClass(this.VALIGN_CLASS_NAMES[this.vAlign]);
-    if (this.vAlign == 'center') {
-        this.view.clearChild();
-        this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
-        this.$containter = this.view;
-
-        if (this.childNode) {
-            this.$containter.addChild(this.childNode.view);
-        }
-    }
-
-    this.vAlign = value;
-    this.view.addClass(this.VALIGN_CLASS_NAMES[this.vAlign]);
-    if (this.vAlign == 'center') {
-        this.view.clearChild();
-        this.view.addChild(_({
-            class: 'as-center-table',
-            child: '.as-center-cell'
-        }
-        ));
-        this.viewBinding.$containter = '.as-center-cell';
-        this.$containter = $(this.viewBinding.$containter, this.view);
-        if (this.childNode) {
-            this.$containter.addChild(this.childNode.view);
-        }
-    }
-    this.updateVAlignStyle();
+RelativeAnchor.prototype.VALIGN_ACCEPT_STYLE = {
+    top: { top: true, bottom: false },
+    bottom: { top: false, bottom: true },
+    center: { top: false, bottom: false },// component need set height
+    fixed: { top: true, bottom: true }
 };
 
 RelativeAnchor.prototype.updateVAlignStyle = function () {
-    for (var key in this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign]) {
-        if (this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign][key]) {
+    for (var key in this.VALIGN_ACCEPT_STYLE[this.style.vAlign]) {
+        if (this.VALIGN_ACCEPT_STYLE[this.style.vAlign][key]) {
             this.view.addStyle(key, this[key] + 'px');
         }
         else {
@@ -166,8 +277,8 @@ RelativeAnchor.prototype.updateVAlignStyle = function () {
 
 
 RelativeAnchor.prototype.updateHAlignStyle = function () {
-    for (var key in this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign]) {
-        if (this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign][key]) {
+    for (var key in this.HALIGN_ACCEPT_STYLE[this.style.hAlign]) {
+        if (this.HALIGN_ACCEPT_STYLE[this.style.hAlign][key]) {
             this.view.addStyle(key, this[key] + 'px');
         }
         else {
@@ -177,47 +288,8 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
 };
 
 
-RelativeAnchor.prototype.setLeft = function (value) {
-    this.left = value;
-    if (this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign].left) {
-        this.view.addStyle('left', value + 'px');
-    }
-};
-
-RelativeAnchor.prototype.setRight = function (value) {
-    this.right = value;
-    if (this.HALIGN_ACCEPT_STYLE_NAMES[this.hAlign].right) {
-        this.view.addStyle('right', value + 'px');
-    }
-};
 
 
-
-RelativeAnchor.prototype.setBottom = function (value) {
-    this.bottom = value;
-    if (this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign].bottom) {
-        this.view.addStyle('bottom', value + 'px');
-    }
-};
-
-RelativeAnchor.prototype.setTop = function (value) {
-    this.top = value;
-    if (this.VALIGN_ACCEPT_STYLE_NAMES[this.vAlign].top) {
-        this.view.addStyle('top', value + 'px');
-    }
-};
-
-
-RelativeAnchor.prototype.setWidth = function (value) {
-    this.width = value;
-    //must set width in component, not anchor
-
-};
-
-RelativeAnchor.prototype.setHeight = function (value) {
-    this.height = value;
-    //must set height in component, not anchor
-};
 
 
 

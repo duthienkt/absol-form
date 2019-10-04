@@ -7,7 +7,7 @@ function FModel() {
  * @returns {Array<String>}
  */
 FModel.prototype.getAcceptsStyleNames = function () {
-
+    return [];
 };
 
 
@@ -18,6 +18,20 @@ FModel.prototype.getAcceptsStyleNames = function () {
 FModel.prototype.getAttributeDescriptor = function (name) {
     var functionName = 'getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
     return this[functionName] && this[functionName].call(this);
+};
+
+/**
+ * @returns {}
+ */
+FModel.prototype.getAttributeDescriptors = function () {
+    var result = {};
+    var names = this.getAcceptsAttributeNames();
+    var key;
+    for (var i = 0; i< names.length; ++i){
+        key = names[i];
+        result[key] = this.getAttributeDescriptor(key);
+    }
+    return result;
 };
 
 
@@ -40,6 +54,7 @@ FModel.prototype.setAttribute = function (name, value) {
     }
     return res;
 };
+
 
 
 /**

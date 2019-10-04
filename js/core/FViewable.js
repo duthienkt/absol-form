@@ -7,7 +7,7 @@ function FViewable() {
  * @returns {Array<String>}
  */
 FViewable.prototype.getAcceptsStyleNames = function () {
-
+    return [];
 };
 
 
@@ -23,6 +23,23 @@ FViewable.prototype.getStyleDescriptor = function (name) {
     var functionName = 'getStyle' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
     return this[functionName] && this[functionName].call(this);
 };
+
+
+/**
+ * @returns {}
+ */
+FViewable.prototype.getStyleDescriptors = function () {
+    var result = {};
+    var names = this.getAcceptsStyleNames();
+    var key;
+    for (var i = 0; i< names.length; ++i){
+        key = names[i];
+        result[key] = this.getStyleDescriptor(key);
+    }
+    return result;
+};
+
+
 
 
 /**
