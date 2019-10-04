@@ -144,7 +144,7 @@ LayoutEditor.prototype.ev_beginMove = function (event) {
         dx: 0,
         dy: 0,
         option: event.option,
-        acceptStyle: this._activatedCompnent.getAcceptStyle(),
+        styleDescriptors: this._activatedCompnent.getStyleDescriptors(),
         style0: Object.assign({}, this._activatedCompnent.style),
         comp: this._activatedCompnent
     };
@@ -160,20 +160,20 @@ LayoutEditor.prototype.ev_moving = function (event) {
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
     //TODO; size may be invalid
-    if (movingData.acceptStyle.left && (movingData.option.left || movingData.option.body)) {
+    if (!movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
         movingData.comp.setStyle('left', movingData.style0.left + movingData.dx);
         this.notifyChanged();
     }
 
 
-    if (movingData.acceptStyle.right && (movingData.option.right || movingData.option.body)) {
+    if (!movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
         movingData.comp.setStyle('right', movingData.style0.right - movingData.dx);
         this.notifyChanged();
     }
 
-    if (movingData.acceptStyle.width) {
+    if (!movingData.styleDescriptors.width.disabled) {
         if (movingData.option.left) {
-            if (!movingData.acceptStyle.left && !movingData.acceptStyle.right) {
+            if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
                 movingData.comp.setStyle('width', Math.max(0, movingData.style0.width - movingData.dx * 2));
                 //center align
             }
@@ -183,7 +183,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
             this.notifyChanged();
         }
         if (movingData.option.right) {
-            if (!movingData.acceptStyle.left && !movingData.acceptStyle.right) {
+            if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
                 movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx * 2));
                 //center align
             }
@@ -194,19 +194,19 @@ LayoutEditor.prototype.ev_moving = function (event) {
         }
     }
 
-    if (movingData.acceptStyle.top && (movingData.option.top || movingData.option.body)) {
+    if (!movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
         movingData.comp.setStyle('top', movingData.style0.top + movingData.dy);
         this.notifyChanged();
     }
 
-    if (movingData.acceptStyle.bottom && (movingData.option.bottom || movingData.option.body)) {
+    if (!movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
         movingData.comp.setStyle('bottom', movingData.style0.bottom - movingData.dy);
         this.notifyChanged();
     }
 
-    if (movingData.acceptStyle.height) {
+    if (!movingData.styleDescriptors.height.disabled) {
         if (movingData.option.top) {
-            if (!movingData.acceptStyle.top && !movingData.acceptStyle.bottom) {
+            if (!!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy * 2));
             }
             else {
@@ -216,7 +216,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
 
         }
         if (movingData.option.bottom) {
-            if (!movingData.acceptStyle.top && !movingData.acceptStyle.bottom) {
+            if (!!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy * 2));
             }
             else {
@@ -309,6 +309,7 @@ LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
                     },
                     {
                         icon: 'span.mdi.mdi-delete-variant',
+                        icon: 'span.mdi.mdi-delete-variant',
                         text: 'Delete',
                         cmd: 'delete',
                         extendStyle: {
@@ -376,34 +377,36 @@ LayoutEditor.prototype.updateAnchor = function () {
     var comp = this._activatedCompnent;
     if (comp && comp != this.rootLayout) {
         this.$resizeBox.addTo(this.$forceground);
+        var styleDescriptors = comp.getStyleDescriptors();
 
-        var anchorAcceptStyle = comp.anchor.getAcceptStyle();
-        if (anchorAcceptStyle.top) {
-            this.$topAlignLine.addTo(this.$forceground);
-        }
-        else {
+
+        if (styleDescriptors.top.disabled) {
             this.$topAlignLine.remove();
         }
-
-        if (anchorAcceptStyle.bottom) {
-            this.$bottomAlignLine.addTo(this.$forceground);
-        }
         else {
+
+            this.$topAlignLine.addTo(this.$forceground);
+        }
+
+        if (styleDescriptors.bottom.disabled) {
             this.$bottomAlignLine.remove();
         }
-
-        if (anchorAcceptStyle.left) {
-            this.$leftAlignLine.addTo(this.$forceground);
-        }
         else {
+            this.$bottomAlignLine.addTo(this.$forceground);
+        }
+
+        if (styleDescriptors.left.disabled) {
             this.$leftAlignLine.remove();
         }
+        else {
+            this.$leftAlignLine.addTo(this.$forceground);
+        }
 
-        if (anchorAcceptStyle.right) {
-            this.$rightAlignLine.addTo(this.$forceground);
+        if (styleDescriptors.right.disabled) {
+            this.$rightAlignLine.remove();
         }
         else {
-            this.$rightAlignLine.remove();
+            this.$rightAlignLine.addTo(this.$forceground);
         }
     }
     else {
@@ -444,6 +447,7 @@ LayoutEditor.prototype.updateAnchorPosition = function () {
             });
 
         if (this.$topAlignLine.parentNode)
+
             this.$topAlignLine.addStyle({
                 top: compBound.top - bound.top - comp.style.top + 'px',
                 height: comp.style.top + 'px',
