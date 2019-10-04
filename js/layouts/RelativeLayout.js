@@ -8,7 +8,7 @@ var _ = Fcore._;
 
 function RelativeLayout() {
     ScalableComponent.call(this);
-    
+
 }
 
 Object.defineProperties(RelativeLayout.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
@@ -20,13 +20,13 @@ RelativeLayout.prototype.menuIcon = 'span.mdi.mdi-relative-scale';
 RelativeLayout.prototype.TOP_CLASS_NAME = 'as-relative-layout';
 RelativeLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
-RelativeLayout.prototype.preInit = function(){
-    ScalableComponent.prototype.preInit.call(this);
+RelativeLayout.prototype.create = function () {
+    ScalableComponent.prototype.create.call(this);
     this.style.vAlign = 'fixed';
     this.style.hAlign = 'fixed';
 };
 
-RelativeLayout.prototype.getAnchorBoxConstructor = function () {
+RelativeLayout.prototype.getAnchorConstructor = function () {
     return RelativeAnchor;
 };
 
@@ -35,13 +35,18 @@ RelativeLayout.prototype.render = function () {
 };
 
 
-RelativeLayout.prototype.handleAddChild = function(child, index){
+RelativeLayout.prototype.onAddChild = function (child, index) {
     var anchor = new RelativeAnchor();
-    this.view.addChild(anchor.view);
     anchor.attachChild(child);
+    if (index == -1 || !this.view.childNodes[index]) {
+        this.view.addChild(anchor.view);
+    }
+    else {
+        this.view.addChildBefore(anchor.view, this.view.childNodes[index]);
+    }
 };
 
-RelativeLayout.prototype.handleRemoveChild = function(child, index){
+RelativeLayout.prototype.onRemoveChild = function (child, index) {
     var anchor = child.anchor;
     anchor.detachChild();
     anchor.view.remove();
