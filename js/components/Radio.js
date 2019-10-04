@@ -18,7 +18,7 @@ Radio.prototype.menuIcon = "span.mdi.mdi-radiobox-marked";
 
 
 
-Radio.prototype.preInit = function () {
+Radio.prototype.create = function () {
     ContentScalelessComponent.prototype.preInit.call(this);
     this.style.width = 18;
     this.style.height = 18;
@@ -34,20 +34,20 @@ Radio.prototype.renderContent = function () {
 };
 
 
-Radio.prototype.handleAttributeChecked = function (value) {
+Radio.prototype.setAttributeChecked = function (value) {
     this.$content.checked = !!value;
+    return this.$content;
+};
+
+Radio.prototype.setStyleWidth = function (value) {
+    value = value >= 18 ? value : 18;
+    return ContentScalelessComponent.prototype.setStyleWidth.call(this, value);
 };
 
 
-Radio.prototype.handleStyleWidth = function (value) {
-    this.style.width = value >= 18 ? value : 18;
-    ContentScalelessComponent.prototype.handleStyleWidth.call(this, value);
-};
-
-
-Radio.prototype.handleStyleHeight = function (value) {
-    this.style.height = value >= 18 ? value : 18;
-    ContentScalelessComponent.prototype.handleStyleHeight.call(this, value);
+Radio.prototype.setStyleHeight = function (value) {
+    value = value >= 18 ? value : 18;
+    return ContentScalelessComponent.prototype.setStyleHeight.call(this, value);
 };
 
 

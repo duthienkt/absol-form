@@ -35,11 +35,12 @@ SelectBox.prototype.render = function () {
 };
 
 
-SelectBox.prototype.handleAttributeList = function (value) {
+SelectBox.prototype.setAttributeList = function (value) {
     this.view.items = value;
+    return this.view.items;
 };
 
-SelectBox.prototype.handleAttributeValue = function (value) {
+SelectBox.prototype.setAttributeValue = function (value) {
     this.view.values = value;
 };
 

@@ -37,7 +37,7 @@ RelativeAnchor.prototype.onCreated = function () {
 };
 
 RelativeAnchor.prototype.VALIGN_VALUE = ['top', 'bottom', 'center', 'fixed'];
-RelativeAnchor.prototype.HALIGN_VALUE = ['left', 'right', 'center'];
+RelativeAnchor.prototype.HALIGN_VALUE = ['left', 'right', 'center', 'fixed'];
 
 
 RelativeAnchor.prototype.HALIGN_CLASS_NAMES = {
@@ -63,7 +63,7 @@ RelativeAnchor.prototype.getAcceptsStyleNames = function () {
 
 RelativeAnchor.prototype.getStyleHAlignDescriptor = function () {
     return {
-        type: 'emnum',
+        type: 'enum',
         values: ['left', 'right', 'center', 'fixed'],
         disabled: false
     }
@@ -71,7 +71,7 @@ RelativeAnchor.prototype.getStyleHAlignDescriptor = function () {
 
 RelativeAnchor.prototype.getStyleVAlignDescriptor = function () {
     return {
-        type: 'emnum',
+        type: 'enum',
         values: ['top', 'bottom', 'center', 'fixed'],
         disabled: false
     }
@@ -83,7 +83,7 @@ RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
         type: 'number',
         min: 0,
         max: Infinity,
-        disabled: this.style.hAlign != 'center'
+        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'right'
     };
 };
 
@@ -93,7 +93,7 @@ RelativeAnchor.prototype.getStyleRightDescriptor = function () {
         type: 'number',
         min: 0,
         max: Infinity,
-        disabled: this.style.hAlign != 'center'
+        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'left'
     };
 };
 
@@ -103,7 +103,7 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
         type: 'number',
         min: 0,
         max: Infinity,
-        disabled: this.style.vAlign != 'center'
+        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'bottom'
     };
 };
 
@@ -113,7 +113,7 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
         type: 'number',
         min: 0,
         max: Infinity,
-        disabled: this.style.vAlign != 'center'
+        disabled: this.style.vAlign == 'center'|| this.style.vAlign == 'top'
     };
 };
 
@@ -241,6 +241,7 @@ RelativeAnchor.prototype.attachChild = function (child) {
 RelativeAnchor.prototype.detachChild = function () {
     if (this.childNode) {
         this.childNode.view.remove();
+        this.childNode.onAnchorDetached();
         this.childNode.anchor = null;
         this.childNode = null;
     }

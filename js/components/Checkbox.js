@@ -16,8 +16,8 @@ CheckBox.prototype.constructor = CheckBox;
 CheckBox.prototype.tag = "CheckBox";
 CheckBox.prototype.menuIcon = "span.mdi.mdi-check-box-outline";
 
-CheckBox.prototype.preInit = function () {
-    ContentScalelessComponent.prototype.preInit.call(this);
+CheckBox.prototype.create = function () {
+    ContentScalelessComponent.prototype.create.call(this);
     this.style.width = 18;
     this.style.height = 18;
     this.style.vAlign = 'top';
@@ -32,20 +32,21 @@ CheckBox.prototype.renderContent = function () {
 };
 
 
-CheckBox.prototype.handleAttributeChecked = function (value) {
+CheckBox.prototype.setAttributeChecked = function (value) {
     this.$content.checked = !!value;
+    return this.$content.checked;
 };
 
 
-CheckBox.prototype.handleStyleWidth = function (value) {
-    this.style.width = value >= 18 ? value : 18;
-    ContentScalelessComponent.prototype.handleStyleWidth.call(this, value);
+CheckBox.prototype.setStyleWidth = function (value) {
+    value = value >= 18 ? value : 18;
+    return ContentScalelessComponent.prototype.setStyleWidth.call(this, value);
 };
 
 
-CheckBox.prototype.handleStyleHeight = function (value) {
-    this.style.height = value >= 18 ? value : 18;
-    ContentScalelessComponent.prototype.handleStyleHeight.call(this, value);
+CheckBox.prototype.setStyleHeight = function (value) {
+    value = value >= 18 ? value : 18;
+    return ContentScalelessComponent.prototype.setStyleHeight.call(this, value);
 };
 
 

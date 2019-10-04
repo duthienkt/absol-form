@@ -25,8 +25,9 @@ Label.prototype.renderContent = function () {
 };
 
 
-Label.prototype.handleAttributeText = function (value) {
-    this.$content.clearChild().addChild(_({ text: value }))
+Label.prototype.setAttributeText = function (value) {
+    this.$content.clearChild().addChild(_({ text: value }));
+    return value;
 };
 
 export default Label;

@@ -1,6 +1,5 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import { getCaretPosition } from "absol/src/HTML5/Text";
 
 var _ = Fcore._;
 
@@ -27,45 +26,19 @@ NumberInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 NumberInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
-    this.view.on('keyup', function () {
-        var lastValue = self.attributes.value;
-        var cValue = parseFloat(this.value);
-        if (this.value != lastValue) {
-            self.attributes.value = cValue;
-            self.emit('change', cValue, self);
-        }
-    }).on("paste", function (e) {
-        e.preventDefault();
-        var text = "";
-        if (e.clipboardData && e.clipboardData.getData) {
-            text = e.clipboardData.getData("text/plain");
-
-        } else if (window.clipboardData && window.clipboardData.getData) {
-            text = window.clipboardData.getData("Text");
-        }
-        var matched = text.match(/[+-]?([0-9]*[.])?[0-9]+/);
-        if (matched) {
-            this.value = matched[0];
-        }
-    }).on('keydown', function (event) {
-        var key = event.key;
-        if (key && key.length == 1) {
-            if (key.match(/[0-9.\-\+]/)) {
-                if (key == '.' && this.value.indexOf('.') >= 0) event.preventDefault();
-                if ((key == '+' || key == '-') && (this.value.indexOf('+') >= 0 || this.value.indexOf('-') >= 0 || getCaretPosition(this) > 0)) event.preventDefault();
-            }
-            else event.preventDefault();
-        }
+    this.view.on('change', function(event){
+        self.attributes.value = event.value;
     });
 };
 
 NumberInput.prototype.render = function () {
-    return _('input[type="text"]');
+    return _('numberinput');
 };
 
 
-NumberInput.prototype.handleAttributeValue = function (value) {
+NumberInput.prototype.setAttributeValue = function (value) {
     this.view.value = value;
+    return this.view.value;
 };
 
 export default NumberInput;

@@ -36,12 +36,14 @@ ComboBox.prototype.render = function () {
 };
 
 
-ComboBox.prototype.handleAttributeList = function (value) {
+ComboBox.prototype.setAttributeList = function (value) {
     this.view.items = value;
+    return this.view.items;
 };
 
-ComboBox.prototype.handleAttributeValue = function (value) {
+ComboBox.prototype.setAttributeValue = function (value) {
     this.view.value = value;
+    return this.view.valuel
 };
 
 

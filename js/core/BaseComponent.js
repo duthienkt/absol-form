@@ -1,55 +1,68 @@
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
+import FViewable from './FViewable';
+import FNode from './FNode';
+import FModel from './FModel';
 
 function BaseComponent() {
     EventEmitter.call(this);
-    this.attributes = {};
-    /**
-     * @type {Array<BaseComponent}
-     */
-    this.children = [];// <> childData
-    this.style = {};
     this.events = {};
-    this.preInit();
+    FViewable.call(this);
+    FNode.call(this);
+    FModel.call(this);
+    this.anchorAcceptsStyleName = {};
+    this.onCreate();
     this.view = this.render();
     this.view.classList.add(this.BASE_COMPONENT_CLASS_NAME);
     this.onCreated();
 }
 
 Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
-
-
+Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(FViewable.prototype));
+Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(FNode.prototype));
+Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(FModel.prototype));
 BaseComponent.prototype.constructor = BaseComponent;
+
+
 BaseComponent.prototype.tag = "BaseComponent";
 BaseComponent.prototype.menuIcon = "span.mdi.mdi-package-variant-closed";
 
 BaseComponent.prototype.BASE_COMPONENT_CLASS_NAME = 'as-base-component';
 
 BaseComponent.prototype.anchor = null;
-BaseComponent.prototype.parent = null;
 
 BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
-BaseComponent.prototype.preInit = function () { };
+BaseComponent.prototype.onCreate = function () { };
 
 BaseComponent.prototype.onCreated = function () {
-    for (var key in this.attributes) {
-        this.handleAttribute(key, this.attributes[key]);
-    }
+    this.updateAttributes();
 };
+
+BaseComponent.prototype.onAnchorAttached = function () {
+    this.anchorAcceptsStyleName = this.anchor.getAcceptsStyleNames().reduce(function (ac, key) { ac[key] = true; return ac; }, {});
+};
+
+BaseComponent.prototype.onAnchorDetached = function () {
+    this.anchorAcceptsStyleName = {};
+};
+
+
 
 BaseComponent.prototype.onAttached = function (parent) {
-    //reset style after attach anchor
+    this.updateStyle();
+
+};
+
+BaseComponent.prototype.updateStyle = function () {
     for (var key in this.style) {
-        this.handleStyle(key, this.style[key]);
+        this.setStyle(key, this.style[key]);
     }
 };
 
-
-BaseComponent.prototype.onDetached = function (parent) { };
-
-
-BaseComponent.prototype.render = function () {
-    throw new Error("Not implement!");
+BaseComponent.prototype.updateAttributes = function () {
+    for (var key in this.attributes) {
+        this.setAttribute(key, this.attributes[key]);//set init attribute
+    }
 };
 
 
@@ -90,152 +103,11 @@ BaseComponent.prototype.getData = function () {
     return data;
 }
 
-BaseComponent.prototype.setAttribute = function (key, value) {
-    this.attributes[key] = value;
-    this.handleAttribute(key, value);
-};
-
-BaseComponent.prototype.getAttribute = function (key) {
-    return this.attributes[key];
-};
-
-BaseComponent.prototype.removeAttribute = function (key) {
-    this.attributes[key] = undefined;
-    delete this.attributes[key];
-    this.handleAttribute(key, undefined);
-};
-
-BaseComponent.prototype.handleAttribute = function (key, value) {
-    var functionName = 'handleAttribute' + key.substr(0, 1).toUpperCase() + key.substr(1);
-
-    if (this[functionName]) this[functionName](value);
-    else
-        throw new Error("Not implement this." + functionName + '(value)!');
-};
-
-BaseComponent.prototype.setStyle = function (key, value) {
-    this.style[key] = value;
-    this.handleStyle(key, value);
-};
-
-BaseComponent.prototype.getStyle = function (key) {
-    return this.style[key];
-};
-
-BaseComponent.prototype.removeStyle = function (key) {
-    delete this.style[key];
-    this.handleStyle(key, undefined);
-};
-
-/**
- * @param {String} key
- * @param {string|Number} value 
- */
-BaseComponent.prototype.handleStyle = function (key, value) {
-    var functionName = 'handleStyle' + key.substr(0, 1).toUpperCase() + key.substr(1);
-
-    if (this[functionName]) this[functionName](value);
-    else
-        throw new Error("Not implement this." + functionName + '(value)!');
-};
-
-
-BaseComponent.prototype.handleStyleVAlign = function (value) {
-    if (this.anchor)
-        this.anchor.setVAlign(value);
-};
-
-
-BaseComponent.prototype.handleStyleHAlign = function (value) {
-    if (this.anchor)
-        this.anchor.setHAlign(value);
-};
-
-
-BaseComponent.prototype.handleStyleLeft = function (value) {
-    if (this.anchor)
-        this.anchor.setLeft(value);
-};
-
-BaseComponent.prototype.handleStyleRight = function (value) {
-    if (this.anchor)
-        this.anchor.setRight(value);
-};
-
-BaseComponent.prototype.handleStyleTop = function (value) {
-    if (this.anchor)
-        this.anchor.setTop(value);
-};
-
-BaseComponent.prototype.handleStyleBottom = function (value) {
-    if (this.anchor)
-        this.anchor.setBottom(value);
-};
-
-
-BaseComponent.prototype.addChild = function (child) {
-    if (child.parent) child.parent.removeChild(child);
-    this.children.push(child);
-    child.parent = this;
-    this.handleAddChild(child, - 1);//negative index for appending child
-    child.onAttached(this);
-};
-
-BaseComponent.prototype.addChildBefore = function (child, existingChild) {
-    if (child.parent) child.parent.removeChild(child);
-    var existChildIndex = this.children.indexOf(existingChild);
-    if (existChildIndex >= 0) {
-        this.children.splice(existChildIndex, 0, child);
-        child.parent = this;
-        this.handleAddChild(child, existChildIndex);
-        child.onAttached(this);
-        return true;
-    }
-    return false;
-};
-
-BaseComponent.prototype.addChildAfter = function (child, existingChild) {
-    if (child.parent) child.parent.removeChild(child);
-    var existChildIndex = this.children.indexOf(existingChild);
-    if (existChildIndex >= 0) {
-        this.children.splice(existChildIndex + 1, 0, child);
-        child.parent = this;
-        this.handleAddChild(child, existChildIndex + 1);
-        child.onAttached(this);
-        return true;
-    }
-    return false;
-};
-
-BaseComponent.prototype.handleAddChild = function (child, index) {
-    throw new Error("Not implement!");
-};
-
-BaseComponent.prototype.removeChild = function (child) {
-    var childIndex = this.children.indexOf(child);
-    if (childIndex < 0) return false;
-    this.children.splice(childIndex, 1);
-    this.handleRemoveChild(child, childIndex);
-    child.parent = undefined;
-    child.onDetached(this);
-    return true;
-};
-
-BaseComponent.prototype.clearChild = function(){
-    while (this.children.length > 0){
-        this.removeChild(this.children[0]);
-    }
-};
-
-
-BaseComponent.prototype.handleRemoveChild = function (child, index) {
-    throw new Error("Not implement!");
-};
-
 BaseComponent.prototype.setEvent = function (key, value) {
     this.events[key] = value;
     this.on(key, value);
 };
+
 
 BaseComponent.prototype.removeEvent = function (key) {
     this.events[key] = undefined;
@@ -243,9 +115,18 @@ BaseComponent.prototype.removeEvent = function (key) {
     this.off(key, value);
 };
 
+BaseComponent.prototype.getAcceptsStyleNames = function () {
+    if (this.anchor)
+        return this.anchor.getAcceptsStyleNames().concat(['width', 'height']);
+    return [];
+};
 
-BaseComponent.prototype.getAcceptStyle = function(){
-    return {};
+BaseComponent.prototype.getStyleDescriptor = function (name) {
+    var res;
+    res = FViewable.prototype.getStyleDescriptor.call(this, name);
+    if (this.anchor)
+        res = res || this.anchor.getStyleDescriptor(name);
+    return res;
 };
 
 export default BaseComponent;

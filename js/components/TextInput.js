@@ -31,13 +31,19 @@ TextInput.prototype.onCreated = function () {
     });
 };
 
+TextInput.prototype.create = function(){
+    ScalableComponent.prototype.create.call(this);
+    this.attributes.value = '';
+}
+
 TextInput.prototype.render = function () {
     return _('input[type="text"]');
 };
 
 
-TextInput.prototype.handleAttributeValue = function (value) {
+TextInput.prototype.setAttributeValue = function (value) {
     this.view.value = value;
+    return value;
 };
 
 export default TextInput;

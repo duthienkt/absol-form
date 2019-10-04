@@ -30,13 +30,16 @@ DateInput.prototype.onCreated = function () {
 };
 
 
-DateInput.prototype.handleAttributeValue = function (value) {
+DateInput.prototype.setAttributeValue = function (value) {   
     if (value instanceof Date)
         this.view.value = value;
     else {
         this.attributes.value = new Date(value);
         this.view.value = this.attributes.value;
     }
+    return this.view.value;
 };
+
+ 
 
 export default DateInput;

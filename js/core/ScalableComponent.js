@@ -14,7 +14,7 @@ ScalableComponent.prototype.tag = "ScalableComponent";
 ScalableComponent.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'left', 'right', 'top', 'bottom'];
 
 
-ScalableComponent.prototype.preInit = function () {
+ScalableComponent.prototype.onCreate = function () {
     this.hAlign = 'left';
     this.vAlign = 'top'
     this.style.left = 0;
@@ -27,48 +27,86 @@ ScalableComponent.prototype.preInit = function () {
 
 
 
-ScalableComponent.prototype.handleStyleWidth = function (value) {
+ScalableComponent.prototype.setStyleWidth = function (value) {
     if (this.style.hAlign != 'fixed')
         this.view.addStyle('width', value + 'px');
+    else 
+    this.view.removeStyle('width');
+    return value;
 };
 
-ScalableComponent.prototype.handleStyleHeight = function (value) {
+ScalableComponent.prototype.setStyleHeight = function (value) {
     if (this.style.vAlign != 'fixed')
         this.view.addStyle('height', value + 'px');
+    else
+        this.view.removeStyle('height');
+
+    return value;
 };
 
 
-ScalableComponent.prototype.handleStyleHAlign = function (value) {
-    BaseComponent.prototype.handleStyleHAlign.call(this, value);
+ScalableComponent.prototype.setStyleHAlign = function (value) {
     if (value != 'fixed') {
         this.view.addStyle('width', this.style.width + 'px')
     }
     else {
         this.view.removeStyle('width');
     }
+
+    return value;
 };
 
 
-ScalableComponent.prototype.handleStyleVAlign = function (value) {
-    BaseComponent.prototype.handleStyleVAlign.call(this, value);
+ScalableComponent.prototype.setStyleVAlign = function (value) {
     if (value != 'fixed') {
         this.view.addStyle('height', this.style.height + 'px')
     }
     else {
         this.view.removeStyle('height');
     }
+    return value;
 };
 
 
-ScalableComponent.prototype.getAcceptStyle = function () {
-    var ac = this.anchor.getAcceptStyle();
-    if (this.style.vAlign != 'fixed')
-        ac.height = true;
+ScalableComponent.prototype.setStyle = function (key, value) {
+    var res;
+    if (this.anchorAcceptsStyleName[key]) {
+        value = this.anchor.setStyle(key, value);// anchor first
+        value = BaseComponent.prototype.setStyle.call(this, key, value);
+        if (value === undefined)
+            delete this.style[key];
+        else this.style[key] = value;
+        res = value;
+    }
+    else {
+        res = BaseComponent.prototype.setStyle.call(this, key, value);
+    }
 
-    if (this.style.hAlign != 'fixed')
-        ac.width = true;
-    return ac;
+    return res;
 };
 
+
+ScalableComponent.prototype.getAcceptsStyleNames = function () {
+    return BaseComponent.prototype.getAcceptsStyleNames.call(this).concat(['width', 'height']);
+};
+
+
+ScalableComponent.prototype.getStyleWidthDescriptor = function () {
+    return {
+        disabled: this.style.hAlign == 'fixed',
+        type: 'number',
+        min: 0,
+        max: Infinity
+    };
+};
+
+ScalableComponent.prototype.getStyleHeightDescriptor = function () {
+    return {
+        disabled: this.style.vAlign == 'fixed',
+        type: 'number',
+        min: 0,
+        max: Infinity
+    };
+};
 
 export default ScalableComponent;

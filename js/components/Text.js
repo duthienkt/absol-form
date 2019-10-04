@@ -19,8 +19,9 @@ Text.prototype.render = function () {
 };
 
 
-Text.prototype.handleAttributeText = function (value) {
+Text.prototype.setAttributeText = function (value) {
     this.view.clearChild().addChild(_({ text: value }));
+    return value;
 };
 
 export default Text;
