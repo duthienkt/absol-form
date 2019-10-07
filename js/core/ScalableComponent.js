@@ -15,8 +15,8 @@ ScalableComponent.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'le
 
 
 ScalableComponent.prototype.onCreate = function () {
-    this.hAlign = 'left';
-    this.vAlign = 'top'
+    this.style.hAlign = 'left';
+    this.style.vAlign = 'top'
     this.style.left = 0;
     this.style.right = 0;
     this.style.top = 0;
@@ -30,8 +30,8 @@ ScalableComponent.prototype.onCreate = function () {
 ScalableComponent.prototype.setStyleWidth = function (value) {
     if (this.style.hAlign != 'fixed')
         this.view.addStyle('width', value + 'px');
-    else 
-    this.view.removeStyle('width');
+    else
+        this.view.removeStyle('width');
     return value;
 };
 
@@ -47,7 +47,7 @@ ScalableComponent.prototype.setStyleHeight = function (value) {
 
 ScalableComponent.prototype.setStyleHAlign = function (value) {
     if (value != 'fixed') {
-        this.view.addStyle('width', this.style.width + 'px')
+        this.view.addStyle('width', this.style.width + 'px');
     }
     else {
         this.view.removeStyle('width');
@@ -59,7 +59,7 @@ ScalableComponent.prototype.setStyleHAlign = function (value) {
 
 ScalableComponent.prototype.setStyleVAlign = function (value) {
     if (value != 'fixed') {
-        this.view.addStyle('height', this.style.height + 'px')
+        this.view.addStyle('height', this.style.height + 'px');
     }
     else {
         this.view.removeStyle('height');
