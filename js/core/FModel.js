@@ -6,7 +6,7 @@ function FModel() {
 /**
  * @returns {Array<String>}
  */
-FModel.prototype.getAcceptsStyleNames = function () {
+FModel.prototype.getAcceptsAttributeNames = function () {
     return [];
 };
 

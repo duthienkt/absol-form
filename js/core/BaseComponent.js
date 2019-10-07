@@ -129,9 +129,30 @@ BaseComponent.prototype.getStyleDescriptor = function (name) {
     return res;
 };
 
-BaseComponent.prototype.reMeasure = function(){
+BaseComponent.prototype.reMeasure = function () {
     if (this.parent && this.parent.reMeasure)
         this.parent.reMeasureChild(this);
+};
+
+
+BaseComponent.prototype.getAcceptsAttributeNames = function () {
+    return ["type", "name"];
+};
+
+
+BaseComponent.prototype.getAttributeTypeDescriptor = function () {
+    return {
+        type: 'const',
+        value: this.tag
+    };
+};
+
+
+BaseComponent.prototype.getAttributeNameDescriptor = function () {
+    return {
+        type: 'text',
+        regex: /^[a-zA-Z\_0-9]$/
+    };
 };
 
 
