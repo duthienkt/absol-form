@@ -117,7 +117,7 @@ BaseComponent.prototype.removeEvent = function (key) {
 
 BaseComponent.prototype.getAcceptsStyleNames = function () {
     if (this.anchor)
-        return this.anchor.getAcceptsStyleNames().concat(['width', 'height']);
+        return this.anchor.getAcceptsStyleNames();
     return [];
 };
 
@@ -128,5 +128,11 @@ BaseComponent.prototype.getStyleDescriptor = function (name) {
         res = res || this.anchor.getStyleDescriptor(name);
     return res;
 };
+
+BaseComponent.prototype.reMeasure = function(){
+    if (this.parent && this.parent.reMeasure)
+        this.parent.reMeasureChild(this);
+};
+
 
 export default BaseComponent;
