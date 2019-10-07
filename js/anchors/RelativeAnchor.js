@@ -166,33 +166,40 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
 };
 
 RelativeAnchor.prototype.setStyleLeft = function (value) {
-    if (this.style.hAlign != 'center') {
+    if (this.style.hAlign != 'center' && this.style.hAlign != 'right') {
         this.view.addStyle('left', value + 'px');
     }
+    else  this.view.removeStyle('left');
     return value;
 };
 
 
 
 RelativeAnchor.prototype.setStyleRight = function (value) {
-    if (this.style.hAlign != 'center') {
+    if (this.style.hAlign != 'center' && this.style.hAlign != 'left') {
         this.view.addStyle('right', value + 'px');
     }
+    else  this.view.removeStyle('right');
+
     return value;
 };
 
 RelativeAnchor.prototype.setStyleTop = function (value) {
-    if (this.style.vAlign != 'center') {
+    if (this.style.vAlign != 'center' && this.style.vAlign != 'bottom') {
         this.view.addStyle('top', value + 'px');
     }
+    else  this.view.removeStyle('top');
+
     return value;
 };
 
 
 RelativeAnchor.prototype.setStyleBottom = function (value) {
-    if (this.style.vAlign != 'center') {
+    if (this.style.vAlign != 'center'&& this.style.vAlign != 'top') {
         this.view.addStyle('bottom', value + 'px');
     }
+    else  this.view.removeStyle('bottom');
+
     return value;
 };
 
@@ -250,7 +257,7 @@ RelativeAnchor.prototype.detachChild = function () {
 RelativeAnchor.prototype.HALIGN_ACCEPT_STYLE = {
     left: { left: true, right: false },
     right: { left: false, right: true },
-    center: { left: false, right: false },// component need set height
+    center: { left: false, right: false },// component need set width
     fixed: { left: true, right: true }
 };
 
@@ -264,7 +271,7 @@ RelativeAnchor.prototype.VALIGN_ACCEPT_STYLE = {
 RelativeAnchor.prototype.updateVAlignStyle = function () {
     for (var key in this.VALIGN_ACCEPT_STYLE[this.style.vAlign]) {
         if (this.VALIGN_ACCEPT_STYLE[this.style.vAlign][key]) {
-            this.view.addStyle(key, this[key] + 'px');
+            this.view.addStyle(key, this.style[key] + 'px');
         }
         else {
             this.view.removeStyle(key);
@@ -276,7 +283,7 @@ RelativeAnchor.prototype.updateVAlignStyle = function () {
 RelativeAnchor.prototype.updateHAlignStyle = function () {
     for (var key in this.HALIGN_ACCEPT_STYLE[this.style.hAlign]) {
         if (this.HALIGN_ACCEPT_STYLE[this.style.hAlign][key]) {
-            this.view.addStyle(key, this[key] + 'px');
+            this.view.addStyle(key, this.style[key] + 'px');
         }
         else {
             this.view.removeStyle(key);
