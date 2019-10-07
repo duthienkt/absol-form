@@ -81,7 +81,7 @@ RelativeAnchor.prototype.getStyleVAlignDescriptor = function () {
 RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
     return {
         type: 'number',
-        min: 0,
+        min: -Infinity,
         max: Infinity,
         disabled: this.style.hAlign == 'center' || this.style.hAlign == 'right'
     };
@@ -91,7 +91,7 @@ RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
 RelativeAnchor.prototype.getStyleRightDescriptor = function () {
     return {
         type: 'number',
-        min: 0,
+        min: -Infinity,
         max: Infinity,
         disabled: this.style.hAlign == 'center' || this.style.hAlign == 'left'
     };
@@ -101,7 +101,7 @@ RelativeAnchor.prototype.getStyleRightDescriptor = function () {
 RelativeAnchor.prototype.getStyleTopDescriptor = function () {
     return {
         type: 'number',
-        min: 0,
+        min: -Infinity,
         max: Infinity,
         disabled: this.style.vAlign == 'center' || this.style.vAlign == 'bottom'
     };
@@ -111,9 +111,9 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
 RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
     return {
         type: 'number',
-        min: 0,
+        min: -Infinity,
         max: Infinity,
-        disabled: this.style.vAlign == 'center'|| this.style.vAlign == 'top'
+        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'top'
     };
 };
 
@@ -166,7 +166,6 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
 };
 
 RelativeAnchor.prototype.setStyleLeft = function (value) {
-    value = Math.max(value, 0);
     if (this.style.hAlign != 'center') {
         this.view.addStyle('left', value + 'px');
     }
@@ -176,7 +175,6 @@ RelativeAnchor.prototype.setStyleLeft = function (value) {
 
 
 RelativeAnchor.prototype.setStyleRight = function (value) {
-    value = Math.max(value, 0);
     if (this.style.hAlign != 'center') {
         this.view.addStyle('right', value + 'px');
     }
@@ -184,7 +182,6 @@ RelativeAnchor.prototype.setStyleRight = function (value) {
 };
 
 RelativeAnchor.prototype.setStyleTop = function (value) {
-    value = Math.max(value, 0);
     if (this.style.vAlign != 'center') {
         this.view.addStyle('top', value + 'px');
     }
@@ -193,7 +190,6 @@ RelativeAnchor.prototype.setStyleTop = function (value) {
 
 
 RelativeAnchor.prototype.setStyleBottom = function (value) {
-    value = Math.max(value, 0);
     if (this.style.vAlign != 'center') {
         this.view.addStyle('bottom', value + 'px');
     }
