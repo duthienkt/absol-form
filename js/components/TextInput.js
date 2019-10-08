@@ -11,6 +11,7 @@ function TextInput() {
 
 Object.defineProperties(TextInput.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
 TextInput.prototype.constructor = TextInput;
+TextInput.count = 0;
 
 TextInput.prototype.tag = "TextInput";
 TextInput.prototype.menuIcon = "span.mdi.mdi-textbox";
@@ -31,10 +32,12 @@ TextInput.prototype.onCreated = function () {
     });
 };
 
-TextInput.prototype.create = function(){
-    ScalableComponent.prototype.create.call(this);
+TextInput.prototype.onCreate = function () {
+    ScalableComponent.prototype.onCreate.call(this);
     this.attributes.value = '';
-}
+    this.attributes.name = "TextInput_" + (TextInput.count++);
+};
+
 
 TextInput.prototype.render = function () {
     return _('input[type="text"]');
@@ -45,5 +48,29 @@ TextInput.prototype.setAttributeValue = function (value) {
     this.view.value = value;
     return value;
 };
+TextInput.prototype.setAttributePlaceHolder = function (value) {
+    this.view.attr('placeholder', value);
+    return value;
+};
+
+
+TextInput.prototype.getAcceptsAttributeNames = function(){
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'placeHolder']);
+};
+
+
+TextInput.prototype.getAttributeValueDescriptor = function(){
+    return {
+        type:"text"
+    }
+};
+
+TextInput.prototype.getAttributePlaceHolderDescriptor = function(){
+    return {
+        type:"text"
+    }
+};
+
+
 
 export default TextInput;
