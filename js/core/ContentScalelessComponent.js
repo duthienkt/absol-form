@@ -25,7 +25,6 @@ ContentScalelessComponent.prototype.onCreated = function () {
 ContentScalelessComponent.prototype.render = function () {
     return _({
         class: 'as-component-content-scaleless',
-
         child: {
             class: 'as-component-content-scaleless-cell',
             child: this.renderContent()
@@ -37,13 +36,15 @@ ContentScalelessComponent.prototype.renderContent = function(){
     throw new Error('Not Implement!');
 }
 
-ContentScalelessComponent.prototype.handleStyleTextHAlign = function (value) {
+ContentScalelessComponent.prototype.setStyleTextHAlign = function (value) {
     this.view.addStyle('text-align', value);
+    return value;
 };
 
-ContentScalelessComponent.prototype.handleStyleTextVAlign = function (value) {
+ContentScalelessComponent.prototype.setStyleTextVAlign = function (value) {
     if (value == 'center') value = 'middle';
     this.$cell.addStyle('vertical-align', value);
+    return value;
 };
 
 
