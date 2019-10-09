@@ -15,6 +15,7 @@ ScalableComponent.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'le
 
 
 ScalableComponent.prototype.onCreate = function () {
+    BaseComponent.prototype.onCreate.call(this);
     this.style.hAlign = 'left';
     this.style.vAlign = 'top'
     this.style.left = 0;
