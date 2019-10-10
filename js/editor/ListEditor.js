@@ -4,8 +4,6 @@ import EventEmitter from "absol/src/HTML5/EventEmitter";
 import '../../css/listeditor.css';
 import QuickMenu from "absol-acomp/js/QuickMenu";
 import { contenteditableTextOnly } from "absol-acomp/js/utils";
-import CMDRunner from "absol/src/AppPattern/CMDRunner";
-import ListEditorCmd from "../cmds/ListEditorCmd";
 
 var _ = Fcore._;
 var $ = Fcore.$;
