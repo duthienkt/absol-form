@@ -24,4 +24,17 @@ Text.prototype.setAttributeText = function (value) {
     return value;
 };
 
+
+Text.prototype.getAcceptsAttributeNames = function(){
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text']);
+};
+
+
+Text.prototype.getAttributeTextDescriptor = function(){
+    return {
+        type:"text",
+        long:true
+    };
+};
+
 export default Text;
