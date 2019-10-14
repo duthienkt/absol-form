@@ -19,6 +19,18 @@ ComboBox.prototype.menuIcon = [
     '</svg>'
 ].join('');
 
+ComboBox.prototype.onCreate = function () {
+    ScalableComponent.prototype.onCreate.call(this);
+    this.attributes.list = [
+        { text: '0', value:'0' },
+        { text: '1', value: '1' },
+        { text: '2', value: '2' },
+        {text:'3', value: '3'}
+    ];
+    this.attributes.value = '0';
+};
+
+
 ComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
@@ -26,7 +38,10 @@ ComboBox.prototype.onCreated = function () {
         if (!(self.style.width > event.value)) {
             self.setStyle('width', event.value);
         }
+    }).on('change', function() {
+        self.attributes.value = this.value;
     });
+    this.attributes.value = this.view.value;
 };
 
 
@@ -43,8 +58,25 @@ ComboBox.prototype.setAttributeList = function (value) {
 
 ComboBox.prototype.setAttributeValue = function (value) {
     this.view.value = value;
-    return this.view.valuel
+    return this.view.value;
 };
+
+
+ComboBox.prototype.getAcceptsAttributeNames = function(){
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value']);
+};
+
+ComboBox.prototype.getAttributeListDescriptor = function(){
+    return {
+        type:'list'
+    };
+};  
+ComboBox.prototype.getAttributeValueDescriptor = function(){
+    return {
+        type:'text'
+    };
+};  
+
 
 
 export default ComboBox;
