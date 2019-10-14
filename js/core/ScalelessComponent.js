@@ -14,7 +14,7 @@ ScalelessComponent.prototype.tag = "ScalableComponent";
 ScalelessComponent.prototype.SUPPORT_STYLE_NAMES = ['top', 'left', 'right', 'top', 'bottom'];
 
 
-ScalelessComponent.prototype.preInit = function () {
+ScalelessComponent.prototype.onCreate = function () {
     this.hAlign = 'left';
     this.vAlign = 'top'
     this.style.left = 0;
