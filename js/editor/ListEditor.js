@@ -12,6 +12,7 @@ function ListEditor() {
     Context.call(this);
     EventEmitter.call(this);
     this._data = [];
+    this._lashHashValue = -1.1;
 }
 
 
@@ -77,12 +78,15 @@ ListEditor.prototype.getView = function () {
 
 ListEditor.prototype.updateData = function () {
     if (!this.$view) return;
+    if (this._lashHashValue == this.getDataHash()) return;
     this.$body.clearChild();
     var self = this;
     this.$items = this._data.map(function (item) {
         return self.makeNewRow(item).addTo(self.$body);
     });
     this.$body.addChild(this.$addRow);
+    this.checkEmpty();
+    this.checkDuplicate();
 };
 
 
@@ -139,17 +143,13 @@ ListEditor.prototype.makeNewRow = function (data) {
                 this.blur();
             }
         }).on('blur', function () {
-            var newText = itemRow.$textInput.innerText;
+            var newText = itemRow.$textInput.innerText.trim();
             if (data.text != newText) {
                 data.text = newText;
-                if (newText.trim() == '') {
-                    itemRow.$textInput.parentNode.addClass('empty-cell');
+                if (self.checkEmpty() && self.checkDuplicate()) {
+                    self.notifyChange();
                 }
-                else {
-                    itemRow.$textInput.parentNode.removeClass('empty-cell');
-                }
-                //todo: check dup, change
-                self.checkDuplicate();
+
             }
         });
     contenteditableTextOnly(itemRow.$textInput, function (text) {
@@ -168,16 +168,12 @@ ListEditor.prototype.makeNewRow = function (data) {
                 this.blur();
             }
         }).on('blur', function () {
-            var newValue = itemRow.$valueInput.innerText;
+            var newValue = itemRow.$valueInput.innerText.trim();
             if (data.value != newValue) {
                 data.value = newValue;
-                if (newValue.trim() == '') {
-                    itemRow.$valueInput.parentNode.addClass('empty-cell');
+                if (self.checkEmpty() && self.checkDuplicate()) {
+                    self.notifyChange();
                 }
-                else {
-                    itemRow.$valueInput.parentNode.removeClass('empty-cell');
-                }
-                self.checkDuplicate();
             }
         });
     contenteditableTextOnly(itemRow.$valueInput, function (text) {
@@ -198,8 +194,7 @@ ListEditor.prototype.makeNewRow = function (data) {
                         { icon: '.mdi.mdi-table-row-plus-before', text: 'Insert Row Before', cmd: 'insert-before' },
                         { icon: '.mdi.mdi-table-row-plus-after', text: 'Insert Row After', cmd: 'insert-after' },
                         { icon: '.mdi.mdi-table-row-remove', text: 'Remove', cmd: 'remove' },
-                    ],
-
+                    ]
                 };
             },
             onSelect: function (itemElt) {
@@ -214,8 +209,11 @@ ListEditor.prototype.makeNewRow = function (data) {
     return itemRow;
 };
 
-
+/**
+ * @returns {Boolean}
+ */
 ListEditor.prototype.checkDuplicate = function () {
+    var res = true;
     var textDict = {};
     var valueDict = {};
     var rows = Array.apply(null, this.$body.childNodes);
@@ -234,13 +232,50 @@ ListEditor.prototype.checkDuplicate = function () {
         if (row.__data__ && (row.__data__.value + '').trim() != '') {
             if (valueDict[row.__data__.value]) {
                 row.$valueInput.parentNode.addClass('duplicate-cell');
+                res = false;
             } else {
                 valueDict[row.__data__.value] = true;
                 row.$valueInput.parentNode.removeClass('duplicate-cell');
             }
         }
     };
+    return res;
 };
+
+
+/**
+ * @returns {Boolean}
+ */
+ListEditor.prototype.checkEmpty = function () {
+    var res = true;
+    var rows = Array.apply(null, this.$body.childNodes);
+    var row;
+    for (var i = 0; i < rows.length; ++i) {
+        row = rows[i];
+
+        if (row.__data__) {
+            if (!row.__data__.text || row.__data__.text.trim() == '') {
+                res = false;
+                row.$textInput.parentNode.addClass('empty-cell');
+            }
+            else {
+                row.$textInput.parentNode.removeClass('empty-cell');
+            }
+
+            if (!row.__data__.value || row.__data__.value.trim() == '') {
+                res = false;
+                row.$valueInput.parentNode.addClass('empty-cell');
+            }
+            else {
+                row.$valueInput.parentNode.removeClass('empty-cell');
+            }
+        }
+    };
+    return res;
+};
+
+
+
 
 ListEditor.prototype.removeRowByElt = function (rowElement) {
     rowElement.remove();
@@ -289,13 +324,6 @@ ListEditor.prototype.appendRowElement = function () {
 
 
 
-ListEditor.prototype.execCmd = function () {
-    var key = arguments[0];
-    var params = Array.prototype.slice(1);
-    console.log(params);
-
-};
-
 ListEditor.prototype.setData = function (items) {
     items = items || [];
     this._data = items;
@@ -306,8 +334,16 @@ ListEditor.prototype.getData = function () {
     return this._data;//todo
 };
 
+/**
+ * @returns {Number}
+ */
 ListEditor.prototype.getDataHash = function () {
-    return this._data.reduce(function (hash, item, idx) {
+    return this.data2Hash(this._data || []);
+};
+
+
+ListEditor.prototype.data2Hash = function (data) {
+    return data.reduce(function (hash, item, idx) {
         var c;
         var s = idx + ':' + item.text + ':' + item.value;
         for (var i = 0; i < s.length; ++i) {
@@ -317,6 +353,16 @@ ListEditor.prototype.getDataHash = function () {
         }
         return hash;
     }, 0);
-}
+};
+
+
+
+ListEditor.prototype.notifyChange = function () {
+    var currentHash = this.getDataHash();
+    if (this._lashHashValue != currentHash) {
+        this._lashHashValue = currentHash;
+        this.emit('change', { target: this, hash: currentHash }, this);
+    }
+};
 
 export default ListEditor;
