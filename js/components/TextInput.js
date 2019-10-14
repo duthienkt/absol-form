@@ -36,6 +36,7 @@ TextInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.value = '';
     this.attributes.name = "TextInput_" + (TextInput.count++);
+    this.attributes.placeHolder = '';
 };
 
 
@@ -48,6 +49,8 @@ TextInput.prototype.setAttributeValue = function (value) {
     this.view.value = value;
     return value;
 };
+
+
 TextInput.prototype.setAttributePlaceHolder = function (value) {
     this.view.attr('placeholder', value);
     return value;
