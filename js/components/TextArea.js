@@ -20,5 +20,13 @@ TextArea.prototype.render = function () {
 
 
 
+TextArea.prototype.getAttributeValueDescriptor = function(){
+    return {
+        type:"text",
+        long:true
+    }
+};
+
+
 
 export default TextArea;
