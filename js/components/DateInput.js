@@ -23,7 +23,7 @@ DateInput.prototype.render = function () {
 };
 
 
-DateInput.prototype.onCreate = function(){
+DateInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.value = null;
 };
@@ -41,7 +41,10 @@ DateInput.prototype.onCreated = function () {
 DateInput.prototype.setAttributeValue = function (value) {
     if (value instanceof Date)
         this.view.value = value;
-    else {
+    else if (typeof value == 'string' || typeof value == "number") {
+        this.attributes.value = new Date(value);
+        this.view.value = this.attributes.value;
+    } else {
         this.attributes.value = null;
         this.view.value = this.attributes.value;
     }
@@ -54,10 +57,10 @@ DateInput.prototype.getAcceptsAttributeNames = function () {
 };
 
 
-DateInput.prototype.getAttributeValueDescriptor = function(){
+DateInput.prototype.getAttributeValueDescriptor = function () {
     return {
-        type:'date',
-        nullable:true,
+        type: 'date',
+        nullable: true,
         defaultValue: beginOfDay(new Date())
     }
 }
