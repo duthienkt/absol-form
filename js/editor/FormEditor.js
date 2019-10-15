@@ -18,6 +18,8 @@ import Radio from '../components/Radio';
 import ComboBox from '../components/ComboBox';
 import Text from '../components/Text';
 import SelectBox from '../components/SelectBox';
+import { compareDate } from 'absol/src/Time/datetime';
+import ListEditor from './ListEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -30,8 +32,8 @@ function FormEditor() {
         leftSizeWidth: 16,//em
         leftSizeMinWidth: 10,
 
-        rightSizeWidth: 16,//em
-        rightSizeMinWidth: 10,
+        rightSizeWidth: 23,//em
+        rightSizeMinWidth: 15,
 
     };
     this.mLayoutEditor = new LayoutEditor();
@@ -48,9 +50,14 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(SelectBox);
     this.mLayoutEditor.addComponent(Text);
 
+    this._styleInputsNeedUpdate = []; // to know which element need to update
+    this._attributeInputsNeedUpdate = []; // to know which element need to update
+
     this.mLayoutEditor.on('change', function (event) {
-        self.emit('change', Object.assign({ formEditor: self }, event), this);
-    });
+        self.notifyStyleChange();
+    }).on('activecomponent', this.ev_activeComponent.bind(this));
+
+    this.mLayoutEditor.on('movecomponent', this.notifyStyleChange.bind(this));
 }
 
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
@@ -147,7 +154,14 @@ FormEditor.prototype.getComponentsTree = function () {
                         tag: 'exptree',
                         props: {
                             name: "ComboBox",
-                            icon: ComboBox.prototype.menuIcon
+                            icon: ComboBox.prototype.menuIcon,
+                        },
+                        on: {
+                            press: function () {
+                                console.log(ComboBox);
+
+                                this.addComponent({ tag: 'ComboBox', attributes: { value: 0, list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
+                            }.bind(this)
                         }
                     },
                     {
@@ -155,6 +169,11 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "SelectBox",
                             icon: SelectBox.prototype.menuIcon
+                        },
+                        on: {
+                            press: function () {
+                                this.addComponent({ tag: 'SelectBox', attributes: { value: [0], list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
+                            }.bind(this)
                         }
                     },
                     {
@@ -162,6 +181,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "Radio",
                             icon: Radio.prototype.menuIcon
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'Radio', attributes: { checked: false } })
                         }
                     },
                     {
@@ -169,6 +191,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "CheckBox",
                             icon: CheckBox.prototype.menuIcon
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'CheckBox', attributes: { checked: false } })
                         }
                     }
                 ]
@@ -188,6 +213,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "Label",
                             icon: Label.prototype.menuIcon
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'Label', attributes: { text: 'label-text' } })
                         }
                     },
                     {
@@ -195,6 +223,9 @@ FormEditor.prototype.getComponentsTree = function () {
                         props: {
                             name: "Text",
                             icon: 'span.mdi.mdi-format-color-text'
+                        },
+                        on: {
+                            press: this.addComponent.bind(this, { tag: 'Text', attributes: { text: 'Lorem ipsum dolor sit amet' }, style: { width: 200 } })
                         }
                     }
                 ]
@@ -218,6 +249,7 @@ FormEditor.prototype.getView = function () {
                     child: [
                         {
                             tag: 'tabframe',
+                            class: ['absol-bscroller', 'as-form-property-tab'],
                             attr: {
                                 name: 'Form',
                                 id: 'tab-form',
@@ -226,7 +258,7 @@ FormEditor.prototype.getView = function () {
                         },
                         {
                             tag: 'tabframe',
-                            class: 'absol-bscroller',
+                            class: ['absol-bscroller', 'as-form-property-tab'],
                             attr: {
                                 name: 'Component',
                                 id: 'tab-component',
@@ -235,11 +267,11 @@ FormEditor.prototype.getView = function () {
                         },
                         {
                             tag: 'tabframe',
+                            class: ['absol-bscroller', 'as-form-property-tab'],
                             attr: {
                                 name: 'Outline',
                                 id: 'tab-outline',
                             }
-
                         },
                     ]
                 }
@@ -255,13 +287,23 @@ FormEditor.prototype.getView = function () {
                     child: [
                         {
                             tag: 'tabframe',
+                            class: ['absol-bscroller', 'as-form-property-tab'],
                             attr: {
-                                name: 'Format',
-                                id: 'tab-format',
+                                name: 'Attributes',
+                                id: 'tab-attributes',
                             }
                         },
                         {
                             tag: 'tabframe',
+                            class: ['absol-bscroller', 'as-form-property-tab'],
+                            attr: {
+                                name: 'Style',
+                                id: 'tab-style',
+                            }
+                        },
+                        {
+                            tag: 'tabframe',
+                            class: ['absol-bscroller', 'as-form-property-tab'],
                             attr: {
                                 name: 'Event',
                                 id: 'tab-event',
@@ -269,6 +311,7 @@ FormEditor.prototype.getView = function () {
                         },
                         {
                             tag: 'tabframe',
+                            class: ['absol-bscroller', 'as-form-property-tab'],
                             attr: {
                                 name: 'All',
                                 id: 'tab-all',
@@ -276,7 +319,6 @@ FormEditor.prototype.getView = function () {
                         }
                     ]
                 }
-
             },
 
             '.as-form-editor-resizer.vertical.left-site',
@@ -305,9 +347,375 @@ FormEditor.prototype.getView = function () {
         .on('drag', this.ev_dragRightResizer.bind(this));
 
 
+    this.$leftTabView = $('tabview', this.$leftSiteCtn);
+    this.$leftTabView.activeTab('tab-component');
+
+
+    this.$rightTabView = $('tabview', this.$rightSiteCtn);
+    this.$rightTabView.activeTab('tab-style');
+    this.$styleTabFrame = $('tabframe#tab-style', this.$rightTabView);
+    this.$attributesTabFrame = $('tabframe#tab-attributes', this.$rightTabView);
+    this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
+
     return this.$view;
 };
 
+
+FormEditor.prototype.ev_activeComponent = function (event) {
+    this._activatedCompnent = event.component;
+    this.loadStyleTab();
+    this.loadAttribiutesTab();
+};
+
+
+FormEditor.prototype.loadStyleTab = function () {
+    this.$styleTabFrame.clearChild();
+    if (this._activatedCompnent) {
+        var component = this._activatedCompnent;
+        var acceptsStyleNames = component.getAcceptsStyleNames();
+        var styleDescriptors = component.getStyleDescriptors();
+        var styleTable = _({
+            tag: 'table',
+            class: 'as-form-params',
+            child: [
+                {
+                    tag: 'thead',
+                    child: [
+                        {
+                            tag: 'tr',
+                            child: [
+                                {
+                                    tag: 'td',
+                                    child: { text: "key" }
+                                },
+                                {
+                                    tag: 'td',
+                                    child: { text: 'value' }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    tag: 'tbody',
+                    child: acceptsStyleNames.map(function (styleName) {
+                        var descriptor = styleDescriptors[styleName];
+
+                        var input = 'input';
+
+                        switch (descriptor.type) {
+                            case "enum": input = {
+                                tag: 'selectmenu',
+                                class: 'style-input-need-update',
+                                props: {
+                                    items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
+                                    value: component.style[styleName],
+                                    disabled: descriptor.disabled,
+                                    notifyStyleUpdate: function () {
+                                        this.value = component.style[styleName];
+                                        this.disabled = component.getStyleDescriptor(styleName).disabled;
+                                    }
+                                },
+                                on: {
+                                    change: function () {
+                                        component.setStyle(styleName, this.value);
+                                        component.reMeasure();
+                                        self.mLayoutEditor.updateAnchor();
+                                        self.mLayoutEditor.updateAnchorPosition();
+                                        self.notifyStyleChange();
+                                    }
+                                }
+                            }; break;
+                            case "number": input = {
+                                tag: 'numberinput',
+                                class: 'style-input-need-update',
+                                props: {
+                                    min: descriptor.min,
+                                    max: descriptor.max,
+                                    disabled: descriptor.disabled,
+                                    value: component.style[styleName],
+                                    notifyStyleUpdate: function () {
+                                        this.value = component.style[styleName];
+                                        this.disabled = component.getStyleDescriptor(styleName).disabled;
+                                    }
+                                },
+                                on: {
+                                    changing: function () {
+                                        component.setStyle(styleName, this.value);
+                                        self.mLayoutEditor.updateAnchorPosition();
+                                        component.reMeasure();
+                                        self.notifyStyleChange();
+                                    }
+                                }
+                            }; break;
+                        }
+
+                        return {
+                            tag: 'tr',
+                            child: [
+                                {
+                                    tag: "td",
+                                    child: { text: styleName }
+                                }, {
+                                    tag: 'td',
+                                    child: input
+                                }
+                            ]
+                        }
+                    })
+                }
+            ]
+        }).addTo(this.$styleTabFrame);
+        var self = this;
+        this._styleInputsNeedUpdate = [];
+        $('.style-input-need-update', styleTable, function (e) {
+            self._styleInputsNeedUpdate.push(e);
+        });
+    }
+};
+
+
+FormEditor.prototype.loadAttribiutesTab = function () {
+    this.$attributesTabFrame.clearChild();
+    if (this._activatedCompnent) {
+        var component = this._activatedCompnent;
+        var component = this._activatedCompnent;
+        var acceptsAttributeNames = component.getAcceptsAttributeNames();
+        var attributeDescriptors = component.getAttributeDescriptors();
+
+
+        var attributeTable = _({
+            tag: 'table',
+            class: 'as-form-params',
+            child: [
+                {
+                    tag: 'thead',
+                    child: [
+
+                        {
+                            tag: 'tr',
+                            child: [
+                                {
+                                    tag: 'td',
+                                    child: { text: "key" }
+                                },
+                                {
+                                    tag: 'td',
+                                    child: { text: 'value' }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    tag: 'tbody',
+                    child: acceptsAttributeNames.map(function (attributeName) {
+                        var descriptor = attributeDescriptors[attributeName];
+
+                        var input = 'input';
+                        var extendCells = [];
+
+                        switch (descriptor.type) {
+                            case "enum": input = {
+                                tag: 'selectmenu',
+                                class: 'attribute-input-need-update',
+                                props: {
+                                    items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
+                                    value: component.attributes[attributeName],
+                                    disabled: descriptor.disabled,
+                                    notifyAttributeUpdate: function () {
+                                        // this.value = component.style[attributeName];
+                                        // this.disabled = component.getStyleDescriptor(attributeName).disabled;
+                                    }
+                                },
+                                on: {
+                                    change: function () {
+                                        // component.setStyle(attributeName, this.value);
+                                        // self.mLayoutEditor.updateAnchor();
+                                        // self.mLayoutEditor.updateAnchorPosition();
+                                        self.notifyAttributeChange();
+                                    }
+                                }
+                            }; break;
+                            case "number":
+
+                                input = {
+                                    tag: 'numberinput',
+                                    class: 'attribute-input-need-update',
+                                    props: {
+                                        disabled: descriptor.disabled,
+                                        value: (component.attributes[attributeName] === null || component.attributes[attributeName] === undefined) ? descriptor.defaultValue : component.attributes[attributeName],
+                                        notifyAttributeUpdate: function () {
+                                            // console.log("attr",);
+                                            this.value = (component.attributes[attributeName] === null || component.attributes[attributeName] === undefined) ? descriptor.defaultValue : component.attributes[attributeName];
+                                        }
+                                    },
+                                    on: {
+                                        change: function () {
+                                            component.setAttribute(attributeName, this.value);
+                                            self.notifyAttributeChange();
+                                        }
+                                    }
+                                };
+
+                                if (descriptor.nullable) {
+                                    extendCells.push({
+                                        tag: 'checkbox',
+                                        class: ['right', 'attribute-input-need-update'],
+                                        props: {
+                                            checked: component.attributes[attributeName] === null,
+                                            text: "NULL",
+                                            notifyAttributeUpdate: function () {
+                                                this.checked = component.attributes[attributeName] === null;
+                                            }
+                                        },
+                                        on: {
+                                            change: function () {
+                                                if (this.checked) {
+                                                    component.setAttribute(attributeName, null);
+                                                }
+                                                else {
+                                                    component.setAttribute(attributeName, descriptor.defaultValue);
+                                                }
+                                                self.notifyAttributeChange();
+                                            }
+                                        }
+                                    })
+                                }
+
+                                break;
+                            case "const":
+                                input = { tag: 'strong', child: { text: descriptor.value } }
+                                break;
+                            case "text":
+                                input = {
+                                    tag: descriptor.long ? 'textarea' : 'input',
+                                    attr:{type:'text'},
+                                    class: 'attribute-input-need-update',
+                                    props: {
+                                        value: component.attributes[attributeName] || "",
+                                        notifyAttributeUpdate: function () {
+                                            this.value = component.attributes[attributeName];
+                                        }
+                                    },
+                                    on: {
+                                        keyup: function () {
+                                            var value = this.value;
+                                            component.setAttribute(attributeName, value);
+                                            self.notifyAttributeChange();
+                                        }
+                                    }
+                                };
+                                break;
+                            case "bool":
+                                input = {
+                                    tag: "checkboxbutton",
+                                    props: {
+                                        checked: component.attributes[attributeName],
+                                        notifyAttributeUpdate: function () {
+                                            this.checked = component.attributes[attributeName];
+                                        }
+                                    },
+                                    on: {
+                                        change: function () {
+                                            component.setAttribute(attributeName, this.checked);
+                                            self.notifyAttributeChange();
+                                        }
+                                    }
+                                };
+                                break;
+                            case "date":
+                                input = {
+                                    tag: 'calendarinput',
+                                    class: 'attribute-input-need-update',
+                                    props: {
+                                        value: component.attributes[attributeName],
+                                        notifyAttributeUpdate: function () {
+                                            if (component.attributes[attributeName] != null && this.value != null && compareDate(component.attributes[attributeName], this.value) != 0) {
+                                                this.value = component.attributes[attributeName];
+                                            }
+                                            else {
+                                                this.value = component.attributes[attributeName];
+                                            }
+                                        }
+                                    },
+                                    on: {
+                                        change: function () {
+                                            component.setAttribute(attributeName, this.value);
+                                            self.notifyAttributeChange();
+                                        }
+                                    }
+                                };
+                                if (descriptor.nullable) {
+                                    extendCells.push({
+                                        tag: 'checkbox',
+                                        class: ['right', 'attribute-input-need-update'],
+                                        props: {
+                                            text: "NULL",
+                                            checked: component.attributes[attributeName] == null,
+                                            notifyAttributeUpdate: function () {
+                                                this.checked = component.attributes[attributeName] == null;
+                                            }
+                                        },
+                                        on: {
+                                            change: function () {
+                                                if (this.checked) {
+                                                    component.setAttribute('value', null);
+                                                }
+                                                else {
+                                                    component.setAttribute('value', descriptor.defaultValue);
+                                                }
+                                                self.notifyAttributeChange();
+                                            }
+                                        }
+                                    })
+                                }
+                                break;
+                            case "list":
+                                var listEditor = new ListEditor();
+                                input = listEditor.getView();
+                                listEditor.setData(component.attributes[attributeName]);
+                                listEditor.on('change', function () {
+                                    var data = this.getData();
+                                    component.setAttribute(attributeName, data);
+                                    self.notifyAttributeChange();
+                                });
+                                break;
+                        }
+
+
+                        return {
+                            tag: 'tr',
+                            child: [
+                                {
+                                    tag: "td",
+                                    child: { text: attributeName != 'name' ? attributeName : 'na\u200Bme' }
+                                },
+                                {
+                                    tag: 'td',
+                                    attr: {
+                                        colspan: 3 - extendCells.length + ''
+                                    },
+                                    child: input
+                                }
+                            ].concat(extendCells.map(function (cell) {
+                                return {
+                                    tag: 'td',
+                                    child: cell
+                                }
+                            }))
+                        }
+                    })
+                }
+            ]
+        }).addTo(this.$attributesTabFrame);
+        var self = this;
+        this._attributeInputsNeedUpdate = [];
+        $('.attribute-input-need-update', attributeTable, function (e) {
+            self._attributeInputsNeedUpdate.push(e);
+        });
+    }
+};
 
 
 
@@ -399,12 +807,34 @@ FormEditor.prototype.getData = function () {
 
 
 FormEditor.prototype.addComponent = function (data) {
-    var newComponent = this.mLayoutEditor.build(data);
-    if (this.mLayoutEditor.rootLayout)
+    if (this.mLayoutEditor.rootLayout) {
+        var newComponent = this.mLayoutEditor.build(data);
         this.mLayoutEditor.rootLayout.addChild(newComponent);
+        this.mLayoutEditor.activeComponent(newComponent);
+    }
+};
+
+
+FormEditor.prototype.notifyStyleChange = function () {
+    this._styleInputsNeedUpdate.forEach(function (e) {
+        if (e.notifyStyleUpdate)
+            e.notifyStyleUpdate();
+    });
+
+    this.emit('change', Object.assign({}, { formEditor: this }), this);
 
 };
 
 
+FormEditor.prototype.notifyAttributeChange = function () {
+    this._attributeInputsNeedUpdate.forEach(function (e) {
+        if (e.notifyAttributeUpdate)
+            e.notifyAttributeUpdate();
+    });
 
-export default FormEditor;
+    this.emit('change', Object.assign({}, { formEditor: this }), this);
+
+};
+
+
+export default FormEditor; 

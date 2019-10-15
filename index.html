@@ -32,243 +32,28 @@
 </head>
 
 <body>
-  <script src="./absol/absol_form.js?"></script>
+  <script src="./absol/absol_form.js?date=3142"></script>
   <div class="form-editor-container"></div>
   <script>
     //\"([^\s]+)\"\s*:
     //\n$1 :
-    var data = true && JSON.parse(localStorage.getItem('form-data') || 'false');
+    var needUpdate = localStorage.getItem('form-data-index') == '3142';
+    localStorage.setItem('form-data-index', '3142');
+    var data = needUpdate && JSON.parse(localStorage.getItem('form-data') || 'false');
     if (!data) {
-      data = {
-        tag: "RelativeLayout",
-        style: {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          height: 800,
-          width: 900,
-          vAlign: "top",
-          hAlign: "left"
-        },
-        children: [
-          {
-            tag: "CheckBox",
-            style: {
-              top: 5,
-              left: 5
-            },
-          },
-          {
-            tag: "CheckBox",
-            style: {
-              top: 25,
-              left: 5
-            },
-            attributes: {
-              checked: true
-            }
-          },
-          {
-            tag: "Radio",
-            style: {
-              top: 5,
-              left: 25
-            },
-          },
-          {
-            tag: "Radio",
-            style: {
-              top: 25,
-              left: 25
-            },
-            attributes: {
-              checked: true
-            }
-          },
-          {
-            tag: "TextInput",
-            attributes: {
-              value: "align: left, top"
-            },
-            style: {
-              left: 95,
-              right: 0,
-              top: 10,
-              bottom: 0,
-              height: 30,
-              width: 252,
-              hAlign: "left"
-            }
-          },
-          {
-            tag: "Label",
-            attributes: {
-              text: "label-text"
-            },
-            style: {
-              left: 23,
-              top: 19,
-              bottom: 0,
-              vAlign: 'top',
-              hAlign: 'left',
-              textHAlign: "center",
-              textVAlign: 'center'
-            }
-          },
-          {
-            tag: "Label",
-            attributes: {
-              text: "label-text-center"
-            },
-            style: {
-              left: 400,
-              right: 0,
-              top: 28,
-              bottom: 0,
-              hAlign: "center"
-            }
-          }, {
-            tag: "NumberInput",
-            attributes: {
-              value: 9911
-            },
-            style: {
-              left: 26,
-              right: 0,
-              top: 65,
-              bottom: 0,
-              height: 40,
-              width: 312,
-              hAlign: "left"
-            }
-          }, 
-          {
-            tag: "ComboBox",
-            attributes: {
-              value: "align: right, top"
-            },
-            style: {
-              left: 0,
-              right: 36,
-              top: 23,
-              bottom: 0,
-              height: 36,
-              width: 332,
-              hAlign: "right",
-              vAlign: "top"
-            },
-            attributes: {
-              list:Array(10).fill(0).map(function(u, i){ return {text:'item '+ i, value:i}}),
-              value: 3
-            }
-          },
-          {
-            tag: "SelectBox",
-            attributes: {
-              value: "align: right, top"
-            },
-            style: {
-              left: 0,
-              right: 36,
-              top: 63,
-              bottom: 0,
-              height: 36,
-              width: 332,
-              hAlign: "right",
-              vAlign: "top"
-            },
-            attributes: {
-              list:Array(10).fill(0).map(function(u, i){ return {text:'item '+ i, value:i}}),
-              value: [3]
-            }
-          },
-           {
-            tag: "TextArea",
-            attributes: {
-              value: "fixed parent's width, height"
-            },
-            style: {
-              left: 66,
-              right: 104,
-              top: 158,
-              bottom: 550,
-              height: 30,
-              width: 69,
-              hAlign: "fixed",
-              vAlign: "fixed"
-            }
-          }, {
-            tag: "Text",
-            attributes: {
-              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-            },
-            style: {
-              left: 132,
-              right: 167,
-              top: 0,
-              bottom: 10,
-              height: 129,
-              width: 69,
-              hAlign: "fixed",
-              vAlign: "bottom"
-            }
-          }, {
-            tag: "TextInput",
-            attributes: {
-              value: "align: right, bottom"
-            },
-            style: {
-              left: 0,
-              right: 20,
-              top: 0,
-              bottom: 304,
-              height: 196,
-              width: 304,
-              hAlign: "right",
-              vAlign: "bottom"
-            }
-          }, {
-            tag: "DateInput",
-            attributes: {
-              value: "2019-10-19T17:00:00.000Z"
-            },
-            style: {
-              left: 0,
-              right: 0,
-              top: 100,
-              bottom: 0,
-              height: 30,
-              width: 200,
-              vAlign: "top",
-              hAlign: "center"
-            }
-          }, {
-            tag: "TextInput",
-            attributes: {
-              value: "align: center, center"
-            },
-            style: {
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              height: 200,
-              width: 200,
-              vAlign: "center",
-              hAlign: "center"
-            }
-          }]
-      };
-    }
+      data = {"tag":"RelativeLayout","attributes":{"name":"PesionalInfor"},"style":{"hAlign":"left","vAlign":"top","left":0,"right":0,"top":0,"bottom":0,"height":534,"width":465},"children":[{"tag":"Label","attributes":{"name":"Label_0","text":"Full Name"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":813,"top":20,"bottom":760,"height":20,"width":67}},{"tag":"Label","attributes":{"name":"Label_1","text":"Email"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":809,"top":50,"bottom":730,"height":20,"width":71}},{"tag":"TextInput","attributes":{"name":"HelloInput","value":"Phạm Quốc Du Thiên","placeHolder":"Enter Your Name"},"style":{"hAlign":"fixed","vAlign":"top","left":120,"right":40,"top":15,"bottom":560,"height":25,"width":340}},{"tag":"TextInput","attributes":{"name":"TextInput_1","value":"blueskythien2010@gmail.com","placeHolder":"example@mail.com"},"style":{"hAlign":"fixed","vAlign":"top","left":120,"right":40,"top":45,"bottom":530,"height":25,"width":340}},{"tag":"Label","attributes":{"name":"Label_2","text":"Gender"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":811,"top":80,"bottom":700,"height":20,"width":69}},{"tag":"Radio","attributes":{"name":"comp_6","checked":true,"groupName":"gender_group"},"style":{"hAlign":"left","vAlign":"top","left":158,"right":724,"top":80,"bottom":702,"height":18,"width":18,"textHAlign":"center","textVAlign":"middle","checked":false}},{"tag":"Label","attributes":{"name":"Label_3","text":"Male"},"style":{"hAlign":"left","vAlign":"top","left":119,"right":756,"top":80,"bottom":700,"height":20,"width":25}},{"tag":"Label","attributes":{"name":"Label_4","text":"Female"},"style":{"hAlign":"left","vAlign":"top","left":208,"right":645,"top":80,"bottom":700,"height":20,"width":47}},{"tag":"Radio","attributes":{"name":"comp_9","checked":false,"groupName":"gender_group"},"style":{"hAlign":"left","vAlign":"top","left":260,"right":222,"top":80,"bottom":702,"height":18,"width":18,"textHAlign":"center","textVAlign":"middle","checked":false}},{"tag":"Label","attributes":{"name":"Label_6","text":"Birthday"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":811,"top":110,"bottom":670,"height":20,"width":69}},{"tag":"DateInput","attributes":{"name":"comp_13","value":"1995-05-28T17:00:00.000Z"},"style":{"hAlign":"left","vAlign":"top","left":120,"right":276,"top":105,"bottom":356,"height":25,"width":100}},{"tag":"Label","attributes":{"name":"Label_7","text":"Address"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":411,"top":140,"bottom":640,"height":20,"width":69}},{"tag":"ComboBox","attributes":{"name":"comp_17","list":[{"text":"Project Owner","value":"0"},{"text":"Designer","value":"1"},{"text":"Developer","value":"2"},{"text":"Tester","value":"3"},{"text":"SCRUM Master","value":"4"},{"text":"RnD","value":"5"}],"value":"4"},"style":{"hAlign":"fixed","vAlign":"top","left":120,"right":43,"top":210,"bottom":370,"height":20,"width":637}},{"tag":"Label","attributes":{"name":"Label_8","text":"Job Title"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":411,"top":210,"bottom":565,"height":25,"width":69}},{"tag":"Label","attributes":{"name":"Label_9","text":"Experience"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":374,"top":245,"bottom":325,"height":30,"width":106}},{"tag":"Text","attributes":{"name":"comp_21","text":"years"},"style":{"hAlign":"left","vAlign":"top","left":198,"right":265,"top":245,"bottom":335,"height":20,"width":37}},{"tag":"NumberInput","attributes":{"name":"comp_21","min":-9999,"max":9999,"value":0,"decimalSeparator":".","thousandsSeparator":"","floatFixed":-1},"style":{"hAlign":"left","vAlign":"top","left":120,"right":311,"top":240,"bottom":333,"height":27,"width":69}},{"tag":"TextArea","attributes":{"name":"TextInput_3","value":"57 Ngô Đức Đệ, tp. Kon Tum","placeHolder":"Enter your address"},"style":{"hAlign":"fixed","vAlign":"top","left":120,"right":42,"top":140,"bottom":19,"height":58,"width":761}},{"tag":"CheckBox","attributes":{"name":"comp_20","checked":false},"style":{"hAlign":"left","vAlign":"top","left":120,"right":362,"top":279,"bottom":303,"height":18,"width":18}},{"tag":"Label","attributes":{"name":"Label_9","text":"Graduated"},"style":{"hAlign":"left","vAlign":"top","left":20,"right":396,"top":280,"bottom":313,"height":7,"width":84}},{"tag":"Text","attributes":{"name":"comp_21","text":"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga."},"style":{"hAlign":"fixed","vAlign":"fixed","left":20,"right":39,"top":312,"bottom":57,"height":117,"width":437}}]};  }
     var mFormEditor = new absol.form.FormEditor();
     mFormEditor.getView().addTo(absol.$('.form-editor-container'));
     mFormEditor.start();
     mFormEditor.setData(data);
+    var saveTimeout = -1;
     mFormEditor.on('change', function () {
-      localStorage.setItem('form-data', JSON.stringify(this.getData()));
+      if (saveTimeout > 0) clearTimeout(saveTimeout);
+      saveTimeout = -1;
+      saveTimeout = setTimeout(function () {
+        localStorage.setItem('form-data', JSON.stringify(this.getData()));
+      }.bind(this), 1000);
     });
-
 
   </script>
 </body>

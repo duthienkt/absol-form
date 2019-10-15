@@ -1,0 +1,37 @@
+.as-list-editor-add-row {
+    cursor: pointer;
+}
+
+table.as-list-editor {
+    border-collapse: collapse;
+}
+
+table.as-list-editor,
+table.as-list-editor>thead>tr>td,
+table.as-list-editor>tbody>tr>td {
+    border: 1px solid #d6d6d6;
+}
+
+.as-list-editor-text,
+.as-list-editor-value {
+    outline: none;
+    padding: 0.2em 1em;
+}
+
+.as-list-editor-cell.empty-cell {
+    background-color: rgba(255, 20, 20, 0.3);
+}
+
+.as-list-editor-cell.duplicate-cell {
+    background-color: rgba(235, 229, 151, 0.3);
+}
+
+.as-list-editor-quick-menu-trigger {
+    border: none;
+    width: 1.5em;
+    height: 1.5em;
+    font-size: 1em;
+    padding: 0;
+    border-radius: 0;
+    margin: 0;
+}

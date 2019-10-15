@@ -37,11 +37,11 @@
     left: 16.2em;
     top: 0;
     bottom: 0;
-    right: 16.2em;
+    right: 23.2em;
 }
 
 .as-form-editor-resizer.vertical.right-site {
-    right: calc(16em - 0.2em);
+    right: calc(23em - 0.2em);
 }
 
 .as-form-editor-right-site-container {
@@ -49,7 +49,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    width: 16em;
+    width: 23em;
 }
 
 .as-form-editor-right-site-container>.as-form-editor-right-site {
@@ -57,7 +57,38 @@
     height: 100%;
 }
 
-.as-form-editor-editor-space-container> .as-layout-editor{
+.as-form-editor-editor-space-container>.as-layout-editor {
     width: 100%;
     height: 100%;
+}
+
+
+table.as-form-params {
+    border-collapse: collapse;
+    box-sizing: border-box;
+}
+
+table.as-form-params>tbody>tr>td,
+table.as-form-params>thead>tr>td {
+    border: 1px solid #eeeeee;
+    padding: 0.25em;
+
+}
+
+.as-form-property-tab>table.as-form-params {
+    width: calc(100% - 10px);
+    margin: 5px;
+}
+
+table.as-form-params>tbody>tr>td>input[type="text"],
+table.as-form-params>tbody>tr>td>textarea {
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+    border: solid 1px #d6d6d6;
+    outline: none;
+}
+
+table.as-form-params>tbody>tr>td>textarea{
+    width: 100% !important;
 }

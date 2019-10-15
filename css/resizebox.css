@@ -3,7 +3,7 @@
     z-index: 1;
     box-sizing: border-box;
     opacity: 0.5;
-
+    pointer-events: none;
 }
 
 .as-resize-box-body {
@@ -13,63 +13,77 @@
     position: relative;
     box-sizing: border-box;
     border: solid 2px rgb(32, 150, 218);
-    cursor: move;
 }
 
+.as-resize-box.as-can-move .as-resize-box-body {
+    cursor: move;
+    pointer-events: all;
+}
+
+.as-resize-box.as-can-move .as-resize-box-dot,
+.as-resize-box.as-can-resize .as-resize-box-dot.right,
+.as-resize-box.as-can-resize .as-resize-box-dot.bottom,
+.as-resize-box.as-can-resize .as-resize-box-dot.right-bottom
+{
+    display: unset;
+
+}
 
 .as-resize-box-dot {
     position: absolute;
-    width: 0.4em;
-    height: 0.4em;
+    width: 0.6em;
+    height: 0.6em;
     background: rgb(32, 150, 218);
+    display: none;
+    pointer-events: all;
 }
 
 .as-resize-box-dot.left-top {
-    top: calc(-0.2em - 1px);
-    left: calc(-0.2em - 1px);
+    top: calc(-0.3em - 1px);
+    left: calc(-0.3em - 1px);
     cursor: nw-resize;
 }
 
 .as-resize-box-dot.left-bottom {
-    bottom: calc(-0.2em - 1px);
-    left: calc(-0.2em - 1px);
+    bottom: calc(-0.3em - 1px);
+    left: calc(-0.3em - 1px);
     cursor: sw-resize;
 }
 
 .as-resize-box-dot.left {
-    top: calc(50% - 0.2em);
-    left: calc(-0.2em - 1px);
+    top: calc(50% - 0.3em);
+    left: calc(-0.3em - 1px);
     cursor: w-resize;
 }
 
 .as-resize-box-dot.top {
-    top: calc(-0.2em - 1px);
-    left: calc(50% - 0.2em);
+    top: calc(-0.3em - 1px);
+    left: calc(50% - 0.3em);
     cursor: n-resize;
 }
 
 .as-resize-box-dot.bottom {
-    bottom: calc(-0.2em - 1px);
-    left: calc(50% - 0.2em);
+    bottom: calc(-0.3em - 1px);
+    left: calc(50% - 0.3em);
     cursor: s-resize;
 }
 
 .as-resize-box-dot.right-top {
-    top: calc(-0.2em - 1px);
-    right: calc(-0.2em - 1px);
+    top: calc(-0.3em - 1px);
+    right: calc(-0.3em - 1px);
     cursor: ne-resize;
 }
 
 .as-resize-box-dot.right-bottom {
-    bottom: calc(-0.2em - 1px);
-    right: calc(-0.2em - 1px);
+    bottom: calc(-0.3em - 1px);
+    right: calc(-0.3em - 1px);
     cursor: se-resize;
 }
 
 
 .as-resize-box-dot.right {
-    top: calc(50% - 0.2em);
-    right: calc(-0.2em - 1px);
+    top: calc(50% - 0.3em);
+    right: calc(-0.3em - 1px);
     cursor: e-resize;
 }
 
@@ -113,9 +127,5 @@
 
 
 .as-resize-box-overiding.right {
-    cursor: e-resize;
-}
-
-body.as-resize-box-overiding-overide.right {
     cursor: e-resize;
 }

@@ -9,8 +9,6 @@ var $ = Fcore.$;
 
 function Radio() {
     ContentScalelessComponent.call(this);
-    
-    
 }
 
 Object.defineProperties(Radio.prototype, Object.getOwnPropertyDescriptors(ContentScalelessComponent.prototype));

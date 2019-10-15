@@ -55,6 +55,7 @@ LayoutEditor.prototype.commitChanged = function () {
 
 LayoutEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
+    var self = this;
     this.$view = _({
         class: ['as-layout-editor'].concat([this.MODE_CLASS_NAMES[this.mode]]),
         child: [
@@ -113,7 +114,6 @@ LayoutEditor.prototype.getView = function () {
 
     this.$layoutCtn = $('.as-layout-editor-layout-container', this.$view);
 
-    this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
 
     this.$forceground = $('.as-layout-editor-forceground', this.$view)
         .on('click', this.ev_clickForceground.bind(this));
@@ -127,6 +127,12 @@ LayoutEditor.prototype.getView = function () {
 
     this.$topAlignLine = _('vline');
     this.$bottomAlignLine = _('vline');
+    this.$editorSpaceCtn = $('.as-layout-editor-space-container', this.$view)
+    .on('click', function (ev) {
+        if (ev.target == this){
+            self.activeComponent(null);
+        }
+    });
 
     return this.$view;
 };
@@ -159,19 +165,20 @@ LayoutEditor.prototype.ev_moving = function (event) {
     var y = event.clientY - bound.top;
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
+
     //TODO; size may be invalid
-    if (!movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
+    if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
         movingData.comp.setStyle('left', movingData.style0.left + movingData.dx);
         this.notifyChanged();
     }
 
 
-    if (!movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
+    if (movingData.styleDescriptors.right && !movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
         movingData.comp.setStyle('right', movingData.style0.right - movingData.dx);
         this.notifyChanged();
     }
 
-    if (!movingData.styleDescriptors.width.disabled) {
+    if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
         if (movingData.option.left) {
             if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
                 movingData.comp.setStyle('width', Math.max(0, movingData.style0.width - movingData.dx * 2));
@@ -183,7 +190,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
             this.notifyChanged();
         }
         if (movingData.option.right) {
-            if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
+            if (movingData.styleDescriptors.left && !!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
                 movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx * 2));
                 //center align
             }
@@ -194,19 +201,19 @@ LayoutEditor.prototype.ev_moving = function (event) {
         }
     }
 
-    if (!movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
+    if (movingData.styleDescriptors.top && !movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
         movingData.comp.setStyle('top', movingData.style0.top + movingData.dy);
         this.notifyChanged();
     }
 
-    if (!movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
+    if (movingData.styleDescriptors.bottom && !movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
         movingData.comp.setStyle('bottom', movingData.style0.bottom - movingData.dy);
         this.notifyChanged();
     }
 
-    if (!movingData.styleDescriptors.height.disabled) {
+    if (movingData.styleDescriptors.height && !movingData.styleDescriptors.height.disabled) {
         if (movingData.option.top) {
-            if (!!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
+            if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy * 2));
             }
             else {
@@ -216,7 +223,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
 
         }
         if (movingData.option.bottom) {
-            if (!!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
+            if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
                 movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy * 2));
             }
             else {
@@ -227,6 +234,8 @@ LayoutEditor.prototype.ev_moving = function (event) {
     }
 
     this.updateAnchorPosition();
+    movingData.comp.reMeasure();
+    this.emit("movecomponent", { component: movingData.comp, movingData: movingData }, this)
 };
 
 LayoutEditor.prototype.ev_endMoving = function (event) {
@@ -369,40 +378,45 @@ LayoutEditor.prototype.clearRootLayout = function () {
 
 LayoutEditor.prototype.activeComponent = function (comp) {
     this._activatedCompnent = comp;
+    if (comp)
+        comp.reMeasure();
     this.updateAnchor();
     this.emit('activecomponent', { target: this, component: comp }, this);
 };
 
 LayoutEditor.prototype.updateAnchor = function () {
     var comp = this._activatedCompnent;
-    if (comp && comp != this.rootLayout) {
+    if (comp) {
         this.$resizeBox.addTo(this.$forceground);
         var styleDescriptors = comp.getStyleDescriptors();
 
+        this.$resizeBox.canMove = !!(styleDescriptors.top || styleDescriptors.bottom || styleDescriptors.left || styleDescriptors.right);
+        this.$resizeBox.canResize = !!(styleDescriptors.width || styleDescriptors.height);
 
-        if (styleDescriptors.top.disabled) {
+        if (!styleDescriptors.top || styleDescriptors.top.disabled) {
             this.$topAlignLine.remove();
         }
         else {
 
             this.$topAlignLine.addTo(this.$forceground);
+
         }
 
-        if (styleDescriptors.bottom.disabled) {
+        if (!styleDescriptors.bottom || styleDescriptors.bottom.disabled) {
             this.$bottomAlignLine.remove();
         }
         else {
             this.$bottomAlignLine.addTo(this.$forceground);
         }
 
-        if (styleDescriptors.left.disabled) {
+        if (!styleDescriptors.left || styleDescriptors.left.disabled) {
             this.$leftAlignLine.remove();
         }
         else {
             this.$leftAlignLine.addTo(this.$forceground);
         }
 
-        if (styleDescriptors.right.disabled) {
+        if (!styleDescriptors.right || styleDescriptors.right.disabled) {
             this.$rightAlignLine.remove();
         }
         else {
@@ -422,7 +436,7 @@ LayoutEditor.prototype.updateAnchor = function () {
 
 LayoutEditor.prototype.updateAnchorPosition = function () {
     var comp = this._activatedCompnent;
-    if (comp && comp != this.rootLayout) {
+    if (comp) {
         var bound = this.$forceground.getBoundingClientRect();
         var compBound = comp.view.getBoundingClientRect();
         this.$resizeBox.addStyle({

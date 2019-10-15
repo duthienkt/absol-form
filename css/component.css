@@ -1,5 +1,13 @@
 textarea.as-base-component {
     resize: none;
+
+}
+
+input.as-base-component,
+textarea.as-base-component {
+    outline: none;
+    border:solid 1px #d6d6d6;
+    border-radius: 2px;
 }
 
 

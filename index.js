@@ -1,3 +1,4 @@
+import 'absol/src/polyfill';
 import './css/base.css'
 import './css/layouteditor.css'
 

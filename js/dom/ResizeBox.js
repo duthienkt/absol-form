@@ -99,7 +99,35 @@ ResizeBox.eventHandler.mouseFinishBody = function (event) {
 };
 
 
+ResizeBox.property = {};
 
+ResizeBox.property.canMove = {
+    set:function(value) {
+        if (value){
+            this.addClass('as-can-move');
+        }
+        else{
+            this.removeClass('as-can-move');
+        }
+    }, 
+    get: function () {
+        return this.containsClass('as-can-move');
+    }
+}
+
+ResizeBox.property.canResize = {
+    set:function(value) {
+        if (value){
+            this.addClass('as-can-resize');
+        }
+        else{
+            this.removeClass('as-can-resize');
+        }
+    }, 
+    get: function () {
+        return this.containsClass('as-can-resize');
+    }
+}
 
 Fcore.install('resizebox', ResizeBox);
 
