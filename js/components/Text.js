@@ -11,7 +11,7 @@ Object.defineProperties(Text.prototype, Object.getOwnPropertyDescriptors(Scalabl
 Text.prototype.constructor = Text;
 
 Text.prototype.tag = "Text";
-Text.prototype.menuIcon = "span.mdi.mdi-textarea";
+Text.prototype.menuIcon = "span.mdi.mdi-format-color-text";
 
 
 Text.prototype.render = function () {
