@@ -12,6 +12,11 @@ import Fcore from "../core/FCore";
 import Context from "absol/src/AppPattern/Context";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
 
+import '../../css/componentpicker.css';
+import Text from "../components/Text";
+import Draggable from "absol-acomp/js/Draggable";
+import R from "../R";
+
 var _ = Fcore._;
 var $ = Fcore.$;
 
@@ -20,11 +25,19 @@ function ComponentPicker() {
     Context.call(this);
     EventEmitter.call(this);
     this.$view = null;
+    this.mLayoutEditor = null;
 }
 Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
 Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 ComponentPicker.prototype.constructor = ComponentPicker;
 
+
+ComponentPicker.prototype.onStart = function () {
+    /**
+     * @type {import('./LayoutEditor').default}
+     */
+    this.mLayoutEditor = this.getContext(R.LAYOUT_EDITOR);
+};
 
 ComponentPicker.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -34,171 +47,212 @@ ComponentPicker.prototype.getView = function () {
         this.status = { open: 'close', close: 'open' }[this.status]
     }
 
+
     this.$view = _({
-        tag: 'exptree',
-        props: {
-            name: 'all',
-            status: 'open'
-        },
-        on: {
-            press: toggleGroup
-        },
-        child: [
-            {
-                tag: 'exptree',
-                props: {
-                    name: 'layouts',
-                    status: 'open'
-                },
-                on: {
-                    press: toggleGroup
-                },
-                child: [
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "RelativeLayout",
-                            icon: RelativeLayout.prototype.menuIcon
-                        }
-                    }
-                ]
+        class: 'as-compopnent-picker',
+        child: [{
+            tag: 'exptree',
+            props: {
+                name: 'all',
+                status: 'open'
             },
-            {
-                tag: 'exptree',
-                props: {
-                    name: 'inputs',
-                    status: 'open'
-                },
-                on: {
-                    press: toggleGroup
-                },
-                child: [
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "DateInput",
-                            icon: DateInput.prototype.menuIcon
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'DateInput' })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "TextInput",
-                            icon: TextInput.prototype.menuIcon
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'TextInput' })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "TextArea",
-                            icon: TextArea.prototype.menuIcon
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'TextArea' })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "NumberInput",
-                            icon: NumberInput.prototype.menuIcon
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'NumberInput', attributes: { value: 0 } })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "ComboBox",
-                            icon: ComboBox.prototype.menuIcon,
-                        },
-                        on: {
-                            press: function () {
-                                // this.addComponent({ tag: 'ComboBox', attributes: { value: 0, list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
-                            }.bind(this)
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "SelectBox",
-                            icon: SelectBox.prototype.menuIcon
-                        },
-                        on: {
-                            press: function () {
-                                // this.addComponent({ tag: 'SelectBox', attributes: { value: [0], list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
-                            }.bind(this)
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "Radio",
-                            icon: Radio.prototype.menuIcon
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'Radio', attributes: { checked: false } })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "CheckBox",
-                            icon: CheckBox.prototype.menuIcon
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'CheckBox', attributes: { checked: false } })
-                        }
-                    }
-                ]
+            on: {
+                press: toggleGroup
             },
-            {
-                tag: 'exptree',
-                props: {
-                    name: "static",
-                    status: 'open'
-                },
-                on: {
-                    press: toggleGroup
-                },
-                child: [
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "Label",
-                            icon: Label.prototype.menuIcon
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'Label', attributes: { text: 'label-text' } })
-                        }
+            child: [
+                {
+                    tag: 'exptree',
+                    props: {
+                        name: 'layouts',
+                        status: 'open'
                     },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "Text",
-                            icon: 'span.mdi.mdi-format-color-text'
-                        },
-                        on: {
-                            // press: this.addComponent.bind(this, { tag: 'Text', attributes: { text: 'Lorem ipsum dolor sit amet' }, style: { width: 200 } })
+                    on: {
+                        press: toggleGroup
+                    },
+                    child: [
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "RelativeLayout",
+                                icon: RelativeLayout.prototype.menuIcon
+                            }
                         }
-                    }
-                ]
-            }
+                    ]
+                },
+                {
+                    tag: 'exptree',
+                    props: {
+                        name: 'inputs',
+                        status: 'open'
+                    },
+                    on: {
+                        press: toggleGroup
+                    },
+                    child: [
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "DateInput",
+                                icon: DateInput.prototype.menuIcon,
+                                componentConstructor: DateInput
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "TextInput",
+                                icon: TextInput.prototype.menuIcon,
+                                componentConstructor: TextInput
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "TextArea",
+                                icon: TextArea.prototype.menuIcon,
+                                componentConstructor: TextArea
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "NumberInput",
+                                icon: NumberInput.prototype.menuIcon,
+                                componentConstructor: NumberInput
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "ComboBox",
+                                icon: ComboBox.prototype.menuIcon,
+                                componentConstructor: ComboBox
+
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "SelectBox",
+                                icon: SelectBox.prototype.menuIcon,
+                                componentConstructor: SelectBox
+                            },
+                            on: {
+                                press: function () {
+                                    // this.addComponent({ tag: 'SelectBox', attributes: { value: [0], list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
+                                }.bind(this)
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Radio",
+                                icon: Radio.prototype.menuIcon,
+                                componentConstructor: Radio
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "CheckBox",
+                                icon: CheckBox.prototype.menuIcon,
+                                componentConstructor: CheckBox
+                            }
+                        }
+                    ]
+                },
+                {
+                    tag: 'exptree',
+                    props: {
+                        name: "static",
+                        status: 'open'
+                    },
+                    on: {
+                        press: toggleGroup
+                    },
+                    child: [
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Label",
+                                icon: Label.prototype.menuIcon,
+                                componentConstructor: Label
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Text",
+                                icon: Text.prototype.menuIcon,
+                                componentConstructor: Text
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
         ]
     });
 
     $('exptree', this.$view, function (elt) {
+        if (elt.componentConstructor) {
+            Draggable(elt.$node).on('begindrag', self.ev_constructorBeginDrag.bind(self, elt))
+                .on('enddrag', self.ev_constructorEndDrag.bind(self, elt))
+                .on('drag', self.ev_constructorDrag.bind(self, elt))
 
+        }
     });
 
     return this.$view;
 };
+
+
+
+
+ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
+    this.$modal = this.$modal || _('.as-compopnent-picker-forceground');
+    this.$higne = this.$higne || _('.as-compopnent-picker-higne').addTo(this.$modal);
+    this.$addBoxCtn = this.$addBoxCtn || _('.as-compopnent-picker-add-box-container').addTo(this.$higne);
+    this.$addBox = this.$addBox || _({ class: 'as-compopnent-picker-add-box', child: { class: 'as-compopnent-picker-add-box-plus', child: 'span.mdi.mdi-plus' } }).addTo(this.$addBoxCtn);
+    if (this.$addBoxIcon) this.$addBoxIcon.remove();
+    this.$addBoxIcon = _(treeNode.componentConstructor.prototype.menuIcon).addTo(this.$addBox);
+    this.$modal.addTo(document.body);
+    if (this.mLayoutEditor.rootLayout) {
+        this._dragRect = this.mLayoutEditor.rootLayout.view.getBoundingClientRect();
+    }
+    else {
+        this._dragRect = undefined;
+    }
+};
+
+
+ComponentPicker.prototype.ev_constructorEndDrag = function (treeNode, event) {
+    this.$modal.remove();
+
+    var x = event.clientX;
+    var y = event.clientY;
+    var rect = this._dragRect;
+    if (rect && rect.top <= y && rect.bottom >= y && rect.left <= x && rect.right >= x) {
+        this.mLayoutEditor.dropNewComponent(treeNode.componentConstructor.prototype.tag, x - rect.left, y - rect.top);
+    }
+};
+
+ComponentPicker.prototype.ev_constructorDrag = function (treeNode, event) {
+    this.$addBoxCtn.addStyle({
+        left: event.clientX + 'px',
+        top: event.clientY + 'px'
+    });
+
+    var x = event.clientX;
+    var y = event.clientY;
+    var rect = this._dragRect;
+    if (rect && rect.top <= y && rect.bottom >= y && rect.left <= x && rect.right >= x) {
+        this.$addBox.addClass('as-can-drop');
+    }
+    else {
+        this.$addBox.removeClass('as-can-drop');
+    }
+};
+
 
 export default ComponentPicker;

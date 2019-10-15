@@ -128,11 +128,11 @@ LayoutEditor.prototype.getView = function () {
     this.$topAlignLine = _('vline');
     this.$bottomAlignLine = _('vline');
     this.$editorSpaceCtn = $('.as-layout-editor-space-container', this.$view)
-    .on('click', function (ev) {
-        if (ev.target == this){
-            self.activeComponent(null);
-        }
-    });
+        .on('click', function (ev) {
+            if (ev.target == this) {
+                self.activeComponent(null);
+            }
+        });
 
     return this.$view;
 };
@@ -332,6 +332,8 @@ LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
                     case 'delete':
                         activatedComponent.parent.removeChild(activatedComponent);
                         self.activeComponent(undefined);
+                        self.notifyChanged();
+                        self.commitChanged();
                         break;
                     case 'attributes-edit': break;
                 }
@@ -558,6 +560,25 @@ LayoutEditor.prototype.setMode = function (mode) {
     }
     this.mode = mode;
 };
+
+/**
+ * @returns {import('../core/BaseComponent') }
+ */
+LayoutEditor.prototype.dropNewComponent = function (tag, posX, posY) {
+    var newComponent = this.build({ tag: tag });
+    this.rootLayout.addChild(newComponent);
+    posX = Math.max(0, Math.min(this.rootLayout.style.width - newComponent.style.width, posX));
+    posY = Math.max(0, Math.min(this.rootLayout.style.height - newComponent.style.height, posY));
+    newComponent.setStyle('left', posX);
+    newComponent.setStyle('top', posY);
+    newComponent.reMeasure();
+    this.activeComponent(newComponent);
+    this.notifyChanged();
+    this.commitChanged();
+    setTimeout(this.updateAnchorPosition.bind(this), 1);
+
+};
+
 
 
 export default LayoutEditor;

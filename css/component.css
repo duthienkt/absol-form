@@ -6,10 +6,13 @@ textarea.as-base-component {
 input.as-base-component,
 textarea.as-base-component {
     outline: none;
-    border:solid 1px #d6d6d6;
+    border: solid 1px #d6d6d6;
     border-radius: 2px;
 }
 
+.as-base-component {
+    box-sizing: border-box;
+}
 
 .absol-selectmenu.as-base-component .absol-selectmenu-holder-item {
     top: calc(50% - 10px);

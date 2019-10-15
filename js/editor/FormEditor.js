@@ -20,6 +20,9 @@ import Text from '../components/Text';
 import SelectBox from '../components/SelectBox';
 import { compareDate } from 'absol/src/Time/datetime';
 import ListEditor from './ListEditor';
+import ComponentPicker from './ComponentPicker';
+import ContextManager from 'absol/src/AppPattern/ContextManager';
+import R from '../R';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -27,6 +30,7 @@ var $ = Fcore.$;
 function FormEditor() {
     Context.call(this);
     EventEmitter.call(this);
+    this.ctxMng = new ContextManager();
     var self = this;
     this.style = {
         leftSizeWidth: 16,//em
@@ -50,6 +54,9 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(SelectBox);
     this.mLayoutEditor.addComponent(Text);
 
+    this.mComponentPicker = new ComponentPicker();
+
+
     this._styleInputsNeedUpdate = []; // to know which element need to update
     this._attributeInputsNeedUpdate = []; // to know which element need to update
 
@@ -58,182 +65,25 @@ function FormEditor() {
     }).on('activecomponent', this.ev_activeComponent.bind(this));
 
     this.mLayoutEditor.on('movecomponent', this.notifyStyleChange.bind(this));
+    this.ctxMng.set(R.LAYOUT_EDITOR, this.mLayoutEditor);
+    this.ctxMng.set(R.COMPONENT_PICKER, this.mComponentPicker);
+    this.mLayoutEditor.attach(this);
+    this.mComponentPicker.attach(this);
 }
 
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 FormEditor.prototype.constructor = FormEditor;
 
-FormEditor.prototype.getComponentsTree = function () {
-    if (this.$compsExpTree) return this.$compExpTree;
-
-    function toggleGroup() {
-        this.status = { open: 'close', close: 'open' }[this.status]
-    }
-
-    this.$compsExpTree = _({
-        tag: 'exptree',
-        props: {
-            name: 'all',
-            status: 'open'
-        },
-        on: {
-            press: toggleGroup
-        },
-        child: [
-            {
-                tag: 'exptree',
-                props: {
-                    name: 'layouts',
-                    status: 'open'
-                },
-                on: {
-                    press: toggleGroup
-                },
-                child: [
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "RelativeLayout",
-                            icon: RelativeLayout.prototype.menuIcon
-                        }
-                    }
-                ]
-            },
-            {
-                tag: 'exptree',
-                props: {
-                    name: 'inputs',
-                    status: 'open'
-                },
-                on: {
-                    press: toggleGroup
-                },
-                child: [
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "DateInput",
-                            icon: DateInput.prototype.menuIcon
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'DateInput' })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "TextInput",
-                            icon: TextInput.prototype.menuIcon
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'TextInput' })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "TextArea",
-                            icon: TextArea.prototype.menuIcon
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'TextArea' })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "NumberInput",
-                            icon: NumberInput.prototype.menuIcon
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'NumberInput', attributes: { value: 0 } })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "ComboBox",
-                            icon: ComboBox.prototype.menuIcon,
-                        },
-                        on: {
-                            press: function () {
-                                console.log(ComboBox);
-
-                                this.addComponent({ tag: 'ComboBox', attributes: { value: 0, list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
-                            }.bind(this)
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "SelectBox",
-                            icon: SelectBox.prototype.menuIcon
-                        },
-                        on: {
-                            press: function () {
-                                this.addComponent({ tag: 'SelectBox', attributes: { value: [0], list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
-                            }.bind(this)
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "Radio",
-                            icon: Radio.prototype.menuIcon
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'Radio', attributes: { checked: false } })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "CheckBox",
-                            icon: CheckBox.prototype.menuIcon
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'CheckBox', attributes: { checked: false } })
-                        }
-                    }
-                ]
-            },
-            {
-                tag: 'exptree',
-                props: {
-                    name: "static",
-                    status: 'open'
-                },
-                on: {
-                    press: toggleGroup
-                },
-                child: [
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "Label",
-                            icon: Label.prototype.menuIcon
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'Label', attributes: { text: 'label-text' } })
-                        }
-                    },
-                    {
-                        tag: 'exptree',
-                        props: {
-                            name: "Text",
-                            icon: 'span.mdi.mdi-format-color-text'
-                        },
-                        on: {
-                            press: this.addComponent.bind(this, { tag: 'Text', attributes: { text: 'Lorem ipsum dolor sit amet' }, style: { width: 200 } })
-                        }
-                    }
-                ]
-            }
-        ]
-    })
-    return this.$compsExpTree;
+FormEditor.prototype.onStart = function () {
+    this.mLayoutEditor.start(this);
+    this.mComponentPicker.start(this);
 };
+
+FormEditor.prototype.getContextManager = function () {
+    return this.ctxMng;
+};
+
 
 FormEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -263,7 +113,7 @@ FormEditor.prototype.getView = function () {
                                 name: 'Component',
                                 id: 'tab-component',
                             },
-                            child: this.getComponentsTree()
+                            child: this.mComponentPicker.getView()
                         },
                         {
                             tag: 'tabframe',
@@ -369,7 +219,8 @@ FormEditor.prototype.ev_activeComponent = function (event) {
 
 
 FormEditor.prototype.loadStyleTab = function () {
-    this.$styleTabFrame.clearChild();
+        this._styleInputsNeedUpdate = [];
+        this.$styleTabFrame.clearChild();
     if (this._activatedCompnent) {
         var component = this._activatedCompnent;
         var acceptsStyleNames = component.getAcceptsStyleNames();
@@ -467,7 +318,6 @@ FormEditor.prototype.loadStyleTab = function () {
             ]
         }).addTo(this.$styleTabFrame);
         var self = this;
-        this._styleInputsNeedUpdate = [];
         $('.style-input-need-update', styleTable, function (e) {
             self._styleInputsNeedUpdate.push(e);
         });
@@ -477,12 +327,13 @@ FormEditor.prototype.loadStyleTab = function () {
 
 FormEditor.prototype.loadAttribiutesTab = function () {
     this.$attributesTabFrame.clearChild();
+    this._attributeInputsNeedUpdate = [];
+
     if (this._activatedCompnent) {
         var component = this._activatedCompnent;
         var component = this._activatedCompnent;
         var acceptsAttributeNames = component.getAcceptsAttributeNames();
         var attributeDescriptors = component.getAttributeDescriptors();
-
 
         var attributeTable = _({
             tag: 'table',
@@ -590,7 +441,7 @@ FormEditor.prototype.loadAttribiutesTab = function () {
                             case "text":
                                 input = {
                                     tag: descriptor.long ? 'textarea' : 'input',
-                                    attr:{type:'text'},
+                                    attr: { type: 'text' },
                                     class: 'attribute-input-need-update',
                                     props: {
                                         value: component.attributes[attributeName] || "",
@@ -710,7 +561,6 @@ FormEditor.prototype.loadAttribiutesTab = function () {
             ]
         }).addTo(this.$attributesTabFrame);
         var self = this;
-        this._attributeInputsNeedUpdate = [];
         $('.attribute-input-need-update', attributeTable, function (e) {
             self._attributeInputsNeedUpdate.push(e);
         });
