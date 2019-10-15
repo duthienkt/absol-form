@@ -24,6 +24,7 @@ Label.prototype.SUPPORT_EVENT_NAMES = ['change'];
 Label.prototype.onCreate = function(){
     ContentScalelessComponent.prototype.onCreate.call(this);
     this.attributes.name = "Label_" + (Label.count++);
+    this.attributes.text = this.attributes.name;
 };
 
 

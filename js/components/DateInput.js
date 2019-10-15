@@ -26,6 +26,8 @@ DateInput.prototype.render = function () {
 DateInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.value = null;
+    this.style.width = 100;
+    this.style.height = 30;
 };
 
 DateInput.prototype.onCreated = function () {

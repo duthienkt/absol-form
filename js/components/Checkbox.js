@@ -16,8 +16,8 @@ CheckBox.prototype.constructor = CheckBox;
 CheckBox.prototype.tag = "CheckBox";
 CheckBox.prototype.menuIcon = "span.mdi.mdi-check-box-outline";
 
-CheckBox.prototype.create = function () {
-    ContentScalelessComponent.prototype.create.call(this);
+CheckBox.prototype.onCreate = function () {
+    ContentScalelessComponent.prototype.onCreate.call(this);
     this.style.width = 18;
     this.style.height = 18;
     this.style.vAlign = 'top';
