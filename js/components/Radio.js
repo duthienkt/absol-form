@@ -29,10 +29,10 @@ Radio.prototype.onCreate = function () {
     this.style.checked = false;
 };
 
-Radio.prototype.onCreated= function(){
+Radio.prototype.onCreated = function () {
     ContentScalelessComponent.prototype.onCreated.call(this);
     var self = this;
-    this.$content.on('change', function(){
+    this.$content.on('change', function () {
         self.attributes.checked = this.checked;
     });
 };
@@ -60,30 +60,34 @@ Radio.prototype.setStyleHeight = function (value) {
 };
 
 
-Radio.prototype.setAttributeGroupName = function(value){
+Radio.prototype.setAttributeGroupName = function (value) {
     this.$content.attr('name', value);
     return value;
 };
 
-Radio.prototype.getAttributeGroupNameDescriptor = function(){
+Radio.prototype.getAttributeGroupNameDescriptor = function () {
     return {
         type: "text",
-        regex:/[a-zA-Z0-9\_\-]+/
+        regex: /[a-zA-Z0-9\_\-]+/
     };
 };
 
 
-Radio.prototype.getAttributeCheckedDescriptor = function(){
+Radio.prototype.getAttributeCheckedDescriptor = function () {
     return {
         type: "bool"
     };
 };
 
 
-Radio.prototype.getAcceptsAttributeNames = function(){
+Radio.prototype.getAcceptsAttributeNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["groupName", "checked"])
 };
 
+
+Radio.prototype.mesureMinSize = function () {
+    return { width: 18, height: 18 };
+};
 
 
 export default Radio;

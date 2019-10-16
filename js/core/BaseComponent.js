@@ -139,6 +139,10 @@ BaseComponent.prototype.reMeasure = function () {
 };
 
 
+BaseComponent.prototype.mesureMinSize = function () {
+    return { width: 0, height: 0 };
+}
+
 BaseComponent.prototype.getAcceptsAttributeNames = function () {
     return ["type", "name"];
 };

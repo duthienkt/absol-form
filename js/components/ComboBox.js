@@ -17,10 +17,10 @@ ComboBox.prototype.menuIcon = 'span.mdi.mdi-arrow-down-drop-circle-outline';
 ComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.list = [
-        { text: '0', value:'0' },
+        { text: '0', value: '0' },
         { text: '1', value: '1' },
         { text: '2', value: '2' },
-        {text:'3', value: '3'}
+        { text: '3', value: '3' }
     ];
     this.attributes.value = '0';
 };
@@ -33,7 +33,7 @@ ComboBox.prototype.onCreated = function () {
         if (!(self.style.width > event.value)) {
             self.setStyle('width', event.value);
         }
-    }).on('change', function() {
+    }).on('change', function () {
         self.attributes.value = this.value;
     });
     this.attributes.value = this.view.value;
@@ -57,21 +57,24 @@ ComboBox.prototype.setAttributeValue = function (value) {
 };
 
 
-ComboBox.prototype.getAcceptsAttributeNames = function(){
+ComboBox.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value']);
 };
 
-ComboBox.prototype.getAttributeListDescriptor = function(){
+ComboBox.prototype.getAttributeListDescriptor = function () {
     return {
-        type:'list'
+        type: 'list'
     };
-};  
-ComboBox.prototype.getAttributeValueDescriptor = function(){
+};
+ComboBox.prototype.getAttributeValueDescriptor = function () {
     return {
-        type:'text'
+        type: 'text'
     };
-};  
+};
 
-
+ComboBox.prototype.mesureMinSize = function () {
+    var minWidthStyle = parseFloat(this.view.getComputedStyleValue('min-width').replace('px'));
+    return { width: Math.max(minWidthStyle, 24), height: 25 };
+};
 
 export default ComboBox;

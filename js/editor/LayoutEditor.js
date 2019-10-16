@@ -168,20 +168,20 @@ LayoutEditor.prototype.ev_moving = function (event) {
 
     //TODO; size may be invalid
     if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
-        movingData.comp.setStyle('left', movingData.style0.left + movingData.dx);
+        movingData.comp.setStyle('left', Math.max(0, movingData.style0.left + movingData.dx));
         this.notifyChanged();
     }
 
 
     if (movingData.styleDescriptors.right && !movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
-        movingData.comp.setStyle('right', movingData.style0.right - movingData.dx);
+        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx));
         this.notifyChanged();
     }
 
     if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
         if (movingData.option.left) {
             if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(0, movingData.style0.width - movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.mesureMinSize().width, movingData.style0.width - movingData.dx * 2));
                 //center align
             }
             else {
@@ -191,43 +191,43 @@ LayoutEditor.prototype.ev_moving = function (event) {
         }
         if (movingData.option.right) {
             if (movingData.styleDescriptors.left && !!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.mesureMinSize().width, movingData.style0.width + movingData.dx * 2));
                 //center align
             }
             else {
-                movingData.comp.setStyle('width', Math.max(0, movingData.style0.width + movingData.dx));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.mesureMinSize().width, movingData.style0.width + movingData.dx));
             }
             this.notifyChanged();
         }
     }
 
     if (movingData.styleDescriptors.top && !movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
-        movingData.comp.setStyle('top', movingData.style0.top + movingData.dy);
+        movingData.comp.setStyle('top', Math.max(0, movingData.style0.top + movingData.dy));
         this.notifyChanged();
     }
 
     if (movingData.styleDescriptors.bottom && !movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
-        movingData.comp.setStyle('bottom', movingData.style0.bottom - movingData.dy);
+        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom - movingData.dy));
         this.notifyChanged();
     }
 
     if (movingData.styleDescriptors.height && !movingData.styleDescriptors.height.disabled) {
         if (movingData.option.top) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height - movingData.dy * 2));
             }
             else {
-                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height - movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height - movingData.dy));
             }
             this.notifyChanged();
 
         }
         if (movingData.option.bottom) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height + movingData.dy * 2));
             }
             else {
-                movingData.comp.setStyle('height', Math.max(0, movingData.style0.height + movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height + movingData.dy));
             }
             this.notifyChanged();
         }
@@ -579,6 +579,14 @@ LayoutEditor.prototype.dropNewComponent = function (tag, posX, posY) {
 
 };
 
+
+LayoutEditor.prototype.autoExpandRootLayout = function () {
+    if (this.rootLayout) {
+        var minSize = this.rootLayout.mesureMinSize();
+        if (minSize.width > this.rootLayout.style.width) this.rootLayout.setStyle('width', minSize.width);
+        if (minSize.height > this.rootLayout.style.height) this.rootLayout.setStyle('height', minSize.height);
+    }
+};
 
 
 export default LayoutEditor;

@@ -73,7 +73,7 @@ RelativeLayout.prototype.reMeasureChild = function (component) {
             break;
     }
 
-    
+
     switch (component.style.vAlign) {
         case "top":
             component.setStyle('bottom', this.style.height - component.style.top - component.style.height);
@@ -90,5 +90,56 @@ RelativeLayout.prototype.reMeasureChild = function (component) {
             break;
     }
 };
+
+/**
+ * 
+ * @returns {{width:Number, height:Number}} 
+ */
+RelativeLayout.prototype.mesureMinSize = function () {
+    var width = 0;
+    var height = 0;
+    var child;
+    var cW;
+    var cH;
+    for (var i = 0; i < this.children.length; ++i) {
+        child = this.children[i];
+        cW = 0;
+        cH = 0;
+        switch (child.style.hAlign) {
+            case "left":
+                cW = child.style.left + child.style.width;
+                break;
+            case "right":
+                cW = child.style.right + child.style.width;
+                break;
+            case "center":
+                cW = child.style.width;
+                break;
+            case "fixed":
+                cW = child.mesureMinSize().width + child.style.left + child.style.right;
+                break;
+        }
+
+        switch (child.style.vAlign) {
+            case "top":
+                cH = child.style.top + child.style.height;
+                break;
+            case "bottom":
+                cH = child.style.bottom + child.style.height;
+                break;
+            case "center":
+                cH = child.style.height;
+                break;
+            case "fixed":
+                cH = child.mesureMinSize().height + child.style.top + child.style.bottom;
+                break;
+        }
+        width = Math.max(cW, width);
+        height = Math.max(cH, height);
+    }
+
+    return { width: width, height: height };
+};
+
 
 export default RelativeLayout;
