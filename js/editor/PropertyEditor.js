@@ -114,7 +114,8 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
                             if (value != this.value) {
                                 this.value = value;
                             }
-                        }
+                        },
+                        value: this.getProperty(name)
                     },
                     on: {
                         change: function () {
