@@ -670,6 +670,7 @@ FormEditor.prototype.notifyStyleChange = function () {
         if (e.notifyStyleUpdate)
             e.notifyStyleUpdate();
     });
+    this.mLayoutEditor.autoExpandRootLayout();
 
     this.emit('change', Object.assign({}, { formEditor: this }), this);
 
@@ -681,7 +682,6 @@ FormEditor.prototype.notifyAttributeChange = function () {
         if (e.notifyAttributeUpdate)
             e.notifyAttributeUpdate();
     });
-
     this.emit('change', Object.assign({}, { formEditor: this }), this);
 
 };
