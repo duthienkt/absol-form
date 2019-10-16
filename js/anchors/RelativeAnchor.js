@@ -83,7 +83,8 @@ RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'right'
+        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'right',
+        livePreview: true
     };
 };
 
@@ -93,7 +94,8 @@ RelativeAnchor.prototype.getStyleRightDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'left'
+        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'left',
+        livePreview: true
     };
 };
 
@@ -103,7 +105,8 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'bottom'
+        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'bottom',
+        livePreview: true
     };
 };
 
@@ -113,7 +116,8 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'top'
+        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'top',
+        livePreview: true
     };
 };
 
