@@ -1,7 +1,7 @@
 import Fcore from '../core/FCore';
 import Context from 'absol/src/AppPattern/Context';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
-import '../../css/attributeeditor.css';
+import '../../css/propertyeditor.css';
 import { camelCaseToPascalCase } from 'absol/src/String/stringFormat';
 import { beginOfDay } from 'absol/src/Time/datetime';
 import ListEditor from './ListEditor';
@@ -429,7 +429,7 @@ PropertyEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
         tag: 'table',
-        class: 'as-attribute-editor',
+        class: 'as-property-editor',
         child: [
             {
                 tag: 'thead',
