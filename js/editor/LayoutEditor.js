@@ -105,12 +105,12 @@ LayoutEditor.prototype.getView = function () {
     }).addTo(this.$view);
 
     this.$hruler = $('hruler', this.$view);
-    this.$hruler.mesureElement($('.as-relative-layout', this.$view));
+    this.$hruler.measureElement($('.as-relative-layout', this.$view));
     this.$spaceCtn = $('.as-layout-editor-space-container', this.$view)
         .on('scroll', this.ev_layoutCtnScroll.bind(this));
 
     this.$vruler = $('vruler', this.$view);
-    this.$vruler.mesureElement($('.as-relative-layout', this.$view));
+    this.$vruler.measureElement($('.as-relative-layout', this.$view));
 
     this.$layoutCtn = $('.as-layout-editor-layout-container', this.$view);
 
@@ -181,7 +181,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
     if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
         if (movingData.option.left) {
             if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.mesureMinSize().width, movingData.style0.width - movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width - movingData.dx * 2));
                 //center align
             }
             else {
@@ -191,11 +191,11 @@ LayoutEditor.prototype.ev_moving = function (event) {
         }
         if (movingData.option.right) {
             if (movingData.styleDescriptors.left && !!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.mesureMinSize().width, movingData.style0.width + movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx * 2));
                 //center align
             }
             else {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.mesureMinSize().width, movingData.style0.width + movingData.dx));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx));
             }
             this.notifyChanged();
         }
@@ -214,20 +214,20 @@ LayoutEditor.prototype.ev_moving = function (event) {
     if (movingData.styleDescriptors.height && !movingData.styleDescriptors.height.disabled) {
         if (movingData.option.top) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height - movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy * 2));
             }
             else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height - movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy));
             }
             this.notifyChanged();
 
         }
         if (movingData.option.bottom) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height + movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy * 2));
             }
             else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.mesureMinSize().height, movingData.style0.height + movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy));
             }
             this.notifyChanged();
         }
@@ -522,8 +522,8 @@ LayoutEditor.prototype.setData = function (data) {
     this.rootLayout = visit(data);
     this.$layoutCtn.addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
-    this.$vruler.mesureElement(this.rootLayout.view);
-    this.$hruler.mesureElement(this.rootLayout.view);
+    this.$vruler.measureElement(this.rootLayout.view);
+    this.$hruler.measureElement(this.rootLayout.view);
 };
 
 
@@ -582,7 +582,7 @@ LayoutEditor.prototype.dropNewComponent = function (tag, posX, posY) {
 
 LayoutEditor.prototype.autoExpandRootLayout = function () {
     if (this.rootLayout) {
-        var minSize = this.rootLayout.mesureMinSize();
+        var minSize = this.rootLayout.measureMinSize();
         if (minSize.width > this.rootLayout.style.width) this.rootLayout.setStyle('width', minSize.width);
         if (minSize.height > this.rootLayout.style.height) this.rootLayout.setStyle('height', minSize.height);
     }

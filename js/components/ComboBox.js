@@ -72,7 +72,7 @@ ComboBox.prototype.getAttributeValueDescriptor = function () {
     };
 };
 
-ComboBox.prototype.mesureMinSize = function () {
+ComboBox.prototype.measureMinSize = function () {
     var minWidthStyle = parseFloat(this.view.getComputedStyleValue('min-width').replace('px'));
     return { width: Math.max(minWidthStyle, 24), height: 25 };
 };

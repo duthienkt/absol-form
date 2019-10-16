@@ -96,7 +96,7 @@ ScalableComponent.prototype.getStyleWidthDescriptor = function () {
     return {
         disabled: this.style.hAlign == 'fixed',
         type: 'number',
-        min: this.mesureMinSize().width,
+        min: this.measureMinSize().width,
         max: Infinity
     };
 };
@@ -105,7 +105,7 @@ ScalableComponent.prototype.getStyleHeightDescriptor = function () {
     return {
         disabled: this.style.vAlign == 'fixed',
         type: 'number',
-        min: this.mesureMinSize().height,
+        min: this.measureMinSize().height,
         max: Infinity
     };
 };

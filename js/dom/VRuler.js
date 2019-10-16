@@ -19,7 +19,7 @@ function VRuler() {
 
     res.$lines = [];
     res.$numbers = [];
-    this.$mesureTarget = undefined;
+    this.$measureTarget = undefined;
     res._viewingNumberCount = 0;
     res._viewingLineCount = 0;
     res._spacing = 10;
@@ -28,15 +28,15 @@ function VRuler() {
 }
 
 
-VRuler.prototype.mesureElement = function (elt) {
+VRuler.prototype.measureElement = function (elt) {
     if (typeof elt == "string") elt = $(elt);
-    this.$mesureTarget = elt;
+    this.$measureTarget = elt;
 };
 
 
 VRuler.prototype.update = function () {
     var fontSize = this.getFontSize();
-    var mesureBound;
+    var measureBound;
     var bound = this.getBoundingClientRect();
     var contentBound = {
         left: bound.left + 1,
@@ -46,18 +46,18 @@ VRuler.prototype.update = function () {
         width: bound.width - 2,
         height: bound.height - 2
     };
-    if (this.$mesureTarget) {
-        mesureBound = this.$mesureTarget.getBoundingClientRect();
+    if (this.$measureTarget) {
+        measureBound = this.$measureTarget.getBoundingClientRect();
     }
     else {
-        mesureBound = contentBound;
+        measureBound = contentBound;
     }
 
-    var topOfset = (mesureBound.top - contentBound.top) % this._spacing;
+    var topOfset = (measureBound.top - contentBound.top) % this._spacing;
     if (topOfset < 0) topOfset += this._spacing;
 
 
-    var lineIndexOfset = Math.round((contentBound.top - mesureBound.top + topOfset) / this._spacing);
+    var lineIndexOfset = Math.round((contentBound.top - measureBound.top + topOfset) / this._spacing);
 
     var lineCount = Math.floor((contentBound.height - topOfset) / this._spacing) + 1;
 

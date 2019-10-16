@@ -95,7 +95,7 @@ RelativeLayout.prototype.reMeasureChild = function (component) {
  * 
  * @returns {{width:Number, height:Number}} 
  */
-RelativeLayout.prototype.mesureMinSize = function () {
+RelativeLayout.prototype.measureMinSize = function () {
     var width = 0;
     var height = 0;
     var child;
@@ -116,7 +116,7 @@ RelativeLayout.prototype.mesureMinSize = function () {
                 cW = child.style.width;
                 break;
             case "fixed":
-                cW = child.mesureMinSize().width + child.style.left + child.style.right;
+                cW = child.measureMinSize().width + child.style.left + child.style.right;
                 break;
         }
 
@@ -131,7 +131,7 @@ RelativeLayout.prototype.mesureMinSize = function () {
                 cH = child.style.height;
                 break;
             case "fixed":
-                cH = child.mesureMinSize().height + child.style.top + child.style.bottom;
+                cH = child.measureMinSize().height + child.style.top + child.style.bottom;
                 break;
         }
         width = Math.max(cW, width);

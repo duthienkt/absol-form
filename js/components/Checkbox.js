@@ -72,7 +72,7 @@ CheckBox.prototype.getAcceptsAttributeNames = function () {
 };
 
 
-CheckBox.prototype.mesureMinSize = function () {
+CheckBox.prototype.measureMinSize = function () {
     return { width: 18, height: 18 };
 };
 

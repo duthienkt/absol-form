@@ -85,7 +85,7 @@ Radio.prototype.getAcceptsAttributeNames = function () {
 };
 
 
-Radio.prototype.mesureMinSize = function () {
+Radio.prototype.measureMinSize = function () {
     return { width: 18, height: 18 };
 };
 

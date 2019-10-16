@@ -23,20 +23,20 @@ function HRuler() {
     res._viewingLineCount = 0;
     res._spacing = 10;
     res._major = 10;
-    res.$mesureTarget = null;
+    res.$measureTarget = null;
     return res;
 }
 
 
-HRuler.prototype.mesureElement = function (elt) {
+HRuler.prototype.measureElement = function (elt) {
     if (typeof elt == "string") elt = $(elt);
-    this.$mesureTarget = elt;
+    this.$measureTarget = elt;
 };
 
 
 HRuler.prototype.update = function () {
     var fontSize = this.getFontSize();
-    var mesureBound;
+    var measureBound;
     var bound = this.getBoundingClientRect();
     var contentBound = {
         left: bound.left + 1,
@@ -46,18 +46,18 @@ HRuler.prototype.update = function () {
         width: bound.width - 2,
         height: bound.height - 2
     };
-    if (this.$mesureTarget) {
-        mesureBound = this.$mesureTarget.getBoundingClientRect();
+    if (this.$measureTarget) {
+        measureBound = this.$measureTarget.getBoundingClientRect();
     }
     else {
-        mesureBound = contentBound;
+        measureBound = contentBound;
     }
 
-    var leftOfset = (mesureBound.left - contentBound.left) % this._spacing;
+    var leftOfset = (measureBound.left - contentBound.left) % this._spacing;
     if (leftOfset < 0) leftOfset += this._spacing;
 
 
-    var lineIndexOfset = Math.round((contentBound.left - mesureBound.left + leftOfset) / this._spacing);
+    var lineIndexOfset = Math.round((contentBound.left - measureBound.left + leftOfset) / this._spacing);
 
     var lineCount = Math.floor((contentBound.width - leftOfset) / this._spacing) + 1;
 
