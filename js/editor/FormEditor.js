@@ -23,6 +23,9 @@ import ListEditor from './ListEditor';
 import ComponentPicker from './ComponentPicker';
 import ContextManager from 'absol/src/AppPattern/ContextManager';
 import R from '../R';
+import PropertyEditor from './PropertyEditor';
+import AttributeEditor from './AttributeEditor';
+import StyleEditor from './StyleEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -55,14 +58,24 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(Text);
 
     this.mComponentPicker = new ComponentPicker();
+    this.mAttributeEditor = new AttributeEditor();
+    this.mAttributeEditor.on('change', function (event) {
+        self.emit('change', Object.assign({ formEditor: this }, event), self);
+    });
 
+    this.mStyleEditor = new StyleEditor();
+    this.mStyleEditor.on('change', function (event) {
+        self.mLayoutEditor.autoExpandRootLayout();
+        if (self._activatedCompnent) self._activatedCompnent.reMeasure();
+        if (event.name == 'vAlign' || event.name == 'hAlign')
+            self.mLayoutEditor.updateAnchor();
+        else
+            self.mLayoutEditor.updateAnchorPosition();
 
-    this._styleInputsNeedUpdate = []; // to know which element need to update
-    this._attributeInputsNeedUpdate = []; // to know which element need to update
+        self.emit('change', Object.assign({ formEditor: this }, event), self);
+    });
 
-    this.mLayoutEditor.on('change', function (event) {
-        self.notifyStyleChange();
-    }).on('activecomponent', this.ev_activeComponent.bind(this));
+    this.mLayoutEditor.on('change', this.notifyStyleChange.bind(this)).on('activecomponent', this.ev_activeComponent.bind(this));
 
     this.mLayoutEditor.on('movecomponent', this.notifyStyleChange.bind(this));
     this.ctxMng.set(R.LAYOUT_EDITOR, this.mLayoutEditor);
@@ -76,8 +89,10 @@ Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(E
 FormEditor.prototype.constructor = FormEditor;
 
 FormEditor.prototype.onStart = function () {
-    this.mLayoutEditor.start(this);
-    this.mComponentPicker.start(this);
+    this.mLayoutEditor.start();
+    this.mComponentPicker.start();
+    this.mAttributeEditor.start();
+    this.mLayoutEditor.start();
 };
 
 FormEditor.prototype.getContextManager = function () {
@@ -104,7 +119,6 @@ FormEditor.prototype.getView = function () {
                                 name: 'Form',
                                 id: 'tab-form',
                             }
-
                         },
                         {
                             tag: 'tabframe',
@@ -140,8 +154,9 @@ FormEditor.prototype.getView = function () {
                             class: ['absol-bscroller', 'as-form-property-tab'],
                             attr: {
                                 name: 'Attributes',
-                                id: 'tab-attributes',
-                            }
+                                id: 'tab-attributes-new',
+                            },
+                            child: this.mAttributeEditor.getView()
                         },
                         {
                             tag: 'tabframe',
@@ -149,7 +164,8 @@ FormEditor.prototype.getView = function () {
                             attr: {
                                 name: 'Style',
                                 id: 'tab-style',
-                            }
+                            },
+                            child: this.mStyleEditor.getView()
                         },
                         {
                             tag: 'tabframe',
@@ -213,359 +229,21 @@ FormEditor.prototype.getView = function () {
 
 FormEditor.prototype.ev_activeComponent = function (event) {
     this._activatedCompnent = event.component;
-    this.loadStyleTab();
-    this.loadAttribiutesTab();
+    this.mStyleEditor.edit(event.component);
+    this.mAttributeEditor.edit(event.component);
 };
 
 
-FormEditor.prototype.loadStyleTab = function () {
-        this._styleInputsNeedUpdate = [];
-        this.$styleTabFrame.clearChild();
-    if (this._activatedCompnent) {
-        var component = this._activatedCompnent;
-        var acceptsStyleNames = component.getAcceptsStyleNames();
-        var styleDescriptors = component.getStyleDescriptors();
-        var styleTable = _({
-            tag: 'table',
-            class: 'as-form-params',
-            child: [
-                {
-                    tag: 'thead',
-                    child: [
-                        {
-                            tag: 'tr',
-                            child: [
-                                {
-                                    tag: 'td',
-                                    child: { text: "key" }
-                                },
-                                {
-                                    tag: 'td',
-                                    child: { text: 'value' }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    tag: 'tbody',
-                    child: acceptsStyleNames.map(function (styleName) {
-                        var descriptor = styleDescriptors[styleName];
 
-                        var input = 'input';
-
-                        switch (descriptor.type) {
-                            case "enum": input = {
-                                tag: 'selectmenu',
-                                class: 'style-input-need-update',
-                                props: {
-                                    items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
-                                    value: component.style[styleName],
-                                    disabled: descriptor.disabled,
-                                    notifyStyleUpdate: function () {
-                                        this.value = component.style[styleName];
-                                        this.disabled = component.getStyleDescriptor(styleName).disabled;
-                                    }
-                                },
-                                on: {
-                                    change: function () {
-                                        component.setStyle(styleName, this.value);
-                                        component.reMeasure();
-                                        self.mLayoutEditor.updateAnchor();
-                                        self.mLayoutEditor.updateAnchorPosition();
-                                        self.notifyStyleChange();
-                                    }
-                                }
-                            }; break;
-                            case "number": input = {
-                                tag: 'numberinput',
-                                class: 'style-input-need-update',
-                                props: {
-                                    min: descriptor.min,
-                                    max: descriptor.max,
-                                    disabled: descriptor.disabled,
-                                    value: component.style[styleName],
-                                    notifyStyleUpdate: function () {
-                                        this.value = component.style[styleName];
-                                        this.disabled = component.getStyleDescriptor(styleName).disabled;
-                                    }
-                                },
-                                on: {
-                                    changing: function () {
-                                        component.setStyle(styleName, this.value);
-                                        self.mLayoutEditor.updateAnchorPosition();
-                                        component.reMeasure();
-                                        self.notifyStyleChange();
-                                    }
-                                }
-                            }; break;
-                        }
-
-                        return {
-                            tag: 'tr',
-                            child: [
-                                {
-                                    tag: "td",
-                                    child: { text: styleName }
-                                }, {
-                                    tag: 'td',
-                                    child: input
-                                }
-                            ]
-                        }
-                    })
-                }
-            ]
-        }).addTo(this.$styleTabFrame);
-        var self = this;
-        $('.style-input-need-update', styleTable, function (e) {
-            self._styleInputsNeedUpdate.push(e);
-        });
-    }
+FormEditor.prototype.setComponentProperty = function (name, value) {
+    return this.component.setAttribute(name, value);
 };
 
 
-FormEditor.prototype.loadAttribiutesTab = function () {
-    this.$attributesTabFrame.clearChild();
-    this._attributeInputsNeedUpdate = [];
-
-    if (this._activatedCompnent) {
-        var component = this._activatedCompnent;
-        var component = this._activatedCompnent;
-        var acceptsAttributeNames = component.getAcceptsAttributeNames();
-        var attributeDescriptors = component.getAttributeDescriptors();
-
-        var attributeTable = _({
-            tag: 'table',
-            class: 'as-form-params',
-            child: [
-                {
-                    tag: 'thead',
-                    child: [
-
-                        {
-                            tag: 'tr',
-                            child: [
-                                {
-                                    tag: 'td',
-                                    child: { text: "key" }
-                                },
-                                {
-                                    tag: 'td',
-                                    child: { text: 'value' }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    tag: 'tbody',
-                    child: acceptsAttributeNames.map(function (attributeName) {
-                        var descriptor = attributeDescriptors[attributeName];
-
-                        var input = 'input';
-                        var extendCells = [];
-
-                        switch (descriptor.type) {
-                            case "enum": input = {
-                                tag: 'selectmenu',
-                                class: 'attribute-input-need-update',
-                                props: {
-                                    items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
-                                    value: component.attributes[attributeName],
-                                    disabled: descriptor.disabled,
-                                    notifyAttributeUpdate: function () {
-                                        // this.value = component.style[attributeName];
-                                        // this.disabled = component.getStyleDescriptor(attributeName).disabled;
-                                    }
-                                },
-                                on: {
-                                    change: function () {
-                                        // component.setStyle(attributeName, this.value);
-                                        // self.mLayoutEditor.updateAnchor();
-                                        // self.mLayoutEditor.updateAnchorPosition();
-                                        self.notifyAttributeChange();
-                                    }
-                                }
-                            }; break;
-                            case "number":
-
-                                input = {
-                                    tag: 'numberinput',
-                                    class: 'attribute-input-need-update',
-                                    props: {
-                                        disabled: descriptor.disabled,
-                                        value: (component.attributes[attributeName] === null || component.attributes[attributeName] === undefined) ? descriptor.defaultValue : component.attributes[attributeName],
-                                        notifyAttributeUpdate: function () {
-                                            // console.log("attr",);
-                                            this.value = (component.attributes[attributeName] === null || component.attributes[attributeName] === undefined) ? descriptor.defaultValue : component.attributes[attributeName];
-                                        }
-                                    },
-                                    on: {
-                                        change: function () {
-                                            component.setAttribute(attributeName, this.value);
-                                            self.notifyAttributeChange();
-                                        }
-                                    }
-                                };
-
-                                if (descriptor.nullable) {
-                                    extendCells.push({
-                                        tag: 'checkbox',
-                                        class: ['right', 'attribute-input-need-update'],
-                                        props: {
-                                            checked: component.attributes[attributeName] === null,
-                                            text: "NULL",
-                                            notifyAttributeUpdate: function () {
-                                                this.checked = component.attributes[attributeName] === null;
-                                            }
-                                        },
-                                        on: {
-                                            change: function () {
-                                                if (this.checked) {
-                                                    component.setAttribute(attributeName, null);
-                                                }
-                                                else {
-                                                    component.setAttribute(attributeName, descriptor.defaultValue);
-                                                }
-                                                self.notifyAttributeChange();
-                                            }
-                                        }
-                                    })
-                                }
-
-                                break;
-                            case "const":
-                                input = { tag: 'strong', child: { text: descriptor.value } }
-                                break;
-                            case "text":
-                                input = {
-                                    tag: descriptor.long ? 'textarea' : 'input',
-                                    attr: { type: 'text' },
-                                    class: 'attribute-input-need-update',
-                                    props: {
-                                        value: component.attributes[attributeName] || "",
-                                        notifyAttributeUpdate: function () {
-                                            this.value = component.attributes[attributeName];
-                                        }
-                                    },
-                                    on: {
-                                        keyup: function () {
-                                            var value = this.value;
-                                            component.setAttribute(attributeName, value);
-                                            self.notifyAttributeChange();
-                                        }
-                                    }
-                                };
-                                break;
-                            case "bool":
-                                input = {
-                                    tag: "checkboxbutton",
-                                    props: {
-                                        checked: component.attributes[attributeName],
-                                        notifyAttributeUpdate: function () {
-                                            this.checked = component.attributes[attributeName];
-                                        }
-                                    },
-                                    on: {
-                                        change: function () {
-                                            component.setAttribute(attributeName, this.checked);
-                                            self.notifyAttributeChange();
-                                        }
-                                    }
-                                };
-                                break;
-                            case "date":
-                                input = {
-                                    tag: 'calendarinput',
-                                    class: 'attribute-input-need-update',
-                                    props: {
-                                        value: component.attributes[attributeName],
-                                        notifyAttributeUpdate: function () {
-                                            if (component.attributes[attributeName] != null && this.value != null && compareDate(component.attributes[attributeName], this.value) != 0) {
-                                                this.value = component.attributes[attributeName];
-                                            }
-                                            else {
-                                                this.value = component.attributes[attributeName];
-                                            }
-                                        }
-                                    },
-                                    on: {
-                                        change: function () {
-                                            component.setAttribute(attributeName, this.value);
-                                            self.notifyAttributeChange();
-                                        }
-                                    }
-                                };
-                                if (descriptor.nullable) {
-                                    extendCells.push({
-                                        tag: 'checkbox',
-                                        class: ['right', 'attribute-input-need-update'],
-                                        props: {
-                                            text: "NULL",
-                                            checked: component.attributes[attributeName] == null,
-                                            notifyAttributeUpdate: function () {
-                                                this.checked = component.attributes[attributeName] == null;
-                                            }
-                                        },
-                                        on: {
-                                            change: function () {
-                                                if (this.checked) {
-                                                    component.setAttribute('value', null);
-                                                }
-                                                else {
-                                                    component.setAttribute('value', descriptor.defaultValue);
-                                                }
-                                                self.notifyAttributeChange();
-                                            }
-                                        }
-                                    })
-                                }
-                                break;
-                            case "list":
-                                var listEditor = new ListEditor();
-                                input = listEditor.getView();
-                                listEditor.setData(component.attributes[attributeName]);
-                                listEditor.on('change', function () {
-                                    var data = this.getData();
-                                    component.setAttribute(attributeName, data);
-                                    self.notifyAttributeChange();
-                                });
-                                break;
-                        }
-
-
-                        return {
-                            tag: 'tr',
-                            child: [
-                                {
-                                    tag: "td",
-                                    child: { text: attributeName != 'name' ? attributeName : 'na\u200Bme' }
-                                },
-                                {
-                                    tag: 'td',
-                                    attr: {
-                                        colspan: 3 - extendCells.length + ''
-                                    },
-                                    child: input
-                                }
-                            ].concat(extendCells.map(function (cell) {
-                                return {
-                                    tag: 'td',
-                                    child: cell
-                                }
-                            }))
-                        }
-                    })
-                }
-            ]
-        }).addTo(this.$attributesTabFrame);
-        var self = this;
-        $('.attribute-input-need-update', attributeTable, function (e) {
-            self._attributeInputsNeedUpdate.push(e);
-        });
-    }
+FormEditor.prototype.getComponentProperty = function (name) {
+    return this.component.getAttribute(name);
 };
+
 
 
 
@@ -664,26 +342,14 @@ FormEditor.prototype.addComponent = function (data) {
     }
 };
 
-
 FormEditor.prototype.notifyStyleChange = function () {
-    this._styleInputsNeedUpdate.forEach(function (e) {
-        if (e.notifyStyleUpdate)
-            e.notifyStyleUpdate();
-    });
-    this.mLayoutEditor.autoExpandRootLayout();
-
+    this.mStyleEditor.notifyChange();
     this.emit('change', Object.assign({}, { formEditor: this }), this);
 
 };
 
-
 FormEditor.prototype.notifyAttributeChange = function () {
-    this._attributeInputsNeedUpdate.forEach(function (e) {
-        if (e.notifyAttributeUpdate)
-            e.notifyAttributeUpdate();
-    });
     this.emit('change', Object.assign({}, { formEditor: this }), this);
-
 };
 
 
