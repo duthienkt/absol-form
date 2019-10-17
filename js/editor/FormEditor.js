@@ -18,14 +18,13 @@ import Radio from '../components/Radio';
 import ComboBox from '../components/ComboBox';
 import Text from '../components/Text';
 import SelectBox from '../components/SelectBox';
-import { compareDate } from 'absol/src/Time/datetime';
-import ListEditor from './ListEditor';
 import ComponentPicker from './ComponentPicker';
 import ContextManager from 'absol/src/AppPattern/ContextManager';
 import R from '../R';
-import PropertyEditor from './PropertyEditor';
 import AttributeEditor from './AttributeEditor';
 import StyleEditor from './StyleEditor';
+import Image from '../components/Image';
+import AllPropertyEditor from './AllPropertyEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -56,6 +55,7 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(ComboBox);
     this.mLayoutEditor.addComponent(SelectBox);
     this.mLayoutEditor.addComponent(Text);
+    this.mLayoutEditor.addComponent(Image);
 
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
@@ -64,6 +64,18 @@ function FormEditor() {
     });
 
     this.mStyleEditor = new StyleEditor();
+    this.mStyleEditor.on('change', function (event) {
+        self.mLayoutEditor.autoExpandRootLayout();
+        if (self._activatedCompnent) self._activatedCompnent.reMeasure();
+        if (event.name == 'vAlign' || event.name == 'hAlign')
+            self.mLayoutEditor.updateAnchor();
+        else
+            self.mLayoutEditor.updateAnchorPosition();
+
+        self.emit('change', Object.assign({ formEditor: this }, event), self);
+    });
+
+    this.mAllPropertyEditor = new AllPropertyEditor();
     this.mStyleEditor.on('change', function (event) {
         self.mLayoutEditor.autoExpandRootLayout();
         if (self._activatedCompnent) self._activatedCompnent.reMeasure();
@@ -93,6 +105,7 @@ FormEditor.prototype.onStart = function () {
     this.mComponentPicker.start();
     this.mAttributeEditor.start();
     this.mLayoutEditor.start();
+    this.mAllPropertyEditor.start();
 };
 
 FormEditor.prototype.getContextManager = function () {
@@ -181,7 +194,8 @@ FormEditor.prototype.getView = function () {
                             attr: {
                                 name: 'All',
                                 id: 'tab-all',
-                            }
+                            },
+                            child: this.mAllPropertyEditor.getView()
                         }
                     ]
                 }
@@ -231,6 +245,7 @@ FormEditor.prototype.ev_activeComponent = function (event) {
     this._activatedCompnent = event.component;
     this.mStyleEditor.edit(event.component);
     this.mAttributeEditor.edit(event.component);
+    this.mAllPropertyEditor.edit(event.component);
 };
 
 
