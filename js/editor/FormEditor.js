@@ -76,14 +76,15 @@ function FormEditor() {
     });
 
     this.mAllPropertyEditor = new AllPropertyEditor();
-    this.mStyleEditor.on('change', function (event) {
+    this.mAllPropertyEditor.on('change', function (event) {
         self.mLayoutEditor.autoExpandRootLayout();
         if (self._activatedCompnent) self._activatedCompnent.reMeasure();
         if (event.name == 'vAlign' || event.name == 'hAlign')
             self.mLayoutEditor.updateAnchor();
         else
             self.mLayoutEditor.updateAnchorPosition();
-
+        self.mStyleEditor.notifyChange();
+        self.mAttributeEditor.notifyChange();
         self.emit('change', Object.assign({ formEditor: this }, event), self);
     });
 
