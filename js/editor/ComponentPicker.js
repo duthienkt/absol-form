@@ -16,6 +16,7 @@ import '../../css/componentpicker.css';
 import Text from "../components/Text";
 import Draggable from "absol-acomp/js/Draggable";
 import R from "../R";
+import Image from "../components/Image";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -186,6 +187,14 @@ ComponentPicker.prototype.getView = function () {
                                 icon: Text.prototype.menuIcon,
                                 componentConstructor: Text
                             }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Image",
+                                icon: Image.prototype.menuIcon,
+                                componentConstructor: Image
+                            }
                         }
                     ]
                 }
@@ -205,7 +214,6 @@ ComponentPicker.prototype.getView = function () {
 
     return this.$view;
 };
-
 
 
 
