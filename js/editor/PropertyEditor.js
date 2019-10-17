@@ -133,6 +133,7 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
 
 
 PropertyEditor.prototype.createConstInputRow = function (name, descriptor) {
+    var self = this;
     var res = _({
         tag: 'tr',
         child: [
@@ -146,13 +147,30 @@ PropertyEditor.prototype.createConstInputRow = function (name, descriptor) {
                 child:
                 {
                     tag: 'strong',
-                    child: {
-                        text: descriptor.value + ""
+                    class: 'as-need-update',
+                    props: {
+                        notifyChange: function () {
+                            var newDescriptor = self.getPropertyDescriptor(name);
+                            if (descriptor.value != newDescriptor.value) {
+                                this.clearChild().addChild(_({ text: newDescriptor.value + '' }));
+                            }
+                        }
                     }
                 }
             }
         ]
     });
+
+    res.$text = $('strong', res);
+    if (typeof (descriptor.value) == 'object' && descriptor.value.then) {
+        descriptor.value.then(function (value) {
+            res.$text.clearChild().addChild(_({ text: value + '' }));
+        });
+    }
+    else {
+        res.$text.clearChild().addChild(_({ text: descriptor.value + '' }));
+    }
+
     return res;
 };
 
