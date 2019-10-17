@@ -150,9 +150,14 @@ PropertyEditor.prototype.createConstInputRow = function (name, descriptor) {
                     class: 'as-need-update',
                     props: {
                         notifyChange: function () {
-                            var newDescriptor = self.getPropertyDescriptor(name);
-                            if (descriptor.value != newDescriptor.value) {
-                                this.clearChild().addChild(_({ text: newDescriptor.value + '' }));
+                            var descriptor = self.getPropertyDescriptor(name);
+                            if (typeof (descriptor.value) == 'object' && descriptor.value.then) {
+                                descriptor.value.then(function (value) {
+                                    res.$text.clearChild().addChild(_({ text: value + '' }));
+                                });
+                            }
+                            else {
+                                res.$text.clearChild().addChild(_({ text: descriptor.value + '' }));
                             }
                         }
                     }
@@ -348,17 +353,14 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
                             this.disabled = self.getPropertyDescriptor(name).disabled;
                         }
                     },
-                    on: descriptor.livePreview ? {
-                        changing: function () {
+                    on: {
+                        change: function (event) {
+                            if (event.by == 'keyup') return;
+                            if (!descriptor.livePreview && event.by == 'long_press_button') return;
                             self.setProperty(name, this.value);
                             self.notifyChange(name, this);
                         }
-                    } : {
-                            change: function () {
-                                self.setProperty(name, this.value);
-                                self.notifyChange(name, this);
-                            }
-                        }
+                    }
                 }
             }
         ].concat(descriptor.nullable ? [{
