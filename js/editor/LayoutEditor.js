@@ -25,6 +25,7 @@ function LayoutEditor() {
     this.snapshotsIndex = 0;
     this._changeCommited = true;
     this.mode = 'design';
+    this._publicDataChange = true;
 }
 
 
@@ -39,17 +40,17 @@ LayoutEditor.prototype.MODE_CLASS_NAMES = {
     interact: 'mode-interact'
 };
 
-LayoutEditor.prototype.notifyChanged = function () {
-    this._changeCommited = false;
+
+LayoutEditor.prototype.activePublicDataChange = function (flag) {
+    this._publicDataChange = !!flag;
 };
 
-
-LayoutEditor.prototype.commitChanged = function () {
-    if (!this._changeCommited) {
-        //todo something
-        this.emit('change', { type: 'change', layoutEditor: this }, this);
-    }
-
+/**
+ * call whenever component is edited, event will not be fired if disable publicDataChange flag
+ */
+LayoutEditor.prototype.notifyDataChange = function () {
+    if (this._publicDataChange)
+        this.emit('change', { type: 'change', target: this }, this);
 };
 
 
@@ -165,17 +166,18 @@ LayoutEditor.prototype.ev_moving = function (event) {
     var y = event.clientY - bound.top;
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
-
+    var positionIsChange = false;
     //TODO; size may be invalid
     if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
         movingData.comp.setStyle('left', Math.max(0, movingData.style0.left + movingData.dx));
-        this.notifyChanged();
+        positionIsChange = true;
     }
 
 
     if (movingData.styleDescriptors.right && !movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
         movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx));
-        this.notifyChanged();
+        positionIsChange = true;
+
     }
 
     if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
@@ -187,7 +189,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx));
             }
-            this.notifyChanged();
+            positionIsChange = true;
         }
         if (movingData.option.right) {
             if (movingData.styleDescriptors.left && !!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
@@ -197,18 +199,18 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx));
             }
-            this.notifyChanged();
+            positionIsChange = true;
         }
     }
 
     if (movingData.styleDescriptors.top && !movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
         movingData.comp.setStyle('top', Math.max(0, movingData.style0.top + movingData.dy));
-        this.notifyChanged();
+        positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.bottom && !movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
         movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom - movingData.dy));
-        this.notifyChanged();
+        positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.height && !movingData.styleDescriptors.height.disabled) {
@@ -219,7 +221,7 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy));
             }
-            this.notifyChanged();
+            positionIsChange = true;
 
         }
         if (movingData.option.bottom) {
@@ -229,27 +231,30 @@ LayoutEditor.prototype.ev_moving = function (event) {
             else {
                 movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy));
             }
-            this.notifyChanged();
+            positionIsChange = true;
         }
     }
 
     this.updateAnchorPosition();
     movingData.comp.reMeasure();
-    this.emit("movecomponent", { component: movingData.comp, movingData: movingData }, this)
+    if (positionIsChange) {
+        this.emit("repositioncomponent", { component: movingData.comp, movingData: movingData }, this);
+        movingData.isChange = true;
+    }
 };
 
 LayoutEditor.prototype.ev_endMoving = function (event) {
+    if (this._movingStateData.isChange) {
+        this.notifyDataChange();
+    }
     this._movingStateData = undefined;
-    this.commitChanged();
 }
 
 LayoutEditor.prototype.ev_clickForceground = function (event) {
     if (event.target != this.$forceground) return;
     var hitComponent;
     function visit(node) {
-
         var bound = node.view.getBoundingClientRect();
-
         if (bound.left <= event.clientX && bound.right >= event.clientX
             && bound.top <= event.clientY && bound.bottom >= event.clientY) {
             hitComponent = node;
@@ -318,7 +323,6 @@ LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
                     },
                     {
                         icon: 'span.mdi.mdi-delete-variant',
-                        icon: 'span.mdi.mdi-delete-variant',
                         text: 'Delete',
                         cmd: 'delete',
                         extendStyle: {
@@ -362,29 +366,6 @@ LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
     });
 };
 
-
-
-
-LayoutEditor.prototype.ev_menuComponent = function (item) {
-    var componentConstructor = item.componentConstructor;
-    var newComponent = new componentConstructor();
-    this.rootLayout.addChild(newComponent);
-    this.activeComponent(newComponent);
-};
-
-LayoutEditor.prototype.clearRootLayout = function () {
-    this._activatedCompnent = undefined;
-    this.rootLayout.clearChild();
-    this.updateAnchor();
-};
-
-LayoutEditor.prototype.activeComponent = function (comp) {
-    this._activatedCompnent = comp;
-    if (comp)
-        comp.reMeasure();
-    this.updateAnchor();
-    this.emit('activecomponent', { target: this, component: comp }, this);
-};
 
 LayoutEditor.prototype.updateAnchor = function () {
     var comp = this._activatedCompnent;
@@ -480,14 +461,10 @@ LayoutEditor.prototype.updateAnchorPosition = function () {
 };
 
 
-LayoutEditor.prototype.updateRuler = function () {
-    this.$hruler.update();
-    this.$vruler.update();
-};
+
 
 LayoutEditor.prototype.updateSize = function () {
-    this.updateRuler();
-    // this.updateAnchorPosition();
+    //todo
 };
 
 
@@ -524,6 +501,33 @@ LayoutEditor.prototype.setData = function (data) {
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
+    this.emit('change', { type: 'change', target: this, data: data }, this);
+};
+
+
+
+LayoutEditor.prototype.autoExpandRootLayout = function () {
+    if (this.rootLayout) {
+        var minSize = this.rootLayout.measureMinSize();
+        var isChange = false;
+        if (minSize.width > this.rootLayout.style.width) { this.rootLayout.setStyle('width', minSize.width); isChange = true; }
+        if (minSize.height > this.rootLayout.style.height) { this.rootLayout.setStyle('height', minSize.height); isChange = true; }
+        if (isChange){
+            this.emit('layoutexpand', { type: 'layoutexpand', target: this, layout: this.rootLayout }, this);
+            this.notifyDataChange();
+        }
+    }
+};
+
+
+
+LayoutEditor.prototype.activeComponent = function (comp) {
+    if (this._activatedCompnent == comp) return;
+    this._activatedCompnent = comp;
+    if (comp)
+        comp.reMeasure();
+    this.updateAnchor();
+    this.emit('activecomponent', { target: this, component: comp }, this);
 };
 
 
@@ -533,24 +537,6 @@ LayoutEditor.prototype.getData = function (data) {
 };
 
 
-LayoutEditor.prototype.getMenuComponentItems = function () {
-    var self = this;
-    this._menuComponentItems = this._menuComponentItems || [];
-    this._menuComponentItems.splice(0, this._menuComponentItems.length);
-    var items = Object.keys(this.constructors).map(function (key) {
-        var constructor = self.constructors[key];
-        return {
-            text: key,
-            icon: constructor.prototype.menuIcon,
-            cmd: 'component',
-            componentConstructor: constructor,
-            componentTag: key
-        }
-    });
-    this._menuComponentItems.push.apply(this._menuComponentItems, items);
-    return this._menuComponentItems;
-};
-
 LayoutEditor.prototype.setMode = function (mode) {
     if (this.MODE_VALUE.indexOf(mode) < 0 || this.mode == mode) return;
     if (this.$view) {
@@ -558,13 +544,15 @@ LayoutEditor.prototype.setMode = function (mode) {
             .addClass(this.MODE_CLASS_NAMES[mode]);
 
     }
+    var lastMode = this.mode;
     this.mode = mode;
+    this.emit('changemode', { type: 'changemode', mode: mode, lastMode: lastMode }, this);
 };
 
 /**
  * @returns {import('../core/BaseComponent') }
  */
-LayoutEditor.prototype.dropNewComponent = function (tag, posX, posY) {
+LayoutEditor.prototype.addNewComponent = function (tag, posX, posY) {
     var newComponent = this.build({ tag: tag });
     this.rootLayout.addChild(newComponent);
     posX = Math.max(0, Math.min(this.rootLayout.style.width - newComponent.style.width, posX));
@@ -572,20 +560,78 @@ LayoutEditor.prototype.dropNewComponent = function (tag, posX, posY) {
     newComponent.setStyle('left', posX);
     newComponent.setStyle('top', posY);
     newComponent.reMeasure();
+    this.emit('addcomponent', { type: 'addcomponent', component: newComponent, target: this }, this);
     this.activeComponent(newComponent);
-    this.notifyChanged();
-    this.commitChanged();
+    this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
-
 };
 
 
-LayoutEditor.prototype.autoExpandRootLayout = function () {
-    if (this.rootLayout) {
-        var minSize = this.rootLayout.measureMinSize();
-        if (minSize.width > this.rootLayout.style.width) this.rootLayout.setStyle('width', minSize.width);
-        if (minSize.height > this.rootLayout.style.height) this.rootLayout.setStyle('height', minSize.height);
+LayoutEditor.prototype.clearRootLayout = function () {
+    this._activatedCompnent = undefined;
+    this.rootLayout.clearChild();
+    this.updateAnchor();
+    this.emit('clearallcomponent', { target: this }, this);
+    this.notifyDataChange();
+};
+
+
+LayoutEditor.prototype.removeComponent = function (comp) {
+    comp.remove();
+    this.emit('removecomponent', { type: 'removecomponent', target: this, component: comp }, this);
+    this.notifyDataChange();
+    if (this._activatedCompnent == comp) {
+        this.activeComponent(undefined);
     }
+};
+
+
+LayoutEditor.prototype.moveUpComponent = function (comp) {
+    var parent = comp.parent;
+    if (!parent) return;
+    var prevChild = parent.findChildBefore(comp);
+    if (!prevChild) return;
+    comp.remove();
+    parent.addChildBefore(comp, prevChild);
+    this.emit('moveupcomponent', { type: 'moveupcomponent', target: this, component: comp }, this);
+    this.notifyDataChange();
+};
+
+
+LayoutEditor.prototype.moveDownComponent = function (comp) {
+    var parent = comp.parent;
+    if (!parent) return;
+    var nextChild = parent.findChildAfter(comp);
+    if (!nextChild) return;
+    nextChild.remove();
+    parent.addChildBefore(nextChild, comp);
+    this.emit('movedowncomponent', { type: 'movedowncomponent', target: this, component: comp }, this);
+    this.notifyDataChange();
+};
+
+
+LayoutEditor.prototype.moveToBottomComponent = function (comp) {
+    var parent = comp.parent;
+    if (!parent) return;
+    var lastChild = parent.children[parent.children - 1];
+    if (lastChild == comp) return;
+    comp.remove();
+    parent.addChild(comp);
+    this.updateComponetTree();
+    this.emit('movetobottomcomponent', { type: 'movetobottomcomponent', target: this, component: comp }, this);
+    this.notifyDataChange();
+};
+
+
+LayoutEditor.prototype.moveToTopComponent = function (comp) {
+    var parent = comp.parent;
+    if (!parent) return;
+    var firstChild = parent.children[0];
+    if (firstChild == comp) return;
+    comp.remove();
+    parent.addChildBefore(comp, firstChild);
+    this.emit('movetotopcomponent', { type: 'movetotopcomponent', target: this, component: comp }, this);
+    this.notifyDataChange();
 };
 
 
