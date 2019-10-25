@@ -25,6 +25,7 @@ import AttributeEditor from './AttributeEditor';
 import StyleEditor from './StyleEditor';
 import Image from '../components/Image';
 import AllPropertyEditor from './AllPropertyEditor';
+import ComponentOutline from './ComponentOutline';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -59,26 +60,18 @@ function FormEditor() {
 
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
+    this.mComponentOutline = new ComponentOutline();
     this.mAttributeEditor.on('change', function (event) {
         self.emit('change', Object.assign({ formEditor: this }, event), self);
     });
 
-    this.mStyleEditor = new StyleEditor();
-    this.mStyleEditor.on('change', function (event) {
-        self.mLayoutEditor.autoExpandRootLayout();
-        if (self._activatedCompnent) self._activatedCompnent.reMeasure();
-        if (event.name == 'vAlign' || event.name == 'hAlign')
-            self.mLayoutEditor.updateAnchor();
-        else
-            self.mLayoutEditor.updateAnchorPosition();
-
-        self.emit('change', Object.assign({ formEditor: this }, event), self);
-    });
+    this.mStyleEditor = new StyleEditor()
+        .on('change', this.ev_styleEditorChange.bind(this));
 
     this.mAllPropertyEditor = new AllPropertyEditor();
     this.mAllPropertyEditor.on('change', function (event) {
         self.mLayoutEditor.autoExpandRootLayout();
-        if (self._activatedCompnent) self._activatedCompnent.reMeasure();
+        if (self._focusElement) self._focusElement.reMeasure();
         if (event.name == 'vAlign' || event.name == 'hAlign')
             self.mLayoutEditor.updateAnchor();
         else
@@ -88,13 +81,17 @@ function FormEditor() {
         self.emit('change', Object.assign({ formEditor: this }, event), self);
     });
 
-    this.mLayoutEditor.on('change', this.notifyStyleChange.bind(this)).on('activecomponent', this.ev_activeComponent.bind(this));
+    this.mLayoutEditor.on('change', this.notifyAllChange.bind(this))
+        .on('focuscomponent', this.ev_focusElement.bind(this))
+        .on('removecomponent', this.ev_removeComponent.bind(this))
+        .on('addcomponent', this.ev_addComponent.bind(this));
 
     this.mLayoutEditor.on('movecomponent', this.notifyStyleChange.bind(this));
     this.ctxMng.set(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.ctxMng.set(R.COMPONENT_PICKER, this.mComponentPicker);
     this.mLayoutEditor.attach(this);
     this.mComponentPicker.attach(this);
+    this.mComponentOutline.attach(this);
 }
 
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
@@ -107,6 +104,7 @@ FormEditor.prototype.onStart = function () {
     this.mAttributeEditor.start();
     this.mLayoutEditor.start();
     this.mAllPropertyEditor.start();
+    this.mComponentOutline.start();
 };
 
 FormEditor.prototype.getContextManager = function () {
@@ -149,7 +147,8 @@ FormEditor.prototype.getView = function () {
                             attr: {
                                 name: 'Outline',
                                 id: 'tab-outline',
-                            }
+                            },
+                            child: this.mComponentOutline.getView()
                         },
                     ]
                 }
@@ -242,13 +241,36 @@ FormEditor.prototype.getView = function () {
 };
 
 
-FormEditor.prototype.ev_activeComponent = function (event) {
-    this._activatedCompnent = event.component;
+FormEditor.prototype.ev_focusElement = function (event) {
+    this._focusElement = event.component;
     this.mStyleEditor.edit(event.component);
     this.mAttributeEditor.edit(event.component);
     this.mAllPropertyEditor.edit(event.component);
 };
 
+FormEditor.prototype.ev_removeComponent = function (event) {
+    if (this._focusElement == event.component) {
+        this._focusElement = undefined;
+        this.mStyleEditor.edit(undefined);
+        this.mAttributeEditor.edit(undefined);
+        this.mAllPropertyEditor.edit(undefined);
+    }
+    this.mComponentOutline.updateComponetTree();
+};
+
+FormEditor.prototype.ev_addComponent = function(){
+    this.mComponentOutline.updateComponetTree();    
+};
+
+FormEditor.prototype.ev_styleEditorChange = function (event) {
+    this.mLayoutEditor.autoExpandRootLayout();
+    if (this._focusElement) this._focusElement.reMeasure();
+    if (event.name == 'vAlign' || event.name == 'hAlign')
+        this.mLayoutEditor.updateAnchor();
+    else
+        this.mLayoutEditor.updateAnchorPosition();
+    this.emit('change', Object.assign({ formEditor: this }, event), this);
+};
 
 
 FormEditor.prototype.setComponentProperty = function (name, value) {
@@ -339,9 +361,14 @@ FormEditor.prototype.ev_dragRightResizer = function (event) {
     window.dispatchEvent(new Event('resize'));
 };
 
+FormEditor.prototype.ev_layoutEditorChange = function(){
+
+};
+
 
 FormEditor.prototype.setData = function (data) {
     this.mLayoutEditor.setData(data);
+    this.mComponentOutline.updateComponetTree();
 };
 
 
@@ -357,6 +384,13 @@ FormEditor.prototype.addComponent = function (data) {
         this.mLayoutEditor.activeComponent(newComponent);
     }
 };
+
+FormEditor.prototype.notifyAllChange = function(){
+    this.mStyleEditor.notifyChange();
+    this.mAttributeEditor.notifyChange();
+    this.mAllPropertyEditor.notifyChange();
+    this.emit('change', Object.assign({}, { formEditor: this }), this);
+}
 
 FormEditor.prototype.notifyStyleChange = function () {
     this.mStyleEditor.notifyChange();
