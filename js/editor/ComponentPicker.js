@@ -236,12 +236,11 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
 
 ComponentPicker.prototype.ev_constructorEndDrag = function (treeNode, event) {
     this.$modal.remove();
-
     var x = event.clientX;
     var y = event.clientY;
     var rect = this._dragRect;
     if (rect && rect.top <= y && rect.bottom >= y && rect.left <= x && rect.right >= x) {
-        this.mLayoutEditor.dropNewComponent(treeNode.componentConstructor.prototype.tag, x - rect.left, y - rect.top);
+        this.mLayoutEditor.addNewComponent(treeNode.componentConstructor.prototype.tag, x - rect.left, y - rect.top);
     }
 };
 
