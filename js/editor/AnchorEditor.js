@@ -84,8 +84,9 @@ AnchorEditor.prototype.ev_contextMenu = function (event) {
     items.push({
         icon: 'span.mdi.mdi-delete-variant[style="color:red"]',
         text: 'Delete',
-        cmd: 'delete'
-    })
+        cmd: this.cmd_delete.bind(this)
+    });
+
     event.showContextMenu({
         items: items
     }, function (event) {
@@ -336,6 +337,14 @@ AnchorEditor.prototype.ev_endMove = function (userAction, event) {
 };
 
 
+AnchorEditor.prototype.cmd_delete = function(){
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    for (var i = 0; i < editors.length; ++i) {
+        var editor = editors[i];
+        this.layoutEditor.removeComponent(editor.component);
+    }
+};
 
 
 AnchorEditor.prototype.cmd_alignLeftDedge = function () {
@@ -409,6 +418,7 @@ AnchorEditor.prototype.alignLeftDedge = function (leftValue) {
             break;
     }
     this.updatePosition();
+    this.component.reMeasure();
 };
 
 
@@ -433,6 +443,7 @@ AnchorEditor.prototype.alignRightDedge = function (rightValue) {
             break;
     }
     this.updatePosition();
+    this.component.reMeasure();
 };
 
 
@@ -461,6 +472,7 @@ AnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { // right
             break;
     }
     this.updatePosition();
+    this.component.reMeasure();
 };
 
 
@@ -498,6 +510,7 @@ AnchorEditor.prototype.equaliseWidth = function (widthValue) {
             break;
     }
     this.updatePosition();
+    this.component.reMeasure();
 };
 
 
@@ -573,6 +586,7 @@ AnchorEditor.prototype.alignTopDedge = function (topValue) {
             break;
     }
     this.updatePosition();
+    this.component.reMeasure();
 };
 
 
@@ -625,6 +639,8 @@ AnchorEditor.prototype.alignVerticalCenter = function (centerValue) { // bottom 
             break;
     }
     this.updatePosition();
+    this.component.reMeasure();
+
 };
 
 
@@ -662,6 +678,7 @@ AnchorEditor.prototype.equaliseHeight = function (heightValue) {
             break;
     }
     this.updatePosition();
+    this.component.reMeasure();
 };
 
 
