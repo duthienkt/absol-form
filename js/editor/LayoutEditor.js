@@ -10,6 +10,7 @@ import '../dom/VLine';
 import '../dom/HRuler';
 import '../dom/VRuler';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
+import AnchorEditor from './AnchorEditor';
 
 
 var _ = Fcore._;
@@ -26,6 +27,15 @@ function LayoutEditor() {
     this._changeCommited = true;
     this.mode = 'design';
     this._publicDataChange = true;
+
+    /**
+     * @type {Array<import('./AnchorEditor')>}
+     */
+    this.anchorEditors = [];
+    /**
+     * @type {Array<import('./AnchorEditor')>}
+     */
+    this.anchorEditorPool = [];
 }
 
 
@@ -78,7 +88,6 @@ LayoutEditor.prototype.getView = function () {
                     child: [
                         {
                             class: 'as-layout-editor-layout-container',
-                            extendEvent: 'contextmenu',
                             on: {
                                 contextmenu: this.ev_contextMenuLayout.bind(this)
                             }
@@ -87,9 +96,7 @@ LayoutEditor.prototype.getView = function () {
                             class: 'as-layout-editor-forceground-container',
                             child: '.as-layout-editor-forceground',
                             extendEvent: 'contextmenu',
-                            on: {
-                                contextmenu: this.ev_contextMenuForceGround.bind(this)
-                            }
+                            
                         }
                     ]
                 }
@@ -119,15 +126,6 @@ LayoutEditor.prototype.getView = function () {
     this.$forceground = $('.as-layout-editor-forceground', this.$view)
         .on('click', this.ev_clickForceground.bind(this));
 
-    this.$resizeBox = _('resizebox')
-        .on('beginmove', this.ev_beginMove.bind(this))
-        .on('moving', this.ev_moving.bind(this))
-        .on('endmove', this.ev_endMoving.bind(this));
-    this.$leftAlignLine = _('hline');
-    this.$rightAlignLine = _('hline');
-
-    this.$topAlignLine = _('vline');
-    this.$bottomAlignLine = _('vline');
     this.$editorSpaceCtn = $('.as-layout-editor-space-container', this.$view)
         .on('click', function (ev) {
             if (ev.target == this) {
@@ -138,117 +136,11 @@ LayoutEditor.prototype.getView = function () {
     return this.$view;
 };
 
+
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
     this.updateRuler();
 };
 
-
-LayoutEditor.prototype.ev_beginMove = function (event) {
-    var bound = this.$forceground.getBoundingClientRect();
-    this._movingStateData = {
-        x0: event.clientX - bound.left,
-        y0: event.clientY - bound.top,
-        dx: 0,
-        dy: 0,
-        option: event.option,
-        styleDescriptors: this._activatedCompnent.getStyleDescriptors(),
-        style0: Object.assign({}, this._activatedCompnent.style),
-        comp: this._activatedCompnent
-    };
-};
-
-
-LayoutEditor.prototype.ev_moving = function (event) {
-    var movingData = this._movingStateData;
-
-    var bound = this.$forceground.getBoundingClientRect();
-    var x = event.clientX - bound.left;
-    var y = event.clientY - bound.top;
-    movingData.dx = x - movingData.x0;
-    movingData.dy = y - movingData.y0;
-    var positionIsChange = false;
-    //TODO; size may be invalid
-    if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
-        movingData.comp.setStyle('left', Math.max(0, movingData.style0.left + movingData.dx));
-        positionIsChange = true;
-    }
-
-
-    if (movingData.styleDescriptors.right && !movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
-        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx));
-        positionIsChange = true;
-
-    }
-
-    if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
-        if (movingData.option.left) {
-            if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width - movingData.dx * 2));
-                //center align
-            }
-            else {
-                movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx));
-            }
-            positionIsChange = true;
-        }
-        if (movingData.option.right) {
-            if (movingData.styleDescriptors.left && !!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx * 2));
-                //center align
-            }
-            else {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx));
-            }
-            positionIsChange = true;
-        }
-    }
-
-    if (movingData.styleDescriptors.top && !movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
-        movingData.comp.setStyle('top', Math.max(0, movingData.style0.top + movingData.dy));
-        positionIsChange = true;
-    }
-
-    if (movingData.styleDescriptors.bottom && !movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
-        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom - movingData.dy));
-        positionIsChange = true;
-    }
-
-    if (movingData.styleDescriptors.height && !movingData.styleDescriptors.height.disabled) {
-        if (movingData.option.top) {
-            if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy * 2));
-            }
-            else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy));
-            }
-            positionIsChange = true;
-
-        }
-        if (movingData.option.bottom) {
-            if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy * 2));
-            }
-            else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy));
-            }
-            positionIsChange = true;
-        }
-    }
-
-    this.updateAnchorPosition();
-    movingData.comp.reMeasure();
-    if (positionIsChange) {
-        this.emit("repositioncomponent", { component: movingData.comp, movingData: movingData }, this);
-        movingData.isChange = true;
-    }
-};
-
-LayoutEditor.prototype.ev_endMoving = function (event) {
-    if (this._movingStateData.isChange) {
-        this.notifyDataChange();
-    }
-    this._movingStateData = undefined;
-}
 
 LayoutEditor.prototype.ev_clickForceground = function (event) {
     if (event.target != this.$forceground) return;
@@ -259,93 +151,19 @@ LayoutEditor.prototype.ev_clickForceground = function (event) {
             && bound.top <= event.clientY && bound.bottom >= event.clientY) {
             hitComponent = node;
         }
-
         if (node.children)
             node.children.forEach(visit);
     }
     visit(this.rootLayout);
 
     if (hitComponent) {
-        this.activeComponent(hitComponent);
+        if (event.shiftKey)
+            this.toggleActiveComponent(hitComponent);
+        else this.setActiveComponent(hitComponent);
     }
 };
 
 
-
-LayoutEditor.prototype.ev_contextMenuForceGround = function (event) {
-    this.ev_clickForceground(event);
-    var self = this;
-    var activatedComponent = this._activatedCompnent;
-    if (activatedComponent) {
-        if (activatedComponent == this.rootLayout) {
-            event.showContextMenu({
-                items: [
-                    {
-                        text: 'New',
-                        icon: 'span.mdi.mdi-plus',
-                        cmd: 'new'
-                        // items: self.getMenuComponentItems()
-                    },
-                    {
-                        icon: 'span.mdi.mdi-eraser',
-                        text: 'Clear',
-                        cmd: 'clear'
-                    },
-                    {
-                        text: "Interact Mode",
-                        cmd: 'interact',
-                        icon: "span.mdi.mdi-android-auto.mdi-rotate-90"
-                    }
-                ]
-            }, function (menuEvent) {
-                var cmd = menuEvent.menuItem.cmd;
-                switch (cmd) {
-                    case 'clear': self.clearRootLayout(); break;
-                    case 'new': setTimeout(self.$componentMenuTrigger.click.bind(self.$componentMenuTrigger), 10); break;
-                    case 'interact': self.setMode('interact'); break;
-                }
-            });
-        }
-        else {
-            event.showContextMenu({
-                items: [
-                    {
-                        text: 'Edit Attributes',
-                        icon: 'span.mdi.mdi-table-edit',
-                        cmd: 'attributes-edit'
-                        // items: self.getMenuComponentItems()
-                    },
-                    {
-                        text: 'Edit Style',
-                        icon: 'span.mdi.mdi-square-edit-outline',
-                        cmd: 'style-edit'
-                        // items: self.getMenuComponentItems()
-                    },
-                    {
-                        icon: 'span.mdi.mdi-delete-variant',
-                        text: 'Delete',
-                        cmd: 'delete',
-                        extendStyle: {
-                            color: 'red'
-                        }
-                    }
-                ]
-            }, function (menuEvent) {
-                var cmd = menuEvent.menuItem.cmd;
-                switch (cmd) {
-                    case 'delete':
-                        activatedComponent.parent.removeChild(activatedComponent);
-                        self.activeComponent(undefined);
-                        self.notifyChanged();
-                        self.commitChanged();
-                        break;
-                    case 'attributes-edit': break;
-                }
-            });
-
-        }
-    }
-};
 
 
 LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
@@ -366,97 +184,21 @@ LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
     });
 };
 
+LayoutEditor.prototype.updateRuler = function () {
+    this.$vruler.update();
+    this.$hruler.update();
+};
 
 LayoutEditor.prototype.updateAnchor = function () {
-    var comp = this._activatedCompnent;
-    if (comp) {
-        this.$resizeBox.addTo(this.$forceground);
-        var styleDescriptors = comp.getStyleDescriptors();
-
-        this.$resizeBox.canMove = !!(styleDescriptors.top || styleDescriptors.bottom || styleDescriptors.left || styleDescriptors.right);
-        this.$resizeBox.canResize = !!(styleDescriptors.width || styleDescriptors.height);
-
-        if (!styleDescriptors.top || styleDescriptors.top.disabled) {
-            this.$topAlignLine.remove();
-        }
-        else {
-
-            this.$topAlignLine.addTo(this.$forceground);
-
-        }
-
-        if (!styleDescriptors.bottom || styleDescriptors.bottom.disabled) {
-            this.$bottomAlignLine.remove();
-        }
-        else {
-            this.$bottomAlignLine.addTo(this.$forceground);
-        }
-
-        if (!styleDescriptors.left || styleDescriptors.left.disabled) {
-            this.$leftAlignLine.remove();
-        }
-        else {
-            this.$leftAlignLine.addTo(this.$forceground);
-        }
-
-        if (!styleDescriptors.right || styleDescriptors.right.disabled) {
-            this.$rightAlignLine.remove();
-        }
-        else {
-            this.$rightAlignLine.addTo(this.$forceground);
-        }
+    for (var i = 0; i < this.anchorEditors.length; ++i) {
+        this.anchorEditors[i].update();
     }
-    else {
-        this.$resizeBox.remove();
-        this.$leftAlignLine.remove();
-        this.$rightAlignLine.remove();
-        this.$topAlignLine.remove();
-        this.$bottomAlignLine.remove();
-    }
-    this.updateAnchorPosition();
 };
 
 
 LayoutEditor.prototype.updateAnchorPosition = function () {
-    var comp = this._activatedCompnent;
-    if (comp) {
-        var bound = this.$forceground.getBoundingClientRect();
-        var compBound = comp.view.getBoundingClientRect();
-        this.$resizeBox.addStyle({
-            left: compBound.left - bound.left + 'px',
-            top: compBound.top - bound.top + 'px',
-            width: compBound.width + 'px',
-            height: compBound.height + 'px'
-        }).addTo(this.$forceground);
-
-        if (this.$leftAlignLine.parentNode)
-            this.$leftAlignLine.addStyle({
-                left: compBound.left - bound.left - comp.style.left + 'px',
-                width: comp.style.left + 'px',
-                top: compBound.top - bound.top + compBound.height / 2 + 'px',
-            });
-
-        if (this.$rightAlignLine.parentNode)
-            this.$rightAlignLine.addStyle({
-                left: compBound.right - bound.left + 'px',
-                width: comp.style.right + 'px',
-                top: compBound.top - bound.top + compBound.height / 2 + 'px',
-            });
-
-        if (this.$topAlignLine.parentNode)
-
-            this.$topAlignLine.addStyle({
-                top: compBound.top - bound.top - comp.style.top + 'px',
-                height: comp.style.top + 'px',
-                left: compBound.left - bound.left + compBound.width / 2 + 'px',
-            });
-
-        if (this.$bottomAlignLine.parentNode)
-            this.$bottomAlignLine.addStyle({
-                top: compBound.bottom - bound.top + 'px',
-                height: comp.style.bottom + 'px',
-                left: compBound.left - bound.left + compBound.width / 2 + 'px',
-            });
+    for (var i = 0; i < this.anchorEditors.length; ++i) {
+        this.anchorEditors[i].updatePosition();
     }
 };
 
@@ -465,6 +207,133 @@ LayoutEditor.prototype.updateAnchorPosition = function () {
 
 LayoutEditor.prototype.updateSize = function () {
     //todo
+};
+
+
+
+LayoutEditor.prototype._newAnchorEditor = function () {
+    var self = this;
+    //craete new, repeat event to other active anchor editor
+    return new AnchorEditor(this).on('quickclick', function (event) {
+        if (this.component)
+            self.toggleActiveComponent(this.component);
+    })//todo: implement in AnchorEditor
+        .on('beginmove', function (event) {
+            var originEvent = event.originEvent;
+            var other;
+            for (var i = 0; i < self.anchorEditors.length; ++i) {
+                other = self.anchorEditors[i];
+                if (other != this) {
+                    other.ev_beginMove(false, originEvent);
+                }
+            }
+        })
+        .on('beginmove', function (event) {
+            var originEvent = event.originEvent;
+            var other;
+            for (var i = 0; i < self.anchorEditors.length; ++i) {
+                other = self.anchorEditors[i];
+                if (other != this) {
+                    other.ev_beginMove(false, originEvent);
+                }
+            }
+        })
+        .on('moving', function (event) {
+            var originEvent = event.originEvent;
+            var other;
+            for (var i = 0; i < self.anchorEditors.length; ++i) {
+                other = self.anchorEditors[i];
+                if (other != this) {
+                    other.ev_moving(false, originEvent);
+                }
+            }
+            self.notifyDataChange();
+        })
+        .on('endmove', function (event) {
+            var originEvent = event.originEvent;
+            var other;
+            for (var i = 0; i < self.anchorEditors.length; ++i) {
+                other = self.anchorEditors[i];
+                if (other != this) {
+                    other.ev_endMove(false, originEvent);
+                }
+            }
+        })
+        .on('focus', function (event) {
+            self.emit('focuscomponent', { type: 'focuscomponent', component: this.component, originEvent: event, target: self }, self);
+        })
+        .on('change', function (event) {
+            self.notifyDataChange();
+        });
+};
+
+/**
+ * @argument {Array<import('../core/BaseComponent').default>}
+ */
+LayoutEditor.prototype.setActiveComponent = function () {
+    //todo
+    while (this.anchorEditors.length > arguments.length) {
+        var editor = this.anchorEditors.pop();
+        editor.edit(undefined);
+        this.anchorEditorPool.push(editor);
+    }
+
+    while (this.anchorEditors.length < arguments.length) {
+        var editor = this.anchorEditorPool.pop() || this._newAnchorEditor();
+        this.anchorEditors.push(editor);
+    }
+
+    for (var i = 0; i < arguments.length; ++i) {
+        this.anchorEditors[i].edit(undefined);
+        this.anchorEditors[i].edit(arguments[i]);
+    }
+    if (this.anchorEditors.length > 0) {
+        this.anchorEditors[this.anchorEditors.length - 1].focus();
+    }
+};
+
+
+/**
+ * @argument {Array<import('../core/BaseComponent').default>}
+ */
+LayoutEditor.prototype.toggleActiveComponent = function () {
+    //todo
+    var editor;
+    for (var i = 0; i < arguments.length; ++i) {
+        editor = this.findAnchorEditorByComponent(arguments[i]);
+        if (editor) {
+            editor.edit(undefined);
+            this.anchorEditorPool.push(editor);
+        }
+        else {
+            editor = this.anchorEditorPool.pop() || this._newAnchorEditor();
+            editor.edit(arguments[i]);
+            this.anchorEditors.push(editor);
+        }
+    }
+
+    this.anchorEditors = this.anchorEditors.filter(function (e) {
+        return !!e.component;
+    });
+
+    if (this.anchorEditors.length > 0) {
+        this.anchorEditors[this.anchorEditors.length - 1].focus();
+    }
+};
+
+
+LayoutEditor.prototype.findAnchorEditorByComponent = function (comp) {
+    for (var i = 0; i < this.anchorEditors.length; ++i) {
+        if (this.anchorEditors[i].component == comp) return this.anchorEditors[i];
+    }
+    return undefined;
+};
+
+
+LayoutEditor.prototype.getActivatedComponents = function () {
+    return this.anchorEditors.map(function (e) {
+        return e.component;
+    }).filter(function (e) { return !!e });
 };
 
 
@@ -490,7 +359,9 @@ LayoutEditor.prototype.setData = function (data) {
 
         if (node.children && node.children.length > 0) {
             node.children.forEach(function (cNode) {
-                comp.addChild(visit(cNode));
+                var childComp = visit(cNode);
+                comp.addChild(childComp);
+                childComp.reMeasure();
             });
         }
         return comp;
@@ -512,7 +383,7 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
         var isChange = false;
         if (minSize.width > this.rootLayout.style.width) { this.rootLayout.setStyle('width', minSize.width); isChange = true; }
         if (minSize.height > this.rootLayout.style.height) { this.rootLayout.setStyle('height', minSize.height); isChange = true; }
-        if (isChange){
+        if (isChange) {
             this.emit('layoutexpand', { type: 'layoutexpand', target: this, layout: this.rootLayout }, this);
             this.notifyDataChange();
         }
@@ -521,17 +392,7 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 
 
 
-LayoutEditor.prototype.activeComponent = function (comp) {
-    if (this._activatedCompnent == comp) return;
-    this._activatedCompnent = comp;
-    if (comp)
-        comp.reMeasure();
-    this.updateAnchor();
-    this.emit('activecomponent', { target: this, component: comp }, this);
-};
-
-
-LayoutEditor.prototype.getData = function (data) {
+LayoutEditor.prototype.getData = function () {
     if (this.rootLayout) return this.rootLayout.getData();
     return null;
 };
@@ -561,14 +422,14 @@ LayoutEditor.prototype.addNewComponent = function (tag, posX, posY) {
     newComponent.setStyle('top', posY);
     newComponent.reMeasure();
     this.emit('addcomponent', { type: 'addcomponent', component: newComponent, target: this }, this);
-    this.activeComponent(newComponent);
+    this.setActiveComponent(newComponent);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
 };
 
 
 LayoutEditor.prototype.clearRootLayout = function () {
-    this._activatedCompnent = undefined;
+    this._activatedComponent = undefined;
     this.rootLayout.clearChild();
     this.updateAnchor();
     this.emit('clearallcomponent', { target: this }, this);
@@ -576,13 +437,18 @@ LayoutEditor.prototype.clearRootLayout = function () {
 };
 
 
-LayoutEditor.prototype.removeComponent = function (comp) {
-    comp.remove();
-    this.emit('removecomponent', { type: 'removecomponent', target: this, component: comp }, this);
-    this.notifyDataChange();
-    if (this._activatedCompnent == comp) {
-        this.activeComponent(undefined);
+LayoutEditor.prototype.removeComponent = function () {
+    var comp;
+    for (var i = 0; i < arguments.length; ++i) {
+        comp = arguments[i];
+        comp.remove();
+        var anchorEditor = this.findAnchorEditorByComponent(comp);
+        if (anchorEditor) {
+            this.toggleActiveComponent(comp);
+        }
+        this.emit('removecomponent', { type: 'removecomponent', target: this, component: comp }, this);
     }
+    this.notifyDataChange();
 };
 
 
