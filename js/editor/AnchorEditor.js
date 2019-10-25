@@ -34,8 +34,9 @@ Object.defineProperties(AnchorEditor.prototype, Object.getOwnPropertyDescriptors
 AnchorEditor.prototype.constructor = AnchorEditor;
 
 AnchorEditor.prototype.ev_contextMenu = function (event) {
+    var self = this;
     var items = [];
-    if (this.layoutEditor.anchorEditors.length > 0) {
+    if (this.layoutEditor.anchorEditors.length > 1) {
         items.push({
             icon: _('mdi-align-horizontal-left'),
             text: 'Align Left Edges',
@@ -57,21 +58,25 @@ AnchorEditor.prototype.ev_contextMenu = function (event) {
             cmd: this.cmd_equaliseWidth.bind(this)
         });
         items.push('================');
-
+        items.push({
+            icon: _('mdi-align-vertical-top'),
+            text: 'Align Top Edges',
+            cmd: this.cmd_alignTopDedge.bind(this)
+        });
         items.push({
             icon: _('mdi-align-vertical-bottom'),
             text: 'Align Bottom Edges',
-            cmd: 'align-bottom-edges'
+            cmd: this.cmd_alignBottomDedge.bind(this)
         });
         items.push({
-            icon: _('mdi-align-vertical-bottom'),
+            icon: _('mdi-align-vertical-center'),
             text: 'Align Vertical Center',
-            cmd: 'align-vertical-bottom'
+            cmd: this.cmd_alignVerticalCenter.bind(this)
         });
         items.push({
-            icon: _('mdi-align-vertical-bottom'),
-            text: 'Align Top Edges',
-            cmd: 'align-top-edges'
+            icon: _('span.mdi.mdi-arrow-expand-vertical'),
+            text: 'Equalise Height',
+            cmd: this.cmd_equaliseHeight.bind(this)
         });
         items.push('================');
     }
@@ -85,8 +90,10 @@ AnchorEditor.prototype.ev_contextMenu = function (event) {
         items: items
     }, function (event) {
         var cmd = event.menuItem.cmd;
-        if (typeof cmd == 'function') cmd();
-
+        if (typeof cmd == 'function') {
+            cmd();
+            self.layoutEditor.notifyDataChange();
+        }
     });
     event.stopPropagation();
 };
@@ -488,6 +495,170 @@ AnchorEditor.prototype.equaliseWidth = function (widthValue) {
             break;
         case 'center':
             this.component.setStyle('width', widthValue);
+            break;
+    }
+    this.updatePosition();
+};
+
+
+
+AnchorEditor.prototype.cmd_alignTopDedge = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    this.component.reMeasure();
+    var topValue = this.component.getStyle('top');
+    for (var i = 0; i < editors.length; ++i) {
+        var editor = editors[i];
+        if (editor == this) continue;
+        editor.alignTopDedge(topValue);
+    }
+};
+
+
+AnchorEditor.prototype.cmd_alignBottomDedge = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    this.component.reMeasure();
+    var bottomValue = this.component.getStyle('bottom');
+
+    for (var i = 0; i < editors.length; ++i) {
+        var editor = editors[i];
+        if (editor == this) continue;
+        editor.alignBottomDedge(bottomValue);
+    }
+};
+
+AnchorEditor.prototype.cmd_alignVerticalCenter = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    this.component.reMeasure();
+    var centerValue = this.component.getStyle('bottom') - this.component.getStyle('top');;
+    for (var i = 0; i < editors.length; ++i) {
+        var editor = editors[i];
+        if (editor == this) continue;
+        editor.alignVerticalCenter(centerValue);
+    }
+};
+
+AnchorEditor.prototype.cmd_equaliseHeight = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    this.component.reMeasure();
+    var heightValue = this.component.getStyle('height');
+    for (var i = 0; i < editors.length; ++i) {
+        var editor = editors[i];
+        if (editor == this) continue;
+        editor.equaliseHeight(heightValue);
+    }
+};
+
+
+AnchorEditor.prototype.alignTopDedge = function (topValue) {
+    if (!this.component) return;
+    this.component.reMeasure();
+    var currentVAlign = this.component.getStyle('vAlign');
+    switch (currentVAlign) {
+        case 'top':
+        case 'fixed':
+            this.component.setStyle('top', topValue);
+            break;
+        case 'bottom':
+            this.component.setStyle('bottom', this.component.getStyle('bottom') + (topValue - this.component.getStyle('top')));
+            break;
+        case 'center':
+            var center = this.component.getStyle('top') + this.component.getStyle('height') / 2;
+            if (center - this.component.measureMinSize().height / 2 >= topValue) {
+                this.component.setStyle('height', (center - topValue) * 2);
+            }
+            break;
+    }
+    this.updatePosition();
+};
+
+
+AnchorEditor.prototype.alignBottomDedge = function (bottomValue) {
+    if (!this.component) return;
+    this.component.reMeasure();
+    var currentVAlign = this.component.getStyle('vAlign');
+
+    switch (currentVAlign) {
+        case 'bottom':
+        case 'fixed':
+            this.component.setStyle('bottom', bottomValue);
+            break;
+        case 'top':
+            this.component.setStyle('top', this.component.getStyle('top') - (bottomValue - this.component.getStyle('bottom')));
+            break;
+        case 'center':
+            var center = this.component.getStyle('bottom') - this.component.getStyle('height') / 2;
+            if (center + this.component.measureMinSize().height / 2 <= bottomValue) {
+                this.component.setStyle('height', (bottomValue - center) * 2);
+            }
+            break;
+    }
+    this.updatePosition();
+};
+
+
+AnchorEditor.prototype.alignVerticalCenter = function (centerValue) { // bottom - top
+    if (!this.component) return;
+    this.component.reMeasure();
+    var currentVAlign = this.component.getStyle('vAlign');
+    var cBottom = this.component.getStyle('bottom');
+    var cTop = this.component.getStyle('top');
+    var newTop = ((cBottom + cTop) - centerValue) / 2;
+    var newBottom = ((cBottom + cTop) + centerValue) / 2;
+
+    switch (currentVAlign) {
+        case 'bottom':
+            this.component.setStyle('bottom', newBottom);
+            break;
+        case 'fixed':
+            this.component.setStyle('top', newTop);
+            this.component.setStyle('bottom', newBottom);
+            break;
+        case 'top':
+            this.component.setStyle('top', newTop);
+            break;
+        case 'center':
+            //noway to align center
+            break;
+    }
+    this.updatePosition();
+};
+
+
+AnchorEditor.prototype.equaliseHeight = function (heightValue) {
+    if (!this.component) return;
+    this.component.reMeasure();
+    var currentVAlign = this.component.getStyle('vAlign');
+    var cBottom = this.component.getStyle('bottom');
+    var cTop = this.component.getStyle('top');
+    var cHeight = this.component.getStyle('height');
+    var dh = heightValue - cHeight;
+
+    switch (currentVAlign) {
+        case 'bottom':
+            if (cTop < dh)
+                this.component.setStyle('bottom', cBottom - (dh - cTop));
+            this.component.setStyle('height', heightValue);
+            break;
+        case 'top':
+            if (cBottom < dh)
+                this.component.setStyle('top', cTop - (dh - cHeight));
+            this.component.setStyle('height', heightValue);
+            break;
+        case 'fixed':
+            if (dh > cBottom) {
+                this.component.setStyle('bottom', 0);
+                this.component.setStyle('top', cTop - (dh - cHeight));
+            }
+            else {
+                this.component.setStyle('bottom', cBottom - dh);
+            }
+            break;
+        case 'center':
+            this.component.setStyle('height', heightValue);
             break;
     }
     this.updatePosition();
