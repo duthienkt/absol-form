@@ -18,6 +18,7 @@ import Draggable from "absol-acomp/js/Draggable";
 import R from "../R";
 import Image from "../components/Image";
 import Button from "../components/Button";
+import Table from "../components/Table";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -195,6 +196,14 @@ ComponentPicker.prototype.getView = function () {
                                 name: "Image",
                                 icon: Image.prototype.menuIcon,
                                 componentConstructor: Image
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Table",
+                                icon: Table.prototype.menuIcon,
+                                componentConstructor: Table
                             }
                         }
                     ]

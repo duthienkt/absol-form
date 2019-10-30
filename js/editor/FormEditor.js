@@ -27,6 +27,7 @@ import Image from '../components/Image';
 import AllPropertyEditor from './AllPropertyEditor';
 import ComponentOutline from './ComponentOutline';
 import Button from '../components/Button';
+import Table from '../components/Table';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -59,6 +60,7 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(Text);
     this.mLayoutEditor.addComponent(Image);
     this.mLayoutEditor.addComponent(Button);
+    this.mLayoutEditor.addComponent(Table);
 
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
