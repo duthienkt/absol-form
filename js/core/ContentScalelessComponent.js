@@ -47,5 +47,9 @@ ContentScalelessComponent.prototype.setStyleTextVAlign = function (value) {
     return value;
 };
 
+ContentScalelessComponent.prototype.measureMinSize = function () {
+    var bound = this.$content.getBoundingClientRect();
+    return { width: bound.width, height: bound.height };
+};
 
 export default ContentScalelessComponent;

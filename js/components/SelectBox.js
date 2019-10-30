@@ -25,7 +25,9 @@ SelectBox.prototype.onCreated = function () {
 
     this.view.on('change', function (event) {
         self.attributes.values = event.values;
-        self.emit('change', event.values, self);
+        // self.emit('change', event.values, self);
+        if (self.events.change)
+            console.log("TODO: exec", self.events.change);
     });
 };
 
@@ -44,5 +46,10 @@ SelectBox.prototype.setAttributeValue = function (value) {
     this.view.values = value;
 };
 
+
+
+SelectBox.prototype.getAcceptsEventNames = function(){
+    return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
+};
 
 export default SelectBox;

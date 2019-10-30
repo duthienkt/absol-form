@@ -11,7 +11,7 @@ Object.defineProperties(NumberInput.prototype, Object.getOwnPropertyDescriptors(
 NumberInput.prototype.constructor = NumberInput;
 
 NumberInput.prototype.tag = "NumberInput";
-NumberInput.prototype.menuIcon  = 'span.mdi.mdi-numeric-2-box-outline';
+NumberInput.prototype.menuIcon = 'span.mdi.mdi-numeric-2-box-outline';
 
 
 NumberInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
@@ -26,6 +26,8 @@ NumberInput.prototype.onCreated = function () {
     var self = this;
     this.view.on('change', function (event) {
         self.attributes.value = event.value;
+        if (self.events.change)
+            console.log("TODO: exec", self.events.change);
     });
     this.view._debug = true;
     //load default value from view
@@ -108,7 +110,7 @@ NumberInput.prototype.getAttributeMinDescriptor = function () {
         type: "number",
         nullable: true,
         defaultValue: -9999,
-        
+
     };
 };
 
@@ -118,6 +120,11 @@ NumberInput.prototype.getAttributeMaxDescriptor = function () {
         nullable: true,
         defaultValue: 9999
     };
+};
+
+
+NumberInput.prototype.getAcceptsEventNames = function(){
+    return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
 
 export default NumberInput;

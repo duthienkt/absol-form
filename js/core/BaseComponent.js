@@ -98,6 +98,17 @@ BaseComponent.prototype.getData = function () {
         }, {});
     }
 
+    var eventsKeys = Object.keys(this.events).filter(function (key) {
+        return self.events[key] !== undefined || self.events[key] !== null;
+    });
+
+    if (eventsKeys.length > 0) {
+        data.events = eventsKeys.reduce(function (ac, key) {
+            ac[key] = self.events[key];
+            return ac;
+        }, {});
+    }
+
     if (this.children.length > 0) {
         data.children = this.children.map(function (child) {
             return child.getData();
@@ -107,16 +118,18 @@ BaseComponent.prototype.getData = function () {
     return data;
 }
 
+
+
 BaseComponent.prototype.setEvent = function (key, value) {
     this.events[key] = value;
-    this.on(key, value);
+    // this.on(key, value);
 };
 
 
 BaseComponent.prototype.removeEvent = function (key) {
     this.events[key] = undefined;
     delete this.events[key];
-    this.off(key, value);
+    // this.off(key, value);
 };
 
 BaseComponent.prototype.getAcceptsStyleNames = function () {
@@ -147,6 +160,18 @@ BaseComponent.prototype.getAcceptsAttributeNames = function () {
     return ["type", "name"];
 };
 
+BaseComponent.prototype.getAcceptsEventNames = function(){
+    return [];
+};
+
+/**
+ * @param {String} name
+ * @returns {}
+ */
+FModel.prototype.getEventDescriptor = function (name) {
+    var functionName = 'getEvent' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
+    return this[functionName] && this[functionName].call(this);
+};
 
 BaseComponent.prototype.getAttributeTypeDescriptor = function () {
     return {

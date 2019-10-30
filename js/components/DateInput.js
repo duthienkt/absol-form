@@ -35,7 +35,9 @@ DateInput.prototype.onCreated = function () {
     var self = this;
     this.view.on('change', function (event) {
         self.attributes.value = this.value;
-        self.emit('change', this.value, self);
+        if (self.events.change)
+            console.log("TODO: exec",  self.events.change);     
+        // self.emit('change', this.value, self);
     });
 };
 
@@ -65,7 +67,16 @@ DateInput.prototype.getAttributeValueDescriptor = function () {
         nullable: true,
         defaultValue: beginOfDay(new Date())
     }
-}
+};
 
+
+
+DateInput.prototype.getAcceptsEventNames = function(){
+    return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
+};
+
+DateInput.prototype.measureMinSize = function () {
+    return { width: 75, height: 16 };
+};
 
 export default DateInput;

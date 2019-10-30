@@ -27,7 +27,9 @@ TextInput.prototype.onCreated = function () {
         var lastValue = self.attributes.value;
         if (this.value != lastValue) {
             self.attributes.value = this.value;
-            self.emit('change', this.value, self);
+            // self.emit('change', this.value, self);
+            if (self.events.change)
+                console.log("TODO: exec",  self.events.change);     
         }
     });
 };
@@ -75,5 +77,8 @@ TextInput.prototype.getAttributePlaceHolderDescriptor = function(){
 };
 
 
+TextInput.prototype.getAcceptsEventNames = function(){
+    return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
+};
 
 export default TextInput;

@@ -34,6 +34,8 @@ Radio.prototype.onCreated = function () {
     var self = this;
     this.$content.on('change', function () {
         self.attributes.checked = this.checked;
+        if (self.events.change)
+        console.log("TODO: exec",  self.events.change);     
     });
 };
 
@@ -82,6 +84,11 @@ Radio.prototype.getAttributeCheckedDescriptor = function () {
 
 Radio.prototype.getAcceptsAttributeNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["groupName", "checked"])
+};
+
+
+Radio.prototype.getAcceptsEventNames = function(){
+    return ContentScalelessComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
 
 

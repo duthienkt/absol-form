@@ -23,6 +23,23 @@ ComboBox.prototype.onCreate = function () {
         { text: '3', value: '3' }
     ];
     this.attributes.value = '0';
+    Object.defineProperty(this.attributes, 'text', {
+        get: function () {
+            if (this.list) {
+                for (var i = 0; i < this.list.length; ++i)
+                    if (this.list[i].value == this.value) return this.list[i].text;
+                return '';
+            }
+            else {
+                return "";
+            }
+        },
+        set: function (value) {
+            //do nothing
+
+        }
+    }
+    )
 };
 
 
@@ -35,6 +52,9 @@ ComboBox.prototype.onCreated = function () {
         }
     }).on('change', function () {
         self.attributes.value = this.value;
+        if (self.events.change)
+            console.log("TODO: exec",  self.events.change);     
+        // self.emit("change", { type: 'change', value: this.value }, self);
     });
     this.attributes.value = this.view.value;
 };
@@ -57,8 +77,13 @@ ComboBox.prototype.setAttributeValue = function (value) {
 };
 
 
+ComboBox.prototype.setAttributeText = function (value) {
+    return value;
+};
+
+
 ComboBox.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value', 'text']);
 };
 
 ComboBox.prototype.getAttributeListDescriptor = function () {
@@ -71,6 +96,19 @@ ComboBox.prototype.getAttributeValueDescriptor = function () {
         type: 'text'
     };
 };
+
+ComboBox.prototype.getAttributeTextDescriptor = function () {
+    return {
+        type: 'const',
+        value: this.getAttribute('text')
+    };
+};
+
+
+ComboBox.prototype.getAcceptsEventNames = function(){
+    return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
+};
+
 
 ComboBox.prototype.measureMinSize = function () {
     var minWidthStyle = parseFloat(this.view.getComputedStyleValue('min-width').replace('px'));

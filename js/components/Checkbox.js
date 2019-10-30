@@ -37,6 +37,8 @@ CheckBox.prototype.onCreated = function () {
     var self = this;
     this.view.on('change', function () {
         self.attributes.checked = this.checked;
+        if (self.events.change)
+            console.log("TODO: exec",  self.events.change);     
     });
 };
 
@@ -71,6 +73,11 @@ CheckBox.prototype.getAcceptsAttributeNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["checked"])
 };
 
+
+
+CheckBox.prototype.getAcceptsEventNames = function(){
+    return ContentScalelessComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
+};
 
 CheckBox.prototype.measureMinSize = function () {
     return { width: 18, height: 18 };
