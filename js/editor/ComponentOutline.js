@@ -93,7 +93,7 @@ ComponentOutline.prototype.moveToTop = function (comp) {
     if (firstChild == comp) return;
     comp.remove();
     parent.addChildBefore(comp, firstChild);
-    this.mComponentOutline.updateComponetTree();
+    this.updateComponetTree();
     this.mLayoutEditor.notifyDataChange();
 };
 
@@ -104,7 +104,7 @@ ComponentOutline.prototype.moveUp = function (comp) {
     if (!prevChild) return;
     comp.remove();
     parent.addChildBefore(comp, prevChild);
-    this.mComponentOutline.updateComponetTree();
+    this.updateComponetTree();
     this.mLayoutEditor.notifyChanged();
 };
 
@@ -115,7 +115,7 @@ ComponentOutline.prototype.moveDown = function (comp) {
     if (!nextChild) return;
     nextChild.remove();
     parent.addChildBefore(nextChild, comp);
-    this.mComponentOutline.updateComponetTree();
+    this.updateComponetTree();
     this.mLayoutEditor.notifyChanged();
 }
 
@@ -124,7 +124,7 @@ ComponentOutline.prototype.moveToBottom = function (comp) {
     if (!parent) return;
     comp.remove();
     parent.addChild(comp);
-    this.mComponentOutline.updateComponetTree();
+    this.updateComponetTree();
     this.mLayoutEditor.notifyChanged();
 };
 

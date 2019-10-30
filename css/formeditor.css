@@ -21,6 +21,8 @@
     top: 0;
     bottom: 0;
     width: 16em;
+    border-right: 1px solid #ddd ;
+
 }
 
 .as-form-editor-left-site-container>.as-form-editor-left-site {
@@ -50,6 +52,7 @@
     top: 0;
     bottom: 0;
     width: 23em;
+    border-left: 1px solid #ddd ;
 }
 
 .as-form-editor-right-site-container>.as-form-editor-right-site {
