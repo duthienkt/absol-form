@@ -21,6 +21,7 @@ Button.prototype.onCreate = function () {
 };
 
 Button.prototype.onCreated = function () {
+    ScalableComponent.prototype.onCreated.call(this);
     var self = this;
     this.view.on('click', function(event){
         if (self.events.click){
