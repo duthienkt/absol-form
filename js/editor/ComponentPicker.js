@@ -17,6 +17,7 @@ import Text from "../components/Text";
 import Draggable from "absol-acomp/js/Draggable";
 import R from "../R";
 import Image from "../components/Image";
+import Button from "../components/Button";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -197,6 +198,26 @@ ComponentPicker.prototype.getView = function () {
                             }
                         }
                     ]
+                },
+                {
+                    tag: 'exptree',
+                    props: {
+                        name: "trigger",
+                        status: 'open'
+                    },
+                    on: {
+                        press: toggleGroup
+                    },
+                    child:[
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Button",
+                                icon: Button.prototype.menuIcon,
+                                componentConstructor: Button
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -218,6 +239,7 @@ ComponentPicker.prototype.getView = function () {
 
 
 ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
+    
     this.$modal = this.$modal || _('.as-compopnent-picker-forceground');
     this.$higne = this.$higne || _('.as-compopnent-picker-higne').addTo(this.$modal);
     this.$addBoxCtn = this.$addBoxCtn || _('.as-compopnent-picker-add-box-container').addTo(this.$higne);
@@ -235,6 +257,7 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
 
 
 ComponentPicker.prototype.ev_constructorEndDrag = function (treeNode, event) {
+    if (!this.$modal) return;//quick fix, must fix in Draggable
     this.$modal.remove();
     var x = event.clientX;
     var y = event.clientY;

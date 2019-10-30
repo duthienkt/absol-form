@@ -26,6 +26,7 @@ import StyleEditor from './StyleEditor';
 import Image from '../components/Image';
 import AllPropertyEditor from './AllPropertyEditor';
 import ComponentOutline from './ComponentOutline';
+import Button from '../components/Button';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -57,6 +58,7 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(SelectBox);
     this.mLayoutEditor.addComponent(Text);
     this.mLayoutEditor.addComponent(Image);
+    this.mLayoutEditor.addComponent(Button);
 
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
