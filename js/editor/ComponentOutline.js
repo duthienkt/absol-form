@@ -105,7 +105,7 @@ ComponentOutline.prototype.moveUp = function (comp) {
     comp.remove();
     parent.addChildBefore(comp, prevChild);
     this.updateComponetTree();
-    this.mLayoutEditor.notifyChanged();
+    this.mLayoutEditor.notifyChange();
 };
 
 ComponentOutline.prototype.moveDown = function (comp) {
@@ -116,7 +116,7 @@ ComponentOutline.prototype.moveDown = function (comp) {
     nextChild.remove();
     parent.addChildBefore(nextChild, comp);
     this.updateComponetTree();
-    this.mLayoutEditor.notifyChanged();
+    this.mLayoutEditor.notifyChange();
 }
 
 ComponentOutline.prototype.moveToBottom = function (comp) {
@@ -125,7 +125,7 @@ ComponentOutline.prototype.moveToBottom = function (comp) {
     comp.remove();
     parent.addChild(comp);
     this.updateComponetTree();
-    this.mLayoutEditor.notifyChanged();
+    this.mLayoutEditor.notifyDataChange();
 };
 
 ComponentOutline.prototype.updateComponetTree = function () {
