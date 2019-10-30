@@ -71,6 +71,13 @@ LayoutEditor.prototype.getView = function () {
         class: ['as-layout-editor'].concat([this.MODE_CLASS_NAMES[this.mode]]),
         child: [
             {
+                class: 'as-layout-editor-mode-button-container',
+                child: {
+                    tag: 'button',
+                    child: ['span.mdi.mdi-pencil-box-multiple-outline', 'span.mdi.mdi-play-outline']
+                }
+            },
+            {
                 class: 'as-layout-editor-vrule-container',
                 child: 'vruler'
             },
@@ -96,7 +103,7 @@ LayoutEditor.prototype.getView = function () {
                             class: 'as-layout-editor-forceground-container',
                             child: '.as-layout-editor-forceground',
                             extendEvent: 'contextmenu',
-                            
+
                         }
                     ]
                 }
@@ -132,10 +139,18 @@ LayoutEditor.prototype.getView = function () {
                 self.activeComponent(null);
             }
         });
-
+    this.$modeBtn = $('.as-layout-editor-mode-button-container > button', this.$view)
+        .on('click', this.ev_clickModeBtn.bind(this));
     return this.$view;
 };
 
+LayoutEditor.prototype.ev_clickModeBtn = function () {
+    var next = {
+        'interact': 'design',
+        'design': 'interact'
+    };
+    this.setMode(next[this.mode]);
+};
 
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
     this.updateRuler();
