@@ -26,7 +26,8 @@ Radio.prototype.onCreate = function () {
     this.style.hAlign = 'left';
     this.style.textHAlign = 'center';
     this.style.textVAlign = 'center';
-    this.style.checked = false;
+    this.attributes.checked = false;
+    this.attributes.value = '';
 };
 
 Radio.prototype.onCreated = function () {
@@ -74,6 +75,18 @@ Radio.prototype.getAttributeGroupNameDescriptor = function () {
     };
 };
 
+Radio.prototype.setAttributValue = function (value) {
+    this.$content.attr('value', value+'');
+    return value;
+};
+
+
+Radio.prototype.getAttributeValueDescriptor = function () {
+    return {
+        type: "text"
+    };
+};
+
 
 Radio.prototype.getAttributeCheckedDescriptor = function () {
     return {
@@ -83,7 +96,7 @@ Radio.prototype.getAttributeCheckedDescriptor = function () {
 
 
 Radio.prototype.getAcceptsAttributeNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["groupName", "checked"])
+    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["groupName", "checked", 'value'])
 };
 
 
