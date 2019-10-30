@@ -43,4 +43,6 @@ Text.prototype.getAttributeTextDescriptor = function () {
     };
 };
 
+
+
 export default Text;

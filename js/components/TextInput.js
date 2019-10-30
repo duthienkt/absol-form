@@ -29,13 +29,14 @@ TextInput.prototype.onCreated = function () {
             self.attributes.value = this.value;
             // self.emit('change', this.value, self);
             if (self.events.change)
-                console.log("TODO: exec",  self.events.change);     
+                console.log("TODO: exec", self.events.change);
         }
     });
 };
 
 TextInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
+    this.setStyleTextAlign.textAlign = 'left';
     this.attributes.value = '';
     this.attributes.name = "TextInput_" + (TextInput.count++);
     this.attributes.placeHolder = '';
@@ -46,6 +47,30 @@ TextInput.prototype.render = function () {
     return _('input[type="text"]');
 };
 
+
+TextInput.prototype.getAcceptsStyleNames = function () {
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['textAlign']);
+};
+
+
+
+TextInput.prototype.getStyleTextAlignDescriptor = function () {
+    return {
+        type: "enum",
+        values: ['left', 'center', 'right', 'unset']
+    };
+};
+
+TextInput.prototype.setStyleTextAlign = function (value) {
+    if (['left', 'center', 'right'].indexOf(value) >= 0) {
+        this.view.addStyle('text-align', value);
+    }
+    else {
+        value = 'unset';
+        this.view.removeStyle('text-align', value);
+    }
+    return value;
+};
 
 TextInput.prototype.setAttributeValue = function (value) {
     this.view.value = value;
@@ -59,25 +84,25 @@ TextInput.prototype.setAttributePlaceHolder = function (value) {
 };
 
 
-TextInput.prototype.getAcceptsAttributeNames = function(){
+TextInput.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'placeHolder']);
 };
 
 
-TextInput.prototype.getAttributeValueDescriptor = function(){
+TextInput.prototype.getAttributeValueDescriptor = function () {
     return {
-        type:"text"
+        type: "text"
     }
 };
 
-TextInput.prototype.getAttributePlaceHolderDescriptor = function(){
+TextInput.prototype.getAttributePlaceHolderDescriptor = function () {
     return {
-        type:"text"
+        type: "text"
     }
 };
 
 
-TextInput.prototype.getAcceptsEventNames = function(){
+TextInput.prototype.getAcceptsEventNames = function () {
     return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
 
