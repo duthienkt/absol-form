@@ -282,6 +282,9 @@ ListEditor.prototype.removeRowByElt = function (rowElement) {
     this._data = this._data.filter(function (item) {
         return rowElement.__data__ != item;
     });
+    if (this.checkEmpty() && this.checkDuplicate()) {
+        this.notifyChange();
+    }
 };
 
 
@@ -294,6 +297,9 @@ ListEditor.prototype.removeRowByData = function (rowData) {
             if (elt.__data__ == rowData) elt.remove();
             return true;
         });
+    if (this.checkEmpty() && this.checkDuplicate()) {
+        this.notifyChange();
+    }
 };
 
 ListEditor.prototype.insertRowBeforeElt = function (elt) {
@@ -302,6 +308,9 @@ ListEditor.prototype.insertRowBeforeElt = function (elt) {
     this.$body.addChildBefore(res, elt);
     var index = this._data.indexOf(elt.__data__);
     this._data.splice(index, 0, itemData);
+    if (this.checkEmpty() && self.checkDuplicate()) {
+        this.notifyChange();
+    }
     return res;
 };
 
@@ -311,6 +320,9 @@ ListEditor.prototype.insertRowAfterElt = function (elt) {
     this.$body.addChildAfter(res, elt);
     var index = this._data.indexOf(elt.__data__);
     this._data.splice(index + 1, 0, itemData);
+    if (this.checkEmpty() && this.checkDuplicate()) {
+        this.notifyChange();
+    }
     return res;
 };
 
@@ -319,6 +331,9 @@ ListEditor.prototype.appendRowElement = function () {
     var res = this.makeNewRow(itemData);
     this.$body.addChildBefore(res, this.$addRow);
     this._data.push(itemData);
+    if (this.checkEmpty() && this.checkDuplicate()) {
+        this.notifyChange();
+    }
     return res;
 };
 
