@@ -25,7 +25,7 @@ Table.prototype.onCreate = function () {
         [randomPhrase(10), randomPhrase(10), randomPhrase(10)],
         [randomPhrase(10), randomPhrase(10), randomPhrase(10)],
         [randomPhrase(10), randomPhrase(10), randomPhrase(10)]
-    ]
+    ];
 
     this.style.height = 100;
     this.style.width = 300;

@@ -1,9 +1,9 @@
-.as-undo-history{
+.as-undo-history {
     min-width: 200px;
-    min-height: 120px;
+    min-height: 200px;
 }
 
-.as-undo-history.as-minimize{
+.as-undo-history.as-minimize {
     left: 5px;
     top: calc(100vh - 1.4em - 5px);
     height: 1.4em;
@@ -16,10 +16,86 @@
 }
 
 
-.as-undo-history.as-minimize > .absol-onscreen-window-content>.absol-onscreen-window-head-bar .absol-onscreen-window-head-bar-button-minimize{
+.as-undo-history.as-minimize>.absol-onscreen-window-content>.absol-onscreen-window-head-bar .absol-onscreen-window-head-bar-button-minimize {
     display: none;
 }
 
-.as-undo-history:not(.as-minimize) > .absol-onscreen-window-content>.absol-onscreen-window-head-bar .absol-onscreen-window-head-bar-button-dock{
+.as-undo-history:not(.as-minimize)>.absol-onscreen-window-content>.absol-onscreen-window-head-bar .absol-onscreen-window-head-bar-button-dock {
     display: none;
+}
+
+
+
+.as-undo-history-item-list {
+    position: absolute;
+    top: 1.6em;
+    left: 0.1em;
+    right: 0.1em;
+    bottom: 0.1em;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+}
+
+.as-undo-history-active-buttons {
+    height: 1.4em;
+    padding: 0.1em;
+}
+
+.as-undo-history-active-buttons button {
+    width: 1.4em;
+    height: 1.4em;
+    font-size: 1em;
+    padding: 0;
+    border: 0;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+    outline: none;
+    background-color: rgba(169, 169, 169, 0.1);
+}
+
+.as-undo-history-active-buttons button:disabled {
+    pointer-events: none;
+}
+
+.as-undo-history-active-buttons button:hover {
+    background-color: rgba(169, 169, 169, 0.2);
+}
+
+.as-undo-history-active-buttons button:active {
+    background-color: rgba(169, 169, 169, 0.4);
+}
+
+.as-undo-history-active-buttons .mdi-delete {
+    color: rgb(255, 59, 59);
+}
+
+.as-undo-history-active-buttons-right-container {
+    position: absolute;
+    top: 0.1em;
+    right: 0.1em;
+}
+
+.as-undo-history-item {
+    position: relative;
+    padding-left: 1.4em;
+    min-height: 1.4em;
+    box-sizing: content-box;
+    border-bottom: 1px solid #ddd;
+}
+
+.as-undo-history-item:hover {
+    background: rgba(169, 169, 169, 0.1);
+}
+
+.as-undo-history-item-icon-container {
+    top: calc(50% - 0.6em);
+    bottom: calc(50% - 0.6em);
+    left: 0.1em;
+    width: 1.2em;
+    position: absolute;
+}
+
+.as-undo-history-item-icon-container>span {
+    font-size: 1em;
+    line-height: 1.2;
 }
