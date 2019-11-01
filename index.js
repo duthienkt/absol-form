@@ -11,16 +11,65 @@ import BaseComponent from './js/core/BaseComponent'
 import LayoutEditor from './js/editor/LayoutEditor'
 import Fcore from './js/core/FCore'
 import FormEditor from './js/editor/FormEditor'
-
+import AllPropertyEditor from './js/editor/AllPropertyEditor';
+import AnchorEditor from './js/editor/AnchorEditor';
+import AttributeEditor from './js/editor/AttributeEditor';
+import ComponentOutline from './js/editor/ComponentOutline';
+import ComponentPicker from './js/editor/ComponentPicker';
+import ListEditor from './js/editor/ListEditor';
+import PropertyEditor from './js/editor/PropertyEditor';
+import StyleEditor from './js/editor/StyleEditor';
+import ContentScalelessComponent from './js/core/ContentScalelessComponent';
+import ScalableComponent from './js/core/ScalableComponent';
+import FModel from './js/core/FModel';
+import FNode from './js/core/FNode';
+import FViewable from './js/core/FViewable';
+import Button from './js/components/Button';
+import CheckBox from './js/components/Checkbox';
+import ComboBox from './js/components/ComboBox';
+import Image from './js/components/Image';
+import Label from './js/components/Label';
+import NumberInput from './js/components/NumberInput';
+import Radio from './js/components/Radio';
+import Table from './js/components/Table';
+import Text from './js/components/Text';
+import TextArea from './js/components/TextArea';
 
 export default {
+    AllPropertyEditor: AllPropertyEditor,
+    AttributeEditor:AttributeEditor,
+    AnchorEditor: AnchorEditor,
+    ComponentOutline: ComponentOutline,
+    ComponentPicker:ComponentPicker,
+    ListEditor:ListEditor,
+    PropertyEditor:PropertyEditor,
+    StyleEditor:StyleEditor,
+    
+    
+    FViewable:FViewable,
+    FNode:FNode,
+    FModel: FModel,
     FormEditor: FormEditor,
     LayoutEditor: LayoutEditor,
+    
+    ScalableComponent: ScalableComponent,
+    ContentScalelessComponent: ContentScalelessComponent,
     RelativeAnchor:RelativeAnchor,
     BaseComponent: BaseComponent,
-    TextInput:TextInput,
     RelativeLayout: RelativeLayout,
-    Assembler: Assembler,
+    TextInput:TextInput,
     DateInput: DateInput,
+    Button:Button,
+    CheckBox:CheckBox,
+    ComboBox:ComboBox,
+    Image:Image,
+    Label:Label,
+    NumberInput:NumberInput,
+    Radio:Radio,
+    Table:Table,
+    Text: Text,
+    TextArea: TextArea,    
+
+    Assembler: Assembler,
     core: Fcore
 };

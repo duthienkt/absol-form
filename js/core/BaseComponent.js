@@ -122,14 +122,13 @@ BaseComponent.prototype.getData = function () {
 
 BaseComponent.prototype.setEvent = function (key, value) {
     this.events[key] = value;
-    // this.on(key, value);
+    return value;
 };
 
 
 BaseComponent.prototype.removeEvent = function (key) {
     this.events[key] = undefined;
     delete this.events[key];
-    // this.off(key, value);
 };
 
 BaseComponent.prototype.getAcceptsStyleNames = function () {

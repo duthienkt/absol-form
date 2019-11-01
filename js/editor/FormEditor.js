@@ -28,6 +28,7 @@ import AllPropertyEditor from './AllPropertyEditor';
 import ComponentOutline from './ComponentOutline';
 import Button from '../components/Button';
 import Table from '../components/Table';
+import UndoHistory from './UndoHistory';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -61,7 +62,7 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(Image);
     this.mLayoutEditor.addComponent(Button);
     this.mLayoutEditor.addComponent(Table);
-
+    this.mUndoHistory = new UndoHistory();
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
     this.mComponentOutline = new ComponentOutline();
@@ -109,7 +110,12 @@ FormEditor.prototype.onStart = function () {
     this.mLayoutEditor.start();
     this.mAllPropertyEditor.start();
     this.mComponentOutline.start();
+    this.mUndoHistory.start();
 };
+
+FormEditor.prototype.onStop = function(){
+    this.mUndoHistory.stop();
+}
 
 FormEditor.prototype.getContextManager = function () {
     return this.ctxMng;

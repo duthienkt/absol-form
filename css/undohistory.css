@@ -1,0 +1,25 @@
+.as-undo-history{
+    min-width: 200px;
+    min-height: 120px;
+}
+
+.as-undo-history.as-minimize{
+    left: 5px;
+    top: calc(100vh - 1.4em - 5px);
+    height: 1.4em;
+    min-width: unset;
+    min-height: unset;
+    overflow: hidden;
+    -webkit-box-shadow: 2px 2px 17px -1px rgba(0, 0, 0, 0.54);
+    -moz-box-shadow: 2px 2px 17px -1px rgba(0, 0, 0, 0.54);
+    box-shadow: 2px 2px 17px -1px rgba(0, 0, 0, 0.54);
+}
+
+
+.as-undo-history.as-minimize > .absol-onscreen-window-content>.absol-onscreen-window-head-bar .absol-onscreen-window-head-bar-button-minimize{
+    display: none;
+}
+
+.as-undo-history:not(.as-minimize) > .absol-onscreen-window-content>.absol-onscreen-window-head-bar .absol-onscreen-window-head-bar-button-dock{
+    display: none;
+}
