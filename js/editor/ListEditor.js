@@ -308,9 +308,6 @@ ListEditor.prototype.insertRowBeforeElt = function (elt) {
     this.$body.addChildBefore(res, elt);
     var index = this._data.indexOf(elt.__data__);
     this._data.splice(index, 0, itemData);
-    if (this.checkEmpty() && self.checkDuplicate()) {
-        this.notifyChange();
-    }
     return res;
 };
 
@@ -320,9 +317,6 @@ ListEditor.prototype.insertRowAfterElt = function (elt) {
     this.$body.addChildAfter(res, elt);
     var index = this._data.indexOf(elt.__data__);
     this._data.splice(index + 1, 0, itemData);
-    if (this.checkEmpty() && this.checkDuplicate()) {
-        this.notifyChange();
-    }
     return res;
 };
 
