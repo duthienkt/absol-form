@@ -121,6 +121,7 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
                         change: function () {
                             self.setProperty(name, this.value);
                             self.notifyChange(name, this);
+                            self.notifyStopChange(name);
                         }
                     }
                 }
@@ -209,6 +210,9 @@ PropertyEditor.prototype.createTextInputRow = function (name, descriptor) {
                         keyup: function () {
                             self.setProperty(name, this.value);
                             self.notifyChange(name, this);
+                        },
+                        change: function () {
+                            self.notifyStopChange(name);
                         }
                     }
                 }
@@ -248,6 +252,7 @@ PropertyEditor.prototype.createBoolInputRow = function (name, descriptor) {
                         change: function () {
                             self.setProperty(name, this.checked);
                             self.notifyChange(name, this);
+                            self.notifyStopChange(name);
                         }
                     }
                 }
@@ -289,6 +294,7 @@ PropertyEditor.prototype.createDateInputRow = function (name, descriptor) {
                         change: function () {
                             self.setProperty(name, this.value);
                             self.notifyChange(name, this);
+                            self.notifyStopChange(name);
                         }
                     }
                 }
@@ -315,6 +321,7 @@ PropertyEditor.prototype.createDateInputRow = function (name, descriptor) {
                                 self.setProperty(name, beginOfDay(new Date()));
                             }
                             self.notifyChange(name, this);
+                            self.notifyStopChange(name);
                         }
                     }
                 }]
@@ -359,6 +366,8 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
                             if (!descriptor.livePreview && event.by == 'long_press_button') return;
                             self.setProperty(name, this.value);
                             self.notifyChange(name, this);
+                            if (event.by != 'long_press_button')
+                                self.notifyStopChange(name);
                         }
                     }
                 }
@@ -412,6 +421,7 @@ PropertyEditor.prototype.createListInputRow = function (name, descriptor) {
     });
     listEditor.on('change', function () {
         self.setProperty(name, this.getData());
+        self.notifyStopChange(name);
     });
     listEditor.start();
     listEditor.setData(this.getProperty(name));
@@ -484,8 +494,12 @@ PropertyEditor.prototype.getView = function () {
 
 PropertyEditor.prototype.notifyChange = function (name, from) {
     this.notifyChangeToProperties(name, from);
-    this.emit('change', { type: 'change', target: this, from: from, name: name }, this);
+    this.emit('change', { type: 'change', target: this, from: from, name: name, object: this.object }, this);
 };
+
+PropertyEditor.prototype.notifyStopChange = function (name) {
+    this.emit('stopchange', { type: 'stopchange', name: name, object: this.object }, this);
+}
 
 
 export default PropertyEditor;
