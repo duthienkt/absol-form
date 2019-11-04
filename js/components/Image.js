@@ -16,11 +16,9 @@ Image.prototype.constructor = Image;
 
 Image.prototype.tag = "Image";
 Image.prototype.menuIcon = "span.mdi.mdi-image-outline";
-Image.count = 0;
 
 Image.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.attributes.name = 'Image_' + (Image.count++);
     this.attributes.src = '';
 }
 

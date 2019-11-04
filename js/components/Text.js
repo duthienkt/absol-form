@@ -12,11 +12,9 @@ Text.prototype.constructor = Text;
 
 Text.prototype.tag = "Text";
 Text.prototype.menuIcon = "span.mdi.mdi-format-color-text";
-Text.count = 0;
 
 Text.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.attributes.name = 'Text_' + (Text.count++);
     this.attributes.text = this.attributes.name;
 }
 

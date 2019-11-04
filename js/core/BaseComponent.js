@@ -23,7 +23,6 @@ Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptor
 BaseComponent.prototype.constructor = BaseComponent;
 
 
-BaseComponent.count = 0;
 
 BaseComponent.prototype.tag = "BaseComponent";
 BaseComponent.prototype.menuIcon = "span.mdi.mdi-package-variant-closed";
@@ -35,7 +34,8 @@ BaseComponent.prototype.anchor = null;
 BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
 BaseComponent.prototype.onCreate = function () {
-    this.attributes.name = "comp_" + (BaseComponent.count++);
+    this.constructor.count = this.constructor.count||0;
+    this.attributes.name = this.tag +"_" + (this.constructor.count++);
 };
 
 BaseComponent.prototype.onCreated = function () {

@@ -12,6 +12,7 @@ function Radio() {
 }
 
 Object.defineProperties(Radio.prototype, Object.getOwnPropertyDescriptors(ContentScalelessComponent.prototype));
+
 Radio.prototype.constructor = Radio;
 Radio.prototype.tag = "Radio";
 Radio.prototype.menuIcon = "span.mdi.mdi-radiobox-marked";

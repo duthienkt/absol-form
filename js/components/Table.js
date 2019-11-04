@@ -15,11 +15,9 @@ Table.prototype.constructor = Table;
 
 Table.prototype.tag = "Table";
 Table.prototype.menuIcon = "span.mdi.mdi-table-large";
-Table.count = 0;
 
 Table.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.attributes.name = 'Table_' + (Table.count++);
     this.attributes.header = this.attributes.header || [randomPhrase(10), randomPhrase(10), randomPhrase(10)];
     this.attributes.body = this.attributes.body || [
         [randomPhrase(10), randomPhrase(10), randomPhrase(10)],

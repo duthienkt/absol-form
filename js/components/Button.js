@@ -12,11 +12,9 @@ Button.prototype.constructor = Button;
 
 Button.prototype.tag = "Button";
 Button.prototype.menuIcon = "span.mdi.mdi-alpha-b-box";
-Button.count = 0;
 
 Button.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.attributes.name = 'Button_' + (Button.count++);
     this.attributes.text = this.attributes.name;
 };
 

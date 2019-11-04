@@ -11,7 +11,6 @@ function TextInput() {
 
 Object.defineProperties(TextInput.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
 TextInput.prototype.constructor = TextInput;
-TextInput.count = 0;
 
 TextInput.prototype.tag = "TextInput";
 TextInput.prototype.menuIcon = "span.mdi.mdi-textbox";
@@ -38,7 +37,6 @@ TextInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.setStyleTextAlign.textAlign = 'left';
     this.attributes.value = '';
-    this.attributes.name = "TextInput_" + (TextInput.count++);
     this.attributes.placeHolder = '';
 };
 
