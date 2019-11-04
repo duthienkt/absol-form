@@ -11,6 +11,7 @@ import '../dom/HRuler';
 import '../dom/VRuler';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import AnchorEditor from './AnchorEditor';
+import R from '../R';
 
 
 var _ = Fcore._;
@@ -50,6 +51,12 @@ LayoutEditor.prototype.MODE_CLASS_NAMES = {
     interact: 'mode-interact'
 };
 
+LayoutEditor.prototype.onAttached = function () {
+    /**
+     * @type {import('./UndoHistory').default}
+     */
+    this.mUndoHistory = this.getContext(R.UNDO_HISTORY);
+}
 
 LayoutEditor.prototype.activePublicDataChange = function (flag) {
     this._publicDataChange = !!flag;
@@ -273,6 +280,7 @@ LayoutEditor.prototype._newAnchorEditor = function () {
                     other.ev_endMove(false, originEvent);
                 }
             }
+            self.commitHistory('move', 'Move/Resize component');
         })
         .on('focus', function (event) {
             self.emit('focuscomponent', { type: 'focuscomponent', component: this.component, originEvent: event, target: self }, self);
@@ -352,7 +360,7 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 };
 
 
-LayoutEditor.prototype.setData = function (data) {
+LayoutEditor.prototype.applyData = function(data){
     var self = this;
     function visit(node) {
         var constructor = self.constructors[node.tag];
@@ -381,13 +389,22 @@ LayoutEditor.prototype.setData = function (data) {
         }
         return comp;
     }
-
+    if (this.rootLayout){
+        this.rootLayout.onDetached(this);
+        this.rootLayout.view.remove();
+    }
     this.rootLayout = visit(data);
     this.$layoutCtn.addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
     this.emit('change', { type: 'change', target: this, data: data }, this);
+};
+
+
+LayoutEditor.prototype.setData = function (data) {
+    this.applyData(data);
+    this.commitHistory('set-data', "Set data");
 };
 
 
@@ -440,6 +457,7 @@ LayoutEditor.prototype.addNewComponent = function (tag, posX, posY) {
     this.setActiveComponent(newComponent);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
+    this.commitHistory('add', "Add " + newComponent.getAttribute('name') + '[' + tag + ']');
 };
 
 
@@ -449,14 +467,17 @@ LayoutEditor.prototype.clearRootLayout = function () {
     this.updateAnchor();
     this.emit('clearallcomponent', { target: this }, this);
     this.notifyDataChange();
+    this.commitHistory('remove', 'Remove all components');
 };
 
 
 LayoutEditor.prototype.removeComponent = function () {
+    var removedComponents = [];
     var comp;
     for (var i = 0; i < arguments.length; ++i) {
         comp = arguments[i];
         comp.remove();
+        removedComponents.push(comp);
         var anchorEditor = this.findAnchorEditorByComponent(comp);
         if (anchorEditor) {
             this.toggleActiveComponent(comp);
@@ -464,6 +485,12 @@ LayoutEditor.prototype.removeComponent = function () {
         this.emit('removecomponent', { type: 'removecomponent', target: this, component: comp }, this);
     }
     this.notifyDataChange();
+
+    if (removedComponents.length > 0) {
+        this.commitHistory('remove', 'Remove ' + removedComponents.map(function (c) {
+            return c.getAttribute('name');
+        }).join(', '));
+    }
 };
 
 
@@ -476,6 +503,7 @@ LayoutEditor.prototype.moveUpComponent = function (comp) {
     parent.addChildBefore(comp, prevChild);
     this.emit('moveupcomponent', { type: 'moveupcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' up');
 };
 
 
@@ -488,6 +516,8 @@ LayoutEditor.prototype.moveDownComponent = function (comp) {
     parent.addChildBefore(nextChild, comp);
     this.emit('movedowncomponent', { type: 'movedowncomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' down');
+
 };
 
 
@@ -498,9 +528,9 @@ LayoutEditor.prototype.moveToBottomComponent = function (comp) {
     if (lastChild == comp) return;
     comp.remove();
     parent.addChild(comp);
-    this.updateComponetTree();
     this.emit('movetobottomcomponent', { type: 'movetobottomcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to bottom');
 };
 
 
@@ -513,7 +543,14 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
     parent.addChildBefore(comp, firstChild);
     this.emit('movetotopcomponent', { type: 'movetotopcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to top');
 };
 
+
+
+LayoutEditor.prototype.commitHistory = function (type, description) {
+    if (!this.mUndoHistory) return;
+    this.mUndoHistory.commit(type, this.getData(), description, new Date());
+};
 
 export default LayoutEditor;

@@ -356,6 +356,7 @@ AnchorEditor.prototype.cmd_alignLeftDedge = function () {
         if (editor == this) continue;
         editor.alignLeftDedge(leftValue);
     }
+    this.layoutEditor.commitHistory('move', 'Align Left Dedge');
 };
 
 
@@ -370,6 +371,8 @@ AnchorEditor.prototype.cmd_alignRightDedge = function () {
         if (editor == this) continue;
         editor.alignRightDedge(rightValue);
     }
+    this.layoutEditor.commitHistory('move', 'Align Right Dedge');
+
 };
 
 AnchorEditor.prototype.cmd_alignHorizontalCenter = function () {
@@ -382,6 +385,8 @@ AnchorEditor.prototype.cmd_alignHorizontalCenter = function () {
         if (editor == this) continue;
         editor.alignHorizontalCenter(centerValue);
     }
+    this.layoutEditor.commitHistory('move', 'Align Horizontal Center');
+
 };
 
 AnchorEditor.prototype.cmd_equaliseWidth = function () {
@@ -394,6 +399,8 @@ AnchorEditor.prototype.cmd_equaliseWidth = function () {
         if (editor == this) continue;
         editor.equaliseWidth(widthValue);
     }
+    this.layoutEditor.commitHistory('move', 'Equalise Width');
+
 };
 
 
@@ -524,6 +531,7 @@ AnchorEditor.prototype.cmd_alignTopDedge = function () {
         if (editor == this) continue;
         editor.alignTopDedge(topValue);
     }
+    this.layoutEditor.commitHistory('move', 'Align Top Dedge');
 };
 
 
@@ -538,6 +546,7 @@ AnchorEditor.prototype.cmd_alignBottomDedge = function () {
         if (editor == this) continue;
         editor.alignBottomDedge(bottomValue);
     }
+    this.layoutEditor.commitHistory('move', 'Align Bottom Dedge');
 };
 
 AnchorEditor.prototype.cmd_alignVerticalCenter = function () {
@@ -550,6 +559,8 @@ AnchorEditor.prototype.cmd_alignVerticalCenter = function () {
         if (editor == this) continue;
         editor.alignVerticalCenter(centerValue);
     }
+    this.layoutEditor.commitHistory('move', 'Align Verlical Center');
+
 };
 
 AnchorEditor.prototype.cmd_equaliseHeight = function () {
@@ -562,6 +573,7 @@ AnchorEditor.prototype.cmd_equaliseHeight = function () {
         if (editor == this) continue;
         editor.equaliseHeight(heightValue);
     }
+    this.layoutEditor.commitHistory('move', 'Equalise Height');
 };
 
 
@@ -586,6 +598,7 @@ AnchorEditor.prototype.alignTopDedge = function (topValue) {
     }
     this.updatePosition();
     this.component.reMeasure();
+
 };
 
 
@@ -639,7 +652,6 @@ AnchorEditor.prototype.alignVerticalCenter = function (centerValue) { // bottom 
     }
     this.updatePosition();
     this.component.reMeasure();
-
 };
 
 

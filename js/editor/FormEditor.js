@@ -68,12 +68,22 @@ function FormEditor() {
     this.mComponentOutline = new ComponentOutline();
     this.mAttributeEditor.on('change', function (event) {
         self.emit('change', Object.assign({ formEditor: this }, event), self);
-    });
+    }).on('stopchange', function (event) {
+        self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
+    }
+    );;
 
     this.mStyleEditor = new StyleEditor()
-        .on('change', this.ev_styleEditorChange.bind(this));
+        .on('change', this.ev_styleEditorChange.bind(this))
+        .on('stopchange', function (event) {
+            self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
+        }
+        );
 
-    this.mAllPropertyEditor = new AllPropertyEditor();
+    this.mAllPropertyEditor = new AllPropertyEditor().on('stopchange', function (event) {
+        self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
+    }
+    );;
     this.mAllPropertyEditor.on('change', function (event) {
         self.mLayoutEditor.autoExpandRootLayout();
         if (self._focusElement) self._focusElement.reMeasure();
@@ -84,16 +94,25 @@ function FormEditor() {
         self.mStyleEditor.notifyChange();
         self.mAttributeEditor.notifyChange();
         self.emit('change', Object.assign({ formEditor: this }, event), self);
-    });
+        Dom.updateResizeSystem();
+    }).on('stopchange', function (event) {
+        self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
+    }
+    );
 
     this.mLayoutEditor.on('change', this.notifyAllChange.bind(this))
         .on('focuscomponent', this.ev_focusElement.bind(this))
         .on('removecomponent', this.ev_removeComponent.bind(this))
         .on('addcomponent', this.ev_addComponent.bind(this));
 
+    this.mUndoHistory.on('checkout', function (event) {
+        self.mLayoutEditor.applyData(event.item.data);
+    });
+
     this.mLayoutEditor.on('movecomponent', this.notifyStyleChange.bind(this));
     this.ctxMng.set(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.ctxMng.set(R.COMPONENT_PICKER, this.mComponentPicker);
+    this.ctxMng.set(R.UNDO_HISTORY, this.mUndoHistory);
     this.mLayoutEditor.attach(this);
     this.mComponentPicker.attach(this);
     this.mComponentOutline.attach(this);
@@ -113,9 +132,11 @@ FormEditor.prototype.onStart = function () {
     this.mUndoHistory.start();
 };
 
-FormEditor.prototype.onStop = function(){
+
+FormEditor.prototype.onStop = function () {
     this.mUndoHistory.stop();
-}
+};
+
 
 FormEditor.prototype.getContextManager = function () {
     return this.ctxMng;
@@ -256,6 +277,7 @@ FormEditor.prototype.ev_focusElement = function (event) {
     this.mStyleEditor.edit(event.component);
     this.mAttributeEditor.edit(event.component);
     this.mAllPropertyEditor.edit(event.component);
+    this.mComponentOutline.updateComponentStatus();
 };
 
 FormEditor.prototype.ev_removeComponent = function (event) {
@@ -268,13 +290,14 @@ FormEditor.prototype.ev_removeComponent = function (event) {
     this.mComponentOutline.updateComponetTree();
 };
 
-FormEditor.prototype.ev_addComponent = function(){
-    this.mComponentOutline.updateComponetTree();    
+FormEditor.prototype.ev_addComponent = function () {
+    this.mComponentOutline.updateComponetTree();
 };
 
 FormEditor.prototype.ev_styleEditorChange = function (event) {
     this.mLayoutEditor.autoExpandRootLayout();
     if (this._focusElement) this._focusElement.reMeasure();
+    Dom.updateResizeSystem();
     if (event.name == 'vAlign' || event.name == 'hAlign')
         this.mLayoutEditor.updateAnchor();
     else
@@ -371,7 +394,7 @@ FormEditor.prototype.ev_dragRightResizer = function (event) {
     window.dispatchEvent(new Event('resize'));
 };
 
-FormEditor.prototype.ev_layoutEditorChange = function(){
+FormEditor.prototype.ev_layoutEditorChange = function () {
 
 };
 
@@ -387,15 +410,21 @@ FormEditor.prototype.getData = function () {
 };
 
 
+FormEditor.prototype.commitHistory = function (type, description) {
+    this.mUndoHistory.commit(type, this.getData(), description, new Date());
+};
+
+
 FormEditor.prototype.addComponent = function (data) {
     if (this.mLayoutEditor.rootLayout) {
         var newComponent = this.mLayoutEditor.build(data);
         this.mLayoutEditor.rootLayout.addChild(newComponent);
         this.mLayoutEditor.activeComponent(newComponent);
+        this.commitHistory('add', 'Add' + newComponent.tag);
     }
 };
 
-FormEditor.prototype.notifyAllChange = function(){
+FormEditor.prototype.notifyAllChange = function () {
     this.mStyleEditor.notifyChange();
     this.mAttributeEditor.notifyChange();
     this.mAllPropertyEditor.notifyChange();
