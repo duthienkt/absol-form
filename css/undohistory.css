@@ -81,10 +81,16 @@
     min-height: 1.4em;
     box-sizing: content-box;
     border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
 }
 
-.as-undo-history-item:hover {
-    background: rgba(169, 169, 169, 0.1);
+.as-undo-history-item>span{
+    overflow: hidden;
+    
 }
 
 .as-undo-history-item-icon-container {
@@ -98,4 +104,11 @@
 .as-undo-history-item-icon-container>span {
     font-size: 1em;
     line-height: 1.2;
+}
+
+.as-undo-history-item-active {
+    background: rgba(169, 169, 199, 0.3);
+}
+.as-undo-history-item-disabled{
+    color: rgb(152, 152, 155);
 }
