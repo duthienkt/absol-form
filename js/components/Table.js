@@ -54,7 +54,6 @@ Table.prototype.render = function () {
 
 Table.prototype.setStyle = function () {
     var res = ScalableComponent.prototype.setStyle.apply(this, arguments);
-    Dom.updateResizeSystem();
     return res;
 };
 
