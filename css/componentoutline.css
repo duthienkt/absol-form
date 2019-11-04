@@ -1,0 +1,8 @@
+.as-component-outline-node-selected>.absol-exp-node {
+    background-color: rgba(20, 185, 235, 0.3);
+}
+
+
+.as-component-outline-node-focus>.absol-exp-node {
+    background-color: rgba(185, 235, 20, 0.3);
+}
