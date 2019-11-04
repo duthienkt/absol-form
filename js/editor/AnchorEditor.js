@@ -339,11 +339,10 @@ AnchorEditor.prototype.ev_endMove = function (userAction, event) {
 
 AnchorEditor.prototype.cmd_delete = function(){
     var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
-        this.layoutEditor.removeComponent(editor.component);
-    }
+    var components = editors.map(function(e){
+        return e.component;
+    });
+    this.layoutEditor.removeComponent.apply(this.layoutEditor, components);
 };
 
 
