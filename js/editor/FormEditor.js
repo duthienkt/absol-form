@@ -107,6 +107,7 @@ function FormEditor() {
 
     this.mUndoHistory.on('checkout', function (event) {
         self.mLayoutEditor.applyData(event.item.data);
+        self.mComponentOutline.updateComponetTree();
     });
 
     this.mLayoutEditor.on('movecomponent', this.notifyStyleChange.bind(this));
