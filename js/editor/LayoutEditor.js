@@ -236,7 +236,7 @@ LayoutEditor.prototype.updateSize = function () {
 LayoutEditor.prototype._newAnchorEditor = function () {
     var self = this;
     //craete new, repeat event to other active anchor editor
-    return new AnchorEditor(this).on('quickclick', function (event) {
+    return new AnchorEditor(this).on('click', function (event) {
         if (this.component)
             self.toggleActiveComponent(this.component);
     })//todo: implement in AnchorEditor
