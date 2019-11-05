@@ -127,7 +127,6 @@ FormEditor.prototype.onStart = function () {
     this.mLayoutEditor.start();
     this.mComponentPicker.start();
     this.mAttributeEditor.start();
-    this.mLayoutEditor.start();
     this.mAllPropertyEditor.start();
     this.mComponentOutline.start();
     this.mUndoHistory.start();
@@ -135,9 +134,33 @@ FormEditor.prototype.onStart = function () {
 
 
 FormEditor.prototype.onStop = function () {
+    this.mLayoutEditor.stop();
+    this.mComponentPicker.stop();
+    this.mAttributeEditor.stop();
+    this.mAllPropertyEditor.stop();
+    this.mComponentOutline.stop();
     this.mUndoHistory.stop();
 };
 
+
+FormEditor.prototype.onPause = function () {
+    this.mLayoutEditor.pause();
+    this.mComponentPicker.pause();
+    this.mAttributeEditor.pause();
+    this.mAllPropertyEditor.pause();
+    this.mComponentOutline.pause();
+    this.mUndoHistory.pause();
+};
+
+
+FormEditor.prototype.onResume  = function(){
+    this.mLayoutEditor.resume();
+    this.mComponentPicker.resume();
+    this.mAttributeEditor.resume();
+    this.mAllPropertyEditor.resume();
+    this.mComponentOutline.resume();
+    this.mUndoHistory.resume ();
+};
 
 FormEditor.prototype.getContextManager = function () {
     return this.ctxMng;

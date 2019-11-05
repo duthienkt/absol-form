@@ -108,8 +108,12 @@ UndoHistory.prototype.getView = function () {
 };
 
 
-UndoHistory.prototype.onStart = function () {
+UndoHistory.prototype.onResume = function () {
     this.getView().addTo(document.body);
+};
+
+UndoHistory.prototype.onPause = function () {
+    this.getView().remove();
 };
 
 
