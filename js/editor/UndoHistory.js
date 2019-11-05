@@ -54,6 +54,9 @@ UndoHistory.prototype.getView = function () {
                     {
                         tag: 'button',
                         class: 'as-undo-history-active-undo',
+                        attr: {
+                            title: 'Undo'
+                        },
                         props: {
                             disabled: true
                         },
@@ -62,6 +65,9 @@ UndoHistory.prototype.getView = function () {
                     {
                         tag: 'button',
                         class: 'as-undo-history-active-redo',
+                        attr: {
+                            title: 'Redo'
+                        },
                         props: {
                             disabled: true
                         },
@@ -71,6 +77,9 @@ UndoHistory.prototype.getView = function () {
                         class: 'as-undo-history-active-buttons-right-container',
                         child: {
                             tag: 'button',
+                            attr: {
+                                title: 'Clear'
+                            },
                             class: 'as-undo-history-active-clear',
                             child: 'span.mdi.mdi-delete'
                         }
@@ -157,17 +166,24 @@ UndoHistory.prototype.commit = function (type, data, description, timestamp) {
 };
 
 
-UndoHistory.prototype.clear = function(){
+UndoHistory.prototype.clear = function () {
     if (this.items.length < 2) return;
     var lastItem = this.items.pop();
     var lastData = lastItem.data;
     lastItem.getView().remove();
-    while (this.items.length >0){
+    while (this.items.length > 0) {
         lastItem = this.items.pop();
         lastItem.getView().remove();
     }
     this.commit('clear', lastData, 'Clear History');
 }
+
+UndoHistory.prototype.renew = function(){
+    while (this.items.length > 0) {
+        lastItem = this.items.pop();
+        lastItem.getView().remove();
+    }
+};
 
 /**
  * @param {UndoHistory}parent
@@ -196,7 +212,7 @@ UndoHistoryItem.prototype.typeIcon = {
     'set-data': 'span.mdi.mdi-open-in-app',
     'move-resize': 'span.mdi.mdi-move-resize',
     'move-order': 'span.mdi.mdi-arrow-up-down-bold',
-    'clear':'span.mdi.mdi-check-outline'
+    'clear': 'span.mdi.mdi-check-outline'
 };
 
 
