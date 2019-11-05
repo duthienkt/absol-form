@@ -13,13 +13,17 @@ var $ = Fcore.$;
  */
 function AnchorEditor(layoutEditor) {
     EventEmitter.call(this);
+    var self = this;
     this.layoutEditor = layoutEditor;
     this.component = null;
     this.$resizeBox = _('resizebox')
         .on('mousedown', this.focus.bind(this))
         .on('beginmove', this.ev_beginMove.bind(this, true))
         .on('moving', this.ev_moving.bind(this, true))
-        .on('endmove', this.ev_endMove.bind(this, true));
+        .on('endmove', this.ev_endMove.bind(this, true))
+        .on('click', function (ev) {
+            self.emit('click', ev, true);
+        });
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
     this.$topAlignLine = _('vline');
@@ -227,7 +231,6 @@ AnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         style0: Object.assign({}, this.component.style),
         comp: this.component,
         isChange: false,
-        startTime: new Date().getTime()
     };
     if (userAction) this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, target: this }, this);
 };
@@ -319,27 +322,17 @@ AnchorEditor.prototype.ev_moving = function (userAction, event) {
 
 
 AnchorEditor.prototype.ev_endMove = function (userAction, event) {
-    this.movingData.endTime = new Date().getTime();
     if (this.movingData.isChange) {
         this.emit('change', { type: 'change', target: this, component: this.movingData.comp, originEvent: event }, this);
-    }
-    else {
-        if (this.movingData.endTime - this.movingData.startTime > 500) {
-            if (userAction) this.emit('longclick', { type: 'longclick', target: this, originEvent: event, time: this.movingData.endTime - this.movingData.startTime, originEvent: event }, this);
-
-        }
-        else {
-            if (userAction) this.emit('quickclick', { type: 'quickclick', target: this, originEvent: event, time: this.movingData.endTime - this.movingData.startTime, originEvent: event }, this);
-        }
     }
     this.movingData = undefined;
     if (userAction) this.emit('endmove', { taget: this, type: 'moving', originEvent: event, target: this }, this);
 };
 
 
-AnchorEditor.prototype.cmd_delete = function(){
+AnchorEditor.prototype.cmd_delete = function () {
     var editors = this.layoutEditor.anchorEditors;
-    var components = editors.map(function(e){
+    var components = editors.map(function (e) {
         return e.component;
     });
     this.layoutEditor.removeComponent.apply(this.layoutEditor, components);
