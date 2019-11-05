@@ -117,6 +117,7 @@ function FormEditor() {
     this.mLayoutEditor.attach(this);
     this.mComponentPicker.attach(this);
     this.mComponentOutline.attach(this);
+    this.mUndoHistory.attach(this);
 }
 
 Object.defineProperties(FormEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
