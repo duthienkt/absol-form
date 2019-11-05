@@ -61,6 +61,7 @@ AnchorEditor.prototype.ev_contextMenu = function (event) {
             text: 'Equalise Width',
             cmd: this.cmd_equaliseWidth.bind(this)
         });
+
         items.push('================');
         items.push({
             icon: _('mdi-align-vertical-top'),
@@ -81,6 +82,61 @@ AnchorEditor.prototype.ev_contextMenu = function (event) {
             icon: _('span.mdi.mdi-arrow-expand-vertical'),
             text: 'Equalise Height',
             cmd: this.cmd_equaliseHeight.bind(this)
+        });
+        items.push('================');
+    }
+
+
+    if (this.layoutEditor.anchorEditors.length > 2) {
+        items.push({
+            icon: _('span.mdi.mdi-distribute-horizontal-left'),
+            text: 'Distribute Horizontal Left',
+            cmd: this.cmd_distributeHorizontalLeft.bind(this)
+        });
+        items.push({
+            icon: _('span.mdi.mdi-distribute-horizontal-center'),
+            text: 'Distribute Horizontal Center',
+            cmd: this.cmd_distributeHorizontalCenter.bind(this)
+        });
+        items.push({
+            icon: _('span.mdi.mdi-distribute-horizontal-right'),
+            text: 'Distribute Horizontal Right',
+            cmd: this.cmd_distributeHorizontalRight.bind(this)
+        });
+        items.push({
+            icon: _(
+                '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
+                <path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\
+                <path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\
+            </svg>'),
+            text: 'Distribute Horizontal Distance',
+            cmd: this.cmd_distributeHorizontalDistance.bind(this)
+        });
+
+        items.push('================');
+        items.push({
+            icon: _('span.mdi.mdi-distribute-vertical-top'),
+            text: 'Distribute Vertical Top',
+            cmd: this.cmd_distributeVerticalTop.bind(this)
+        });
+        items.push({
+            icon: _('span.mdi.mdi-distribute-vertical-center'),
+            text: 'Distribute Vertical Center',
+            cmd: this.cmd_distributeVerticalCenter.bind(this)
+        });
+        items.push({
+            icon: _('span.mdi.mdi-distribute-vertical-bottom'),
+            text: 'Distribute Vertical Bottom',
+            cmd: this.cmd_distributeVerticalBottom.bind(this)
+        });
+        items.push({
+            icon: _(
+                '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
+                <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
+                <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
+            </svg>'),
+            text: 'Distribute Verlical Distance',
+            cmd: this.cmd_distributeVerticalDistance.bind(this)
         });
         items.push('================');
     }
@@ -345,7 +401,7 @@ AnchorEditor.prototype.cmd_alignLeftDedge = function () {
     this.component.reMeasure();
     var leftValue = this.component.getStyle('left');
     for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
+        editor = editors[i];
         if (editor == this) continue;
         editor.alignLeftDedge(leftValue);
     }
@@ -360,7 +416,7 @@ AnchorEditor.prototype.cmd_alignRightDedge = function () {
     var rightValue = this.component.getStyle('right');
 
     for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
+        editor = editors[i];
         if (editor == this) continue;
         editor.alignRightDedge(rightValue);
     }
@@ -374,7 +430,7 @@ AnchorEditor.prototype.cmd_alignHorizontalCenter = function () {
     this.component.reMeasure();
     var centerValue = this.component.getStyle('right') - this.component.getStyle('left');;
     for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
+        editor = editors[i];
         if (editor == this) continue;
         editor.alignHorizontalCenter(centerValue);
     }
@@ -520,7 +576,7 @@ AnchorEditor.prototype.cmd_alignTopDedge = function () {
     this.component.reMeasure();
     var topValue = this.component.getStyle('top');
     for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
+        editor = editors[i];
         if (editor == this) continue;
         editor.alignTopDedge(topValue);
     }
@@ -535,7 +591,7 @@ AnchorEditor.prototype.cmd_alignBottomDedge = function () {
     var bottomValue = this.component.getStyle('bottom');
 
     for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
+        editor = editors[i];
         if (editor == this) continue;
         editor.alignBottomDedge(bottomValue);
     }
@@ -548,7 +604,7 @@ AnchorEditor.prototype.cmd_alignVerticalCenter = function () {
     this.component.reMeasure();
     var centerValue = this.component.getStyle('bottom') - this.component.getStyle('top');;
     for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
+        editor = editors[i];
         if (editor == this) continue;
         editor.alignVerticalCenter(centerValue);
     }
@@ -562,12 +618,13 @@ AnchorEditor.prototype.cmd_equaliseHeight = function () {
     this.component.reMeasure();
     var heightValue = this.component.getStyle('height');
     for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
+        editor = editors[i];
         if (editor == this) continue;
         editor.equaliseHeight(heightValue);
     }
     this.layoutEditor.commitHistory('move', 'Equalise Height');
 };
+
 
 
 AnchorEditor.prototype.alignTopDedge = function (topValue) {
@@ -683,6 +740,216 @@ AnchorEditor.prototype.equaliseHeight = function (heightValue) {
     }
     this.updatePosition();
     this.component.reMeasure();
+};
+
+
+
+
+
+AnchorEditor.prototype.cmd_distributeHorizontalLeft = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return a.component.style.left - b.component.style.left;
+    });
+    var minX = editors[0].component.style.left;
+    var maxX = editors[editors.length - 1].component.style.left;
+    if (minX == maxX) return;
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignLeftDedge(minX + (maxX - minX) / (editors.length - 1) * i);
+        editor.component.reMeasure();
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Horizontal Left');
+};
+
+AnchorEditor.prototype.cmd_distributeHorizontalCenter = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return (a.component.style.left + a.component.style.width / 2) - (b.component.style.left + b.component.style.width / 2);
+    });
+    var minX = (editors[0].component.style.left + editors[0].component.style.width / 2);
+    var maxX = (editors[editors.length - 1].component.style.left + editors[editors.length - 1].component.style.width / 2);
+    if (minX == maxX) return;
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignLeftDedge(minX + (maxX - minX) / (editors.length - 1) * i - editor.component.style.width / 2);
+        editor.component.reMeasure();
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Horizontal Center');
+};
+
+
+
+AnchorEditor.prototype.cmd_distributeHorizontalRight = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return a.component.style.right - b.component.style.right;
+    });
+    var minX = editors[0].component.style.right;
+    var maxX = editors[editors.length - 1].component.style.right;
+    if (minX == maxX) return;
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignRightDedge(minX + (maxX - minX) / (editors.length - 1) * i);
+        editor.component.reMeasure();
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Horizontal Right');
+};
+
+AnchorEditor.prototype.cmd_distributeHorizontalDistance = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return (a.component.style.left + a.component.style.width / 2) - (b.component.style.left + b.component.style.width / 2);
+    });
+
+    var sumDistance = editors[editors.length - 1].component.style.left - (editors[0].component.style.left + editors[0].component.style.width);
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        sumDistance -= editor.component.style.width;
+    }
+    var distance = sumDistance / (editors.length - 1);
+    var curentLeft = editors[0].component.style.left + editors[0].component.style.width + distance;
+
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignHorizontalCenter(editor.component.style.right - 2 * curentLeft + editor.component.style.left);
+        editor.component.reMeasure();
+        curentLeft += editor.component.style.width + distance;
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Horizontal Distance');
+};
+
+
+
+
+AnchorEditor.prototype.cmd_distributeVerticalTop = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return a.component.style.top - b.component.style.top;
+    });
+    var minX = editors[0].component.style.top;
+    var maxX = editors[editors.length - 1].component.style.top;
+    if (minX == maxX) return;
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignTopDedge(minX + (maxX - minX) / (editors.length - 1) * i);
+        editor.component.reMeasure();
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Vertical Top');
+};
+
+AnchorEditor.prototype.cmd_distributeVerticalCenter = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return (a.component.style.top + a.component.style.height / 2) - (b.component.style.top + b.component.style.height / 2);
+    });
+    var minX = (editors[0].component.style.top + editors[0].component.style.height / 2);
+    var maxX = (editors[editors.length - 1].component.style.top + editors[editors.length - 1].component.style.height / 2);
+    if (minX == maxX) return;
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignTopDedge(minX + (maxX - minX) / (editors.length - 1) * i - editor.component.style.height / 2);
+        editor.component.reMeasure();
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Vertical Center');
+};
+
+
+
+AnchorEditor.prototype.cmd_distributeVerticalBottom = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return a.component.style.bottom - b.component.style.bottom;
+    });
+    var minX = editors[0].component.style.bottom;
+    var maxX = editors[editors.length - 1].component.style.bottom;
+    if (minX == maxX) return;
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignBottomDedge(minX + (maxX - minX) / (editors.length - 1) * i);
+        editor.component.reMeasure();
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Vertical Bottom');
+};
+
+
+AnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    var i;
+    for (i = 0; i < editors.length; ++i) {
+        editor = editors[i];
+        editor.component.reMeasure();
+    }
+    editors = editors.slice();
+    editors.sort(function (a, b) {
+        return (a.component.style.top + a.component.style.height / 2) - (b.component.style.top + b.component.style.height / 2);
+    });
+
+    var sumDistance = editors[editors.length - 1].component.style.top - (editors[0].component.style.top + editors[0].component.style.height);
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        sumDistance -= editor.component.style.height;
+    }
+    var distance = sumDistance / (editors.length - 1);
+    var curentTop = editors[0].component.style.top + editors[0].component.style.height + distance;
+
+    for (i = 1; i < editors.length - 1; ++i) {
+        editor = editors[i];
+        editor.alignVerticalCenter(editor.component.style.bottom - 2 * curentTop + editor.component.style.top);
+        editor.component.reMeasure();
+        curentTop += editor.component.style.height + distance;
+    }
+    this.layoutEditor.commitHistory('move', 'Distribute Vertical Distance');
 };
 
 
