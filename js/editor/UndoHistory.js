@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
 import Context from "absol/src/AppPattern/Context";
 import '../../css/undohistory.css';
+import R from "../R";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -109,7 +110,15 @@ UndoHistory.prototype.getView = function () {
 
 
 UndoHistory.prototype.onResume = function () {
-    this.getView().addTo(document.body);
+    var view = this.getView();
+    view.addTo(document.body);
+    var bound = view.getBoundingClientRect();
+    var layoutEditor = this.getContext(R.LAYOUT_EDITOR);
+    if (layoutEditor) {
+        var layoutBound = layoutEditor.getView().getBoundingClientRect();
+        view.addStyle('left', layoutBound.right - bound.width + 'px');
+        view.addStyle('top', layoutBound.top + 'px');
+    }
 };
 
 UndoHistory.prototype.onPause = function () {
@@ -182,7 +191,7 @@ UndoHistory.prototype.clear = function () {
     this.commit('clear', lastData, 'Clear History');
 }
 
-UndoHistory.prototype.renew = function(){
+UndoHistory.prototype.renew = function () {
     while (this.items.length > 0) {
         lastItem = this.items.pop();
         lastItem.getView().remove();
