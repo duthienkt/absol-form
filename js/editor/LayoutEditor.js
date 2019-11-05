@@ -238,7 +238,11 @@ LayoutEditor.prototype._newAnchorEditor = function () {
     //craete new, repeat event to other active anchor editor
     return new AnchorEditor(this).on('click', function (event) {
         if (this.component)
-            self.toggleActiveComponent(this.component);
+            if (self.anchorEditors.length > 1)
+                self.toggleActiveComponent(this.component);
+            else {
+                self.setActiveComponent(this.component);
+            }
     })//todo: implement in AnchorEditor
         .on('beginmove', function (event) {
             var originEvent = event.originEvent;
@@ -360,7 +364,7 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 };
 
 
-LayoutEditor.prototype.applyData = function(data){
+LayoutEditor.prototype.applyData = function (data) {
     var self = this;
     function visit(node) {
         var constructor = self.constructors[node.tag];
@@ -389,7 +393,7 @@ LayoutEditor.prototype.applyData = function(data){
         }
         return comp;
     }
-    if (this.rootLayout){
+    if (this.rootLayout) {
         this.rootLayout.onDetached(this);
         this.rootLayout.view.remove();
     }

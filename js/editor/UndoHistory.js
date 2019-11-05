@@ -71,9 +71,7 @@ UndoHistory.prototype.getView = function () {
                         class: 'as-undo-history-active-buttons-right-container',
                         child: {
                             tag: 'button',
-                            props: {
-                                disabled: true
-                            },
+                            class: 'as-undo-history-active-clear',
                             child: 'span.mdi.mdi-delete'
                         }
                     }
@@ -95,6 +93,8 @@ UndoHistory.prototype.getView = function () {
         .on('click', this.undo.bind(this));
     this.$redoBtn = $('button.as-undo-history-active-redo', this.$view)
         .on('click', this.redo.bind(this));
+    this.$clear = $('button.as-undo-history-active-clear', this.$view)
+        .on('click', this.clear.bind(this));
     return this.$view;
 };
 
@@ -157,7 +157,17 @@ UndoHistory.prototype.commit = function (type, data, description, timestamp) {
 };
 
 
-
+UndoHistory.prototype.clear = function(){
+    if (this.items.length < 2) return;
+    var lastItem = this.items.pop();
+    var lastData = lastItem.data;
+    lastItem.getView().remove();
+    while (this.items.length >0){
+        lastItem = this.items.pop();
+        lastItem.getView().remove();
+    }
+    this.commit('clear', lastData, 'Clear History');
+}
 
 /**
  * @param {UndoHistory}parent
@@ -185,7 +195,8 @@ UndoHistoryItem.prototype.typeIcon = {
     add: 'span.mdi.mdi-pen-plus',
     'set-data': 'span.mdi.mdi-open-in-app',
     'move-resize': 'span.mdi.mdi-move-resize',
-    'move-order': 'span.mdi.mdi-arrow-up-down-bold'
+    'move-order': 'span.mdi.mdi-arrow-up-down-bold',
+    'clear':'span.mdi.mdi-check-outline'
 };
 
 
