@@ -143,7 +143,7 @@ LayoutEditor.prototype.getView = function () {
     this.$editorSpaceCtn = $('.as-layout-editor-space-container', this.$view)
         .on('click', function (ev) {
             if (ev.target == this) {
-                self.activeComponent(null);
+                self.setActiveComponent();
             }
         });
     this.$modeBtn = $('.as-layout-editor-mode-button-container > button', this.$view)

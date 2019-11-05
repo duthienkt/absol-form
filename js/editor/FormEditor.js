@@ -149,6 +149,9 @@ FormEditor.prototype.getView = function () {
     var self = this;
     this.$view = _({
         class: 'as-form-editor',
+        attr: {
+            tabindex: '1'
+        },
         child: [
             {
                 class: 'as-form-editor-left-site-container',
@@ -236,7 +239,10 @@ FormEditor.prototype.getView = function () {
             '.as-form-editor-resizer.vertical.left-site',
             '.as-form-editor-resizer.vertical.right-site'
 
-        ]
+        ],
+        on: {
+            keydown: this.ev_keydown.bind(this)
+        }
     });
 
     this.$attachhook = _('attachook').addTo(this.$view).on('error', function () {
@@ -393,6 +399,23 @@ FormEditor.prototype.ev_dragRightResizer = function (event) {
     this.$rightSiteCtn.addStyle('width', this.style.rightSizeWidth + 'em');
     this.$editorSpaceCtn.addStyle('right', this.style.rightSizeWidth + 0.2 + 'em');
     window.dispatchEvent(new Event('resize'));
+};
+
+
+
+FormEditor.prototype.ev_keydown = function (event) {
+    this._lastKeydownTime = this._lastKeydownTime || 0;
+    var now = new Date().getTime();
+    if (now - this._lastKeydownTime > 100) {
+        if (event.ctrlKey && event.key == 'z') {
+            this._lastKeydownTime = now;
+            this.mUndoHistory.undo();
+        }
+        else if (event.ctrlKey && event.key == 'y') {
+            this._lastKeydownTime = now;
+            this.mUndoHistory.redo();
+        }
+    }
 };
 
 FormEditor.prototype.ev_layoutEditorChange = function () {

@@ -1,6 +1,7 @@
 .as-form-editor {
     position: relative;
     font-size: 14px;
+    outline: none;
 }
 
 .as-form-editor-resizer {
