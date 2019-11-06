@@ -1,6 +1,7 @@
 import RelativeAnchor from "../anchors/RelativeAnchor";
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
+import RelativeAnchorEditor from "../anchoreditors/RelativeAnchorEditor";
 
 var _ = Fcore._;
 
@@ -29,6 +30,13 @@ RelativeLayout.prototype.create = function () {
 RelativeLayout.prototype.getAnchorConstructor = function () {
     return RelativeAnchor;
 };
+
+
+
+RelativeLayout.prototype.getAnchorEditorConstructor = function () {
+     return RelativeAnchorEditor;
+};
+
 
 RelativeLayout.prototype.render = function () {
     return _({ class: this.TOP_CLASS_NAME });

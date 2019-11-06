@@ -10,7 +10,6 @@ import '../dom/VLine';
 import '../dom/HRuler';
 import '../dom/VRuler';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
-import AnchorEditor from './AnchorEditor';
 import R from '../R';
 
 
@@ -30,11 +29,11 @@ function LayoutEditor() {
     this._publicDataChange = true;
 
     /**
-     * @type {Array<import('./AnchorEditor')>}
+     * @type {Array<import('../anchoreditors/AnchorEditor')>}
      */
     this.anchorEditors = [];
     /**
-     * @type {Array<import('./AnchorEditor')>}
+     * @type {Array<import('../anchoreditors/AnchorEditor')>}
      */
     this.anchorEditorPool = [];
 }
@@ -81,6 +80,12 @@ LayoutEditor.prototype.getView = function () {
                 class: 'as-layout-editor-mode-button-container',
                 child: {
                     tag: 'button',
+                    attr:{
+                        title: ({
+                            'interact': 'Interact Mode',
+                            'design': 'Design Mode'
+                        })[this.mode]
+                    },
                     child: ['span.mdi.mdi-pencil-box-multiple-outline', 'span.mdi.mdi-play-outline']
                 }
             },
@@ -146,17 +151,21 @@ LayoutEditor.prototype.getView = function () {
                 self.setActiveComponent();
             }
         });
-    this.$modeBtn = $('.as-layout-editor-mode-button-container > button', this.$view)
-        .on('click', this.ev_clickModeBtn.bind(this));
+    this.$modeBtn = $('.as-layout-editor-mode-button-container > button', this.$view).on('click', this.ev_clickModeBtn.bind(this));
     return this.$view;
 };
 
-LayoutEditor.prototype.ev_clickModeBtn = function () {
+LayoutEditor.prototype.ev_clickModeBtn = function (button, event) {
     var next = {
         'interact': 'design',
         'design': 'interact'
     };
+    var buttonTitle = {
+        'interact': 'Interact Mode',
+        'design': 'Design Mode'
+    }
     this.setMode(next[this.mode]);
+    this.$modeBtn.attr('title', buttonTitle[this.mode]);
 };
 
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
@@ -235,6 +244,7 @@ LayoutEditor.prototype.updateSize = function () {
 
 LayoutEditor.prototype._newAnchorEditor = function () {
     var self = this;
+    var AnchorEditor = this.rootLayout.getAnchorEditorConstructor();
     //craete new, repeat event to other active anchor editor
     return new AnchorEditor(this).on('click', function (event) {
         if (this.component)
