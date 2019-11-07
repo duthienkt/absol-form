@@ -8,7 +8,13 @@ var $ = Fcore.$;
 
 
 function ResizeBox() {
-    var res = _({
+    this.on('mousedown', this.eventHandler.mouseDownBody);
+    this._mousedownEventData = undefined;
+    this._mousemoveEventData = undefined;
+}
+
+ResizeBox.render = function () {
+    return _({
         class: 'as-resize-box',
         extendEvent: ['beginmove', 'endmove', 'moving', 'click'],//override click event
         child: {
@@ -26,14 +32,7 @@ function ResizeBox() {
         }
 
     });
-
-    res.eventHandler = OOP.bindFunctions(res, ResizeBox.eventHandler);
-    res.on('mousedown', res.eventHandler.mouseDownBody);
-    res._mousedownEventData = undefined;
-    res._mousemoveEventData = undefined;
-
-    return res;
-}
+};
 
 ResizeBox.eventHandler = {};
 

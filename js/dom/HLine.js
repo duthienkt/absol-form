@@ -5,20 +5,20 @@ var $ = Fcore.$;
 var _ = Fcore._;
 
 function HLine() {
-    var res = _({
+}
+
+HLine.render = function () {
+    return _({
         class: 'as-hline',
-        child:{
-            class:'as-hline-body',
-            child:[
+        child: {
+            class: 'as-hline-body',
+            child: [
                 '.as-hline-dot.left',
                 '.as-hline-dot.right'
             ]
         }
     });
-
-
-    return res;
-}
+};
 
 Fcore.install('hline', HLine);
 

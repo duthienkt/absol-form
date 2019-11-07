@@ -7,26 +7,28 @@ var $ = Fcore.$;
 
 
 function VRuler() {
-    var res = _({
-        class: 'as-vruler'
-    });
-
-    res.$attachHook = _('attachhook').on('error', function () {
-        this.updateSize = res.update.bind(res);
+    var self = this;
+    this.$attachHook = _('attachhook').on('error', function () {
+        this.updateSize = self.update.bind(self);
         Dom.addToResizeSystem(this);
         this.updateSize();
-    }).addTo(res);
+    }).addTo(this);
 
-    res.$lines = [];
-    res.$numbers = [];
+    this.$lines = [];
+    this.$numbers = [];
     this.$measureTarget = undefined;
-    res._viewingNumberCount = 0;
-    res._viewingLineCount = 0;
-    res._spacing = 10;
-    res._major = 10;
-    return res;
+    this._viewingNumberCount = 0;
+    this._viewingLineCount = 0;
+    this._spacing = 10;
+    this._major = 10;
 }
 
+
+VRuler.render = function(){
+   return  _({
+        class: 'as-vruler'
+    });
+};
 
 VRuler.prototype.measureElement = function (elt) {
     if (typeof elt == "string") elt = $(elt);

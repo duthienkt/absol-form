@@ -7,25 +7,28 @@ var $ = Fcore.$;
 
 
 function HRuler() {
-    var res = _({
-        class: 'as-hruler'
-    });
-
-    res.$attachHook = _('attachhook').on('error', function () {
-        this.updateSize = res.update.bind(res);
+    var self = this;
+    this.$attachHook = _('attachhook').on('error', function () {
+        this.updateSize = self.update.bind(self);
         Dom.addToResizeSystem(this);
         this.updateSize();
-    }).addTo(res);
+    }).addTo(self);
 
-    res.$lines = [];
-    res.$numbers = [];
-    res._viewingNumberCount = 0;
-    res._viewingLineCount = 0;
-    res._spacing = 10;
-    res._major = 10;
-    res.$measureTarget = null;
-    return res;
+    this.$lines = [];
+    this.$numbers = [];
+    this._viewingNumberCount = 0;
+    this._viewingLineCount = 0;
+    this._spacing = 10;
+    this._major = 10;
+    this.$measureTarget = null;
 }
+
+HRuler.render = function(){
+    return _({
+        class: 'as-hruler'
+    });
+};
+
 
 
 HRuler.prototype.measureElement = function (elt) {

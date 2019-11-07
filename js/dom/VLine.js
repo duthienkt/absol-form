@@ -5,7 +5,10 @@ var $ = Fcore.$;
 var _ = Fcore._;
 
 function VLine() {
-    var res = _({
+}
+
+VLine.render = function(){
+    return _({
         class: 'as-vline',
         child:{
             class:'as-vline-body',
@@ -15,8 +18,6 @@ function VLine() {
             ]
         }
     });
-
-    return res;
 }
 
 Fcore.install('vline', VLine);
