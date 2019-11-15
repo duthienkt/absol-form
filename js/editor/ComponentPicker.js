@@ -19,6 +19,7 @@ import R from "../R";
 import Image from "../components/Image";
 import Button from "../components/Button";
 import Table from "../components/Table";
+import LinearLayout from "../layouts/LinearLayout";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -79,6 +80,13 @@ ComponentPicker.prototype.getView = function () {
                                 name: "RelativeLayout",
                                 icon: RelativeLayout.prototype.menuIcon
                             }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "LinearLayout",
+                                icon: LinearLayout.prototype.menuIcon
+                            }
                         }
                     ]
                 },
@@ -133,19 +141,19 @@ ComponentPicker.prototype.getView = function () {
 
                             }
                         },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "SelectBox",
-                                icon: SelectBox.prototype.menuIcon,
-                                componentConstructor: SelectBox
-                            },
-                            on: {
-                                press: function () {
-                                    // this.addComponent({ tag: 'SelectBox', attributes: { value: [0], list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
-                                }.bind(this)
-                            }
-                        },
+                        // {
+                        //     tag: 'exptree',
+                        //     props: {
+                        //         name: "SelectBox",
+                        //         icon: SelectBox.prototype.menuIcon,
+                        //         componentConstructor: SelectBox
+                        //     },
+                        //     on: {
+                        //         press: function () {
+                        //             // this.addComponent({ tag: 'SelectBox', attributes: { value: [0], list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
+                        //         }.bind(this)
+                        //     }
+                        // },
                         {
                             tag: 'exptree',
                             props: {
