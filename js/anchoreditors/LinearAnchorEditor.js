@@ -11,7 +11,7 @@ var $ = Fcore.$;
  * 
  * @param {import('../editor/LayoutEditor').default} layoutEditor 
  */
-function RelativeAnchorEditor(layoutEditor) {
+function LinearAnchorEditor(layoutEditor) {
     EventEmitter.call(this);
     var self = this;
     this.layoutEditor = layoutEditor;
@@ -23,31 +23,33 @@ function RelativeAnchorEditor(layoutEditor) {
             right: '1px',
             top: '1px',
             bottom: '1px',
-            position:'fixed'
+            position: 'fixed'
         }
     });
+    this.$marginBox = _('resizebox')
+        .on('click', this.focusMarginBox.bind(this))
+        .on('beginmove', this.ev_beginMove.bind(this, true))
+        .on('moving', this.ev_movingMargin.bind(this, true))
+        .on('endmove', this.ev_endMove.bind(this, true));
+
     this.$resizeBox = _('resizebox')
         .on('mousedown', this.focus.bind(this))
         .on('beginmove', this.ev_beginMove.bind(this, true))
         .on('moving', this.ev_moving.bind(this, true))
         .on('endmove', this.ev_endMove.bind(this, true))
-        .on('click', function (ev) {
-            self.emit('click', ev, true);
-        });
+        .on('click', this.focus.bind(this));
+
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
-    this.$topAlignLine = _('vline');
-    this.$bottomAlignLine = _('vline');
-    this.$leftAlignLine = _('hline');
-    this.$rightAlignLine = _('hline');
     this.movingData = null;
     this.isFocus = false;
 }
 
-Object.defineProperties(RelativeAnchorEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
-RelativeAnchorEditor.prototype.constructor = RelativeAnchorEditor;
+Object.defineProperties(LinearAnchorEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
+LinearAnchorEditor.prototype.constructor = LinearAnchorEditor;
 
-RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
+
+LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
     var self = this;
     var items = [];
     if (this.layoutEditor.anchorEditors.length > 1) {
@@ -148,7 +150,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
             text: 'Distribute Verlical Distance',
             cmd: this.cmd_distributeVerticalDistance.bind(this)
         });
-        items.push('================'); 
+        items.push('================');
     }
 
     items.push({
@@ -169,11 +171,32 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
     event.stopPropagation();
 };
 
-RelativeAnchorEditor.prototype.focus = function () {
+
+LinearAnchorEditor.prototype.focusMarginBox = function () {
     if (!this.component) return;
+    if (this.isFocus) {
+        this.$resizeBox.removeClass('as-focus');
+        this.$marginBox.addClass('as-focus');
+    }
+    else {
+        this.$marginBox.addClass('as-focus');
+        this.isFocus = true;
+        var editor;
+        for (var i = 0; i < this.layoutEditor.anchorEditors.length; ++i) {
+            editor = this.layoutEditor.anchorEditors[i];
+            if (editor == this) continue;
+            editor.blur();
+        }
+        this.emit('focus', { type: 'focus', target: this }, this);
+    }
+};
+
+LinearAnchorEditor.prototype.focus = function () {
+    if (!this.component) return;
+    this.$resizeBox.addClass('as-focus');
+    this.$marginBox.removeClass('as-focus');
     if (this.isFocus) return;
     this.isFocus = true;
-    this.$resizeBox.addClass('as-focus');
     var editor;
     for (var i = 0; i < this.layoutEditor.anchorEditors.length; ++i) {
         editor = this.layoutEditor.anchorEditors[i];
@@ -183,67 +206,46 @@ RelativeAnchorEditor.prototype.focus = function () {
     this.emit('focus', { type: 'focus', target: this }, this);
 };
 
-RelativeAnchorEditor.prototype.blur = function () {
+LinearAnchorEditor.prototype.blur = function () {
     if (!this.isFocus) return;
     this.isFocus = false;
     this.$resizeBox.removeClass('as-focus');
     this.emit('blur', { type: 'blur', target: this }, this);
 };
 
-RelativeAnchorEditor.prototype.edit = function (component) {
+LinearAnchorEditor.prototype.edit = function (component) {
     this.component = component;
     if (!this.component) this.blur();
     this.update();
 };
 
-RelativeAnchorEditor.prototype.update = function () {
+LinearAnchorEditor.prototype.update = function () {
     if (this.component) {
-        this.$resizeBox.addTo(this.layoutEditor.$forceground);
         var styleDescriptors = this.component.getStyleDescriptors();
+
+        if (styleDescriptors.top || styleDescriptors.bottom || styleDescriptors.left || styleDescriptors.right) {
+            this.$marginBox.addTo(this.layoutEditor.$forceground);
+        }
+        else {
+            this.$marginBox.selfRemove();
+        }
+        this.$resizeBox.addTo(this.layoutEditor.$forceground);
 
         this.$resizeBox.canMove = !!(styleDescriptors.top || styleDescriptors.bottom || styleDescriptors.left || styleDescriptors.right);
         this.$resizeBox.canResize = !!(styleDescriptors.width || styleDescriptors.height);
-
-        if (!styleDescriptors.top || styleDescriptors.top.disabled) {
-            this.$topAlignLine.remove();
-        }
-        else {
-            this.$topAlignLine.addTo(this.layoutEditor.$forceground);
-        }
-
-        if (!styleDescriptors.bottom || styleDescriptors.bottom.disabled) {
-            this.$bottomAlignLine.remove();
-        }
-        else {
-            this.$bottomAlignLine.addTo(this.layoutEditor.$forceground);
-        }
-
-        if (!styleDescriptors.left || styleDescriptors.left.disabled) {
-            this.$leftAlignLine.remove();
-        }
-        else {
-            this.$leftAlignLine.addTo(this.layoutEditor.$forceground);
-        }
-
-        if (!styleDescriptors.right || styleDescriptors.right.disabled) {
-            this.$rightAlignLine.remove();
-        }
-        else {
-            this.$rightAlignLine.addTo(this.layoutEditor.$forceground);
-        }
+        this.$marginBox.canClick = !!(styleDescriptors.top || styleDescriptors.bottom || styleDescriptors.left || styleDescriptors.right);
+        this.$marginBox.canResize = true;
         this.updatePosition();
     }
     else {
         this.$resizeBox.remove();
-        this.$leftAlignLine.remove();
-        this.$rightAlignLine.remove();
-        this.$topAlignLine.remove();
-        this.$bottomAlignLine.remove();
+        this.$marginBox.remove();
     }
 };
 
-RelativeAnchorEditor.prototype.updatePosition = function () {
+LinearAnchorEditor.prototype.updatePosition = function () {
     if (this.component) {
+        this.component.reMeasure();
         var bound = this.layoutEditor.$forceground.getBoundingClientRect();
         var compBound = this.component.view.getBoundingClientRect();
         this.$resizeBox.addStyle({
@@ -252,40 +254,22 @@ RelativeAnchorEditor.prototype.updatePosition = function () {
             width: compBound.width + 'px',
             height: compBound.height + 'px'
         });
+        this.$marginBox.addStyle({
+            left: compBound.left - bound.left - this.component.style.left + 'px',
+            top: compBound.top - bound.top - this.component.style.top + 'px',
+            width: compBound.width + this.component.style.left + this.component.style.right + 'px',
+            height: compBound.height + this.component.style.top + this.component.style.bottom + 'px'
+        });
 
-        if (this.$leftAlignLine.parentNode)
-            this.$leftAlignLine.addStyle({
-                left: compBound.left - bound.left - this.component.style.left + 'px',
-                width: this.component.style.left + 'px',
-                top: compBound.top - bound.top + compBound.height / 2 + 'px',
-            });
-
-        if (this.$rightAlignLine.parentNode)
-            this.$rightAlignLine.addStyle({
-                left: compBound.right - bound.left + 'px',
-                width: this.component.style.right + 'px',
-                top: compBound.top - bound.top + compBound.height / 2 + 'px',
-            });
-
-        if (this.$topAlignLine.parentNode)
-            this.$topAlignLine.addStyle({
-                top: compBound.top - bound.top - this.component.style.top + 'px',
-                height: this.component.style.top + 'px',
-                left: compBound.left - bound.left + compBound.width / 2 + 'px',
-            });
-
-        if (this.$bottomAlignLine.parentNode)
-            this.$bottomAlignLine.addStyle({
-                top: compBound.bottom - bound.top + 'px',
-                height: this.component.style.bottom + 'px',
-                left: compBound.left - bound.left + compBound.width / 2 + 'px',
-            });
     }
 };
 
 
 
-RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
+
+
+LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
+
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
     this.movingData = {
         x0: event.clientX - bound.left,
@@ -298,18 +282,23 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         comp: this.component,
         isChange: false,
     };
-    if (userAction) this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, target: this }, this);
+    if (userAction) {
+        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, target: this }, this);
+        this.$modal.addTo(document.body);
+    }
 };
 
 
 
-RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
+LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     var movingData = this.movingData;
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
+
     var x = event.clientX - bound.left;
     var y = event.clientY - bound.top;
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
+
     var positionIsChange = false;
 
     if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
@@ -377,6 +366,34 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
         }
     }
 
+
+    movingData.comp.reMeasure();
+    this.updatePosition();
+    if (positionIsChange) {
+        this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event }, this);
+        movingData.isChange = true;
+    }
+    if (userAction) this.emit('moving', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+};
+
+LinearAnchorEditor.prototype.ev_movingMargin = function (userAction, event) {
+    var movingData = this.movingData;
+    var bound = this.layoutEditor.$forceground.getBoundingClientRect();
+
+    var x = event.clientX - bound.left;
+    var y = event.clientY - bound.top;
+    movingData.dx = x - movingData.x0;
+    movingData.dy = y - movingData.y0;
+    var positionIsChange = false;
+
+
+    if (movingData.styleDescriptors.bottom && event.option.bottom) {
+        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom + movingData.dy));
+    }
+    if (movingData.styleDescriptors.right && event.option.right) {
+        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right + movingData.dx));
+    }
+
     this.updatePosition();
     movingData.comp.reMeasure();
     if (positionIsChange) {
@@ -387,16 +404,19 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
 };
 
 
-RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
+LinearAnchorEditor.prototype.ev_endMove = function (userAction, event) {
     if (this.movingData.isChange) {
         this.emit('change', { type: 'change', target: this, component: this.movingData.comp, originEvent: event }, this);
     }
     this.movingData = undefined;
-    if (userAction) this.emit('endmove', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+    if (userAction) {
+        this.emit('endmove', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+        setTimeout(this.$modal.selfRemove.bind(this.$modal), 100);
+    }
 };
 
 
-RelativeAnchorEditor.prototype.cmd_delete = function () {
+LinearAnchorEditor.prototype.cmd_delete = function () {
     var editors = this.layoutEditor.anchorEditors;
     var components = editors.map(function (e) {
         return e.component;
@@ -405,7 +425,7 @@ RelativeAnchorEditor.prototype.cmd_delete = function () {
 };
 
 
-RelativeAnchorEditor.prototype.cmd_alignLeftDedge = function () {
+LinearAnchorEditor.prototype.cmd_alignLeftDedge = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -419,7 +439,7 @@ RelativeAnchorEditor.prototype.cmd_alignLeftDedge = function () {
 };
 
 
-RelativeAnchorEditor.prototype.cmd_alignRightDedge = function () {
+LinearAnchorEditor.prototype.cmd_alignRightDedge = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -434,7 +454,7 @@ RelativeAnchorEditor.prototype.cmd_alignRightDedge = function () {
 
 };
 
-RelativeAnchorEditor.prototype.cmd_alignHorizontalCenter = function () {
+LinearAnchorEditor.prototype.cmd_alignHorizontalCenter = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -448,7 +468,7 @@ RelativeAnchorEditor.prototype.cmd_alignHorizontalCenter = function () {
 
 };
 
-RelativeAnchorEditor.prototype.cmd_equaliseWidth = function () {
+LinearAnchorEditor.prototype.cmd_equaliseWidth = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -463,7 +483,7 @@ RelativeAnchorEditor.prototype.cmd_equaliseWidth = function () {
 };
 
 
-RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue) {
+LinearAnchorEditor.prototype.alignLeftDedge = function (leftValue) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentHAlign = this.component.getStyle('hAlign');
@@ -487,7 +507,7 @@ RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue) {
 };
 
 
-RelativeAnchorEditor.prototype.alignRightDedge = function (rightValue) {
+LinearAnchorEditor.prototype.alignRightDedge = function (rightValue) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentHAlign = this.component.getStyle('hAlign');
@@ -512,7 +532,7 @@ RelativeAnchorEditor.prototype.alignRightDedge = function (rightValue) {
 };
 
 
-RelativeAnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { // right - left
+LinearAnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { // right - left
     if (!this.component) return;
     this.component.reMeasure();
     var currentHAlign = this.component.getStyle('hAlign');
@@ -541,7 +561,7 @@ RelativeAnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { 
 };
 
 
-RelativeAnchorEditor.prototype.equaliseWidth = function (widthValue) {
+LinearAnchorEditor.prototype.equaliseWidth = function (widthValue) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentHAlign = this.component.getStyle('hAlign');
@@ -580,7 +600,7 @@ RelativeAnchorEditor.prototype.equaliseWidth = function (widthValue) {
 
 
 
-RelativeAnchorEditor.prototype.cmd_alignTopDedge = function () {
+LinearAnchorEditor.prototype.cmd_alignTopDedge = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -594,7 +614,7 @@ RelativeAnchorEditor.prototype.cmd_alignTopDedge = function () {
 };
 
 
-RelativeAnchorEditor.prototype.cmd_alignBottomDedge = function () {
+LinearAnchorEditor.prototype.cmd_alignBottomDedge = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -608,7 +628,7 @@ RelativeAnchorEditor.prototype.cmd_alignBottomDedge = function () {
     this.layoutEditor.commitHistory('move', 'Align Bottom Dedge');
 };
 
-RelativeAnchorEditor.prototype.cmd_alignVerticalCenter = function () {
+LinearAnchorEditor.prototype.cmd_alignVerticalCenter = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -622,7 +642,7 @@ RelativeAnchorEditor.prototype.cmd_alignVerticalCenter = function () {
 
 };
 
-RelativeAnchorEditor.prototype.cmd_equaliseHeight = function () {
+LinearAnchorEditor.prototype.cmd_equaliseHeight = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     this.component.reMeasure();
@@ -637,7 +657,7 @@ RelativeAnchorEditor.prototype.cmd_equaliseHeight = function () {
 
 
 
-RelativeAnchorEditor.prototype.alignTopDedge = function (topValue) {
+LinearAnchorEditor.prototype.alignTopDedge = function (topValue) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentVAlign = this.component.getStyle('vAlign');
@@ -662,7 +682,7 @@ RelativeAnchorEditor.prototype.alignTopDedge = function (topValue) {
 };
 
 
-RelativeAnchorEditor.prototype.alignBottomDedge = function (bottomValue) {
+LinearAnchorEditor.prototype.alignBottomDedge = function (bottomValue) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentVAlign = this.component.getStyle('vAlign');
@@ -686,7 +706,7 @@ RelativeAnchorEditor.prototype.alignBottomDedge = function (bottomValue) {
 };
 
 
-RelativeAnchorEditor.prototype.alignVerticalCenter = function (centerValue) { // bottom - top
+LinearAnchorEditor.prototype.alignVerticalCenter = function (centerValue) { // bottom - top
     if (!this.component) return;
     this.component.reMeasure();
     var currentVAlign = this.component.getStyle('vAlign');
@@ -715,7 +735,7 @@ RelativeAnchorEditor.prototype.alignVerticalCenter = function (centerValue) { //
 };
 
 
-RelativeAnchorEditor.prototype.equaliseHeight = function (heightValue) {
+LinearAnchorEditor.prototype.equaliseHeight = function (heightValue) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentVAlign = this.component.getStyle('vAlign');
@@ -756,7 +776,7 @@ RelativeAnchorEditor.prototype.equaliseHeight = function (heightValue) {
 
 
 
-RelativeAnchorEditor.prototype.cmd_distributeHorizontalLeft = function () {
+LinearAnchorEditor.prototype.cmd_distributeHorizontalLeft = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -779,7 +799,7 @@ RelativeAnchorEditor.prototype.cmd_distributeHorizontalLeft = function () {
     this.layoutEditor.commitHistory('move', 'Distribute Horizontal Left');
 };
 
-RelativeAnchorEditor.prototype.cmd_distributeHorizontalCenter = function () {
+LinearAnchorEditor.prototype.cmd_distributeHorizontalCenter = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -804,7 +824,7 @@ RelativeAnchorEditor.prototype.cmd_distributeHorizontalCenter = function () {
 
 
 
-RelativeAnchorEditor.prototype.cmd_distributeHorizontalRight = function () {
+LinearAnchorEditor.prototype.cmd_distributeHorizontalRight = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -827,7 +847,7 @@ RelativeAnchorEditor.prototype.cmd_distributeHorizontalRight = function () {
     this.layoutEditor.commitHistory('move', 'Distribute Horizontal Right');
 };
 
-RelativeAnchorEditor.prototype.cmd_distributeHorizontalDistance = function () {
+LinearAnchorEditor.prototype.cmd_distributeHorizontalDistance = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -860,7 +880,7 @@ RelativeAnchorEditor.prototype.cmd_distributeHorizontalDistance = function () {
 
 
 
-RelativeAnchorEditor.prototype.cmd_distributeVerticalTop = function () {
+LinearAnchorEditor.prototype.cmd_distributeVerticalTop = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -883,7 +903,7 @@ RelativeAnchorEditor.prototype.cmd_distributeVerticalTop = function () {
     this.layoutEditor.commitHistory('move', 'Distribute Vertical Top');
 };
 
-RelativeAnchorEditor.prototype.cmd_distributeVerticalCenter = function () {
+LinearAnchorEditor.prototype.cmd_distributeVerticalCenter = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -908,7 +928,7 @@ RelativeAnchorEditor.prototype.cmd_distributeVerticalCenter = function () {
 
 
 
-RelativeAnchorEditor.prototype.cmd_distributeVerticalBottom = function () {
+LinearAnchorEditor.prototype.cmd_distributeVerticalBottom = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -932,7 +952,7 @@ RelativeAnchorEditor.prototype.cmd_distributeVerticalBottom = function () {
 };
 
 
-RelativeAnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
+LinearAnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
     var i;
@@ -963,4 +983,4 @@ RelativeAnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
 };
 
 
-export default RelativeAnchorEditor;
+export default LinearAnchorEditor;

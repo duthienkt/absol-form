@@ -34,7 +34,7 @@ RelativeLayout.prototype.getAnchorConstructor = function () {
 
 
 RelativeLayout.prototype.getAnchorEditorConstructor = function () {
-     return RelativeAnchorEditor;
+    return RelativeAnchorEditor;
 };
 
 
@@ -149,5 +149,19 @@ RelativeLayout.prototype.measureMinSize = function () {
     return { width: width, height: height };
 };
 
+
+
+/**
+ * @param {BaseComponent} child,
+ * @param {Number} posX
+ * @param {Number} posY
+ */
+RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
+    this.addChild(child)
+    posX = Math.max(0, Math.min(this.style.width - child.style.width, posX));
+    posY = Math.max(0, Math.min(this.style.height - child.style.height, posY));
+    child.setStyle('left', posX);
+    child.setStyle('top', posY);
+};
 
 export default RelativeLayout;

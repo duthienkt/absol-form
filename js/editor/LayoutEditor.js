@@ -4,11 +4,8 @@ import RelativeLayout from '../layouts/RelativeLayout';
 import Dom from 'absol/src/HTML5/Dom';
 
 import Fcore from '../core/FCore';
-import '../dom/ResizeBox';
 import '../dom/HLine';
 import '../dom/VLine';
-import '../dom/HRuler';
-import '../dom/VRuler';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import R from '../R';
 
@@ -461,12 +458,9 @@ LayoutEditor.prototype.setMode = function (mode) {
  */
 LayoutEditor.prototype.addNewComponent = function (tag, posX, posY) {
     var newComponent = this.build({ tag: tag });
-    this.rootLayout.addChild(newComponent);
-    posX = Math.max(0, Math.min(this.rootLayout.style.width - newComponent.style.width, posX));
-    posY = Math.max(0, Math.min(this.rootLayout.style.height - newComponent.style.height, posY));
-    newComponent.setStyle('left', posX);
-    newComponent.setStyle('top', posY);
+    this.rootLayout.addChildByPosition(newComponent, posX, posY);
     newComponent.reMeasure();
+   
     this.emit('addcomponent', { type: 'addcomponent', component: newComponent, target: this }, this);
     this.setActiveComponent(newComponent);
     this.notifyDataChange();

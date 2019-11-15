@@ -149,3 +149,14 @@
     display: table-cell;
     width: 100%;
 }
+
+.as-linear-layout::before {
+    content: "";
+    display: block;
+    height: 1px;
+    margin-bottom: -1px;
+}
+
+.as-linear-anchor-box {
+    display: block;
+}

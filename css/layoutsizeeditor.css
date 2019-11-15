@@ -1,0 +1,69 @@
+.as-size-box-editor {
+    padding: 0.35em;
+    border: 1px solid black;
+    font-size: 12px;
+    display: table;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.as-size-box-editor-title{
+    width: 0;
+    overflow: visible;
+    white-space: nowrap;
+    color: rgb(169, 169, 169);
+}
+
+.as-size-box-editor-position-top,
+.as-size-box-editor-position-bottom {
+    height: 1.2em;
+    text-align: center;
+    display: table-row;
+}
+
+.as-size-box-editor-position-top>*,
+.as-size-box-editor-position-bottom>* {
+    display: table-cell;
+}
+
+.as-size-box-editor-position-top>span,
+.as-size-box-editor-position-bottom>span {
+    font-size: inherit;
+}
+
+
+.as-size-box-editor-top-text{
+    outline: none;
+}
+
+.as-size-box-editor-position-top>span {
+    font-size: inherit;
+}
+
+
+.as-size-box-editor-position-mid {
+    display: table-row;
+}
+
+.as-size-box-editor-position-left,
+.as-size-box-editor-position-right {
+    display: table-cell;
+    width: 0;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    vertical-align: middle;
+
+}
+
+.as-size-box-editor-position-left>span,
+.as-size-box-editor-position-right>span {
+    font-size: inherit;
+}
+
+
+.as-size-box-editor-position-center {
+    display: table-cell;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: rgba(255, 0, 0, 0.3);    
+}
