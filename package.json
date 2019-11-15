@@ -1,6 +1,6 @@
 {
   "name": "absol-form",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "Pham Quoc Du Thien",
   "license": "ISC",
   "dependencies": {
-    "absol": "^1.9.6",
+    "absol": "^1.9.8",
     "absol-acomp": "^0.8.0"
   },
   "devDependencies": {
