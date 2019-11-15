@@ -5,6 +5,7 @@ import '../../css/propertyeditor.css';
 import { camelCaseToPascalCase } from 'absol/src/String/stringFormat';
 import { beginOfDay } from 'absol/src/Time/datetime';
 import ListEditor from './ListEditor';
+import { FONT_ITEMS } from '../font/GoogleFont';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -132,6 +133,45 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
     return res;
 };
 
+PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
+    var self = this;
+    var res = _({
+        tag: 'tr',
+        child: [
+            {
+                tag: 'td',
+                child: { text: name }
+            },
+            {
+                tag: 'td',
+                child: {
+                    tag: 'selectmenu',
+                    class: 'as-need-update',
+                    props: {
+                        items: [{ text: 'None', value: undefined }].concat(FONT_ITEMS),
+                        notifyChange: function () {
+                            var value = self.getProperty(name);
+                            if (value != this.value) {
+                                this.value = value;
+                            }
+                        },
+                        value: this.getProperty(name)
+                    },
+                    on: {
+                        change: function () {
+                            self.setProperty(name, this.value);
+                            self.notifyChange(name, this);
+                            self.notifyStopChange(name);
+                        }
+                    }
+                }
+            }
+        ]
+    });
+
+    return res;
+};
+
 
 PropertyEditor.prototype.createConstInputRow = function (name, descriptor) {
     var self = this;
@@ -194,7 +234,7 @@ PropertyEditor.prototype.createTextInputRow = function (name, descriptor) {
                 attr: { colspan: '3' },
                 child:
                 {
-                    tag: 'input',
+                    tag: descriptor.long ? 'textarea' : 'input',
                     class: 'as-need-update',
                     attr: { type: 'text' },
                     props: {

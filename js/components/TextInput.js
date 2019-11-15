@@ -1,6 +1,7 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import '../../css/component.css';
+import Text from "./Text";
 
 
 var _ = Fcore._;
@@ -47,8 +48,19 @@ TextInput.prototype.render = function () {
 
 
 TextInput.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['textAlign']);
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['textAlign', 'font', 'fontStyle', 'textSize']);
 };
+
+
+TextInput.prototype.setStyleFont = Text.prototype.setStyleFont;
+TextInput.prototype.getStyleFontDescriptor = Text.prototype.getStyleFontDescriptor;
+
+TextInput.prototype.setStyleFontStyle = Text.prototype.setStyleFontStyle;
+TextInput.prototype.getStyleFontStyleDescriptor = Text.prototype.getStyleFontStyleDescriptor;
+
+TextInput.prototype.setStyleTextSize = Text.prototype.setStyleTextSize;
+TextInput.prototype.getStyleTextSizeDescriptor = Text.prototype.getStyleTextSizeDescriptor;
+
 
 
 

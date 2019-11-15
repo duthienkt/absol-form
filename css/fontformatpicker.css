@@ -1,0 +1,36 @@
+.as-form-format-picker {
+    font-size: 14px;
+    width: 500px;
+    height: 300px;
+    left: calc(50vw - 250px);
+    top: calc(30vh - 150px);
+    z-index: 1000;
+}
+
+
+.as-form-format-picker .absol-onscreen-window-resizer {
+    display: none;
+}
+
+.as-form-format-picker .absol-onscreen-window-body-container {
+    padding: 5px;
+}
+
+.as-form-format-picker-input-box {
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.as-form-format-picker-input-box-name{
+    line-height: 1.3;
+}
+
+.as-form-format-picker-select-font{
+    width: 100%;
+} 
+
+
+.as-form-format-picker-input-box-select-font{
+    width: 60%;
+}

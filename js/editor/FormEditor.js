@@ -29,6 +29,8 @@ import ComponentOutline from './ComponentOutline';
 import Button from '../components/Button';
 import Table from '../components/Table';
 import UndoHistory from './UndoHistory';
+import LinearLayout from '../layouts/LinearLayout';
+import FontFormatPicker from '../font/FontFormatPicker';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -57,17 +59,18 @@ function FormEditor() {
     this.mLayoutEditor.addComponent(CheckBox);
     this.mLayoutEditor.addComponent(Radio);
     this.mLayoutEditor.addComponent(ComboBox);
-    this.mLayoutEditor.addComponent(SelectBox);
+    // this.mLayoutEditor.addComponent(SelectBox);
     this.mLayoutEditor.addComponent(Text);
     this.mLayoutEditor.addComponent(Image);
     this.mLayoutEditor.addComponent(Button);
     this.mLayoutEditor.addComponent(Table);
+    this.mLayoutEditor.addComponent(LinearLayout);
     this.mUndoHistory = new UndoHistory();
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
     this.mComponentOutline = new ComponentOutline();
     this.mAttributeEditor.on('change', function (event) {
-        self.emit('change', Object.assign({ formEditor: this }, event), self);
+        self.emit('change', Object.assign({ formEditor: self }, event), self);
     }).on('stopchange', function (event) {
         self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
     }

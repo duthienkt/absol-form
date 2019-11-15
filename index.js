@@ -12,7 +12,6 @@ import LayoutEditor from './js/editor/LayoutEditor'
 import Fcore from './js/core/FCore'
 import FormEditor from './js/editor/FormEditor'
 import AllPropertyEditor from './js/editor/AllPropertyEditor';
-import AnchorEditor from './js/editor/AnchorEditor';
 import AttributeEditor from './js/editor/AttributeEditor';
 import ComponentOutline from './js/editor/ComponentOutline';
 import ComponentPicker from './js/editor/ComponentPicker';
@@ -34,41 +33,44 @@ import Radio from './js/components/Radio';
 import Table from './js/components/Table';
 import Text from './js/components/Text';
 import TextArea from './js/components/TextArea';
+import RelativeAnchorEditor from './js/anchoreditors/RelativeAnchorEditor';
+import LayoutSizeEditor from './js/propertyeditors/LayoutSizeEditor';
 
 export default {
     AllPropertyEditor: AllPropertyEditor,
-    AttributeEditor:AttributeEditor,
-    AnchorEditor: AnchorEditor,
+    AttributeEditor: AttributeEditor,
+    AnchorEditor: RelativeAnchorEditor,
     ComponentOutline: ComponentOutline,
-    ComponentPicker:ComponentPicker,
-    ListEditor:ListEditor,
-    PropertyEditor:PropertyEditor,
-    StyleEditor:StyleEditor,
-    
-    
-    FViewable:FViewable,
-    FNode:FNode,
+    ComponentPicker: ComponentPicker,
+    ListEditor: ListEditor,
+    PropertyEditor: PropertyEditor,
+    StyleEditor: StyleEditor,
+    LayoutSizeEditor: LayoutSizeEditor,
+
+
+    FViewable: FViewable,
+    FNode: FNode,
     FModel: FModel,
     FormEditor: FormEditor,
     LayoutEditor: LayoutEditor,
-    
+
     ScalableComponent: ScalableComponent,
     ContentScalelessComponent: ContentScalelessComponent,
-    RelativeAnchor:RelativeAnchor,
+    RelativeAnchor: RelativeAnchor,
     BaseComponent: BaseComponent,
     RelativeLayout: RelativeLayout,
-    TextInput:TextInput,
+    TextInput: TextInput,
     DateInput: DateInput,
-    Button:Button,
-    CheckBox:CheckBox,
-    ComboBox:ComboBox,
-    Image:Image,
-    Label:Label,
-    NumberInput:NumberInput,
-    Radio:Radio,
-    Table:Table,
+    Button: Button,
+    CheckBox: CheckBox,
+    ComboBox: ComboBox,
+    Image: Image,
+    Label: Label,
+    NumberInput: NumberInput,
+    Radio: Radio,
+    Table: Table,
     Text: Text,
-    TextArea: TextArea,    
+    TextArea: TextArea,
 
     Assembler: Assembler,
     core: Fcore
