@@ -35,6 +35,7 @@ import Text from './js/components/Text';
 import TextArea from './js/components/TextArea';
 import RelativeAnchorEditor from './js/anchoreditors/RelativeAnchorEditor';
 import LayoutSizeEditor from './js/propertyeditors/LayoutSizeEditor';
+import PluginManager from './js/core/PluginManager';
 
 export default {
     AllPropertyEditor: AllPropertyEditor,
@@ -46,8 +47,7 @@ export default {
     PropertyEditor: PropertyEditor,
     StyleEditor: StyleEditor,
     LayoutSizeEditor: LayoutSizeEditor,
-
-
+    PluginManager: PluginManager,
     FViewable: FViewable,
     FNode: FNode,
     FModel: FModel,

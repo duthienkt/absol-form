@@ -25,9 +25,7 @@ SelectBox.prototype.onCreated = function () {
 
     this.view.on('change', function (event) {
         self.attributes.values = event.values;
-        // self.emit('change', event.values, self);
-        if (self.events.change)
-            console.log("TODO: exec", self.events.change);
+        self.emit('change', event.values, self);
     });
 };
 

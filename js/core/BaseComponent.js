@@ -2,6 +2,7 @@ import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import FViewable from './FViewable';
 import FNode from './FNode';
 import FModel from './FModel';
+import PluginManager from './PluginManager';
 
 function BaseComponent() {
     EventEmitter.call(this);
@@ -34,8 +35,8 @@ BaseComponent.prototype.anchor = null;
 BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
 BaseComponent.prototype.onCreate = function () {
-    this.constructor.count = this.constructor.count||0;
-    this.attributes.name = this.tag +"_" + (this.constructor.count++);
+    this.constructor.count = this.constructor.count || 0;
+    this.attributes.name = this.tag + "_" + (this.constructor.count++);
 };
 
 BaseComponent.prototype.onCreated = function () {
@@ -120,16 +121,24 @@ BaseComponent.prototype.getData = function () {
 
 
 
+BaseComponent.prototype.fire = function (name) {
+    EventEmitter.prototype.fire.apply(this, arguments);
+    if (this.events[name]) {
+        PluginManager.exec(this, 'EXEC_SCRIPT', this.events[name], Array.prototype.slice.call(arguments, 1));
+    }
+    return this;
+};
+
+
 BaseComponent.prototype.setEvent = function (key, value) {
-    this.events[key] = value;
+    if (value === undefined) {
+        delete this.events[key];
+    }
+    else
+        this.events[key] = value;
     return value;
 };
 
-
-BaseComponent.prototype.removeEvent = function (key) {
-    this.events[key] = undefined;
-    delete this.events[key];
-};
 
 BaseComponent.prototype.getAcceptsStyleNames = function () {
     if (this.anchor)
@@ -159,7 +168,7 @@ BaseComponent.prototype.getAcceptsAttributeNames = function () {
     return ["type", "name"];
 };
 
-BaseComponent.prototype.getAcceptsEventNames = function(){
+BaseComponent.prototype.getAcceptsEventNames = function () {
     return [];
 };
 

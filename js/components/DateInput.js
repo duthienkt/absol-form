@@ -35,9 +35,7 @@ DateInput.prototype.onCreated = function () {
     var self = this;
     this.view.on('change', function (event) {
         self.attributes.value = this.value;
-        if (self.events.change)
-            console.log("TODO: exec",  self.events.change);     
-        // self.emit('change', this.value, self);
+        self.emit('change', { type:'change', value: this.value}, self);
     });
 };
 

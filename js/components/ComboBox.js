@@ -52,9 +52,7 @@ ComboBox.prototype.onCreated = function () {
         }
     }).on('change', function () {
         self.attributes.value = this.value;
-        if (self.events.change)
-            console.log("TODO: exec",  self.events.change);     
-        // self.emit("change", { type: 'change', value: this.value }, self);
+        self.emit("change", { type: 'change', value: this.value }, self);
     });
     this.attributes.value = this.view.value;
 };

@@ -27,9 +27,7 @@ TextInput.prototype.onCreated = function () {
         var lastValue = self.attributes.value;
         if (this.value != lastValue) {
             self.attributes.value = this.value;
-            // self.emit('change', this.value, self);
-            if (self.events.change)
-                console.log("TODO: exec", self.events.change);
+            self.emit('change', this.value, self);
         }
     });
 };

@@ -77,7 +77,7 @@ LayoutEditor.prototype.getView = function () {
                 class: 'as-layout-editor-mode-button-container',
                 child: {
                     tag: 'button',
-                    attr:{
+                    attr: {
                         title: ({
                             'interact': 'Interact Mode',
                             'design': 'Design Mode'
@@ -391,6 +391,13 @@ LayoutEditor.prototype.applyData = function (data) {
                 comp.setAttribute(attributeName, attributes[attributeName]);
             }
 
+        var events = node.events;
+        if (typeof events == 'object')
+            for (var eventName in events) {
+                comp.setEvent(eventName, events[eventName]);
+            }
+
+
         if (node.children && node.children.length > 0) {
             node.children.forEach(function (cNode) {
                 var childComp = visit(cNode);
@@ -460,7 +467,7 @@ LayoutEditor.prototype.addNewComponent = function (tag, posX, posY) {
     var newComponent = this.build({ tag: tag });
     this.rootLayout.addChildByPosition(newComponent, posX, posY);
     newComponent.reMeasure();
-   
+
     this.emit('addcomponent', { type: 'addcomponent', component: newComponent, target: this }, this);
     this.setActiveComponent(newComponent);
     this.notifyDataChange();
