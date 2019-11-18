@@ -64,39 +64,6 @@ LinearLayout.prototype.onRemoveChild = function (child, index) {
  * @returns {BaseComponent} auto set disable style 
  */
 LinearLayout.prototype.reMeasureChild = function (component) {
-    //todo
-    // switch (component.style.hAlign) {
-    //     case "left":
-    //         component.setStyle('right', this.style.width - component.style.left - component.style.width);
-    //         break;
-    //     case "right":
-    //         component.setStyle('left', this.style.width - component.style.right - component.style.width);
-    //         break;
-    //     case "center":
-    //         component.setStyle('right', (this.style.width - component.style.width) / 2);
-    //         component.setStyle('left', (this.style.width - component.style.width) / 2);
-    //         break;
-    //     case "fixed":
-    //         component.setStyle('width', this.style.width - component.style.right - component.style.left);
-    //         break;
-    // }
-
-
-    // switch (component.style.vAlign) {
-    //     case "top":
-    //         component.setStyle('bottom', this.style.height - component.style.top - component.style.height);
-    //         break;
-    //     case "bottom":
-    //         component.setStyle('top', this.style.height - component.style.bottom - component.style.height);
-    //         break;
-    //     case "center":
-    //         component.setStyle('bottom', (this.style.height - component.style.height) / 2);
-    //         component.setStyle('top', (this.style.height - component.style.height) / 2);
-    //         break;
-    //     case "fixed":
-    //         component.setStyle('height', this.style.height - component.style.bottom - component.style.top);
-    //         break;
-    // }
 };
 
 /**
@@ -107,46 +74,18 @@ LinearLayout.prototype.measureMinSize = function () {
     //todo
     var width = 0;
     var height = 0;
-    // var child;
-    // var cW;
-    // var cH;
-    // for (var i = 0; i < this.children.length; ++i) {
-    //     child = this.children[i];
-    //     cW = 0;
-    //     cH = 0;
-    //     switch (child.style.hAlign) {
-    //         case "left":
-    //             cW = child.style.left + child.style.width;
-    //             break;
-    //         case "right":
-    //             cW = child.style.right + child.style.width;
-    //             break;
-    //         case "center":
-    //             cW = child.style.width;
-    //             break;
-    //         case "fixed":
-    //             cW = child.measureMinSize().width + child.style.left + child.style.right;
-    //             break;
-    //     }
 
-    //     switch (child.style.vAlign) {
-    //         case "top":
-    //             cH = child.style.top + child.style.height;
-    //             break;
-    //         case "bottom":
-    //             cH = child.style.bottom + child.style.height;
-    //             break;
-    //         case "center":
-    //             cH = child.style.height;
-    //             break;
-    //         case "fixed":
-    //             cH = child.measureMinSize().height + child.style.top + child.style.bottom;
-    //             break;
-    //     }
-    //     width = Math.max(cW, width);
-    //     height = Math.max(cH, height);
-    // }
-
+    var child;
+    var cW;
+    var cH;
+    for (var i = 0; i < this.children.length; ++i) {
+        child = this.children[i];
+        var minSize = child.measureMinSize();
+        cW = child.style.left + minSize.width + child.style.right;
+        cH = child.style.top + minSize.height + child.style.bottom;
+        width = Math.min(cW, width);
+        height += cH;
+    }
     return { width: width, height: height };
 };
 
