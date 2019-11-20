@@ -1,0 +1,70 @@
+.as-font-icon-picker {
+    font-size: 14px;
+    background-color: white;
+    display: inline-block;
+    padding: 0.357em;
+    -webkit-box-shadow: 2px 2px 17px -1px rgba(0, 0, 0, 0.54);
+    -moz-box-shadow: 2px 2px 17px -1px rgba(0, 0, 0, 0.54);
+    box-shadow: 2px 2px 17px -1px rgba(0, 0, 0, 0.54);
+}
+
+.as-font-icon-picker>.absol-search-text-input {
+    margin-bottom: 0.357em;
+}
+
+.as-font-icon-picker-option {
+    padding-bottom: 0.357em;
+}
+
+button.as-font-icon-picker-icon {
+    height: 3em;
+    width: 3em;
+    padding: 0;
+    margin: 0;
+    margin: 0.1em;
+    font-size: 1em;
+    box-sizing: border-box;
+    background-color: rgba(169, 169, 172, 0);
+    border: 1px solid #dddd;
+
+}
+
+button.as-font-icon-picker-icon:hover {
+    background-color: rgba(169, 169, 172, 0.2);
+}
+
+button.as-font-icon-picker-icon>span {
+    font-size: 2em;
+}
+
+
+.as-font-icon-picker-content {
+    text-align: center;
+    height: 19.2em;
+    width: 20.2em;
+}
+
+button.as-font-icon-picker-icon.as-font-icon-picker-selected {
+    background-color: rgba(20, 185, 235, 0.3);
+}
+
+button.as-font-icon-input{
+    font-size: 14px;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    margin: 0;
+    box-sizing: content-box;
+    border: solid 1px #ddd;
+    background-color: rgba(169, 169, 172, 0);
+}
+
+
+button.as-font-icon-input>span,
+button.as-font-icon-input>i{
+    font-size: 1.5em;
+}
+
+.as-font-icon-input.as-font-icon-selecting{
+
+}

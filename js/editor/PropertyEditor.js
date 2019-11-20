@@ -6,6 +6,13 @@ import { camelCaseToPascalCase } from 'absol/src/String/stringFormat';
 import { beginOfDay } from 'absol/src/Time/datetime';
 import ListEditor from './ListEditor';
 import { FONT_ITEMS } from '../font/GoogleFont';
+import { getMaterialDesignIconNames } from '../font/MaterialDesignIcons';
+import  '../dom/FontIconPicker';
+import  '../dom/FontIconInput';
+
+// FontIconPicker
+
+getMaterialDesignIconNames();
 
 var _ = Fcore._;
 var $ = Fcore.$;
