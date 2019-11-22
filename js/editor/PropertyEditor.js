@@ -7,8 +7,7 @@ import { beginOfDay } from 'absol/src/Time/datetime';
 import ListEditor from './ListEditor';
 import { FONT_ITEMS } from '../font/GoogleFont';
 import { getMaterialDesignIconNames } from '../font/MaterialDesignIcons';
-import  '../dom/FontIconPicker';
-import  '../dom/FontIconInput';
+import '../dom/FontIconInput';
 
 // FontIconPicker
 
@@ -448,6 +447,49 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
     });
     return res;
 };
+
+
+PropertyEditor.prototype.createIconInputRow = function (name, descriptor) {
+    var self = this;
+    var res = _({
+        tag: 'tr',
+        child: [
+            {
+                tag: 'td',
+                child: { text: name }
+            },
+            {
+                tag: 'td',
+                attr: { colspan: '3' },
+                child:
+                {
+                    tag: 'fonticoninput',
+                    class: 'as-need-update',
+                    props: {
+                        min: typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity,
+                        max: typeof (descriptor.max) == 'number' ? descriptor.max : Infinity,
+                        value: self.getProperty(name),
+                        disabled: descriptor.disabled,
+                        notifyChange: function () {
+                            var value = self.getProperty(name);
+                            this.value = value;
+                        }
+                    },
+                    on: {
+                        change: function (event) {
+                            console.log(this.value);
+                            
+                            self.setProperty(name, this.value);
+                            self.notifyChange(name, this);
+                        }
+                    }
+                }
+            }
+        ]
+    });
+    return res;
+};
+
 
 PropertyEditor.prototype.createListInputRow = function (name, descriptor) {
     var self = this;
