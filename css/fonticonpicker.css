@@ -57,6 +57,7 @@ button.as-font-icon-input{
     box-sizing: content-box;
     border: solid 1px #ddd;
     background-color: rgba(169, 169, 172, 0);
+    outline: none;
 }
 
 

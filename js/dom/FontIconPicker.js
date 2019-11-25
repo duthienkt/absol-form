@@ -70,7 +70,9 @@ function FontIconPicker() {
     });
 
     this.updateContent();
-
+    this.$noneBtn = $('button.none-icon', this);
+    this.$noneBtn.__data__ = null;
+    this.$noneBtn.on('click',this.eventHandler.clickContent);
 }
 
 
@@ -97,6 +99,24 @@ FontIconPicker.render = function () {
                     ]
                 },
                 value: 0
+            },
+            {
+                tag: 'button',
+                class: ['as-font-icon-picker-icon', 'none-icon'],
+                attr: {
+                    title: 'None'
+                },
+                style: {
+                    height: '2em',
+                    verticalAlign: 'top'
+                },
+                child: {
+                    tag: 'span',
+                    style: {
+                        fontSize: '1em'
+                    },
+                    child: { text: 'None' }
+                }
             },
             {
                 tag: 'bscroller',
