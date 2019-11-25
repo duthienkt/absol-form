@@ -1,0 +1,22 @@
+.as-form-preview{
+    font-size: 14px;
+    z-index: 99;
+}
+
+.as-form-preview-actions{
+    padding: 0.357em;
+    border-bottom: 1px solid #ddd;
+}
+
+.as-form-preview-actions>button{
+    margin-right: 1em;
+}
+
+
+.as-form-preview-content{
+}
+
+.as-form-preview-content:empty{
+    height: 0;
+    width: 0;
+}
