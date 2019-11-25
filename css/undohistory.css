@@ -1,6 +1,7 @@
 .as-undo-history {
     min-width: 200px;
     min-height: 200px;
+    font-size: 14px;
 }
 
 .as-undo-history.as-minimize {
