@@ -113,18 +113,15 @@
     left: -1.5em;
 }
 
-.as-layout-editor.mode-interact .as-layout-editor-forceground-container {
-    visibility: hidden;
-}
 
-.as-layout-editor-mode-button-container {
+.as-layout-editor-preview-button-container {
     left: 0;
     top: 0;
     width: 1.5em;
     height: 1.45em;
 }
 
-.as-layout-editor-mode-button-container>button {
+.as-layout-editor-preview-button-container>button {
     border: none;
     width: 100%;
     height: 100%;
@@ -135,25 +132,14 @@
     font-size: 1em;
 }
 
-.as-layout-editor-mode-button-container>button:hover {
+.as-layout-editor-preview-button-container>button:hover {
     background-color: rgba(169, 169, 170, 0.2);
 }
 
-.as-layout-editor-mode-button-container>button:active {
+.as-layout-editor-preview-button-container>button:active {
     background-color: rgba(169, 169, 170, 0.4);
 }
 
-.as-layout-editor-mode-button-container .mdi {
-    display: none;
-}
-
-.as-layout-editor.mode-interact>.as-layout-editor-mode-button-container .mdi-play-outline {
-    display: inline;
-}
-
-.as-layout-editor.mode-design>.as-layout-editor-mode-button-container .mdi-pencil-box-multiple-outline {
-    display: inline;
-}
 
 .as-layout-editor-layout-container .as-base-component .as-relative-layout,
 .as-layout-editor-layout-container .as-base-component .as-linear-layout {
