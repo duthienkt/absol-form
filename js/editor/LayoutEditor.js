@@ -8,6 +8,7 @@ import '../dom/HLine';
 import '../dom/VLine';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import R from '../R';
+import PluginManager from '../core/PluginManager';
 
 
 var _ = Fcore._;
@@ -22,17 +23,12 @@ function LayoutEditor() {
     this.snapshots = [];
     this.snapshotsIndex = 0;
     this._changeCommited = true;
-    this.mode = 'design';
     this._publicDataChange = true;
 
     /**
      * @type {Array<import('../anchoreditors/AnchorEditor')>}
      */
     this.anchorEditors = [];
-    /**
-     * @type {Array<import('../anchoreditors/AnchorEditor')>}
-     */
-    this.anchorEditorPool = [];
 }
 
 
@@ -41,11 +37,7 @@ Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 LayoutEditor.prototype.constructor = LayoutEditor;
 
-LayoutEditor.prototype.MODE_VALUE = ['design', 'interact'];
-LayoutEditor.prototype.MODE_CLASS_NAMES = {
-    design: 'mode-design',
-    interact: 'mode-interact'
-};
+
 
 LayoutEditor.prototype.onAttached = function () {
     /**
@@ -71,21 +63,8 @@ LayoutEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
     this.$view = _({
-        class: ['as-layout-editor'].concat([this.MODE_CLASS_NAMES[this.mode]]),
+        class: ['as-layout-editor'],
         child: [
-            {
-                class: 'as-layout-editor-mode-button-container',
-                child: {
-                    tag: 'button',
-                    attr: {
-                        title: ({
-                            'interact': 'Interact Mode',
-                            'design': 'Design Mode'
-                        })[this.mode]
-                    },
-                    child: ['span.mdi.mdi-pencil-box-multiple-outline', 'span.mdi.mdi-play-outline']
-                }
-            },
             {
                 class: 'as-layout-editor-vrule-container',
                 child: 'vruler'
@@ -148,11 +127,10 @@ LayoutEditor.prototype.getView = function () {
                 self.setActiveComponent();
             }
         });
-    this.$modeBtn = $('.as-layout-editor-mode-button-container > button', this.$view).on('click', this.ev_clickModeBtn.bind(this));
     return this.$view;
 };
 
-LayoutEditor.prototype.ev_clickModeBtn = function (button, event) {
+LayoutEditor.prototype.ev_clickPreviewBtn = function (button, event) {
     var next = {
         'interact': 'design',
         'design': 'interact'
@@ -162,7 +140,7 @@ LayoutEditor.prototype.ev_clickModeBtn = function (button, event) {
         'design': 'Design Mode'
     }
     this.setMode(next[this.mode]);
-    this.$modeBtn.attr('title', buttonTitle[this.mode]);
+    this.$previewBtn.attr('title', buttonTitle[this.mode]);
 };
 
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
@@ -239,11 +217,11 @@ LayoutEditor.prototype.updateSize = function () {
 
 
 
-LayoutEditor.prototype._newAnchorEditor = function () {
+LayoutEditor.prototype._newAnchorEditor = function (component) {
     var self = this;
-    var AnchorEditor = this.rootLayout.getAnchorEditorConstructor();
+    var AnchorEditor = this.findNearestLayoutParent(component.parent || this.rootLayout).getAnchorEditorConstructor();
     //craete new, repeat event to other active anchor editor
-    return new AnchorEditor(this).on('click', function (event) {
+    var editor = new AnchorEditor(this).on('click', function (event) {
         if (this.component)
             if (self.anchorEditors.length > 1)
                 self.toggleActiveComponent(this.component);
@@ -299,6 +277,8 @@ LayoutEditor.prototype._newAnchorEditor = function () {
         .on('change', function (event) {
             self.notifyDataChange();
         });
+    editor.edit(component)
+    return editor;
 };
 
 /**
@@ -306,23 +286,15 @@ LayoutEditor.prototype._newAnchorEditor = function () {
  */
 LayoutEditor.prototype.setActiveComponent = function () {
     //todo
-    while (this.anchorEditors.length > arguments.length) {
+    while (this.anchorEditors.length > 0) {
         var editor = this.anchorEditors.pop();
         editor.edit(undefined);
-        this.anchorEditorPool.push(editor);
     }
 
     while (this.anchorEditors.length < arguments.length) {
-        var editor = this.anchorEditorPool.pop() || this._newAnchorEditor();
+        var editor = this._newAnchorEditor(arguments[this.anchorEditors.length]);
         this.anchorEditors.push(editor);
-    }
-
-    for (var i = 0; i < arguments.length; ++i) {
-        this.anchorEditors[i].edit(undefined);
-        this.anchorEditors[i].edit(arguments[i]);
-    }
-    if (this.anchorEditors.length > 0) {
-        this.anchorEditors[this.anchorEditors.length - 1].focus();
+        editor.focus();
     }
 };
 
@@ -337,12 +309,11 @@ LayoutEditor.prototype.toggleActiveComponent = function () {
         editor = this.findAnchorEditorByComponent(arguments[i]);
         if (editor) {
             editor.edit(undefined);
-            this.anchorEditorPool.push(editor);
         }
         else {
-            editor = this.anchorEditorPool.pop() || this._newAnchorEditor();
-            editor.edit(arguments[i]);
+            editor = this._newAnchorEditor(arguments[i]);
             this.anchorEditors.push(editor);
+            editor.focus();
         }
     }
 
@@ -373,45 +344,8 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 
 LayoutEditor.prototype.applyData = function (data) {
     var self = this;
-    function visit(node) {
-        var constructor = self.constructors[node.tag];
-        if (!constructor) throw new Error(node.tag + ' constructor not found!');
-        var comp = new constructor();
-
-        var style = node.style;
-        if (typeof style == 'object')
-            for (var styleName in style) {
-                comp.setStyle(styleName, style[styleName]);
-            }
-
-
-        var attributes = node.attributes;
-        if (typeof attributes == 'object')
-            for (var attributeName in attributes) {
-                comp.setAttribute(attributeName, attributes[attributeName]);
-            }
-
-        var events = node.events;
-        if (typeof events == 'object')
-            for (var eventName in events) {
-                comp.setEvent(eventName, events[eventName]);
-            }
-
-
-        if (node.children && node.children.length > 0) {
-            node.children.forEach(function (cNode) {
-                var childComp = visit(cNode);
-                comp.addChild(childComp);
-                childComp.reMeasure();
-            });
-        }
-        return comp;
-    }
-    if (this.rootLayout) {
-        this.rootLayout.onDetached(this);
-        this.rootLayout.view.remove();
-    }
-    this.rootLayout = visit(data);
+    
+    this.rootLayout = this.build(data);
     this.$layoutCtn.addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
@@ -420,12 +354,16 @@ LayoutEditor.prototype.applyData = function (data) {
 };
 
 
+
+
 LayoutEditor.prototype.setData = function (data) {
     this.applyData(data);
     this.commitHistory('set-data', "Set data");
 };
 
+LayoutEditor.prototype.editLayout = function (component) {
 
+};
 
 LayoutEditor.prototype.autoExpandRootLayout = function () {
     if (this.rootLayout) {
@@ -448,31 +386,66 @@ LayoutEditor.prototype.getData = function () {
 };
 
 
-LayoutEditor.prototype.setMode = function (mode) {
-    if (this.MODE_VALUE.indexOf(mode) < 0 || this.mode == mode) return;
-    if (this.$view) {
-        this.$view.removeClass(this.MODE_CLASS_NAMES[this.mode])
-            .addClass(this.MODE_CLASS_NAMES[mode]);
+LayoutEditor.prototype.loadEditableView = function () {
+    this.applyData(this.mUndoHistory.items[this.mUndoHistory.items.length].data);
+};
 
+LayoutEditor.prototype.findNearestLayoutParent = function (comp) {
+    while (comp) {
+        if (comp.addChildByPosition) {
+            break;
+        }
+        comp = comp.parent;
     }
-    var lastMode = this.mode;
-    this.mode = mode;
-    this.emit('changemode', { type: 'changemode', mode: mode, lastMode: lastMode }, this);
+    return comp;
 };
 
 /**
  * @returns {import('../core/BaseComponent') }
  */
-LayoutEditor.prototype.addNewComponent = function (tag, posX, posY) {
-    var newComponent = this.build({ tag: tag });
-    this.rootLayout.addChildByPosition(newComponent, posX, posY);
-    newComponent.reMeasure();
+LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
+    var self = this;
+    var layout;
+    if (this.anchorEditors.length > 0) {
+        layout = this.findNearestLayoutParent(this.anchorEditors[this.anchorEditors.length - 1].component);
+    }
+    layout = layout || this.rootLayout;
+    var rootBound = this.rootLayout.view.getBoundingClientRect();
+    var layoutBound = layout.view.getBoundingClientRect();
+    var context = {
+        posX: posX - (layoutBound.left - rootBound.left), 
+        posY: posY - (layoutBound.top - rootBound.top),
+        layout: layout,
+        layoutBound:layoutBound,
+        rootBound: rootBound,
+        selt: this,
+        constructor: contructor,
+        assembler: this,
+        descript: 'You can set result by your own component. After plugin was called, if result still null, the editor will build the element by tag',
+        preventDefault: function(){
+            this.prevented = true;
+        },
+        prevented: false,
+        addedComponets:[],
+        
+        addcomponent: function(newComponent, x, y){
+            this.addedComponets = newComponent;
+            layout.addChildByPosition(newComponent, x,y);
+            newComponent.reMeasure();
+        }
+    };
 
-    this.emit('addcomponent', { type: 'addcomponent', component: newComponent, target: this }, this);
-    this.setActiveComponent(newComponent);
+    PluginManager.exec("BUILD_ELEMENT_BY_CONSTRUCTOR", context);
+
+    if (!context.prevented){
+        context.addcomponent(this.build({ tag: contructor.prototype.tag }), context.posX, context.posY);
+    }
+
+    this.emit('addcomponent', { type: 'addcomponent', components: context.addedComponets, target: this }, this);
+    this.setActiveComponent.apply(this, context.addedComponets);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
-    this.commitHistory('add', "Add " + newComponent.getAttribute('name') + '[' + tag + ']');
+    this.commitHistory('add', "Add " + context.addedComponets.map(function(comp){return comp.getAttribute('name')}).join(', ') + '[' + tag + ']');
 };
 
 

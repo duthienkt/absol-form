@@ -129,6 +129,23 @@ BaseComponent.prototype.fire = function (name) {
     return this;
 };
 
+BaseComponent.prototype.setEvents = function (events) {
+    for (var name in events) {
+        this.setEvent(name, events[name]);
+    }
+};
+
+BaseComponent.prototype.setAttributes = function (attributes) {
+    for (var name in attributes) {
+        this.setAttribute(name, attributes[name]);
+    }
+};
+
+BaseComponent.prototype.setStyles = function (styles) {
+    for (var name in styles) {
+        this.setStyle(name, styles[name]);
+    }
+};
 
 BaseComponent.prototype.setEvent = function (key, value) {
     if (value === undefined) {
