@@ -23,7 +23,7 @@ function RelativeAnchorEditor(layoutEditor) {
             right: '1px',
             top: '1px',
             bottom: '1px',
-            position:'fixed'
+            position: 'fixed'
         }
     });
     this.$resizeBox = _('resizebox')
@@ -148,7 +148,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
             text: 'Distribute Verlical Distance',
             cmd: this.cmd_distributeVerticalDistance.bind(this)
         });
-        items.push('================'); 
+        items.push('================');
     }
 
     items.push({
@@ -287,6 +287,7 @@ RelativeAnchorEditor.prototype.updatePosition = function () {
 
 RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
+    this.component.reMeasure();
     this.movingData = {
         x0: event.clientX - bound.left,
         y0: event.clientY - bound.top,
@@ -298,18 +299,69 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         comp: this.component,
         isChange: false,
     };
-    if (userAction) this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, target: this }, this);
+    if (userAction) {
+        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event.originEvent || event, repeatEvent: event, target: this }, this);
+        this.$modal.addTo(document.body);
+    }
 };
 
 
 
 RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
+
     var movingData = this.movingData;
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
     var x = event.clientX - bound.left;
     var y = event.clientY - bound.top;
+
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
+    if (event.originEvent.ctrlKey) {
+        var newW, newH, dH, dW;
+        if (movingData.option.body) {
+            if (Math.abs(movingData.dx) < Math.abs(movingData.dy)) {
+                movingData.dx = 0;
+            }
+            else {
+                movingData.dy = 0;
+            }
+        }
+        else {
+            if (movingData.option.right) {
+                if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
+                    newW = Math.max(0, movingData.style0.width + movingData.dx * 2);
+                }
+                else {
+                    newW = Math.max(0, movingData.style0.width + movingData.dx);
+                }
+                newH = movingData.style0.height * newW / Math.max(1, movingData.style0.width);
+
+
+            }
+            else if (movingData.option.left) {
+                if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
+                    newW = Math.max(0, movingData.style0.width - movingData.dx * 2);
+                }
+                else {
+                    newW = Math.max(0, movingData.style0.width - movingData.dx);
+                }
+                newH = movingData.style0.height * newW / Math.max(1, movingData.style0.width);
+            }
+        }
+        if (movingData.option.bottom) {
+            movingData.dy = newH - movingData.style0.height;
+            if (!!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
+                movingData.dy /= 2;
+            }
+        }
+        else if (movingData.option.top) {
+            movingData.dy = -(newH - movingData.style0.height);
+            if (!!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
+                movingData.dy /= 2;
+            }
+        }
+    }
+
     var positionIsChange = false;
 
     if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
@@ -380,19 +432,24 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     this.updatePosition();
     movingData.comp.reMeasure();
     if (positionIsChange) {
-        this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event }, this);
+        this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event.originEvent || event, repeatEvent: event }, this);
         movingData.isChange = true;
     }
-    if (userAction) this.emit('moving', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+    if (userAction) {
+        this.emit('moving', { taget: this, type: 'moving', originEvent: event.originEvent || event, repeatEvent: event, target: this, repeatEvent: event }, this);
+    }
 };
 
 
 RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
     if (this.movingData.isChange) {
-        this.emit('change', { type: 'change', target: this, component: this.movingData.comp, originEvent: event }, this);
+        this.emit('change', { type: 'change', target: this, component: this.movingData.comp, originEvent: event.originEvent || event, repeatEvent: event }, this);
     }
     this.movingData = undefined;
-    if (userAction) this.emit('endmove', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+    if (userAction) {
+        this.emit('endmove', { taget: this, type: 'moving', originEvent: event.originEvent || event, target: this, repeatEvent: event }, this);
+        this.$modal.remove();
+    }
 };
 
 
