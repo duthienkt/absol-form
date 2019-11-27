@@ -16,13 +16,61 @@
     cursor: w-resize;
 }
 
-.as-form-editor-left-site-container {
+.as-form-editor-left-tab-bar {
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 16em;
-    border-right: 1px solid #ddd ;
+    width: 3em;
+    background-color: rgba(169, 169, 170, 0.11659);
+}
+
+.as-form-editor-left-tab-bar>button,
+.as-form-editor-left-tab-bar-bottom-container>button {
+    display: block;
+    width: 3em;
+    height: 3em;
+    font-size: 1em;
+    color: rgb(196, 196, 196);
+    border: none;
+    background-color: transparent;
+    border-radius: 0;
+    outline: none;
+}
+
+.as-form-editor-left-tab-bar>button:hover,
+.as-form-editor-left-tab-bar-bottom-container>button:hover {
+    color: rgba(102, 102, 102);
+}
+
+.as-form-editor-left-tab-bar>button:active,
+.as-form-editor-left-tab-bar>button.active {
+    background-color: rgb(169, 169, 169);
+    color: white;
+
+}
+
+.as-form-editor-left-tab-bar>button>span,
+.as-form-editor-left-tab-bar-bottom-container>button>span {
+    font-size: 2em;
+}
+
+.as-form-editor-left-tab-bar-bottom-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+
+
+.as-form-editor-left-site-container {
+    position: absolute;
+    left: 3em;
+    top: 0;
+    bottom: 0;
+    width: calc(20% - 3em);
+    border-right: 1px solid #ddd;
 
 }
 
@@ -53,7 +101,7 @@
     top: 0;
     bottom: 0;
     width: 23em;
-    border-left: 1px solid #ddd ;
+    border-left: 1px solid #ddd;
 }
 
 .as-form-editor-right-site-container>.as-form-editor-right-site {
@@ -93,6 +141,6 @@ table.as-form-params>tbody>tr>td>textarea {
     outline: none;
 }
 
-table.as-form-params>tbody>tr>td>textarea{
+table.as-form-params>tbody>tr>td>textarea {
     width: 100% !important;
 }
