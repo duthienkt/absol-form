@@ -36,8 +36,11 @@ import TextArea from './js/components/TextArea';
 import RelativeAnchorEditor from './js/anchoreditors/RelativeAnchorEditor';
 import LayoutSizeEditor from './js/propertyeditors/LayoutSizeEditor';
 import PluginManager from './js/core/PluginManager';
-
+import R from './js/R';
+import * as framePlugins from './js/frame/plugins';
 export default {
+    framePlugin:framePlugins,
+    R: R,
     AllPropertyEditor: AllPropertyEditor,
     AttributeEditor: AttributeEditor,
     AnchorEditor: RelativeAnchorEditor,
