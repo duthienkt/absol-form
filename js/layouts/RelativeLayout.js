@@ -164,4 +164,21 @@ RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
     child.setStyle('top', posY);
 };
 
+
+
+RelativeLayout.prototype.getAcceptsAttributeNames = function(){
+    var res = ScalableComponent.prototype.getAcceptsAttributeNames.call(this);
+    if (this.attributes.formType){
+        res = ['formType'].concat(res);
+    }
+    return res;
+};
+
+RelativeLayout.prototype.getAttributeFormTypeDescriptor = function(){
+    return {
+        type:'const',
+        value: this.attributes.formType
+    }
+};
+
 export default RelativeLayout;

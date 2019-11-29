@@ -113,4 +113,19 @@ LinearLayout.prototype.addChildByPosition = function (child, posX, posY) {
     }
 };
 
+LinearLayout.prototype.getAcceptsAttributeNames = function(){
+    var res = ScalableComponent.getAcceptsAttributeNames.call(this);
+    if (this.attributes.formType){
+        res = ['formType'].concat(res);
+    }
+    return res;
+};
+
+LinearLayout.prototype.getAttributFormTypeDescriptor = function(){
+    return {
+        type:'const',
+        value: this.attributes.formType
+    }
+};
+
 export default LinearLayout;
