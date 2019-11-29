@@ -18,7 +18,7 @@ import LinearLayout from "../layouts/LinearLayout";
 function Assembler() {
     this.constructors = {};
     this.addConstructor(Button);
-    this.addConstructor(CheckBox);''
+    this.addConstructor(CheckBox);
     this.addConstructor(ComboBox);
     this.addConstructor(DateInput);
     this.addConstructor(Image);
@@ -36,6 +36,7 @@ function Assembler() {
 
 Assembler.prototype.build = function (data) {
     var construction = this.constructors[data.tag];
+    
     var result = null;
     if (typeof construction == 'function') {
         result = new construction();
@@ -44,7 +45,6 @@ Assembler.prototype.build = function (data) {
             for (var styleName in style) {
                 result.setStyle(styleName, style[styleName]);
             }
-
 
         var attributes = data.attributes;
         if (typeof attributes == 'object')
