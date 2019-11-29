@@ -260,16 +260,12 @@ LinearAnchorEditor.prototype.updatePosition = function () {
             width: compBound.width + this.component.style.left + this.component.style.right + 'px',
             height: compBound.height + this.component.style.top + this.component.style.bottom + 'px'
         });
-
     }
 };
 
 
 
-
-
 LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
-
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
     this.movingData = {
         x0: event.clientX - bound.left,
