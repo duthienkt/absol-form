@@ -4,12 +4,42 @@ import Fragment from "absol/src/AppPattern/Fragment";
 function BaseEditor(){
     EventEmitter.call(this);
     Fragment.call(this);
+    this.loadConfig();
 }
 
 
 Object.defineProperties(BaseEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 Object.defineProperties(BaseEditor.prototype, Object.getOwnPropertyDescriptors(Fragment.prototype));
 BaseEditor.prototype.constructor = BaseEditor;
+
+BaseEditor.prototype.CONFIG_STORE_KEY = "AS_BaseEditor_config";
+BaseEditor.prototype.config = {};//share width differentInstance
+
+BaseEditor.prototype.loadConfig = function () {
+    var raw = localStorage.getItem(this.CONFIG_STORE_KEY);
+    if (raw) {
+        try {
+            Object.assign(this.config, JSON.parse(raw));
+        }
+        catch (error) {
+            console.error("Config fail:", error);
+        }
+    }
+};
+
+
+BaseEditor.prototype.saveConfig = function () {
+    if (this._saveConfigTimeOut > 0) {
+        clearTimeout(this._saveConfigTimeOut);
+        this._saveConfigTimeOut = -1;
+    }
+    var self = this;
+    setTimeout(function () {
+        var raw = JSON.stringify(self.config);
+        localStorage.setItem(self.CONFIG_STORE_KEY, raw);
+    }, 2000);
+};
+
 
 BaseEditor.prototype.setData = function(data){
     throw new Error('Not implement!');
