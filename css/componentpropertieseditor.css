@@ -1,0 +1,12 @@
+.as-form-component-properties-editor-window .as-form-component-properties-editor{
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+}
+
+.as-form-component-properties-editor-window{
+    min-width: 23em;
+    font-size: 14px;
+    min-height: 10em;
+    z-index: 99;
+}

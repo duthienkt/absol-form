@@ -1,50 +1,110 @@
-import Context from 'absol/src/AppPattern/Context';
 import Assembler from '../core/Assembler';
-import RelativeLayout from '../layouts/RelativeLayout';
 import Dom from 'absol/src/HTML5/Dom';
 
 import Fcore from '../core/FCore';
 import '../dom/HLine';
 import '../dom/VLine';
-import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import R from '../R';
 import PluginManager from '../core/PluginManager';
+import BaseEditor from '../core/BaseEditor';
+import ContextManager from 'absol/src/AppPattern/ContextManager';
+import UndoHistory from './UndoHistory';
+import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 function LayoutEditor() {
-    Context.call(this);
+    BaseEditor.call(this);
     Assembler.call(this);
-    EventEmitter.call(this);
-    this.addConstructor('RelativeLayout', RelativeLayout);
+    var self = this;
     this.rootLayout = null;
     this.snapshots = [];
     this.snapshotsIndex = 0;
     this._changeCommited = true;
     this._publicDataChange = true;
+    this.ctxMng = new ContextManager();
 
     /**
      * @type {Array<import('../anchoreditors/AnchorEditor')>}
      */
     this.anchorEditors = [];
+    this.undoHistory = new UndoHistory()
+        .on('checkout', function (event) {
+            self.applyData(event.item.data);
+            self.updateAnchor();
+            // self.mComponentOutline.updateComponetTree();
+        });
+    this.setContext(R.UNDO_HISTORY, this.undoHistory);// because it had it's ContextManager
+    this.undoHistory.attach(this);
+    var self = this;
+    this.undoHistory
+
+    this.componentPropertiesEditor = new ComponentPropertiesEditor()
+    .on({
+        change:function(event){
+            self.updateAnchorPosition();
+            Dom.updateResizeSystem();
+            if (event.name == 'vAlign' || event.name == 'hAlign'){
+                self.updateAnchor();
+            }
+            this.component.reMeasure();
+        },
+        stopchange:function(event){
+            self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '');
+        }
+    });
+    this.componentPropertiesEditor.attach(this);
 }
 
 
-Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
+Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(Assembler.prototype));
-Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
+
+
 LayoutEditor.prototype.constructor = LayoutEditor;
 
-
-
 LayoutEditor.prototype.onAttached = function () {
+    this.undoHistory.attach(this);
+    this.componentPropertiesEditor.attach(this);
+};
+
+
+LayoutEditor.prototype.onStart = function () {
+    this.undoHistory.start();
+    this.componentPropertiesEditor.start();
+};
+
+
+LayoutEditor.prototype.onResume = function () {
     /**
      * @type {import('./UndoHistory').default}
      */
-    this.mUndoHistory = this.getContext(R.UNDO_HISTORY);
-}
+    this.undoHistory.resume();
+    this.componentPropertiesEditor.resume();
+
+    console.log('resume');
+
+};
+
+
+LayoutEditor.prototype.onPause = function () {
+    // release undoHistory
+    this.undoHistory.pause();
+    this.componentPropertiesEditor.pause();
+};
+
+LayoutEditor.prototype.onStop = function () {
+    this.undoHistory.stop();
+    this.componentPropertiesEditor.stop();
+
+};
+
+LayoutEditor.prototype.onDestroy = function () {
+    this.undoHistory.destroy();
+    this.componentPropertiesEditor.destroy();
+};
 
 LayoutEditor.prototype.activePublicDataChange = function (flag) {
     this._publicDataChange = !!flag;
@@ -151,16 +211,17 @@ LayoutEditor.prototype.ev_layoutCtnScroll = function () {
 LayoutEditor.prototype.ev_clickForceground = function (event) {
     if (event.target != this.$forceground) return;
     var hitComponent;
+    var self = this;
     function visit(node) {
         var bound = node.view.getBoundingClientRect();
         if (bound.left <= event.clientX && bound.right >= event.clientX
             && bound.top <= event.clientY && bound.bottom >= event.clientY) {
             hitComponent = node;
         }
-        if (node.children)
+        if (node.children && (!node.attributes.formType || node == self.rootLayout))
             node.children.forEach(visit);
     }
-    visit(this.rootLayout);
+    visit(this.rootLayout, true);
 
     if (hitComponent) {
         if (event.shiftKey)
@@ -208,6 +269,23 @@ LayoutEditor.prototype.updateAnchorPosition = function () {
     }
 };
 
+LayoutEditor.prototype.findComponentsByName = function (name, from) {
+    from = from || this.rootLayout;
+    if (!from) return;
+    var res = undefined;
+    if (from.name == name) {
+        return from;
+    }
+    var self = this;
+    if (from.children)
+        res = from.children.reduce(function (ac, child) {
+            var found = self.findAnchorEditorByComponent();
+            if (found) return ac.concat(found);
+            return ac;
+        }, []);
+    if (res.length > 0) return res;
+    return undefined;
+};
 
 
 
@@ -230,35 +308,27 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
             }
     })//todo: implement in AnchorEditor
         .on('beginmove', function (event) {
-            var originEvent = event.originEvent;
+            var repeatEvent = event.repeatEvent;
             var other;
             for (var i = 0; i < self.anchorEditors.length; ++i) {
                 other = self.anchorEditors[i];
                 if (other != this) {
-                    other.ev_beginMove(false, originEvent);
-                }
-            }
-        })
-        .on('beginmove', function (event) {
-            var originEvent = event.originEvent;
-            var other;
-            for (var i = 0; i < self.anchorEditors.length; ++i) {
-                other = self.anchorEditors[i];
-                if (other != this) {
-                    other.ev_beginMove(false, originEvent);
+                    other.ev_beginMove(false, repeatEvent);
                 }
             }
         })
         .on('moving', function (event) {
-            var originEvent = event.originEvent;
+
+            var repeatEvent = event.repeatEvent;
             var other;
             for (var i = 0; i < self.anchorEditors.length; ++i) {
                 other = self.anchorEditors[i];
                 if (other != this) {
-                    other.ev_moving(false, originEvent);
+                    other.ev_moving(false, repeatEvent);
                 }
             }
             self.notifyDataChange();
+            self.componentPropertiesEditor.styleEditor.notifyChangeToProperties();
         })
         .on('endmove', function (event) {
             var originEvent = event.originEvent;
@@ -272,6 +342,7 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
             self.commitHistory('move', 'Move/Resize component');
         })
         .on('focus', function (event) {
+            self.componentPropertiesEditor.edit(this.component);
             self.emit('focuscomponent', { type: 'focuscomponent', component: this.component, originEvent: event, target: self }, self);
         })
         .on('change', function (event) {
@@ -296,6 +367,7 @@ LayoutEditor.prototype.setActiveComponent = function () {
         this.anchorEditors.push(editor);
         editor.focus();
     }
+    this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
 };
 
 
@@ -305,6 +377,7 @@ LayoutEditor.prototype.setActiveComponent = function () {
 LayoutEditor.prototype.toggleActiveComponent = function () {
     //todo
     var editor;
+    var focusEditor = undefined;
     for (var i = 0; i < arguments.length; ++i) {
         editor = this.findAnchorEditorByComponent(arguments[i]);
         if (editor) {
@@ -313,7 +386,7 @@ LayoutEditor.prototype.toggleActiveComponent = function () {
         else {
             editor = this._newAnchorEditor(arguments[i]);
             this.anchorEditors.push(editor);
-            editor.focus();
+            focusEditor = editor;
         }
     }
 
@@ -322,8 +395,10 @@ LayoutEditor.prototype.toggleActiveComponent = function () {
     });
 
     if (this.anchorEditors.length > 0) {
-        this.anchorEditors[this.anchorEditors.length - 1].focus();
+        focusEditor = this.anchorEditors[this.anchorEditors.length - 1];
     }
+    if (focusEditor) focusEditor.focus();
+    this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
 };
 
 
@@ -344,9 +419,9 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 
 LayoutEditor.prototype.applyData = function (data) {
     var self = this;
-    
+
     this.rootLayout = this.build(data);
-    this.$layoutCtn.addChild(this.rootLayout.view);
+    this.$layoutCtn.clearChild().addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
@@ -413,39 +488,39 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
     var rootBound = this.rootLayout.view.getBoundingClientRect();
     var layoutBound = layout.view.getBoundingClientRect();
     var context = {
-        posX: posX - (layoutBound.left - rootBound.left), 
+        posX: posX - (layoutBound.left - rootBound.left),
         posY: posY - (layoutBound.top - rootBound.top),
         layout: layout,
-        layoutBound:layoutBound,
+        layoutBound: layoutBound,
         rootBound: rootBound,
         selt: this,
         constructor: contructor,
         assembler: this,
         descript: 'You can set result by your own component. After plugin was called, if result still null, the editor will build the element by tag',
-        preventDefault: function(){
+        preventDefault: function () {
             this.prevented = true;
         },
         prevented: false,
-        addedComponets:[],
-        
-        addcomponent: function(newComponent, x, y){
-            this.addedComponets = newComponent;
-            layout.addChildByPosition(newComponent, x,y);
+        addedComponets: [],
+
+        addComponent: function (newComponent, x, y) {
+            this.addedComponets.push(newComponent);
+            layout.addChildByPosition(newComponent, x, y);
             newComponent.reMeasure();
         }
     };
 
-    PluginManager.exec("BUILD_ELEMENT_BY_CONSTRUCTOR", context);
+    PluginManager.exec(this, R.PLUGINS.DROP_TO_LAYOUT_EDITOR, context);
 
-    if (!context.prevented){
-        context.addcomponent(this.build({ tag: contructor.prototype.tag }), context.posX, context.posY);
+    if (!context.prevented) {
+        context.addComponent(this.build({ tag: contructor.prototype.tag }), context.posX, context.posY);
     }
 
     this.emit('addcomponent', { type: 'addcomponent', components: context.addedComponets, target: this }, this);
     this.setActiveComponent.apply(this, context.addedComponets);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
-    this.commitHistory('add', "Add " + context.addedComponets.map(function(comp){return comp.getAttribute('name')}).join(', ') + '[' + tag + ']');
+    this.commitHistory('add', "Add " + context.addedComponets.map(function (comp) { return comp.getAttribute('name') }).join(', '));
 };
 
 
@@ -470,6 +545,7 @@ LayoutEditor.prototype.removeComponent = function () {
         if (anchorEditor) {
             this.toggleActiveComponent(comp);
         }
+        if (comp == this.componentPropertiesEditor.component) this.componentPropertiesEditor.edit(undefined);
         this.emit('removecomponent', { type: 'removecomponent', target: this, component: comp }, this);
     }
     this.notifyDataChange();
@@ -537,8 +613,8 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
 
 
 LayoutEditor.prototype.commitHistory = function (type, description) {
-    if (!this.mUndoHistory) return;
-    this.mUndoHistory.commit(type, this.getData(), description, new Date());
+    if (!this.undoHistory) return;
+    this.undoHistory.commit(type, this.getData(), description, new Date());
 };
 
 export default LayoutEditor;
