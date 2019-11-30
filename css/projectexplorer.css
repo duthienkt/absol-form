@@ -1,0 +1,18 @@
+.as-form-explorer {}
+
+.as-form-explorer .absol-drop-panel-head {
+    font-size: 12px;
+    height: 1.5em;
+    line-height: 1.5;
+}
+
+.absol-drop-panel-head svg{
+    width: 0.8em;
+    height: 0.8em;
+    line-height: 1.5;
+}
+
+
+.as-form-explorer .absol-exp-tree {
+    font-size: 14px;
+}
