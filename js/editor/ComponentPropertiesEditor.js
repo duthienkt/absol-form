@@ -5,6 +5,7 @@ import AttributeEditor from "./AttributeEditor";
 import R from "../R";
 import StyleEditor from "./StyleEditor";
 import AllPropertyEditor from "./AllPropertyEditor";
+import Dom from "absol/src/HTML5/Dom";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -26,19 +27,25 @@ function ComponentPropertiesEditor() {
     this.allPropertyEditor = new AllPropertyEditor().on(repeatEvents);
 
     this.$dockElt = null;
-    this.component = undefined;    
+    this.component = undefined;
 }
 
 Object.defineProperties(ComponentPropertiesEditor.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 ComponentPropertiesEditor.prototype.constructor = ComponentPropertiesEditor;
 
 ComponentPropertiesEditor.prototype.CONFIG_STORE_KEY = "AS_ComponentPropertiesEditor_config";
-ComponentPropertiesEditor.prototype.config = {};
+ComponentPropertiesEditor.prototype.config = {
+    windowStyle: {
+        left: Dom.getScreenSize().width - 346 + 'px',
+        top: '59px',
+        height: Dom.getScreenSize().height - 100 + 'px'
+    }
+};
 
 
 ComponentPropertiesEditor.prototype.ev_windowPosChange = function () {
     this.config.windowStyle = { width: this.$window.style.width, height: this.$window.style.height, top: this.$window.style.top, left: this.$window.style.left };
-    this.saveConfig(); 
+    this.saveConfig();
 };
 
 ComponentPropertiesEditor.prototype.getView = function () {
@@ -123,7 +130,7 @@ ComponentPropertiesEditor.prototype.onPause = function () {
 
 ComponentPropertiesEditor.prototype.onResume = function () {
     if (this.$dockElt) {
-        
+
     }
     else {
         this.$window.addStyle(this.config.windowStyle).addTo(document.body);
