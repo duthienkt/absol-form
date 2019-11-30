@@ -20,6 +20,7 @@ import Image from "../components/Image";
 import Button from "../components/Button";
 import Table from "../components/Table";
 import LinearLayout from "../layouts/LinearLayout";
+import PluginManager from "../core/PluginManager";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -78,14 +79,17 @@ ComponentPicker.prototype.getView = function () {
                             tag: 'exptree',
                             props: {
                                 name: "RelativeLayout",
-                                icon: RelativeLayout.prototype.menuIcon
+                                icon: RelativeLayout.prototype.menuIcon,
+                                componentConstructor: RelativeLayout
+
                             }
                         },
                         {
                             tag: 'exptree',
                             props: {
                                 name: "LinearLayout",
-                                icon: LinearLayout.prototype.menuIcon
+                                icon: LinearLayout.prototype.menuIcon,
+                                componentConstructor: LinearLayout
                             }
                         }
                     ]
@@ -141,19 +145,6 @@ ComponentPicker.prototype.getView = function () {
 
                             }
                         },
-                        // {
-                        //     tag: 'exptree',
-                        //     props: {
-                        //         name: "SelectBox",
-                        //         icon: SelectBox.prototype.menuIcon,
-                        //         componentConstructor: SelectBox
-                        //     },
-                        //     on: {
-                        //         press: function () {
-                        //             // this.addComponent({ tag: 'SelectBox', attributes: { value: [0], list: [{ text: 'Item 0', value: 0 }, { text: 'Item 1', value: 1 }] } });
-                        //         }.bind(this)
-                        //     }
-                        // },
                         {
                             tag: 'exptree',
                             props: {
@@ -225,7 +216,7 @@ ComponentPicker.prototype.getView = function () {
                     on: {
                         press: toggleGroup
                     },
-                    child:[
+                    child: [
                         {
                             tag: 'exptree',
                             props: {
@@ -241,6 +232,8 @@ ComponentPicker.prototype.getView = function () {
         ]
     });
 
+    var context = { self: this, toggleGroup: toggleGroup, $view: this.$view };
+    PluginManager.exec(this, R.PLUGINS.COMPONENT_PICKER_VIEW, context);
     $('exptree', this.$view, function (elt) {
         if (elt.componentConstructor) {
             Draggable(elt.$node).on('begindrag', self.ev_constructorBeginDrag.bind(self, elt))
@@ -256,7 +249,7 @@ ComponentPicker.prototype.getView = function () {
 
 
 ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
-    
+
     this.$modal = this.$modal || _('.as-compopnent-picker-forceground');
     this.$higne = this.$higne || _('.as-compopnent-picker-higne').addTo(this.$modal);
     this.$addBoxCtn = this.$addBoxCtn || _('.as-compopnent-picker-add-box-container').addTo(this.$higne);
@@ -280,7 +273,7 @@ ComponentPicker.prototype.ev_constructorEndDrag = function (treeNode, event) {
     var y = event.clientY;
     var rect = this._dragRect;
     if (rect && rect.top <= y && rect.bottom >= y && rect.left <= x && rect.right >= x) {
-        this.mLayoutEditor.addNewComponent(treeNode.componentConstructor.prototype.tag, x - rect.left, y - rect.top);
+        this.mLayoutEditor.addNewComponent(treeNode.componentConstructor, x - rect.left, y - rect.top);
     }
 };
 

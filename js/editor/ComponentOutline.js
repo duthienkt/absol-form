@@ -15,7 +15,7 @@ function ComponentOutline() {
     /**
      * @type {import('./LayoutEditor').default}
      */
-    this.mLayoutEditor = null;
+    this.layoutEditor = null;
     this.activeComponents = [];
     this.$expNodes = [];
     this.$focusNode = undefined;
@@ -28,7 +28,8 @@ ComponentOutline.prototype.constructor = ComponentOutline;
 
 
 ComponentOutline.prototype.onStart = function () {
-    this.mLayoutEditor = this.getContext(R.LAYOUT_EDITOR);
+    this.layoutEditor = this.getContext(R.LAYOUT_EDITOR);
+    
 };
 
 ComponentOutline.prototype.ev_contextNode = function (comp, event) {
@@ -41,15 +42,15 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
             color: 'red'
         }
     }];
-    var anchorEditor = this.mLayoutEditor.findAnchorEditorByComponent(comp);
+    var anchorEditor = this.layoutEditor.findAnchorEditorByComponent(comp);
     if (anchorEditor) {
         anchorEditor.focus()
     }
     else {
-        this.mLayoutEditor.setActiveComponent(comp);
+        this.layoutEditor.setActiveComponent(comp);
     }
 
-    if (this.mLayoutEditor.anchorEditors.length == 1) {
+    if (this.layoutEditor.anchorEditors.length == 1) {
         items = [
             {
                 icon: 'span.mdi.mdi-arrow-collapse-up',
@@ -83,7 +84,7 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
         switch (event.menuItem.cmd) {
             case "delete":
                 if (comp.parent) {
-                    self.mLayoutEditor.removeComponent(comp);
+                    self.layoutEditor.removeComponent(comp);
                 }
                 break;
             case 'move-to-top':
@@ -103,21 +104,21 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
 };
 
 ComponentOutline.prototype.moveToTop = function (comp) {
-    this.mLayoutEditor.moveToTopComponent(comp);
+    this.layoutEditor.moveToTopComponent(comp);
 };
 
 ComponentOutline.prototype.moveUp = function (comp) {
-    this.mLayoutEditor.moveUpComponent(comp);
+    this.layoutEditor.moveUpComponent(comp);
     this.updateComponetTree();
 };
 
 ComponentOutline.prototype.moveDown = function (comp) {
-    this.mLayoutEditor.moveDownComponent(comp);
+    this.layoutEditor.moveDownComponent(comp);
     this.updateComponetTree();
 }
 
 ComponentOutline.prototype.moveToBottom = function (comp) {
-    this.mLayoutEditor.moveToBottomComponent(comp);
+    this.layoutEditor.moveToBottomComponent(comp);
     this.updateComponetTree();
 };
 
@@ -129,11 +130,11 @@ ComponentOutline.prototype.updateComponetTree = function () {
         this.$exptree = undefined
     }
 
-    function onPressNode(event) {
+    function onPressNode(comp, event) {
         if (event.shiftKey)
-            self.mLayoutEditor.toggleActiveComponent(this.__comp__);
+            self.layoutEditor.toggleActiveComponent(comp);
         else
-            self.mLayoutEditor.setActiveComponent(this.__comp__);
+            self.layoutEditor.setActiveComponent(comp);
     }
 
     function visit(expTree, comp) {
@@ -141,33 +142,33 @@ ComponentOutline.prototype.updateComponetTree = function () {
             comp.children.forEach(function (childComp) {
                 var childElt = _({
                     tag: 'exptree',
-                    extendEvent: ['contextmenu'],
                     props: {
                         icon: childComp.menuIcon,
                         name: childComp.getAttribute('name'),
                         __comp__: childComp
-                    },
-                    on: {
-                        click: onPressNode,
-                        contextmenu: self.ev_contextNode.bind(self, childComp)
                     }
+                });
+                childElt.getNode().defineEvent(['contextmenu']);
+                childElt.getNode().on({
+                    click: onPressNode.bind(null, childComp),
+                    contextmenu: self.ev_contextNode.bind(self, childComp)
                 });
                 expTree.addChild(childElt);
                 self.$expNodes.push(childElt);
-                visit(childElt, childComp)
+                visit(childElt, childComp);
             });
         }
     }
 
 
-    if (this.mLayoutEditor.rootLayout) {
+    if (this.layoutEditor.rootLayout) {
         this.$exptree = _({
             tag: 'exptree',
             props: {
                 status: 'open',
-                icon: this.mLayoutEditor.rootLayout.menuIcon,
-                name: this.mLayoutEditor.rootLayout.getAttribute('name'),
-                __comp__: this.mLayoutEditor.rootLayout,
+                icon: this.layoutEditor.rootLayout.menuIcon,
+                name: this.layoutEditor.rootLayout.getAttribute('name'),
+                __comp__: this.layoutEditor.rootLayout,
                 __isRoot__: true
             },
             on: {
@@ -175,7 +176,7 @@ ComponentOutline.prototype.updateComponetTree = function () {
             }
         });
         this.$expNodes.push(this.$exptree);
-        visit(this.$exptree, this.mLayoutEditor.rootLayout);
+        visit(this.$exptree, this.layoutEditor.rootLayout);
         if (this.$view) {
             this.$view.addChild(this.$exptree);
         }
@@ -190,34 +191,34 @@ ComponentOutline.prototype.updateComponentStatus = function () {
     for (var i = 0; i < this.$expNodes.length; ++i) {
         nodeElt = this.$expNodes[i];
         editor = undefined;
-        for (var j = 0; j < this.mLayoutEditor.anchorEditors.length; ++j) {
-            if (this.mLayoutEditor.anchorEditors[j].component == nodeElt.__comp__) {
-                editor = this.mLayoutEditor.anchorEditors[j];
-            }
-            if (editor) {
-                nodeElt.addClass('as-component-outline-node-selected');
-                if (editor.isFocus) {
-                    nodeElt.addClass('as-component-outline-node-focus');
-                    this.$focusNode = nodeElt;
-                }
-                else {
-                    nodeElt.removeClass('as-component-outline-node-focus');
-                }
-
-            }
-            else {
-                nodeElt.removeClass('as-component-outline-node-selected');
-                nodeElt.removeClass('as-component-outline-node-focus');
+        for (var j = 0; j < this.layoutEditor.anchorEditors.length; ++j) {
+            if (this.layoutEditor.anchorEditors[j].component == nodeElt.__comp__) {
+                editor = this.layoutEditor.anchorEditors[j];
             }
         }
+        if (editor) {
+            nodeElt.addClass('as-component-outline-node-selected');
+            if (editor.isFocus) {
+                nodeElt.addClass('as-component-outline-node-focus');
+                this.$focusNode = nodeElt;
+            }
+            else {
+                nodeElt.removeClass('as-component-outline-node-focus');
+            }
+
+        }
+        else {
+            nodeElt.removeClass('as-component-outline-node-selected');
+            nodeElt.removeClass('as-component-outline-node-focus');
+        }
     }
-    // console.log(this.mLayoutEditor.getActivatedComponents());
 };
 
 ComponentOutline.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
-        class: 'as-component-outline',
+        tag:'bscroller',
+        class: ['as-component-outline'],
         attr: {
             tabindex: '1'
         },
@@ -257,7 +258,7 @@ ComponentOutline.prototype.selectNext = function (component) {
             prev = node;
         }
         else if (prev) {
-            self.mLayoutEditor.setActiveComponent(node.__comp__);
+            self.layoutEditor.setActiveComponent(node.__comp__);
             node.$node.focus();
             return true;
         }
@@ -270,7 +271,7 @@ ComponentOutline.prototype.selectPrev = function (component) {
     $('exptree', this.$view, function (node) {
         if (node.__comp__ == component) {
             if (prev) {
-                self.mLayoutEditor.setActiveComponent(prev.__comp__);
+                self.layoutEditor.setActiveComponent(prev.__comp__);
                 prev.$node.focus();
                 return true;
             }

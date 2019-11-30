@@ -10,6 +10,7 @@ import BaseEditor from '../core/BaseEditor';
 import ContextManager from 'absol/src/AppPattern/ContextManager';
 import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
+import ComponentOutline from './ComponentOutline';
 
 
 var _ = Fcore._;
@@ -24,7 +25,8 @@ function LayoutEditor() {
     this.snapshotsIndex = 0;
     this._changeCommited = true;
     this._publicDataChange = true;
-    this.ctxMng = new ContextManager();
+    this.setContext(R.LAYOUT_EDITOR, this);
+
 
     /**
      * @type {Array<import('../anchoreditors/AnchorEditor')>}
@@ -37,24 +39,25 @@ function LayoutEditor() {
             // self.mComponentOutline.updateComponetTree();
         });
     this.setContext(R.UNDO_HISTORY, this.undoHistory);// because it had it's ContextManager
-    this.undoHistory.attach(this);
-    var self = this;
-    this.undoHistory
+
+    this.componentOtline = new ComponentOutline();
+    this.setContext(R.COMPONENT_OUTLINE, this.componentOtline);
+
 
     this.componentPropertiesEditor = new ComponentPropertiesEditor()
-    .on({
-        change:function(event){
-            self.updateAnchorPosition();
-            Dom.updateResizeSystem();
-            if (event.name == 'vAlign' || event.name == 'hAlign'){
-                self.updateAnchor();
+        .on({
+            change: function (event) {
+                self.updateAnchorPosition();
+                Dom.updateResizeSystem();
+                if (event.name == 'vAlign' || event.name == 'hAlign') {
+                    self.updateAnchor();
+                }
+                this.component.reMeasure();
+            },
+            stopchange: function (event) {
+                self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '');
             }
-            this.component.reMeasure();
-        },
-        stopchange:function(event){
-            self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '');
-        }
-    });
+        });
     this.componentPropertiesEditor.attach(this);
 }
 
@@ -65,15 +68,19 @@ Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors
 
 LayoutEditor.prototype.constructor = LayoutEditor;
 
+
 LayoutEditor.prototype.onAttached = function () {
     this.undoHistory.attach(this);
     this.componentPropertiesEditor.attach(this);
+    this.undoHistory.attach(this);
+    this.componentOtline.attach(this);
 };
 
 
 LayoutEditor.prototype.onStart = function () {
     this.undoHistory.start();
     this.componentPropertiesEditor.start();
+    this.componentOtline.start();
 };
 
 
@@ -83,6 +90,7 @@ LayoutEditor.prototype.onResume = function () {
      */
     this.undoHistory.resume();
     this.componentPropertiesEditor.resume();
+    this.componentOtline.resume();
 
     console.log('resume');
 
@@ -93,17 +101,20 @@ LayoutEditor.prototype.onPause = function () {
     // release undoHistory
     this.undoHistory.pause();
     this.componentPropertiesEditor.pause();
+    this.componentOtline.pause();
+
 };
 
 LayoutEditor.prototype.onStop = function () {
     this.undoHistory.stop();
     this.componentPropertiesEditor.stop();
-
+    this.componentOtline.stop();
 };
 
 LayoutEditor.prototype.onDestroy = function () {
     this.undoHistory.destroy();
     this.componentPropertiesEditor.destroy();
+    this.componentOtline.destroy();
 };
 
 LayoutEditor.prototype.activePublicDataChange = function (flag) {
@@ -367,6 +378,7 @@ LayoutEditor.prototype.setActiveComponent = function () {
         this.anchorEditors.push(editor);
         editor.focus();
     }
+    this.componentOtline.updateComponentStatus();
     this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
 };
 
@@ -398,6 +410,7 @@ LayoutEditor.prototype.toggleActiveComponent = function () {
         focusEditor = this.anchorEditors[this.anchorEditors.length - 1];
     }
     if (focusEditor) focusEditor.focus();
+    this.componentOtline.updateComponentStatus();
     this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
 };
 
@@ -425,6 +438,7 @@ LayoutEditor.prototype.applyData = function (data) {
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
+    this.componentOtline.updateComponetTree();
     this.emit('change', { type: 'change', target: this, data: data }, this);
 };
 
@@ -458,6 +472,14 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 LayoutEditor.prototype.getData = function () {
     if (this.rootLayout) return this.rootLayout.getData();
     return null;
+};
+
+LayoutEditor.prototype.getComponentTool = function () {
+    return this.getContext(R.COMPONENT_PICKER);;
+};
+
+LayoutEditor.prototype.getOutlineTool = function () {
+    return this.getContext(R.COMPONENT_OUTLINE);
 };
 
 
@@ -520,6 +542,8 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
     this.setActiveComponent.apply(this, context.addedComponets);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
+    this.componentOtline.updateComponetTree();
+
     this.commitHistory('add', "Add " + context.addedComponets.map(function (comp) { return comp.getAttribute('name') }).join(', '));
 };
 
@@ -530,6 +554,7 @@ LayoutEditor.prototype.clearRootLayout = function () {
     this.updateAnchor();
     this.emit('clearallcomponent', { target: this }, this);
     this.notifyDataChange();
+    this.componentOtline.updateComponetTree();
     this.commitHistory('remove', 'Remove all components');
 };
 
@@ -551,6 +576,7 @@ LayoutEditor.prototype.removeComponent = function () {
     this.notifyDataChange();
 
     if (removedComponents.length > 0) {
+        this.componentOtline.updateComponetTree();
         this.commitHistory('remove', 'Remove ' + removedComponents.map(function (c) {
             return c.getAttribute('name');
         }).join(', '));
@@ -567,6 +593,7 @@ LayoutEditor.prototype.moveUpComponent = function (comp) {
     parent.addChildBefore(comp, prevChild);
     this.emit('moveupcomponent', { type: 'moveupcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' up');
 };
 
@@ -580,6 +607,7 @@ LayoutEditor.prototype.moveDownComponent = function (comp) {
     parent.addChildBefore(nextChild, comp);
     this.emit('movedowncomponent', { type: 'movedowncomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' down');
 
 };
@@ -594,6 +622,7 @@ LayoutEditor.prototype.moveToBottomComponent = function (comp) {
     parent.addChild(comp);
     this.emit('movetobottomcomponent', { type: 'movetobottomcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to bottom');
 };
 
@@ -607,6 +636,7 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
     parent.addChildBefore(comp, firstChild);
     this.emit('movetotopcomponent', { type: 'movetotopcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
+    this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to top');
 };
 
