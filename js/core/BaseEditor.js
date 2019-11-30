@@ -49,4 +49,13 @@ BaseEditor.prototype.getData = function(){
     throw new Error('Not implement!');
 };
 
+BaseEditor.prototype.getComponentTool = function(){
+    return undefined;
+};
+
+BaseEditor.prototype.getOutlineTool = function () {
+    return undefined;
+};
+
+
 export default BaseEditor;
