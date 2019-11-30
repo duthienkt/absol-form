@@ -548,8 +548,9 @@ PropertyEditor.prototype.createNotSupportInputRow = function (name, descriptor) 
 PropertyEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
-        tag: 'table',
         class: 'as-property-editor',
+        child:{
+        tag: 'table',
         child: [
             {
                 tag: 'thead',
@@ -575,7 +576,7 @@ PropertyEditor.prototype.getView = function () {
                 tag: 'tbody'
             }
         ]
-    });
+    }});
     this.$body = $('tbody', this.$view);
     return this.$view;
 }

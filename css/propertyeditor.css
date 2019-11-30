@@ -1,27 +1,32 @@
-table.as-property-editor {
+.as-property-editor{
+    padding:0.357em;
+}
+
+
+.as-property-editor>table {
     border-collapse: collapse;
     box-sizing: border-box;
 }
 
-table.as-property-editor>thead{
+.as-property-editor>table>thead{
     font-style: italic;
     background: #f5f5f5;
 }
 
-table.as-property-editor>tbody>tr>td,
-table.as-property-editor>thead>tr>td {
+.as-property-editor>table>tbody>tr>td,
+.as-property-editor>table>thead>tr>td {
     border: 1px solid #aaaaaa;
     padding: 0.25em;
 
 }
 
-.as-form-property-tab>table.as-property-editor {
+.as-form-property-tab>.as-property-editor>table {
     width: calc(100% - 10px);
     margin: 5px;
 }
 
-table.as-property-editor>tbody>tr>td>input[type="text"],
-table.as-property-editor>tbody>tr>td>textarea {
+.as-property-editor>table>tbody>tr>td>input[type="text"],
+.as-property-editor>table>tbody>tr>td>textarea {
     font-size: 1em;
     width: 100%;
     box-sizing: border-box;
@@ -29,6 +34,6 @@ table.as-property-editor>tbody>tr>td>textarea {
     outline: none;
 }
 
-table.as-property-editor>tbody>tr>td>textarea{
+.as-property-editor>table>tbody>tr>td>textarea{
     width: 100% !important;
 }
