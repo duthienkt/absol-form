@@ -30,19 +30,19 @@ function ComponentPicker() {
     Context.call(this);
     EventEmitter.call(this);
     this.$view = null;
-    this.mLayoutEditor = null;
+    /**
+     * @type {import('./LayoutEditor').default}
+     */
+    this.layoutEditor = null;
 }
 Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
 Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 ComponentPicker.prototype.constructor = ComponentPicker;
 
 
-ComponentPicker.prototype.onStart = function () {
-    /**
-     * @type {import('./LayoutEditor').default}
-     */
-    this.mLayoutEditor = this.getContext(R.LAYOUT_EDITOR);
-};
+ComponentPicker.prototype.bindWithLayoutEditor = function(editor){
+    this.layoutEditor = editor;
+}
 
 ComponentPicker.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -257,8 +257,8 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
     if (this.$addBoxIcon) this.$addBoxIcon.remove();
     this.$addBoxIcon = _(treeNode.componentConstructor.prototype.menuIcon).addTo(this.$addBox);
     this.$modal.addTo(document.body);
-    if (this.mLayoutEditor.rootLayout) {
-        this._dragRect = this.mLayoutEditor.rootLayout.view.getBoundingClientRect();
+    if (this.layoutEditor.rootLayout) {
+        this._dragRect = this.layoutEditor.rootLayout.view.getBoundingClientRect();
     }
     else {
         this._dragRect = undefined;
@@ -273,7 +273,7 @@ ComponentPicker.prototype.ev_constructorEndDrag = function (treeNode, event) {
     var y = event.clientY;
     var rect = this._dragRect;
     if (rect && rect.top <= y && rect.bottom >= y && rect.left <= x && rect.right >= x) {
-        this.mLayoutEditor.addNewComponent(treeNode.componentConstructor, x - rect.left, y - rect.top);
+        this.layoutEditor.addNewComponent(treeNode.componentConstructor, x - rect.left, y - rect.top);
     }
 };
 

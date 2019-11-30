@@ -113,9 +113,6 @@ FormEditor.prototype.SUPPORT_EDITOR = {
 
 FormEditor.prototype.onStart = function () {
     this.mComponentPicker.start();
-    // this.mAttributeEditor.start();
-    // this.mAllPropertyEditor.start();
-    // this.mComponentOutline.start();
     this.projectExplorer.start();
 };
 
@@ -137,7 +134,7 @@ FormEditor.prototype.onPause = function () {
 FormEditor.prototype.onResume = function () {
     this.mComponentPicker.resume();
     this.projectExplorer.resume();
-    
+
 };
 
 
@@ -195,7 +192,9 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
                     if (componentTool)
                         componentTool.getView().remove();
                     if (outlineTool)
-                    outlineTool.getView().remove();
+                        outlineTool.getView().remove();
+                    if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(undefined);
+
                 },
                 active: function () {
                     editor.start();
@@ -204,6 +203,7 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
                         componentTool.getView().addTo(self.$componentTabFrame);
                     if (outlineTool)
                         outlineTool.getView().addTo(self.$outlineTabFrame);
+                    if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(editor);
                 },
                 remove: function () {
                     self.editorHolders[ident].editor.destroy();
