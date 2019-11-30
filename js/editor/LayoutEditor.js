@@ -432,7 +432,6 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 
 LayoutEditor.prototype.applyData = function (data) {
     var self = this;
-
     this.rootLayout = this.build(data);
     this.$layoutCtn.clearChild().addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
@@ -441,8 +440,6 @@ LayoutEditor.prototype.applyData = function (data) {
     this.componentOtline.updateComponetTree();
     this.emit('change', { type: 'change', target: this, data: data }, this);
 };
-
-
 
 
 LayoutEditor.prototype.setData = function (data) {
