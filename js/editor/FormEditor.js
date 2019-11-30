@@ -238,13 +238,13 @@ FormEditor.prototype.getView = function () {
                 child: [
                     {
                         tag: 'button',
-                        id: this.prefix + 'button-tab-explore',
+                        id: this.prefix + 'button-tab-explorer',
                         child: 'span.mdi.mdi-file-multiple',
                         attr: {
                             title: 'Explorer'
                         },
                         on: {
-                            click: this.showToolTab.bind(this, 'tab-explore')
+                            click: this.showToolTab.bind(this, 'tab-explorer')
                         }
                     },
                     {
@@ -293,7 +293,7 @@ FormEditor.prototype.getView = function () {
                             class: ['as-form-left-tool-site-tab'],
                             attr: {
                                 name: 'Explorer',
-                                id: this.prefix + 'tab-explore',
+                                id: this.prefix + 'tab-explorer',
                             },
                             child: [
                                 {
@@ -420,7 +420,7 @@ FormEditor.prototype.getView = function () {
     this.$mainTabview = $('.as-form-editor-main-tabview', this.$view);
     this.$mainTabview.appendChild(this.$quickToolBar);
 
-    this.$exploreTabFrame = $('tabframe#' + this.prefix + 'tab-explore', this.$view);
+    this.$exploreTabFrame = $('tabframe#' + this.prefix + 'tab-explorer', this.$view);
     this.$componentTabFrame = $('tabframe#' + this.prefix + 'tab-component', this.$view);
     this.$outlineTabFrame = $('tabframe#' + this.prefix + 'tab-outline', this.$view);
 
@@ -453,7 +453,7 @@ FormEditor.prototype.getView = function () {
     // this.$styleTabFrame = $('tabframe#tab-style', this.$rightTabView);
     // this.$attributesTabFrame = $('tabframe#tab-attributes', this.$rightTabView);
     this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
-
+    this.showToolTab('tab-explorer');
     return this.$view;
 };
 
