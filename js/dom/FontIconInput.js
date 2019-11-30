@@ -18,6 +18,7 @@ FontIconInput.eventHandler.click = function (event) {
 
 FontIconInput.eventHandler.clickIcon = function (event) {
     this.value = event.value;
+    this.emit('change', { type: 'change', value: event.value, target: this, originEvent: event.originEvent || event }, this);
     this.closePicker();
 
 };
@@ -58,6 +59,7 @@ FontIconInput.prototype.closePicker = function () {
         this.$ctn.remove();
     }
     document.body.off('click', this.eventHandler.clickBody);
+    this.$fontIconPicker.off('clickicon', this.eventHandler.clickIcon);
 };
 
 FontIconInput.prototype.prepare = function () {
@@ -76,8 +78,9 @@ FontIconInput.prototype.prepare = function () {
 
 FontIconInput.render = function () {
     return _({
+        extendEvent: 'change',
         tag: 'button',
-        extendEvent:'change',
+        extendEvent: 'change',
         class: 'as-font-icon-input'
     });
 }
@@ -87,8 +90,11 @@ FontIconInput.property.value = {
     set: function (value) {
         this.clearChild();
         this._value = value;
-        if (this._value){
+        if (this._value) {
             this.addChild(_(value));
+        }
+        else {
+            this.addChild(_('<span></span>'));
         }
     },
     get: function () {
@@ -100,8 +106,3 @@ FontIconInput.property.value = {
 Fcore.install('FontIconInput'.toLowerCase(), FontIconInput);
 
 export default FontIconInput;
-
-
-Dom.documentReady.then(function () {
-    _('fonticoninput').addTo(document.body);
-})
