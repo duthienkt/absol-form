@@ -3,29 +3,37 @@ import EventEmitter from "absol/src/HTML5/EventEmitter";
 import Context from "absol/src/AppPattern/Context";
 import '../../css/undohistory.css';
 import R from "../R";
+import BaseEditor from "../core/BaseEditor";
+import Dom from "absol/src/HTML5/Dom";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 function UndoHistory() {
-    EventEmitter.call(this);
-    Context.call(this);
+    BaseEditor.call(this);
     this._lastPosition = undefined;
     this.items = [];
     this.lastItemIndex = this.items.length - 1;
 }
 
-Object.defineProperties(UndoHistory.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
-Object.defineProperties(UndoHistory.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
+Object.defineProperties(UndoHistory.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 UndoHistory.prototype.constructor = UndoHistory;
+
+UndoHistory.prototype.CONFIG_STORE_KEY = "AS_UndoHistory_config";
+
+UndoHistory.prototype.config = {
+    windowStyle:{
+        left: '57px',
+        top:Dom.getScreenSize().height - 230 + 'px'
+    }
+};
+
 
 UndoHistory.prototype.ev_clickDockBtn = function () {
     this.$view.removeClass('as-minimize');
     if (this._lastPosition) {
         var bound = this.$view.getBoundingClientRect();
     }
-
-
 };
 
 
@@ -34,10 +42,11 @@ UndoHistory.prototype.ev_clickMinimizeBtn = function () {
 };
 
 
-UndoHistory.prototype.ev_relocation = function () {
 
+UndoHistory.prototype.ev_windowPosChange = function () {
+    this.config.windowStyle = { width: this.$view.style.width, height: this.$view.style.height, top: this.$view.style.top, left: this.$view.style.left };
+    this.saveConfig(); 
 };
-
 
 UndoHistory.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -93,11 +102,16 @@ UndoHistory.prototype.getView = function () {
                 class: ['as-undo-history-item-list'],
                 child: this.items.map(function (item) { return item.getView() })
             }
-        ]
+        ],
+        on: {
+            sizechange: this.ev_windowPosChange.bind(this),
+            drag: this.ev_windowPosChange.bind(this),
+            relocation: this.ev_windowPosChange.bind(this),
+        }
     });
     this.$view.$dockBtn.on('click', this.ev_clickDockBtn.bind(this));
     this.$view.$minimizeBtn.on('click', this.ev_clickMinimizeBtn.bind(this));
-    this.$view.on('relocation', this.ev_relocation.bind(this));
+    // this.$view.on('relocation', this.ev_relocation.bind(this));
     this.$list = $('.as-undo-history-item-list', this.$view);
     this.$undoBtn = $('button.as-undo-history-active-undo', this.$view)
         .on('click', this.undo.bind(this));
@@ -111,14 +125,8 @@ UndoHistory.prototype.getView = function () {
 
 UndoHistory.prototype.onResume = function () {
     var view = this.getView();
+    view.addStyle(this.config.windowStyle).addTo(document.body);
     view.addTo(document.body);
-    var bound = view.getBoundingClientRect();
-    var layoutEditor = this.getContext(R.LAYOUT_EDITOR);
-    if (layoutEditor) {
-        var layoutBound = layoutEditor.getView().getBoundingClientRect();
-        view.addStyle('left', layoutBound.right - bound.width + 'px');
-        view.addStyle('top', layoutBound.top + 'px');
-    }
 };
 
 UndoHistory.prototype.onPause = function () {
