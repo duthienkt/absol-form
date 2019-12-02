@@ -77,9 +77,11 @@ export function PluginProjectExplore(context) {
                         text: 'Duplicate',
                         icon: 'span.mdi.mdi-content-duplicate',
                         cmd: 'duplicate'
-                    },
-
-                ]
+                    }
+                ],
+                extendStyle: {
+                    fontSize: '12px'
+                }
             }, function (event) {
                 switch (event.menuItem.cmd) {
                     case 'open':
