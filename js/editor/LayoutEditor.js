@@ -253,7 +253,10 @@ LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
                 icon: 'span.mdi.mdi-pencil-box-multiple-outline',
                 cmd: 'design'
             }
-        ]
+        ],
+        extendStyle: {
+            fontSize: '12px'
+        }
     }, function (menuEvent) {
         var cmd = menuEvent.menuItem.cmd;
         switch (cmd) {

@@ -158,7 +158,10 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
     });
 
     event.showContextMenu({
-        items: items
+        items: items,
+        extendStyle: {
+            fontSize: '12px'
+        }
     }, function (event) {
         var cmd = event.menuItem.cmd;
         if (typeof cmd == 'function') {

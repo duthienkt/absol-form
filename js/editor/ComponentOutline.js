@@ -79,7 +79,10 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
     }
     event.stopPropagation();
     event.showContextMenu({
-        items: items
+        items: items,
+        extendStyle: {
+            fontSize: '12px'
+        }
     }, function (event) {
         switch (event.menuItem.cmd) {
             case "delete":
