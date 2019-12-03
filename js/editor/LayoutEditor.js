@@ -70,7 +70,6 @@ LayoutEditor.prototype.constructor = LayoutEditor;
 
 
 LayoutEditor.prototype.onAttached = function () {
-    this.undoHistory.attach(this);
     this.componentPropertiesEditor.attach(this);
     this.undoHistory.attach(this);
     this.componentOtline.attach(this);
@@ -91,7 +90,11 @@ LayoutEditor.prototype.onResume = function () {
     this.undoHistory.resume();
     this.componentPropertiesEditor.resume();
     this.componentOtline.resume();
+    this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
+    console.log(this.componentEditTool);
 
+    if (this.componentEditTool)
+        this.componentEditTool.start();
     console.log('resume');
 
 };
@@ -103,6 +106,8 @@ LayoutEditor.prototype.onPause = function () {
     this.componentPropertiesEditor.pause();
     this.componentOtline.pause();
 
+    if (this.componentEditTool)
+        this.componentEditTool.pause();
 };
 
 LayoutEditor.prototype.onStop = function () {
@@ -648,3 +653,4 @@ LayoutEditor.prototype.commitHistory = function (type, description) {
 };
 
 export default LayoutEditor;
+

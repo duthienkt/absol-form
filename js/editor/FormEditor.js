@@ -22,6 +22,7 @@ import QuickMenu from 'absol-acomp/js/QuickMenu';
 import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
+import ComponentEditTool from '../fragment/ComonentEditTool';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -49,8 +50,7 @@ function FormEditor() {
 
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
-    // this.mComponentOutline = new ComponentOutline();
-
+    this.mComponentEditTool = new ComponentEditTool();
 
     this.mStyleEditor = new StyleEditor()
         .on('change', this.ev_styleEditorChange.bind(this))
@@ -62,7 +62,7 @@ function FormEditor() {
     this.mAllPropertyEditor = new AllPropertyEditor().on('stopchange', function (event) {
         self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
     }
-    );;
+    );
     this.mAllPropertyEditor.on('change', function (event) {
         self.mLayoutEditor.autoExpandRootLayout();
         if (self._focusElement) self._focusElement.reMeasure();
@@ -78,26 +78,11 @@ function FormEditor() {
         self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
     }
     );
-
-    // this.mLayoutEditor.on('change', this.notifyAllChange.bind(this))
-    //     .on('focuscomponent', this.ev_focusElement.bind(this))
-    //     .on('removecomponent', this.ev_removeComponent.bind(this))
-    //     .on('addcomponent', this.ev_addComponent.bind(this))
-    //     .on('selectedcomponentchange', this.ev_selectedComponentChange.bind(this))
-
-    // this.mUndoHistory.on('checkout', function (event) {
-    //     self.mLayoutEditor.applyData(event.item.data);
-    //     self.mComponentOutline.updateComponetTree();
-    // });
-
-    // this.mLayoutEditor.on('movecomponent', this.notifyStyleChange.bind(this));
     this.ctxMng.set(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.ctxMng.set(R.COMPONENT_PICKER, this.mComponentPicker);
     this.ctxMng.set(R.UNDO_HISTORY, this.mUndoHistory);
-    // this.mLayoutEditor.attach(this);
-    this.mComponentPicker.attach(this);
-    // this.mComponentOutline.attach(this);
-    // this.mUndoHistory.attach(this);
+    this.ctxMng.set(R.COMPONENT_EDIT_TOOL, this.mComponentEditTool);
+    this.mComponentPicker.attach(this);// share, but not run
     this.mFormPreview.attach(this);
     this.projectExplorer.attach(this);
 }
@@ -112,19 +97,16 @@ FormEditor.prototype.SUPPORT_EDITOR = {
 };
 
 FormEditor.prototype.onStart = function () {
-    this.mComponentPicker.start();
     this.projectExplorer.start();
 };
 
 
 FormEditor.prototype.onStop = function () {
-    this.mComponentPicker.stop();
     this.projectExplorer.stop();
 };
 
 
 FormEditor.prototype.onPause = function () {
-    this.mComponentPicker.pause();
     this.projectExplorer.pause();
 
 
@@ -132,7 +114,6 @@ FormEditor.prototype.onPause = function () {
 
 
 FormEditor.prototype.onResume = function () {
-    this.mComponentPicker.resume();
     this.projectExplorer.resume();
 
 };
@@ -439,45 +420,19 @@ FormEditor.prototype.getView = function () {
         .on('enddrag', this.ev_endDragLeftResizer.bind(this))
         .on('drag', this.ev_dragLeftResizer.bind(this));
 
-    // this.$rightSiteResizer = Draggable($('.as-form-editor-resizer.vertical.right-site', this.$view))
-    //     .on('predrag', this.ev_preDragRightResizer.bind(this))
-    //     .on('enddrag', this.ev_endDragRightResizer.bind(this))
-    //     .on('drag', this.ev_dragRightResizer.bind(this));
-
+  
 
     this.$leftFrameView = $('frameview', this.$leftSiteCtn);
     this.$leftFrameView.activeFrameById(this.prefix + 'tab-component');
 
-    // this.$rightTabView = $('tabview', this.$rightSiteCtn);
-    // this.$rightTabView.activeTab('tab-style');
-    // this.$styleTabFrame = $('tabframe#tab-style', this.$rightTabView);
-    // this.$attributesTabFrame = $('tabframe#tab-attributes', this.$rightTabView);
+
     this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
     this.showToolTab('tab-explorer');
     return this.$view;
 };
 
 
-FormEditor.prototype.ev_focusElement = function (event) {
-    this._focusElement = event.component;
-    this.mStyleEditor.edit(event.component);
-    this.mAttributeEditor.edit(event.component);
-    this.mAllPropertyEditor.edit(event.component);
-};
 
-FormEditor.prototype.ev_selectedComponentChange = function () {
-    this.mComponentOutline.updateComponentStatus();
-};
-
-FormEditor.prototype.ev_removeComponent = function (event) {
-    if (this._focusElement == event.component) {
-        this._focusElement = undefined;
-        this.mStyleEditor.edit(undefined);
-        this.mAttributeEditor.edit(undefined);
-        this.mAllPropertyEditor.edit(undefined);
-    }
-    this.mComponentOutline.updateComponetTree();
-};
 
 FormEditor.prototype.ev_addComponent = function () {
     this.mComponentOutline.updateComponetTree();
