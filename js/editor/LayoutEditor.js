@@ -24,7 +24,6 @@ function LayoutEditor() {
     this.snapshots = [];
     this.snapshotsIndex = 0;
     this._changeCommited = true;
-    this._publicDataChange = true;
     this.setContext(R.LAYOUT_EDITOR, this);
 
 
@@ -120,10 +119,6 @@ LayoutEditor.prototype.onDestroy = function () {
     this.undoHistory.destroy();
     this.componentPropertiesEditor.destroy();
     this.componentOtline.destroy();
-};
-
-LayoutEditor.prototype.activePublicDataChange = function (flag) {
-    this._publicDataChange = !!flag;
 };
 
 /**
