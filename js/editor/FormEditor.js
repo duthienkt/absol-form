@@ -394,7 +394,8 @@ FormEditor.prototype.getView = function () {
                 },
                 items: [
                     { text: "Close All", icon: 'span.mdi.mdi-close-box-multiple-outline' },
-                    { text: "Close Saved", icon: 'span.mdi.mdi-progress-close' }
+                    { text: "Close Saved", icon: 'span.mdi.mdi-progress-close' },
+                    { text: "Save All and Close", icon: 'span.mdi.mdi-content-save-all-outline' }
                 ]
             }
         }
