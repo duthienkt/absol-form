@@ -14,8 +14,6 @@ import R from '../R';
 import AttributeEditor from './AttributeEditor';
 import StyleEditor from './StyleEditor';
 import AllPropertyEditor from './AllPropertyEditor';
-import ComponentOutline from './ComponentOutline';
-import UndoHistory from './UndoHistory';
 import FormPreview from './FormPreview';
 import { randomIdent } from 'absol/src/String/stringGenerate';
 import QuickMenu from 'absol-acomp/js/QuickMenu';
@@ -23,6 +21,7 @@ import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
 import ComponentEditTool from '../fragment/ComonentEditTool';
+import CodeEditor from './CodeEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -96,6 +95,10 @@ FormEditor.prototype.SUPPORT_EDITOR = {
     form: LayoutEditor
 };
 
+Object.keys(CodeEditor.prototype.TYPE_MODE).forEach(function(typeName){
+    FormEditor.prototype.SUPPORT_EDITOR [typeName] = CodeEditor;
+})
+
 FormEditor.prototype.onStart = function () {
     this.projectExplorer.start();
 };
@@ -130,6 +133,7 @@ FormEditor.prototype.openProject = function (name) {
 
 
 FormEditor.prototype.openItem = function (type, ident, name, contentArguments, desc) {
+    
     var self = this;
     if (this.editorHolders[ident]) {
         this.editorHolders[ident].tabframe.requestActive();

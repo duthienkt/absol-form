@@ -110,7 +110,9 @@
     background: white;
 }
 
-.as-form-editor-editor-space-container .as-layout-editor{
+.as-form-editor-editor-space-container .as-layout-editor,
+.as-form-editor-editor-space-container .as-code-editor
+{
     width: 100%;
     height: 100%;
 }
