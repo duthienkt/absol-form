@@ -23,7 +23,7 @@ function ComponentPropertiesEditor() {
     }
     this.attributeEditor = new AttributeEditor().on(repeatEvents);
     this.styleEditor = new StyleEditor().on(repeatEvents);
-    this.Editor = new StyleEditor().on(repeatEvents);
+    // this.eveEditor = new StyleEditor().on(repeatEvents);
     this.allPropertyEditor = new AllPropertyEditor().on(repeatEvents);
 
     this.$dockElt = null;

@@ -58,7 +58,6 @@ function LayoutEditor() {
                 self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '');
             }
         });
-    this.componentPropertiesEditor.attach(this);
 }
 
 
@@ -73,6 +72,9 @@ LayoutEditor.prototype.onAttached = function () {
     this.componentPropertiesEditor.attach(this);
     this.undoHistory.attach(this);
     this.componentOtline.attach(this);
+    this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
+    if (this.componentEditTool)
+        this.componentEditTool.start();
 };
 
 
@@ -90,13 +92,8 @@ LayoutEditor.prototype.onResume = function () {
     this.undoHistory.resume();
     this.componentPropertiesEditor.resume();
     this.componentOtline.resume();
-    this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
-    console.log(this.componentEditTool);
-
-    if (this.componentEditTool)
-        this.componentEditTool.start();
+    this.componentEditTool.bindWithLayoutEditor(this);
     console.log('resume');
-
 };
 
 
@@ -105,7 +102,6 @@ LayoutEditor.prototype.onPause = function () {
     this.undoHistory.pause();
     this.componentPropertiesEditor.pause();
     this.componentOtline.pause();
-
     if (this.componentEditTool)
         this.componentEditTool.pause();
 };

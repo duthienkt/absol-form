@@ -22,7 +22,7 @@ import QuickMenu from 'absol-acomp/js/QuickMenu';
 import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
-import ComponentEditTool from '../fragment/ComonentEditTool';
+import ComponentEditTool from '../fragment/ComponentEditTool';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -83,6 +83,7 @@ function FormEditor() {
     this.ctxMng.set(R.UNDO_HISTORY, this.mUndoHistory);
     this.ctxMng.set(R.COMPONENT_EDIT_TOOL, this.mComponentEditTool);
     this.mComponentPicker.attach(this);// share, but not run
+    this.mComponentEditTool.attach(this);
     this.mFormPreview.attach(this);
     this.projectExplorer.attach(this);
 }
@@ -175,7 +176,7 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
                     if (outlineTool)
                         outlineTool.getView().remove();
                     if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(undefined);
-
+                    
                 },
                 active: function () {
                     editor.start();
