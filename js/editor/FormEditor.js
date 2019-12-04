@@ -350,7 +350,7 @@ FormEditor.prototype.getView = function () {
             {
                 class: 'as-form-editor-empty-space',
                 style: {
-                    left: 'calc(' + this.config.leftSiteWidthPercent + "% - 0.2em)"
+                    left: 'calc(' + this.config.leftSiteWidthPercent + "%)"
                 },
                 child: {
                     tag: 'frame-ico',
@@ -369,7 +369,7 @@ FormEditor.prototype.getView = function () {
             {
                 class: 'as-form-editor-editor-space-container',
                 style: {
-                    left: 'calc(' + this.config.leftSiteWidthPercent + "% - 0.2em)",
+                    left: 'calc(' + this.config.leftSiteWidthPercent + "%)",
                     visibility: 'hidden'
                 },
                 child: {

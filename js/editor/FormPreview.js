@@ -39,8 +39,6 @@ FormPreview.prototype.onResume = function () {
 FormPreview.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
-
-
     this.$view = _({
         class: 'as-form-preview',
         child: [
@@ -113,7 +111,7 @@ FormPreview.prototype.flushDataToView = function () {
     if (this.dataFlushed) return;
     this.dataFlushed = true;
     //TODO: remove older view
-    if (this.data) return;
+    if (!this.data) return;
     this.$content.clearChild();
     if (data && this.$view) {
         var rootComponent = this.build(data);

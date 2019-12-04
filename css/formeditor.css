@@ -81,6 +81,7 @@
     bottom: 0;
     width: calc(15% - 3em);
     border-right: 1px solid #ddd;
+    box-sizing: border-box;
 
 }
 
@@ -111,7 +112,9 @@
 }
 
 .as-form-editor-editor-space-container .as-layout-editor,
-.as-form-editor-editor-space-container .as-code-editor
+.as-form-editor-editor-space-container .as-code-editor,
+.as-form-editor-editor-space-container .as-form-preview
+
 {
     width: 100%;
     height: 100%;
