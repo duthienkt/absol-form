@@ -57,5 +57,9 @@ BaseEditor.prototype.getOutlineTool = function () {
     return undefined;
 };
 
+BaseEditor.prototype.notifyDataChange = function(){
+    this.emit('datachange', { type: 'datachange', target: this }, this);
+};
+
 
 export default BaseEditor;

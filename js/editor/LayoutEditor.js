@@ -7,10 +7,10 @@ import '../dom/VLine';
 import R from '../R';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
-import ContextManager from 'absol/src/AppPattern/ContextManager';
 import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
+import FormPreview from './FormPreview';
 
 
 var _ = Fcore._;
@@ -24,7 +24,6 @@ function LayoutEditor() {
     this.snapshots = [];
     this.snapshotsIndex = 0;
     this._changeCommited = true;
-    this._publicDataChange = true;
     this.setContext(R.LAYOUT_EDITOR, this);
 
 
@@ -92,8 +91,17 @@ LayoutEditor.prototype.onResume = function () {
     this.undoHistory.resume();
     this.componentPropertiesEditor.resume();
     this.componentOtline.resume();
-    this.componentEditTool.bindWithLayoutEditor(this);
-    console.log('resume');
+    /**
+     * @type {import('../fragment/ComponentEditTool'.default)}
+     */
+    this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
+    
+    if (this.componentEditTool){
+        this.componentEditTool.bindWithLayoutEditor(this);
+        this.componentEditTool.start();
+    }
+  
+
 };
 
 
@@ -102,8 +110,11 @@ LayoutEditor.prototype.onPause = function () {
     this.undoHistory.pause();
     this.componentPropertiesEditor.pause();
     this.componentOtline.pause();
-    if (this.componentEditTool)
+
+    if (this.componentEditTool){
         this.componentEditTool.pause();
+        this.componentEditTool.bindWithLayoutEditor(undefined);
+    }
 };
 
 LayoutEditor.prototype.onStop = function () {
@@ -116,10 +127,6 @@ LayoutEditor.prototype.onDestroy = function () {
     this.undoHistory.destroy();
     this.componentPropertiesEditor.destroy();
     this.componentOtline.destroy();
-};
-
-LayoutEditor.prototype.activePublicDataChange = function (flag) {
-    this._publicDataChange = !!flag;
 };
 
 /**
@@ -646,6 +653,37 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
 LayoutEditor.prototype.commitHistory = function (type, description) {
     if (!this.undoHistory) return;
     this.undoHistory.commit(type, this.getData(), description, new Date());
+};
+
+
+LayoutEditor.prototype.preview = function () {
+    if (!this.rootLayout) return;
+    /**
+     * @type {import('./FormEditor').default}
+     */
+    var formEditor = this.getContext(R.FORM_EDITOR);
+    if (!formEditor) return;
+    var tabHolder = formEditor.getEditorHolderByEditor(this);
+    var currentTabIdent = tabHolder.ident;
+    var previewTabIdent = currentTabIdent + '_preview';
+    var previewEditor;
+    var previewTabHolder = formEditor.getEditorHolderByIdent(previewTabIdent);
+    if (previewTabHolder)
+        previewEditor = previewTabHolder.editor;
+
+    if (!previewEditor) {
+        previewEditor = new FormPreview();
+        previewEditor.attach(this);
+        var name = tabHolder.name + ('(Preview)');
+        var desc = tabHolder.desc;
+        formEditor.openEditorTab(previewTabIdent, name, desc, previewEditor, { layoutEditor: this })
+    }
+    else {
+        previewTabHolder.tabframe.requestActive();
+    }
+
+    var data = this.getData();
+    previewEditor.setData(data);
 };
 
 export default LayoutEditor;

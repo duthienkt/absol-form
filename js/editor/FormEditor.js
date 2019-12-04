@@ -6,16 +6,12 @@ import '../../css/formeditor.css';
 import Fcore from '../core/FCore';
 import LayoutEditor from './LayoutEditor';
 import Dom from 'absol/src/HTML5/Dom';
-import EventEmitter from 'absol/src/HTML5/EventEmitter';
 
 import ComponentPicker from './ComponentPicker';
-import ContextManager from 'absol/src/AppPattern/ContextManager';
 import R from '../R';
 import AttributeEditor from './AttributeEditor';
 import StyleEditor from './StyleEditor';
 import AllPropertyEditor from './AllPropertyEditor';
-import ComponentOutline from './ComponentOutline';
-import UndoHistory from './UndoHistory';
 import FormPreview from './FormPreview';
 import { randomIdent } from 'absol/src/String/stringGenerate';
 import QuickMenu from 'absol-acomp/js/QuickMenu';
@@ -23,6 +19,7 @@ import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
 import ComponentEditTool from '../fragment/ComponentEditTool';
+import CodeEditor from './CodeEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -30,7 +27,7 @@ var $ = Fcore.$;
 function FormEditor() {
     BaseEditor.call(this);
     this.prefix = randomIdent(16) + "_";
-    this.ctxMng.set(R.FORM_EDITOR, this);
+    this.setContext(R.FORM_EDITOR, this);
     var self = this;
     this.style = {
         leftSizeWidth: 16,//em
@@ -78,10 +75,10 @@ function FormEditor() {
         self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
     }
     );
-    this.ctxMng.set(R.LAYOUT_EDITOR, this.mLayoutEditor);
-    this.ctxMng.set(R.COMPONENT_PICKER, this.mComponentPicker);
-    this.ctxMng.set(R.UNDO_HISTORY, this.mUndoHistory);
-    this.ctxMng.set(R.COMPONENT_EDIT_TOOL, this.mComponentEditTool);
+    this.setContext(R.LAYOUT_EDITOR, this.mLayoutEditor);
+    this.setContext(R.COMPONENT_PICKER, this.mComponentPicker);
+    this.setContext(R.UNDO_HISTORY, this.mUndoHistory);
+    this.setContext(R.COMPONENT_EDIT_TOOL, this.mComponentEditTool);
     this.mComponentPicker.attach(this);// share, but not run
     this.mComponentEditTool.attach(this);
     this.mFormPreview.attach(this);
@@ -96,6 +93,10 @@ FormEditor.prototype.CONFIG_STORE_KEY = "AS_FormEditor_config";
 FormEditor.prototype.SUPPORT_EDITOR = {
     form: LayoutEditor
 };
+
+Object.keys(CodeEditor.prototype.TYPE_MODE).forEach(function (typeName) {
+    FormEditor.prototype.SUPPORT_EDITOR[typeName] = CodeEditor;
+})
 
 FormEditor.prototype.onStart = function () {
     this.projectExplorer.start();
@@ -139,72 +140,93 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
         if (this.SUPPORT_EDITOR[type]) {
             var editor = new this.SUPPORT_EDITOR[type];
             editor.attach(this);
-            var componentTool = editor.getComponentTool();
-            var outlineTool = editor.getOutlineTool();
-            var tabframe = _({
-                tag: 'tabframe',
-                attr: {
-                    name: name,
-                    desc: desc
-                },
-                child: editor.getView(),
 
-            });
             var accumulator = {
-                tabframe: tabframe,
                 type: type,
-                ident: ident,
-                name: name,
-                contentArguments: contentArguments,
-                desc: desc,
-                editor: editor,
-                formEditor: this,
-                componentTool: componentTool,
-                outlineTool: outlineTool
+                contentArguments: contentArguments
             };
-            this.editorHolders[ident] = accumulator;
-
-            this.$editorSpaceCtn.removeStyle('visibility');
+            this.openEditorTab(ident, name, desc, editor, accumulator);
             PluginManager.exec(this, R.PLUGINS.LOAD_CONTENT_DATA, accumulator)
-            tabframe.on({
-                deactive: function () {
-                    editor.pause();
-                    if (self.activeEditorHolder == accumulator)
-                        self.activeEditorHolder = null;
-                    if (componentTool)
-                        componentTool.getView().remove();
-                    if (outlineTool)
-                        outlineTool.getView().remove();
-                    if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(undefined);
-                    
-                },
-                active: function () {
-                    editor.start();
-                    self.activeEditorHolder = accumulator;
-                    if (componentTool)
-                        componentTool.getView().addTo(self.$componentTabFrame);
-                    if (outlineTool)
-                        outlineTool.getView().addTo(self.$outlineTabFrame);
-                    if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(editor);
-                },
-                remove: function () {
-                    self.editorHolders[ident].editor.destroy();
-                    self.editorHolders[ident] = undefined;
-                    delete self.editorHolders[ident];
-                    if (Object.keys(self.editorHolders).length == 0)
-                        self.$editorSpaceCtn.addStyle('visibility', 'hidden');
-                }
-            });
-            this.$mainTabview.addChild(tabframe);
-            // editor.start();
         }
         else {
             throw new Error("The editor not supprt " + type + ' type!');
         }
     }
-
+    return this.editorHolders[ident];
 };
 
+FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumulator) {
+    var self = this;
+    accumulator = accumulator || {};
+    var componentTool = editor.getComponentTool();
+    var outlineTool = editor.getOutlineTool();
+
+    var tabframe = _({
+        tag: 'tabframe',
+        attr: {
+            name: name,
+            desc: desc
+        },
+        child: editor.getView()
+
+    });
+    Object.assign(accumulator, {
+        tabframe: tabframe,
+        ident: ident,
+        name: name,
+        desc: desc,
+        editor: editor,
+        formEditor: this,
+        componentTool: componentTool,
+        outlineTool: outlineTool
+    });
+    this.editorHolders[ident] = accumulator;
+
+    this.$editorSpaceCtn.removeStyle('visibility');
+    tabframe.on({
+        deactive: function () {
+            editor.pause();
+            if (self.activeEditorHolder == accumulator)
+                self.activeEditorHolder = null;
+            if (componentTool)
+                componentTool.getView().remove();
+            if (outlineTool)
+                outlineTool.getView().remove();
+            if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(undefined);
+
+        },
+        active: function () {
+            editor.start();
+            self.activeEditorHolder = accumulator;
+            if (componentTool)
+                componentTool.getView().addTo(self.$componentTabFrame);
+            if (outlineTool)
+                outlineTool.getView().addTo(self.$outlineTabFrame);
+            if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(editor);
+        },
+        remove: function () {
+            self.editorHolders[ident].editor.destroy();
+            self.editorHolders[ident] = undefined;
+            delete self.editorHolders[ident];
+            if (Object.keys(self.editorHolders).length == 0)
+                self.$editorSpaceCtn.addStyle('visibility', 'hidden');
+        }
+    });
+    this.$mainTabview.addChild(tabframe);
+    return accumulator;
+};
+
+
+FormEditor.prototype.getEditorHolderByIdent = function(ident){
+    return this.editorHolders[ident];
+};
+
+FormEditor.prototype.getEditorHolderByEditor = function(editor){
+    for (var ident in this.editorHolders){
+        if (this.editorHolders[ident].editor == editor) return this.editorHolders[ident];
+    }
+    return null;
+};
 
 FormEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -361,9 +383,7 @@ FormEditor.prototype.getView = function () {
                 style: {
                     left: 'calc(' + this.config.leftSiteWidthPercent + "% - 0.2em)"
                 }
-            },
-            // '.as-form-editor-resizer.vertical.right-site'
-
+            }
         ],
         on: {
             keydown: this.ev_keydown.bind(this)
@@ -391,7 +411,8 @@ FormEditor.prototype.getView = function () {
                 },
                 items: [
                     { text: "Close All", icon: 'span.mdi.mdi-close-box-multiple-outline' },
-                    { text: "Close Saved", icon: 'span.mdi.mdi-progress-close' }
+                    { text: "Close Saved", icon: 'span.mdi.mdi-progress-close' },
+                    { text: "Save All and Close", icon: 'span.mdi.mdi-content-save-all-outline' }
                 ]
             }
         }
@@ -421,7 +442,7 @@ FormEditor.prototype.getView = function () {
         .on('enddrag', this.ev_endDragLeftResizer.bind(this))
         .on('drag', this.ev_dragLeftResizer.bind(this));
 
-  
+
 
     this.$leftFrameView = $('frameview', this.$leftSiteCtn);
     this.$leftFrameView.activeFrameById(this.prefix + 'tab-component');

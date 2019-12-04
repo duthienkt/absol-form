@@ -1,4 +1,5 @@
 import XHR from 'absol/src/Network/XHR';
+import CodeEditor from '../editor/CodeEditor';
 
 var WOKSPACE_FOLDER = 'formeditor/workspace';
 
@@ -65,31 +66,31 @@ export function PluginProjectExplore(context) {
     var self = context.self;
 
     function contextMenuEventHandler(contentArguments, event) {
-        if (contentArguments.ext == 'form') {
-            event.showContextMenu({
-                items: [
-                    {
-                        text: 'Open',
-                        icon: 'span.mdi.mdi-menu-open',
-                        cmd: 'open'
-                    },
-                    {
-                        text: 'Duplicate',
-                        icon: 'span.mdi.mdi-content-duplicate',
-                        cmd: 'duplicate'
-                    }
-                ],
-                extendStyle: {
-                    fontSize: '12px'
+        // if (contentArguments.ext == 'form') {
+        event.showContextMenu({
+            items: [
+                {
+                    text: 'Open',
+                    icon: 'span.mdi.mdi-menu-open',
+                    cmd: 'open'
+                },
+                {
+                    text: 'Duplicate',
+                    icon: 'span.mdi.mdi-content-duplicate',
+                    cmd: 'duplicate'
                 }
-            }, function (event) {
-                switch (event.menuItem.cmd) {
-                    case 'open':
-                        self.openItem('form', contentArguments.fullPath.replace(/[^a-zA-Z0-9\_]/g, '_'), contentArguments.name, contentArguments, contentArguments.fullPath)
-                        break;
-                }
-            });
-        }
+            ],
+            extendStyle: {
+                fontSize: '12px'
+            }
+        }, function (event) {
+            switch (event.menuItem.cmd) {
+                case 'open':
+                    self.openItem('form', contentArguments.fullPath.replace(/[^a-zA-Z0-9\_]/g, '_'), contentArguments.name, contentArguments, contentArguments.fullPath)
+                    break;
+            }
+        });
+        // }
 
     }
     context.loadExpTree = function () {
@@ -122,10 +123,13 @@ export function PluginProjectExplore(context) {
                                 icon: extIcons[it.ext] || extIcons['*']
                             }
                         });
+                        res.getNode().defineEvent('contextmenu')
+                            .on('contextmenu', contextMenuEventHandler.bind(res, it))
+                            .on('dblclick', function (event) {
+                                self.openItem(it.ext, it.fullPath.replace(/[^a-zA-Z0-9\_]/g, '_'), it.name, it, it.fullPath);
+                            });
                     }
 
-                    res.getNode().defineEvent('contextmenu')
-                        .on('contextmenu', contextMenuEventHandler.bind(res, it));
                     res.addTo(rootElt);
                 });
             });
@@ -146,6 +150,16 @@ export function PluginLoadContentData(accumulator) {
             try {
                 var data = JSON.parse(out);
                 accumulator.editor.setData(data);
+            }
+            catch (error) {
+                console.error(error)
+            }
+        });
+    }
+    else if (CodeEditor.prototype.TYPE_MODE[accumulator.contentArguments.ext]) {
+        catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
+            try {
+                accumulator.editor.setData({ value: out, type: accumulator.contentArguments.ext });
             }
             catch (error) {
                 console.error(error)
