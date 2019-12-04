@@ -93,283 +93,283 @@ ComponentEditTool.prototype.onResume = function () {
     this.$window.addStyle(this.config.windowStyle).addTo(document.body);
 };
 
-ComponentEditTool.prototype.
 
-    ComponentEditTool.prototype.getView = function () {
-        if (this.$view) return this.$view;
-        var self = this;
-        var items = [];
-        var tempItem;
-        this.$visiable = [];
-        //////////////////////////////1//////////////////////////
-        this.$visiable[1] = [];
-        this.$visiable[2] = [];
-        this.$visiable[0] = [];
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: "mdi-align-horizontal-left",
-            on: {
-                click: this.cmd_alignLeftDedge.bind(this)
-            },
-            props: {
-                hover: "Align Left Edges"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: "mdi-align-horizontal-center",
-            on: {
-                click: this.cmd_alignHorizontalCenter.bind(this)
-            },
-            props: {
-                hover: "Align Horizontal Center"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
+ComponentEditTool.prototype.getView = function () {
+    if (this.$view) return this.$view;
+    var self = this;
+    var items = [];
+    var tempItem;
+    this.$visiable = [];
+    //////////////////////////////1//////////////////////////
+    this.$visiable[1] = [];
+    this.$visiable[2] = [];
+    this.$visiable[0] = [];
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: "mdi-align-horizontal-left",
+        on: {
+            click: this.cmd_alignLeftDedge.bind(this)
+        },
+        props: {
+            hover: "Align Left Edges"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: "mdi-align-horizontal-right",
-            on: {
-                click: this.cmd_alignRightDedge.bind(this)
-            },
-            props: {
-                hover: "Align Right Edges"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: "mdi-align-horizontal-center",
+        on: {
+            click: this.cmd_alignHorizontalCenter.bind(this)
+        },
+        props: {
+            hover: "Align Horizontal Center"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_("span.mdi.mdi-arrow-expand-horizontal")],
-            on: {
-                click: this.cmd_equaliseWidth.bind(this)
-            },
-            props: {
-                hover: "Equalise Width"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: "mdi-align-horizontal-right",
+        on: {
+            click: this.cmd_alignRightDedge.bind(this)
+        },
+        props: {
+            hover: "Align Right Edges"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        items.push(_({ tag: "br" }));
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_("span.mdi.mdi-arrow-expand-horizontal")],
+        on: {
+            click: this.cmd_equaliseWidth.bind(this)
+        },
+        props: {
+            hover: "Equalise Width"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_("mdi-align-vertical-top")],
-            on: {
-                click: this.cmd_alignTopDedge.bind(this)
-            },
-            props: {
-                hover: "Align Top Edges"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
+    items.push(_({ tag: "br" }));
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('mdi-align-vertical-bottom')],
-            on: {
-                click: this.cmd_alignBottomDedge.bind(this)
-            },
-            props: {
-                hover: "Align Bottom Edges"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_("mdi-align-vertical-top")],
+        on: {
+            click: this.cmd_alignTopDedge.bind(this)
+        },
+        props: {
+            hover: "Align Top Edges"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('mdi-align-vertical-center')],
-            on: {
-                click: this.cmd_alignVerticalCenter.bind(this)
-            },
-            props: {
-                hover: "Align Vertical Center"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('mdi-align-vertical-bottom')],
+        on: {
+            click: this.cmd_alignBottomDedge.bind(this)
+        },
+        props: {
+            hover: "Align Bottom Edges"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('mdi-align-vertical-center')],
-            on: {
-                click: this.cmd_equaliseHeight.bind(this)
-            },
-            props: {
-                hover: "Equalise Height"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[1].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('mdi-align-vertical-center')],
+        on: {
+            click: this.cmd_alignVerticalCenter.bind(this)
+        },
+        props: {
+            hover: "Align Vertical Center"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        items.push(_({ tag: "br" }));
-        ///////////////////////////2////////////////////////
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('span.mdi.mdi-distribute-horizontal-left')],
-            on: {
-                click: this.cmd_distributeHorizontalLeft.bind(this)
-            },
-            props: {
-                hover: "Distribute Horizontal Left"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('mdi-align-vertical-center')],
+        on: {
+            click: this.cmd_equaliseHeight.bind(this)
+        },
+        props: {
+            hover: "Equalise Height"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[1].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('span.mdi.mdi-distribute-horizontal-center')],
-            on: {
-                click: this.cmd_distributeHorizontalCenter.bind(this)
-            },
-            props: {
-                hover: "Distribute Horizontal Center"
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
+    items.push(_({ tag: "br" }));
+    ///////////////////////////2////////////////////////
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('span.mdi.mdi-distribute-horizontal-left')],
+        on: {
+            click: this.cmd_distributeHorizontalLeft.bind(this)
+        },
+        props: {
+            hover: "Distribute Horizontal Left"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('span.mdi.mdi-distribute-horizontal-right')],
-            on: {
-                click: this.cmd_distributeHorizontalRight.bind(this)
-            },
-            props: {
-                hover: 'Distribute Horizontal Right',
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('span.mdi.mdi-distribute-horizontal-center')],
+        on: {
+            click: this.cmd_distributeHorizontalCenter.bind(this)
+        },
+        props: {
+            hover: "Distribute Horizontal Center"
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\<path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\</svg>')],
-            on: {
-                click: this.cmd_distributeHorizontalDistance.bind(this)
-            },
-            props: {
-                hover: 'Distribute Horizontal Distance',
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('span.mdi.mdi-distribute-horizontal-right')],
+        on: {
+            click: this.cmd_distributeHorizontalRight.bind(this)
+        },
+        props: {
+            hover: 'Distribute Horizontal Right',
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
 
-        items.push(_({ tag: "br" }));
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\<path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\</svg>')],
+        on: {
+            click: this.cmd_distributeHorizontalDistance.bind(this)
+        },
+        props: {
+            hover: 'Distribute Horizontal Distance',
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('span.mdi.mdi-distribute-vertical-top')],
-            on: {
-                click: this.cmd_distributeVerticalTop.bind(this)
-            },
-            props: {
-                hover: 'Distribute Vertical Top',
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
+    items.push(_({ tag: "br" }));
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('span.mdi.mdi-distribute-vertical-center')],
-            on: {
-                click: this.cmd_distributeVerticalCenter.bind(this)
-            },
-            props: {
-                hover: 'Distribute Vertical Center',
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('span.mdi.mdi-distribute-vertical-top')],
+        on: {
+            click: this.cmd_distributeVerticalTop.bind(this)
+        },
+        props: {
+            hover: 'Distribute Vertical Top',
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('span.mdi.mdi-distribute-vertical-bottom')],
-            on: {
-                click: this.cmd_distributeVerticalBottom.bind(this)
-            },
-            props: {
-                hover: 'Distribute Vertical Bottom',
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('span.mdi.mdi-distribute-vertical-center')],
+        on: {
+            click: this.cmd_distributeVerticalCenter.bind(this)
+        },
+        props: {
+            hover: 'Distribute Vertical Center',
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
 
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: [_('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\<path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\</svg>')],
-            on: {
-                click: this.cmd_distributeVerticalDistance.bind(this)
-            },
-            props: {
-                hover: 'Distribute Verlical Distance',
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[2].push(tempItem);
-        items.push(_({ tag: "br" }));
-        tempItem = _({
-            tag: "button",
-            class: "as-from-tool-button",
-            child: ['span.mdi.mdi-delete-variant'],
-            on: {
-                click: this.cmd_delete.bind(this)
-            },
-            props: {
-                hover: 'Delete',
-            }
-        });
-        items.push(tempItem);
-        this.$visiable[0].push(tempItem);
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('span.mdi.mdi-distribute-vertical-bottom')],
+        on: {
+            click: this.cmd_distributeVerticalBottom.bind(this)
+        },
+        props: {
+            hover: 'Distribute Vertical Bottom',
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
 
-        this.$window = _({
-            tag: "onscreenwindow",
-            class: "as-form-component-properties-editor-window",
-            props: {
-                windowTitle: "Tools",
-                windowIcon: "span.mdi.mdi-shape-plus"
-            },
-            on: {
-                sizechange: this.ev_windowPosChange.bind(this),
-                drag: this.ev_windowPosChange.bind(this),
-                relocation: this.ev_windowPosChange.bind(this)
-            }
-        });
-        this.$view = _({
-            class: "as-form-component-edit-tool",
-            child: items
-        });
-        this.$window.addChild(this.$view);
-        this.updateVisiable();
-        return this.$view;
-    };
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: [_('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\<path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\</svg>')],
+        on: {
+            click: this.cmd_distributeVerticalDistance.bind(this)
+        },
+        props: {
+            hover: 'Distribute Verlical Distance',
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[2].push(tempItem);
+    items.push(_({ tag: "br" }));
+    tempItem = _({
+        tag: "button",
+        class: "as-from-tool-button",
+        child: ['span.mdi.mdi-delete-variant'],
+        on: {
+            click: this.cmd_delete.bind(this)
+        },
+        props: {
+            hover: 'Delete',
+        }
+    });
+    items.push(tempItem);
+    this.$visiable[0].push(tempItem);
+
+    this.$window = _({
+        tag: "onscreenwindow",
+        class: "as-form-component-properties-editor-window",
+        props: {
+            windowTitle: "Tools",
+            windowIcon: "span.mdi.mdi-shape-plus"
+        },
+        on: {
+            sizechange: this.ev_windowPosChange.bind(this),
+            drag: this.ev_windowPosChange.bind(this),
+            relocation: this.ev_windowPosChange.bind(this)
+        }
+    });
+    this.$view = _({
+        class: "as-form-component-edit-tool",
+        child: items
+    });
+    this.$window.addChild(this.$view);
+    this.updateVisiable();
+    return this.$view;
+};
 
 ComponentEditTool.prototype.findFocusAnchorEditor = function () {
     var focusEditor = this.layoutEditor.anchorEditors.filter(function (e) { return e.isFocus });
