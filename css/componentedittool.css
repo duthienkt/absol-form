@@ -1,0 +1,46 @@
+
+
+
+.as-from-tool-button {
+    font-size: 12px;
+    height: 2em;
+    width: 2em;
+    background-color: transparent;
+    padding: 0;
+    vertical-align: middle;
+    border: none;
+    border-radius: 0.3em;
+}
+
+.as-from-tool-button:not(:disabled):hover {
+    background-color: rgba(169, 169, 169, 0.1);
+}
+
+.as-from-tool-button>span {
+    font-size: 1.5em;
+}
+
+.as-from-tool-button>svg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.as-from-tool-button:disabled>span {
+    color: #c4c4c4;
+}
+
+.as-from-tool-button:disabled>svg>path {
+    fill: #c4c4c4;
+}
+
+.as-from-tool-button:not(:disabled)>span.mdi-delete-variant {
+    color: red;
+}
+
+.as-from-tool-group-buttons{
+    border-right: 1px solid #ddd;
+}
+
+.as-from-tool-group-buttons:empty{
+    display: none;
+}

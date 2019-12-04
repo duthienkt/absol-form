@@ -89,12 +89,16 @@ LayoutEditor.prototype.onResume = function () {
     this.undoHistory.resume();
     this.componentPropertiesEditor.resume();
     this.componentOtline.resume();
+    /**
+     * @type {import('../fragment/ComponentEditTool'.default)}
+     */
     this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
-    console.log(this.componentEditTool);
-
-    if (this.componentEditTool)
+    
+    if (this.componentEditTool){
+        this.componentEditTool.bindWithLayoutEditor(this);
         this.componentEditTool.start();
-    console.log('resume');
+    }
+  
 
 };
 
@@ -105,8 +109,10 @@ LayoutEditor.prototype.onPause = function () {
     this.componentPropertiesEditor.pause();
     this.componentOtline.pause();
 
-    if (this.componentEditTool)
+    if (this.componentEditTool){
         this.componentEditTool.pause();
+        this.componentEditTool.bindWithLayoutEditor(undefined);
+    }
 };
 
 LayoutEditor.prototype.onStop = function () {
