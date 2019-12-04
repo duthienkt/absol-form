@@ -17,6 +17,7 @@ function ComponentEditTool() {
 
     this.$dockElt = null;
     this.$visiable = [];
+    this.updateVisiable = this.updateVisiable.bind(this);
 }
 
 Object.defineProperties(ComponentEditTool.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
@@ -32,10 +33,12 @@ ComponentEditTool.prototype.config = {
 };
 
 ComponentEditTool.prototype.bindWithLayoutEditor = function (editor) {
-    var self = this;
-    self.layoutEditor = editor;
-    window.theFuck = this.layoutEditor;
-    self.layoutEditor.on("selectedcomponentchange", self.updateVisiable.bind(this))
+    // this.updateVisiable is binded
+    if (this.layoutEditor)
+        this.layoutEditor.off('selectedcomponentchange', this.updateVisiable);
+    this.layoutEditor = editor;
+    if (this.layoutEditor)
+        this.layoutEditor.on("selectedcomponentchange", this.updateVisiable);
 };
 
 ComponentEditTool.prototype.ev_windowPosChange = function () {
