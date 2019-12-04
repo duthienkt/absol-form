@@ -1,45 +1,48 @@
 import Fcore from "../core/FCore"
-import Context from "absol/src/AppPattern/Context";
 import Assembler from "../core/Assembler";
 import '../../css/formpreview.css';
 import R from "../R";
 import Dom from "absol/src/HTML5/Dom";
+import BaseEditor from "../core/BaseEditor";
 
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 function FormPreview() {
-    this.data = null;
-    Context.call(this);
+    BaseEditor.call(this);
     Assembler.call(this);
+    this.data = null;
+    this.dataFlushed = true;
 }
 
+Object.defineProperties(FormPreview.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 Object.defineProperties(FormPreview.prototype, Object.getOwnPropertyDescriptors(Assembler.prototype));
-Object.defineProperties(FormPreview.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
 FormPreview.prototype.constructor = FormPreview;
 
 
 
 FormPreview.prototype.onPause = function () {
-    this.getView().remove();
+    // this.getView().remove();
 };
 
 
 FormPreview.prototype.onResume = function () {
-    this.getView().addTo(document.body);
-    this.updateSize();
+    console.log(this);
+    
+    this.flushDataToView();
+    //TODO: update new data to view if need
+    // this.getView().addTo(document.body);
+    // this.updateSize();
 };
 
 FormPreview.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
+
+
     this.$view = _({
-        tag: 'onscreenwindow',
         class: 'as-form-preview',
-        props: {
-            windowTitle: 'Form Preview'
-        },
         child: [
             {
                 class: 'as-form-preview-actions',
@@ -91,30 +94,10 @@ FormPreview.prototype.refresh = function () {
     var data;
     var editor = this.getContext(R.LAYOUT_EDITOR);
     if (editor) data = editor.getData();
-    this.$content.clearChild();
-    if (data && this.$view) {
-        var rootComponent = this.build(data);
-        this.$content.addChild(rootComponent.view);
-        rootComponent.onAttach();
-    }
-    this.updateSize();
-
+    if (data)
+        this.setData(data);
 };
 
-
-FormPreview.prototype.updateSize = function () {
-    if (!this.$view) return;
-    var bound = this.$view.getBoundingClientRect();
-    var contentBound = (this.$content.children.length > 0 ? this.$content.children[0] : this.$content).getBoundingClientRect();
-    this.$view.addStyle({
-        width: Math.max(contentBound.width, 200) + 'px',
-        height: contentBound.top - bound.top + contentBound.height + 'px'
-    });
-    this.$content.removeStyle('width');
-    this.$content.removeStyle('height');
-    this.$view.addStyle('min-height', contentBound.top - bound.top + 'px');
-    this.$view.relocation();
-};
 
 FormPreview.prototype.ev_sizeChange = function (event) {
     Dom.updateResizeSystem.bind(Dom);
@@ -125,6 +108,28 @@ FormPreview.prototype.ev_sizeChange = function (event) {
         height: bound.height - (contentBound.top - bound.top) + 'px'
     });
 };
+
+FormPreview.prototype.flushDataToView = function () {
+    if (this.dataFlushed) return;
+    this.dataFlushed = true;
+    //TODO: remove older view
+    if (this.data) return;
+    this.$content.clearChild();
+    if (data && this.$view) {
+        var rootComponent = this.build(data);
+        this.$content.addChild(rootComponent.view);
+        rootComponent.onAttach();
+    }
+};
+
+FormPreview.prototype.setData = function (data) {
+    this.data = data;
+    this.dataFlushed = false;
+    if (this.state == "RUNNING")
+        this.flushDataToView();
+};
+
+
 
 
 export default FormPreview;

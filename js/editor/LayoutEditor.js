@@ -7,10 +7,10 @@ import '../dom/VLine';
 import R from '../R';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
-import ContextManager from 'absol/src/AppPattern/ContextManager';
 import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
+import FormPreview from './FormPreview';
 
 
 var _ = Fcore._;
@@ -645,6 +645,37 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
 LayoutEditor.prototype.commitHistory = function (type, description) {
     if (!this.undoHistory) return;
     this.undoHistory.commit(type, this.getData(), description, new Date());
+};
+
+
+LayoutEditor.prototype.preview = function () {
+    if (!this.rootLayout) return;
+    /**
+     * @type {import('./FormEditor').default}
+     */
+    var formEditor = this.getContext(R.FORM_EDITOR);
+    if (!formEditor) return;
+    var tabHolder = formEditor.getEditorHolderByEditor(this);
+    var currentTabIdent = tabHolder.ident;
+    var previewTabIdent = currentTabIdent + '_preview';
+    var previewEditor;
+    var previewTabHolder = formEditor.getEditorHolderByIdent(previewTabIdent);
+    if (previewTabHolder)
+        previewEditor = previewTabHolder.editor;
+
+    if (!previewEditor) {
+        previewEditor = new FormPreview();
+        previewEditor.attach(this);
+        var name = tabHolder.name + ('(Preview)');
+        var desc = tabHolder.desc;
+        formEditor.openEditorTab(previewTabIdent, name, desc, previewEditor, { layoutEditor: this })
+    }
+    else {
+        previewTabHolder.tabframe.requestActive();
+    }
+
+    var data = this.getData();
+    previewEditor.setData(data);
 };
 
 export default LayoutEditor;
