@@ -6,10 +6,8 @@ import '../../css/formeditor.css';
 import Fcore from '../core/FCore';
 import LayoutEditor from './LayoutEditor';
 import Dom from 'absol/src/HTML5/Dom';
-import EventEmitter from 'absol/src/HTML5/EventEmitter';
 
 import ComponentPicker from './ComponentPicker';
-import ContextManager from 'absol/src/AppPattern/ContextManager';
 import R from '../R';
 import AttributeEditor from './AttributeEditor';
 import StyleEditor from './StyleEditor';
@@ -20,7 +18,7 @@ import QuickMenu from 'absol-acomp/js/QuickMenu';
 import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
-import ComponentEditTool from '../fragment/ComonentEditTool';
+import ComponentEditTool from '../fragment/ComponentEditTool';
 import CodeEditor from './CodeEditor';
 
 var _ = Fcore._;
@@ -140,6 +138,7 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
     else {
         if (this.SUPPORT_EDITOR[type]) {
             var editor = new this.SUPPORT_EDITOR[type];
+            editor.attach(this);
 
             var accumulator = {
                 type: type,
@@ -157,8 +156,8 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
 };
 
 FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumulator) {
+    var self = this;
     accumulator = accumulator || {};
-    editor.attach(this);
     var componentTool = editor.getComponentTool();
     var outlineTool = editor.getOutlineTool();
 
@@ -217,6 +216,17 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
     return accumulator;
 };
 
+
+FormEditor.prototype.getEditorHolderByIdent = function(ident){
+    return this.editorHolders[ident];
+};
+
+FormEditor.prototype.getEditorHolderByEditor = function(editor){
+    for (var ident in this.editorHolders){
+        if (this.editorHolders[ident].editor == editor) return this.editorHolders[ident];
+    }
+    return null;
+};
 
 FormEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -373,9 +383,7 @@ FormEditor.prototype.getView = function () {
                 style: {
                     left: 'calc(' + this.config.leftSiteWidthPercent + "% - 0.2em)"
                 }
-            },
-            // '.as-form-editor-resizer.vertical.right-site'
-
+            }
         ],
         on: {
             keydown: this.ev_keydown.bind(this)
