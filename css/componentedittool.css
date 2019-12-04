@@ -1,0 +1,27 @@
+.as-form-component-edit-tool .button-edit-tool{
+
+}
+.button-edit-tool{
+    font-size: 1.5em;
+    background-color: rgb(221, 221, 221);
+    display: inline-block;
+    width: 3em;
+    height: 3em;
+    vertical-align: top;
+}
+
+.mdi-delete-variant
+{
+    color:red;
+}
+
+.disabled.button-edit-tool{
+    color: #c4c4c4;
+}
+
+.disabled.button-edit-tool .mdi-delete-variant{
+    color: #c4c4c4;
+}
+.disabled.button-edit-tool>svg>path{
+    fill: #c4c4c4;
+}
