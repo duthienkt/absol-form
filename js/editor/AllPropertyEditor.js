@@ -34,7 +34,7 @@ AllPropertyEditor.prototype.getPropertyDescriptor = function (name) {
         return this.object.getAttributeDescriptor(this.propertyGroup.attributes[name]);
     if (this.propertyGroup.style[name])
         return this.object.getStyleDescriptor(this.propertyGroup.style[name]);
-        throw new Error('not found ' + name);
+    throw new Error('not found ' + name);
 };
 
 
