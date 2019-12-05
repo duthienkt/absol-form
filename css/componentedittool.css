@@ -25,6 +25,10 @@
     height: 1.5em;
 }
 
+.as-from-tool-button:not(:disabled)>span.mdi-delete-variant {
+    color: red;
+}
+
 .as-from-tool-button:disabled>span {
     color: #c4c4c4;
 }
@@ -33,12 +37,12 @@
     fill: #c4c4c4;
 }
 
-.as-from-tool-button:not(:disabled)>span.mdi-delete-variant {
-    color: red;
-}
-
 .as-from-tool-group-buttons{
     border-right: 1px solid #ddd;
+}
+
+.absol-tooltip-root{
+    z-index: 100;
 }
 
 .as-from-tool-group-buttons:empty{
