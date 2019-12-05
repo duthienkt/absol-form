@@ -21,19 +21,8 @@ Object.defineProperties(FormPreview.prototype, Object.getOwnPropertyDescriptors(
 FormPreview.prototype.constructor = FormPreview;
 
 
-
-FormPreview.prototype.onPause = function () {
-    // this.getView().remove();
-};
-
-
 FormPreview.prototype.onResume = function () {
-    console.log(this);
-    
     this.flushDataToView();
-    //TODO: update new data to view if need
-    // this.getView().addTo(document.body);
-    // this.updateSize();
 };
 
 FormPreview.prototype.getView = function () {
@@ -81,7 +70,6 @@ FormPreview.prototype.getView = function () {
             self.$content.clearChild();
             self.$content.removeStyle('width');
             self.$content.removeStyle('height');
-            self.updateSize();
         });
     this.refresh();
     return this.$view;
@@ -113,8 +101,8 @@ FormPreview.prototype.flushDataToView = function () {
     //TODO: remove older view
     if (!this.data) return;
     this.$content.clearChild();
-    if (data && this.$view) {
-        var rootComponent = this.build(data);
+    if (this.data && this.$view) {
+        var rootComponent = this.build(this.data);
         this.$content.addChild(rootComponent.view);
         rootComponent.onAttach();
     }
@@ -122,6 +110,7 @@ FormPreview.prototype.flushDataToView = function () {
 
 FormPreview.prototype.setData = function (data) {
     this.data = data;
+    this.data.tracking = "OK";
     this.dataFlushed = false;
     if (this.state == "RUNNING")
         this.flushDataToView();
