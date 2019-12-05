@@ -168,7 +168,7 @@ ComponentEditTool.prototype.constructor = ComponentEditTool;
 ComponentEditTool.prototype.CONFIG_STORE_KEY = "AS_ComponentEditorTool_config";
 ComponentEditTool.prototype.config = {
     windowStyle: {
-        left: '57px',
+        left: '320px',
         top: Dom.getScreenSize().height - 330 + 'px',
         height: '110px'
     }
@@ -177,10 +177,11 @@ ComponentEditTool.prototype.config = {
 ComponentEditTool.prototype.bindWithLayoutEditor = function (editor) {
     console.log(editor)
     var self = this;
+    if (self.$layoutEditor !== undefined) 
+    self.$layoutEditor.off("selectedcomponentchange")
     self.$layoutEditor = editor;
-    if (self.$layoutEditor === undefined) {
+    if (self.$layoutEditor === undefined)
         return;
-    }
 
     self.$layoutEditor.on("selectedcomponentchange", self.updateVisiable.bind(this))
 };
@@ -207,7 +208,6 @@ ComponentEditTool.prototype.onPause = function () {
     }
     else {
         this.$window.selfRemove();
-        self.$layoutEditor.off("selectedcomponentchange")
     }
 };
 
