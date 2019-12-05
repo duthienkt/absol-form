@@ -175,11 +175,11 @@ ComponentEditTool.prototype.config = {
 };
 
 ComponentEditTool.prototype.bindWithLayoutEditor = function (editor) {
+    console.log(editor)
     var self = this;
     self.$layoutEditor = editor;
     if(self.$layoutEditor===undefined)
     {
-        this.onPause();
         return;
     }
     
@@ -203,7 +203,13 @@ ComponentEditTool.prototype.onStart = function () {
 
 ComponentEditTool.prototype.onPause = function () {
     //todo
-    this.$view.selfRemove();
+    if (this.$dockElt) {
+
+    }
+    else {
+        this.$window.selfRemove();
+        self.$layoutEditor.off("selectedcomponentchange")
+    }
 };
 
 ComponentEditTool.prototype.updateVisiable = function () {
@@ -246,7 +252,12 @@ ComponentEditTool.prototype.updateVisiable = function () {
 };
 
 ComponentEditTool.prototype.onResume = function () {
-    this.$window.addStyle(this.config.windowStyle).addTo(document.body);
+    if (this.$dockElt) {
+
+    }
+    else {
+        this.$window.addStyle(this.config.windowStyle).addTo(document.body);
+    }
 };
 
 ComponentEditTool.prototype.button = function(object){
@@ -377,7 +388,9 @@ ComponentEditTool.prototype.getView = function () {
             class: "as-form-component-edit-tool",
             child: ComponentEditTool.prototype.extract(this.$dataButton)
         });
+        if (!this.$dockElt) {
         this.$window.addChild(this.$view);
+        }
         this.updateVisiable();
         return this.$view;
     };
