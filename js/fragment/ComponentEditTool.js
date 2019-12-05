@@ -11,155 +11,155 @@ function ComponentEditTool() {
     this.$dockElt = null;
     this.$visiable = [];
     this.$dataButton = {
-    self:this,
-    Edges: [
-        {
-        tag:"as-from-align-controler-edit-tool-edges-horizontal",
-        child:[
+        self: this,
+        Edges: [
             {
-                tag:"as-from-tool-button",
-                child:"mdi-align-horizontal-left",
-                click:this.cmd_alignLeftDedge.bind(this),
-                hover:"Align Left Edges"
+                tag: "as-from-align-controler-edit-tool-edges-horizontal",
+                child: [
+                    {
+                        tag: "as-from-tool-button-align-horizontal-left",
+                        child: "mdi-align-horizontal-left",
+                        click: this.cmd_alignLeftDedge.bind(this),
+                        hover: "Align Left Edges"
+                    },
+                    {
+                        tag: "as-from-tool-button-align-horizontal-center",
+                        child: "mdi-align-horizontal-center",
+                        click: this.cmd_alignHorizontalCenter.bind(this),
+                        hover: "Align Horizontal Center"
+                    },
+                    {
+                        tag: "as-from-tool-button-align-horizontal-right",
+                        child: "mdi-align-horizontal-right",
+                        click: this.cmd_alignRightDedge.bind(this),
+                        hover: "Align Right Edges"
+                    },
+                    {
+                        tag: "as-from-tool-button-equalise-width",
+                        child: "span.mdi.mdi-arrow-expand-horizontal",
+                        click: this.cmd_equaliseWidth.bind(this),
+                        hover: "Equalise Width"
+                    }
+                ]
             },
             {
-                tag:"as-from-tool-button",
-                child:"mdi-align-horizontal-center",
-                click:this.cmd_alignHorizontalCenter.bind(this),
-                hover:"Align Horizontal Center"
+                tag: "as-from-align-controler-edit-tool-edges-vertical",
+                child: [
+                    {
+                        tag: "as-from-tool-button-align-vertical-top",
+                        child: "mdi-align-vertical-top",
+                        click: this.cmd_alignTopDedge.bind(this),
+                        hover: "Align Top Edges"
+                    },
+                    {
+                        tag: "as-from-tool-button-align-vertical-bottom",
+                        child: "mdi-align-vertical-bottom",
+                        click: this.cmd_alignBottomDedge.bind(this),
+                        hover: "Align Bottom Edge"
+                    },
+                    {
+                        tag: "as-from-tool-button-align-vertical-center",
+                        child: "mdi-align-vertical-center",
+                        click: this.cmd_alignVerticalCenter.bind(this),
+                        hover: "Align Vertical Center"
+                    },
+                    {
+                        tag: "as-from-tool-button-equalise-height",
+                        child: "span.mdi.mdi-arrow-expand-vertical",
+                        click: this.cmd_equaliseHeight.bind(this),
+                        hover: "Equalise Height"
+                    }
+                ]
+            }],
+        Distribute: [
+            {
+                tag: "as-from-align-controler-edit-tool-distribute-horizontal",
+                child: [
+                    {
+                        tag: "as-from-tool-button-distribute-horizontal-left",
+                        child: "span.mdi.mdi-distribute-horizontal-left",
+                        click: this.cmd_distributeHorizontalLeft.bind(this),
+                        hover: "Distribute Horizontal Left"
+                    },
+                    {
+                        tag: "as-from-tool-button-distribute-horizontal-center",
+                        child: "span.mdi.mdi-distribute-horizontal-center",
+                        click: this.cmd_distributeHorizontalCenter.bind(this),
+                        hover: "Distribute Horizontal Center"
+                    },
+                    {
+                        tag: "as-from-tool-button-distribute-horizontal-right",
+                        child: "span.mdi.mdi-distribute-horizontal-right",
+                        click: this.cmd_distributeHorizontalRight.bind(this),
+                        hover: "Distribute Horizontal Right"
+                    },
+                    {
+                        tag: "as-from-tool-button-distribute-horizontal-distance",
+                        child: _('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\<path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\</svg>'),
+                        click: this.cmd_distributeHorizontalDistance.bind(this),
+                        hover: "Distribute Horizontal Distance"
+                    },
+                ]
+
             },
             {
-                tag:"as-from-tool-button",
-                child:"mdi-align-horizontal-right",
-                click:this.cmd_alignRightDedge.bind(this),
-                hover:"Align Right Edges"
-            },
+                tag: "as-from-align-controler-edit-tool-distribute-vertical",
+                child: [
+                    {
+                        tag: "as-from-tool-button-distribute-vertical-top",
+                        child: "span.mdi.mdi-distribute-vertical-top",
+                        click: this.cmd_distributeVerticalTop.bind(this),
+                        hover: "Distribute Vertical Top"
+                    },
+                    {
+                        tag: "as-from-tool-button",
+                        child: 'span.mdi.mdi-distribute-vertical-center',
+                        click: this.cmd_distributeVerticalCenter.bind(this),
+                        hover: "Distribute Vertical Center"
+                    },
+                    {
+                        tag: "as-from-tool-button-distribute-vertical-bottom",
+                        child: "span.mdi.mdi-distribute-vertical-bottom",
+                        click: this.cmd_distributeVerticalBottom.bind(this),
+                        hover: "Distribute Vertical Bottom"
+                    },
+                    {
+                        tag: "as-from-tool-button-distribute-verlical-distance",
+                        child: _('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\<path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\</svg>'),
+                        click: this.cmd_distributeVerticalDistance.bind(this),
+                        hover: "Distribute Verlical Distance"
+                    },
+                ]
+
+            }
+        ],
+        Delete: [
             {
-                tag:"as-from-tool-button",
-                child:"span.mdi.mdi-arrow-expand-horizontal",
-                click:this.cmd_equaliseWidth.bind(this),
-                hover:"Equalise Width"
+                tag: "as-from-align-controler-edit-tool-delete",
+                child: [
+                    {
+                        tag: "as-from-tool-button-delete",
+                        child: "span.mdi.mdi-delete-variant",
+                        click: this.cmd_delete.bind(this),
+                        hover: "Delete"
+                    },
+                ]
+            }
+        ],
+        Preview: [
+            {
+                tag: "as-from-align-controler-edit-tool-preview",
+                child: [
+                    {
+                        tag: "as-from-tool-button-preview",
+                        child: "span.mdi.mdi-magnify",
+                        click: this.cmd_preview.bind(this),
+                        hover: "Preview"
+                    }
+                ]
             }
         ]
-    },
-    {
-        tag:"as-from-align-controler-edit-tool-edges-vertical",
-        child:[
-            {
-                tag:"as-from-tool-button",
-                child:"mdi-align-vertical-top",
-                click:this.cmd_alignTopDedge.bind(this),
-                hover:"Align Top Edges"
-            },
-            {
-                tag:"as-from-tool-button",
-                child:"mdi-align-vertical-bottom",
-                click:this.cmd_alignBottomDedge.bind(this),
-                hover:"Align Bottom Edge"
-            },
-            {
-                tag:"as-from-tool-button",
-                child:"mdi-align-vertical-center",
-                click:this.cmd_alignVerticalCenter.bind(this),
-                hover:"Align Vertical Center"
-            },
-            {
-                tag:"as-from-tool-button",
-                child:"span.mdi.mdi-arrow-expand-vertical",
-                click:this.cmd_equaliseHeight.bind(this),
-                hover:"Equalise Height"
-            }
-        ]
-    }],
-    Distribute:[
-        {
-            tag:"as-from-align-controler-edit-tool-distribute-horizontal",
-            child:[
-                {  
-                    tag:"as-from-tool-button",
-                    child:"span.mdi.mdi-distribute-horizontal-left",
-                    click:this.cmd_distributeHorizontalLeft.bind(this),
-                    hover:"Distribute Horizontal Left"
-                },
-                {  
-                    tag:"as-from-tool-button",
-                    child:"span.mdi.mdi-distribute-horizontal-center",
-                    click:this.cmd_distributeHorizontalCenter.bind(this),
-                    hover:"Distribute Horizontal Center"
-                },
-                {  
-                    tag:"as-from-tool-button",
-                    child:"span.mdi.mdi-distribute-horizontal-right",
-                    click:this.cmd_distributeHorizontalRight.bind(this),
-                    hover:"Distribute Horizontal Right"
-                },
-                {  
-                    tag:"as-from-tool-button",
-                    child:_('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\<path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\</svg>'),
-                    click:this.cmd_distributeHorizontalDistance.bind(this),
-                    hover:"Distribute Horizontal Distance"
-                },
-            ]
-              
-        },
-        {
-            tag:"as-from-align-controler-edit-tool-distribute-vertical",
-            child:[
-                {  
-                    tag:"as-from-tool-button",
-                    child:"span.mdi.mdi-distribute-vertical-top",
-                    click:this.cmd_distributeVerticalTop.bind(this),
-                    hover:"Distribute Vertical Top"
-                },
-                {  
-                    tag:"as-from-tool-button",
-                    child:'span.mdi.mdi-distribute-vertical-center',
-                    click:this.cmd_distributeVerticalCenter.bind(this),
-                    hover:"Distribute Vertical Center"
-                },
-                {  
-                    tag:"as-from-tool-button",
-                    child:"span.mdi.mdi-distribute-vertical-bottom",
-                    click:this.cmd_distributeVerticalBottom.bind(this),
-                    hover:"Distribute Vertical Bottom"
-                },
-                {  
-                    tag:"as-from-tool-button",
-                    child:_('<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\<path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\<path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\</svg>'),
-                    click:this.cmd_distributeVerticalDistance.bind(this),
-                    hover:"Distribute Verlical Distance"
-                },
-            ]
-              
-        }
-    ],
-    Delete:[
-        {
-            tag:"as-from-align-controler-edit-tool-delete",
-            child:[
-                {  
-                    tag:"as-from-tool-button",
-                    child:"span.mdi.mdi-delete-variant",
-                    click:this.cmd_delete.bind(this),
-                    hover:"Delete"
-                },
-            ]
-        }
-    ],
-    Preview:[
-        {
-            tag:"as-from-align-controler-edit-tool-preview",
-            child:[
-                {
-                    tag:"as-from-tool-button",
-                    child:"span.mdi.mdi-magnify",
-                    click:this.cmd_preview.bind(this),
-                    hover:"Preview"
-                }
-            ]
-        }
-    ]
-}
+    }
 }
 
 Object.defineProperties(ComponentEditTool.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
@@ -178,11 +178,10 @@ ComponentEditTool.prototype.bindWithLayoutEditor = function (editor) {
     console.log(editor)
     var self = this;
     self.$layoutEditor = editor;
-    if(self.$layoutEditor===undefined)
-    {
+    if (self.$layoutEditor === undefined) {
         return;
     }
-    
+
     self.$layoutEditor.on("selectedcomponentchange", self.updateVisiable.bind(this))
 };
 
@@ -260,140 +259,123 @@ ComponentEditTool.prototype.onResume = function () {
     }
 };
 
-ComponentEditTool.prototype.button = function(object){
+ComponentEditTool.prototype.button = function (object) {
+    var classArray = ["as-from-tool-button"]
+    if (Array.isArray(object.tag))
+        classArray.concat(object.tag);
+    else
+        classArray.push(object.tag);
     return _(
-                {
-                    tag:"button",
-                    class: object.tag,
-                    child: object.child,
-                    on: {
-                        click: function() {
-                        object.click();
-                        if (object.hover !== undefined)
-                            Fcore.creator.tooltip.closeTooltip(this.session);
-                        },
-                        mouseover: function() {
-                        if (object.hover !== undefined)
-                            this.session = Fcore.creator.tooltip.show(
+        {
+            tag: "button",
+            class: classArray,
+            child: object.child,
+            on: {
+                click: function () {
+                    object.click();
+                    if (object.hover !== undefined)
+                        Fcore.creator.tooltip.closeTooltip(this.session);
+                },
+                mouseover: function () {
+                    if (object.hover !== undefined)
+                        this.session = Fcore.creator.tooltip.show(
                             this,
                             object.hover,
                             "bottom"
-                            );
-                        },
-                        mouseout: function() {
-                        if (object.hover !== undefined)
-                            Fcore.creator.tooltip.closeTooltip(this.session);
-                        }
-                    }
+                        );
+                },
+                mouseout: function () {
+                    if (object.hover !== undefined)
+                        Fcore.creator.tooltip.closeTooltip(this.session);
                 }
+            }
+        }
     );
 };
 
-ComponentEditTool.prototype.extract = function(object)
-{
-    var edges= object.Edges;
-    this.$edges=[];
+ComponentEditTool.prototype.container = function (object, arrayVisiable) {
+    var container,button;
+    var classArray = ["as-from-align-controler-edit-tool"]
+    if (Array.isArray(object.tag))
+        classArray.concat(object.tag);
+    else
+        classArray.push(object.tag);
+    container = _(
+        {
+            tag: "div",
+            class: classArray
+        }
+    )
+    for (var j = 0; j < object.child.length; j++) {
+        button = this.button(object.child[j]);
+        container.addChild(button);
+        arrayVisiable.push(button);
+    }
+    return container;
+}
+
+ComponentEditTool.prototype.extract = function (object) {
+    var classArray;
+    var edges = object.Edges;
+    this.$edges = [];
     var final = [];
-    var button,container;
-    for(var i=0;i<edges.length;i++){
-        container=_(
-            {
-                tag:"div",
-                class:edges[i].tag
-            }
-        )
-        for(var j=0;j<edges[i].child.length;j++)
-        {
-            button=this.button(edges[i].child[j]);
-            container.addChild(button);
-            this.$edges.push(button);
-        }
+    var button, container;
+
+    for (var i = 0; i < edges.length; i++) {
+        container = this.container(edges[i], this.$edges);
         final.push(container);
     }
 
-    var distribute= object.Distribute;
-    this.$distribute=[];
-    for(var i=0;i<distribute.length;i++){
-        container=_(
-            {
-                tag:"div",
-                class:distribute[i].tag
-            }
-        )
-        for(var j=0;j<distribute[i].child.length;j++)
-        {
-            button=this.button(distribute[i].child[j]);
-            container.addChild(button);
-            this.$distribute.push(button);
-        }
+    var distribute = object.Distribute;
+    this.$distribute = [];
+    for (var i = 0; i < distribute.length; i++) {
+        container = this.container(distribute[i], this.$distribute);
         final.push(container);
     }
 
-    var deleteTemp= object.Delete;
-    this.$delete=[];
-    for(var i=0;i<deleteTemp.length;i++){
-        container=_(
-            {
-                tag:"div",
-                class:deleteTemp[i].tag
-            }
-        )
-        for(var j=0;j<deleteTemp[i].child.length;j++)
-        {
-            button=this.button(deleteTemp[i].child[j]);
-            container.addChild(button);
-            this.$delete.push(button);
-        }
+    var deleteTemp = object.Delete;
+    this.$delete = [];
+    for (var i = 0; i < deleteTemp.length; i++) {
+        container = this.container(deleteTemp[i], this.$delete);
         final.push(container);
     }
 
-    var previewTemp= object.Preview;
-    this.$preview=[];
-    for(var i=0;i<previewTemp.length;i++){
-        container=_(
-            {
-                tag:"div",
-                class:previewTemp[i].tag
-            }
-        )
-        for(var j=0;j<previewTemp[i].child.length;j++)
-        {
-            button=this.button(previewTemp[i].child[j]);
-            container.addChild(button);
-            this.$preview.push(button);
-        }
+    var previewTemp = object.Preview;
+    this.$preview = [];
+    for (var i = 0; i < previewTemp.length; i++) {
+        container = this.container(previewTemp[i], this.$preview);
         final.push(container);
     }
     return final;
 }
-    
-ComponentEditTool.prototype.getView = function () {
-        if (this.$view) return this.$view;
-        var self = this;
 
-        this.$window = _({
-            tag: "onscreenwindow",
-            class: "as-form-component-properties-editor-window",
-            props: {
-                windowTitle: "Tools",
-                windowIcon: "span.mdi.mdi-shape-plus"
-            },
-            on: {
-                sizechange: this.ev_windowPosChange.bind(this),
-                drag: this.ev_windowPosChange.bind(this),
-                relocation: this.ev_windowPosChange.bind(this)
-            }
-        });
-        this.$view = _({
-            class: "as-form-component-edit-tool",
-            child: ComponentEditTool.prototype.extract(this.$dataButton)
-        });
-        if (!this.$dockElt) {
-        this.$window.addChild(this.$view);
+ComponentEditTool.prototype.getView = function () {
+    if (this.$view) return this.$view;
+    var self = this;
+
+    this.$window = _({
+        tag: "onscreenwindow",
+        class: "as-form-component-properties-editor-window",
+        props: {
+            windowTitle: "Tools",
+            windowIcon: "span.mdi.mdi-shape-plus"
+        },
+        on: {
+            sizechange: this.ev_windowPosChange.bind(this),
+            drag: this.ev_windowPosChange.bind(this),
+            relocation: this.ev_windowPosChange.bind(this)
         }
-        this.updateVisiable();
-        return this.$view;
-    };
+    });
+    this.$view = _({
+        class: "as-form-component-edit-tool",
+        child: ComponentEditTool.prototype.extract(this.$dataButton)
+    });
+    if (!this.$dockElt) {
+        this.$window.addChild(this.$view);
+    }
+    this.updateVisiable();
+    return this.$view;
+};
 
 ComponentEditTool.prototype.findFocusAnchorEditor = function () {
     var focusEditor = this.$layoutEditor.anchorEditors.filter(function (e) { return e.isFocus });
