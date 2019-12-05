@@ -1,9 +1,11 @@
 import EventEmitter from "absol/src/HTML5/EventEmitter";
 import Fragment from "absol/src/AppPattern/Fragment";
+import CMDRunner from "absol/src/AppPattern/CMDRunner";
 
-function BaseEditor(){
+function BaseEditor() {
     EventEmitter.call(this);
     Fragment.call(this);
+    this.cmdRunner = new CMDRunner(this);
     this.loadConfig();
 }
 
@@ -41,15 +43,15 @@ BaseEditor.prototype.saveConfig = function () {
 };
 
 
-BaseEditor.prototype.setData = function(data){
+BaseEditor.prototype.setData = function (data) {
     throw new Error('Not implement!');
 };
 
-BaseEditor.prototype.getData = function(){
+BaseEditor.prototype.getData = function () {
     throw new Error('Not implement!');
 };
 
-BaseEditor.prototype.getComponentTool = function(){
+BaseEditor.prototype.getComponentTool = function () {
     return undefined;
 };
 
@@ -57,9 +59,14 @@ BaseEditor.prototype.getOutlineTool = function () {
     return undefined;
 };
 
-BaseEditor.prototype.notifyDataChange = function(){
+BaseEditor.prototype.notifyDataChange = function () {
     this.emit('datachange', { type: 'datachange', target: this }, this);
 };
 
+
+
+BaseEditor.prototype.runCmd = function () {
+    return this.cmdRunner.invoke.apply(this.cmdRunner, arguments);
+};
 
 export default BaseEditor;

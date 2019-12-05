@@ -11,7 +11,7 @@ import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
 import FormPreview from './FormPreview';
-
+import * as LayoutEditorCMD from '../cmds/LayoutEditorCmd';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -19,6 +19,7 @@ var $ = Fcore.$;
 function LayoutEditor() {
     BaseEditor.call(this);
     Assembler.call(this);
+    this.cmdRunner.assign(LayoutEditorCMD);
     var self = this;
     this.rootLayout = null;
     this.snapshots = [];
@@ -95,12 +96,12 @@ LayoutEditor.prototype.onResume = function () {
      * @type {import('../fragment/ComponentEditTool'.default)}
      */
     this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
-    
-    if (this.componentEditTool){
+
+    if (this.componentEditTool) {
         this.componentEditTool.bindWithLayoutEditor(this);
         this.componentEditTool.start();
     }
-  
+
 
 };
 
@@ -111,7 +112,7 @@ LayoutEditor.prototype.onPause = function () {
     this.componentPropertiesEditor.pause();
     this.componentOtline.pause();
 
-    if (this.componentEditTool){
+    if (this.componentEditTool) {
         this.componentEditTool.pause();
         this.componentEditTool.bindWithLayoutEditor(undefined);
     }
@@ -161,16 +162,15 @@ LayoutEditor.prototype.getView = function () {
                     class: 'as-layout-editor-space',
                     child: [
                         {
-                            class: 'as-layout-editor-layout-container',
-                            on: {
-                                contextmenu: this.ev_contextMenuLayout.bind(this)
-                            }
+                            class: 'as-layout-editor-layout-container'
                         },
                         {
                             class: 'as-layout-editor-forceground-container',
                             child: '.as-layout-editor-forceground',
                             extendEvent: 'contextmenu',
-
+                            on: {
+                                contextmenu: this.ev_contextMenuLayout.bind(this)
+                            }
                         }
                     ]
                 }
@@ -254,23 +254,24 @@ LayoutEditor.prototype.ev_clickForceground = function (event) {
 
 LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
     var self = this;
-    event.showContextMenu({
-        items: [
-            {
-                text: 'Design Mode',
-                icon: 'span.mdi.mdi-pencil-box-multiple-outline',
-                cmd: 'design'
+    if (event.target == this.$forceground) {
+        event.showContextMenu({
+            // play-box-outline
+            items: [
+                {
+                    text: 'Preview',
+                    icon: 'span.mdi.mdi-pencil-box-multiple-outline',
+                    cmd: 'preview'
+                }
+            ],
+            extendStyle: {
+                fontSize: '12px'
             }
-        ],
-        extendStyle: {
-            fontSize: '12px'
-        }
-    }, function (menuEvent) {
-        var cmd = menuEvent.menuItem.cmd;
-        switch (cmd) {
-            case 'design': self.setMode('design'); break;
-        }
-    });
+        }, function (menuEvent) {
+            var cmd = menuEvent.menuItem.cmd;
+            self.runCmd(cmd);
+        });
+    }
 };
 
 LayoutEditor.prototype.updateRuler = function () {
