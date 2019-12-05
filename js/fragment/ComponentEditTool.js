@@ -212,12 +212,10 @@ ComponentEditTool.prototype.onPause = function () {
 };
 
 ComponentEditTool.prototype.updateVisiable = function () {
-    // console.log();
-    // console.log('update');
     
     var editors = [];
-    if (this.$layoutEditor !== undefined)
-        editors = this.$layoutEditor.anchorEditors;
+    if (this.layoutEditor !== undefined)
+        editors = this.layoutEditor.anchorEditors;
     if (editors.length > 2) {
         for (var i = 0; i < this.$distribute.length; i++)
             this.$distribute[i].disabled = false;
@@ -274,21 +272,11 @@ ComponentEditTool.prototype.button = function (object) {
             on: {
                 click: function () {
                     object.click();
-                    if (object.hover !== undefined)
-                        Fcore.creator.tooltip.closeTooltip(this.session);
-                },
-                mouseover: function () {
-                    if (object.hover !== undefined)
-                        this.session = Fcore.creator.tooltip.show(
-                            this,
-                            object.hover,
-                            "bottom"
-                        );
-                },
-                mouseout: function () {
-                    if (object.hover !== undefined)
-                        Fcore.creator.tooltip.closeTooltip(this.session);
+                    
                 }
+            },
+            attr:{
+                title: object.hover
             }
         }
     );
@@ -379,7 +367,7 @@ ComponentEditTool.prototype.getView = function () {
 };
 
 ComponentEditTool.prototype.findFocusAnchorEditor = function () {
-    var focusEditor = this.$layoutEditor.anchorEditors.filter(function (e) { return e.isFocus });
+    var focusEditor = this.layoutEditor.anchorEditors.filter(function (e) { return e.isFocus });
     return focusEditor[0];
 }
 
@@ -503,8 +491,8 @@ ComponentEditTool.prototype.cmd_delete = function () {
 };
 
 ComponentEditTool.prototype.cmd_preview = function () {
-    if (this.$layoutEditor.preview) {
-        this.$layoutEditor.preview();
+    if (this.layoutEditor.preview) {
+        this.layoutEditor.preview();
     }
 };
 
