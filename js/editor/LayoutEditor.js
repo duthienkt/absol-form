@@ -72,9 +72,9 @@ LayoutEditor.prototype.onAttached = function () {
     this.componentPropertiesEditor.attach(this);
     this.undoHistory.attach(this);
     this.componentOtline.attach(this);
-    this.LayoutEditorCMDTool = this.getContext(R.COMPONENT_EDIT_TOOL);
-    if (this.LayoutEditorCMDTool)
-        this.LayoutEditorCMDTool.start();
+    this.CMDTool = this.getContext(R.CMD_TOOL);
+    if (this.CMDTool)
+        this.CMDTool.start();
 };
 
 
@@ -93,15 +93,15 @@ LayoutEditor.prototype.onResume = function () {
     this.componentPropertiesEditor.resume();
     this.componentOtline.resume();
     /**
-     * @type {import('../fragment/LayoutEditorCMDTool'.default)}
+     * @type {import('../fragment/CMDTool'.default)}
      */
-    this.LayoutEditorCMDTool = this.getContext(R.COMPONENT_EDIT_TOOL);
-    console.log(this.LayoutEditorCMDTool);
+    this.CMDTool = this.getContext(R.CMD_TOOL);
+    console.log(this.CMDTool);
 
 
-    if (this.LayoutEditorCMDTool) {
-        this.LayoutEditorCMDTool.bindWithLayoutEditor(this);
-        this.LayoutEditorCMDTool.start();
+    if (this.CMDTool) {
+        this.CMDTool.bindWithEditor(this);
+        this.CMDTool.start();
     }
 
 
@@ -114,9 +114,9 @@ LayoutEditor.prototype.onPause = function () {
     this.componentPropertiesEditor.pause();
     this.componentOtline.pause();
 
-    if (this.LayoutEditorCMDTool) {
-        this.LayoutEditorCMDTool.pause();
-        this.LayoutEditorCMDTool.bindWithLayoutEditor(undefined);
+    if (this.CMDTool) {
+        this.CMDTool.pause();
+        this.CMDTool.bindWithEditor(undefined);
     }
 };
 
@@ -394,6 +394,7 @@ LayoutEditor.prototype.setActiveComponent = function () {
     }
     this.componentOtline.updateComponentStatus();
     this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
+    this.notifyCmdDescriptorsChange();
 };
 
 
@@ -426,6 +427,7 @@ LayoutEditor.prototype.toggleActiveComponent = function () {
     if (focusEditor) focusEditor.focus();
     this.componentOtline.updateComponentStatus();
     this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
+    this.notifyCmdDescriptorsChange();
 };
 
 

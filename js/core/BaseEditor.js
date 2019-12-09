@@ -92,6 +92,10 @@ BaseEditor.prototype.getCmdDescriptor = function (name) {
     };
 };
 
+BaseEditor.prototype.notifyCmdDescriptorsChange = function(){
+    this.emit('cmddescriptorschange', {type:'cmddescriptorschange'}, this);
+};
+
 
 BaseEditor.prototype.getCmdGroupTree = function () {
     return [];

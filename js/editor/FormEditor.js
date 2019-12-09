@@ -18,7 +18,7 @@ import QuickMenu from 'absol-acomp/js/QuickMenu';
 import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
-import LayoutEditorCMDTool from '../fragment/LayoutEditorCMDTool';
+import CMDTool from '../fragment/CMDTool';
 import CodeEditor from './CodeEditor';
 
 var _ = Fcore._;
@@ -47,7 +47,7 @@ function FormEditor() {
 
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
-    this.mLayoutEditorCMDTool = new LayoutEditorCMDTool();
+    this.mCMDTool = new CMDTool();
 
     this.mStyleEditor = new StyleEditor()
         .on('change', this.ev_styleEditorChange.bind(this))
@@ -78,9 +78,9 @@ function FormEditor() {
     this.setContext(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.setContext(R.COMPONENT_PICKER, this.mComponentPicker);
     this.setContext(R.UNDO_HISTORY, this.mUndoHistory);
-    this.setContext(R.COMPONENT_EDIT_TOOL, this.mLayoutEditorCMDTool);
+    this.setContext(R.CMD_TOOL, this.mCMDTool);
     this.mComponentPicker.attach(this);// share, but not run
-    this.mLayoutEditorCMDTool.attach(this);
+    this.mCMDTool.attach(this);
     this.mFormPreview.attach(this);
     this.projectExplorer.attach(this);
 }
@@ -192,7 +192,7 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
                 componentTool.getView().remove();
             if (outlineTool)
                 outlineTool.getView().remove();
-            if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(undefined);
+            if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithEditor(undefined);
 
         },
         active: function () {
@@ -202,7 +202,7 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
                 componentTool.getView().addTo(self.$componentTabFrame);
             if (outlineTool)
                 outlineTool.getView().addTo(self.$outlineTabFrame);
-            if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithLayoutEditor(editor);
+            if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithEditor(editor);
         },
         remove: function () {
             self.editorHolders[ident].editor.destroy();

@@ -32,13 +32,13 @@ CMDTool.prototype.config = {
 /**
  * @param {import('../editor/LayoutEditor').default} editor
  */
-CMDTool.prototype.bindWithLayoutEditor = function (editor) {
+CMDTool.prototype.bindWithEditor = function (editor) {
     // this.updateVisiable is binded
     if (this.layoutEditor)
-        this.layoutEditor.off('selectedcomponentchange', this.updateVisiable);
+        this.layoutEditor.off('cmddescriptorschange', this.updateVisiable);
     this.layoutEditor = editor;
     if (this.layoutEditor) {
-        this.layoutEditor.on("selectedcomponentchange", this.updateVisiable);
+        this.layoutEditor.on("cmddescriptorschange", this.updateVisiable);
     }
     this.refresh();
 };

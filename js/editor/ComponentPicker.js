@@ -40,7 +40,7 @@ Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescript
 ComponentPicker.prototype.constructor = ComponentPicker;
 
 
-ComponentPicker.prototype.bindWithLayoutEditor = function(editor){
+ComponentPicker.prototype.bindWithEditor = function(editor){
     this.layoutEditor = editor;
 }
 

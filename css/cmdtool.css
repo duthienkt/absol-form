@@ -61,11 +61,3 @@
 .as-from-tool-group-buttons:empty{
     display: none;
 }
-
-.as-from-align-controler-edit-tool{
-    display: inline-block;
-}
-
-.as-from-align-controler-edit-tool:not(:first-child){
-    border-left: solid 1px #aaaaaa;
-}
