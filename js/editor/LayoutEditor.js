@@ -530,6 +530,11 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
                     'preview'
                 ],
                 [
+                    'save',
+                    'saveAs',
+                    'export2Json'
+                ],
+                [
                     'cut',
                     'copy',
                     'paste',

@@ -122,6 +122,18 @@ LayoutEditorCmd.preview = function () {
     this.preview();
 };
 
+LayoutEditorCmd.save = function () {
+
+};
+
+LayoutEditorCmd.saveAs = function () {
+
+};
+
+LayoutEditorCmd.export2Json = function () {
+
+};
+
 export default LayoutEditorCmd;
 
 export var LayoutEditorCmdDescriptors = {
@@ -235,5 +247,20 @@ export var LayoutEditorCmdDescriptors = {
         type: 'trigger',
         icon: 'span.mdi.mdi-delete-variant',
         desc: 'Delete'
+    },
+    save: {
+        type: 'trigger',
+        icon: 'span.mdi.mdi-content-save',
+        desc: 'Save'
+    },
+    saveAs: {
+        type: 'trigger',
+        icon: 'span.mdi.mdi-content-save-edit',
+        desc: 'Save As'
+    },
+    export2Json: {
+        type: 'trigger',
+        icon: 'span.mdi.mdi-cloud-download-outline',
+        desc: 'Export To JSON'
     }
 };
