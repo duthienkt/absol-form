@@ -119,9 +119,7 @@ LayoutEditorCmd.delete = function () {
 };
 
 LayoutEditorCmd.preview = function () {
-    if (this.layoutEditor.preview) {
-        this.layoutEditor.preview();
-    }
+    this.preview();
 };
 
 export default LayoutEditorCmd;
