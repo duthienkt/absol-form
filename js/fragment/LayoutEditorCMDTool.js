@@ -225,7 +225,7 @@ LayoutEditorCMDTool.prototype.refresh = function () {
                 },
                 on:{
                     click:function(){
-                        self.layoutEditor.runCmd.apply(self.layoutEditor, [node].concat(descriptor.args||[]));
+                        self.runCmd.apply(self, [node].concat(descriptor.args||[]));
                     }
                 }
             });
@@ -236,7 +236,7 @@ LayoutEditorCMDTool.prototype.refresh = function () {
 };
 
 LayoutEditorCMDTool.prototype.runCmd = function () {
-    // this.layoutEditor.runCmd.apply(this.layoutEditor, );
+        this.layoutEditor.runCmd.apply(this.layoutEditor, arguments);
 };
 
 export default LayoutEditorCMDTool;
