@@ -1,13 +1,13 @@
 import BaseEditor from "../core/BaseEditor";
 import Fcore from "../core/FCore";
 import Dom from "absol/src/HTML5/Dom";
-import '../../css/layouteditorcmdtool.css';
+import '../../css/CMDTool.css';
 import { LayoutEditorCmdDescriptors } from "../cmds/LayoutEditorCmd";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
-function LayoutEditorCMDTool() {
+function CMDTool() {
     BaseEditor.call(this);
     this.$dockElt = null;
     this.cmdTree = [];
@@ -17,11 +17,11 @@ function LayoutEditorCMDTool() {
 
 }
 
-Object.defineProperties(LayoutEditorCMDTool.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
-LayoutEditorCMDTool.prototype.constructor = LayoutEditorCMDTool;
+Object.defineProperties(CMDTool.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
+CMDTool.prototype.constructor = CMDTool;
 
-LayoutEditorCMDTool.prototype.CONFIG_STORE_KEY = "AS_ComponentEditorTool_config";
-LayoutEditorCMDTool.prototype.config = {
+CMDTool.prototype.CONFIG_STORE_KEY = "AS_ComponentEditorTool_config";
+CMDTool.prototype.config = {
     windowStyle: {
         left: '320px',
         top: Dom.getScreenSize().height - 330 + 'px',
@@ -32,7 +32,7 @@ LayoutEditorCMDTool.prototype.config = {
 /**
  * @param {import('../editor/LayoutEditor').default} editor
  */
-LayoutEditorCMDTool.prototype.bindWithLayoutEditor = function (editor) {
+CMDTool.prototype.bindWithLayoutEditor = function (editor) {
     // this.updateVisiable is binded
     if (this.layoutEditor)
         this.layoutEditor.off('selectedcomponentchange', this.updateVisiable);
@@ -43,7 +43,7 @@ LayoutEditorCMDTool.prototype.bindWithLayoutEditor = function (editor) {
     this.refresh();
 };
 
-LayoutEditorCMDTool.prototype.ev_windowPosChange = function () {
+CMDTool.prototype.ev_windowPosChange = function () {
     this.config.windowStyle = {
         width: this.$window.style.width,
         height: this.$window.style.height,
@@ -54,13 +54,13 @@ LayoutEditorCMDTool.prototype.ev_windowPosChange = function () {
     this.saveConfig();
 };
 
-LayoutEditorCMDTool.prototype.onStart = function () {
+CMDTool.prototype.onStart = function () {
     this.getView();
 };
 
-// LayoutEditorCMDTool.prototype.onResume
+// CMDTool.prototype.onResume
 
-LayoutEditorCMDTool.prototype.onPause = function () {
+CMDTool.prototype.onPause = function () {
     //todo
     if (this.$dockElt) {
 
@@ -70,7 +70,7 @@ LayoutEditorCMDTool.prototype.onPause = function () {
     }
 };
 
-LayoutEditorCMDTool.prototype.updateVisiable = function () {
+CMDTool.prototype.updateVisiable = function () {
     var self = this;
     Object.keys(this.$buttons).forEach(function (name) {
         var descriptor = self.layoutEditor.getCmdDescriptor(name);
@@ -78,7 +78,7 @@ LayoutEditorCMDTool.prototype.updateVisiable = function () {
     });
 };
 
-LayoutEditorCMDTool.prototype.onResume = function () {
+CMDTool.prototype.onResume = function () {
     if (this.$dockElt) {
 
     }
@@ -88,7 +88,7 @@ LayoutEditorCMDTool.prototype.onResume = function () {
     this.refresh();
 };
 
-LayoutEditorCMDTool.prototype.button = function (object) {
+CMDTool.prototype.button = function (object) {
     var classArray = ["as-from-tool-button"]
     if (Array.isArray(object.tag))
         classArray.concat(object.tag);
@@ -112,7 +112,7 @@ LayoutEditorCMDTool.prototype.button = function (object) {
     );
 };
 
-LayoutEditorCMDTool.prototype.container = function (object, arrayVisiable) {
+CMDTool.prototype.container = function (object, arrayVisiable) {
     var container, button;
     var classArray = ["as-from-align-controler-edit-tool"]
     if (Array.isArray(object.tag))
@@ -133,7 +133,7 @@ LayoutEditorCMDTool.prototype.container = function (object, arrayVisiable) {
     return container;
 }
 
-// LayoutEditorCMDTool.prototype.extract = function (object) {
+// CMDTool.prototype.extract = function (object) {
 //     var classArray;
 //     var edges = object.Edges;
 //     this.$edges = [];
@@ -168,7 +168,7 @@ LayoutEditorCMDTool.prototype.container = function (object, arrayVisiable) {
 //     return final;
 // }
 
-LayoutEditorCMDTool.prototype.getView = function () {
+CMDTool.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
 
@@ -187,7 +187,7 @@ LayoutEditorCMDTool.prototype.getView = function () {
     });
     this.$view = _({
         class: "as-form-component-edit-tool",
-        // child: LayoutEditorCMDTool.prototype.extract(this.$dataButton)
+        // child: CMDTool.prototype.extract(this.$dataButton)
     });
     if (!this.$dockElt) {
         this.$window.addChild(this.$view);
@@ -198,7 +198,7 @@ LayoutEditorCMDTool.prototype.getView = function () {
 };
 
 
-LayoutEditorCMDTool.prototype.refresh = function () {
+CMDTool.prototype.refresh = function () {
     if (!this.layoutEditor) return;
     this.$view.clearChild();
     this.$buttons = {};
@@ -235,8 +235,8 @@ LayoutEditorCMDTool.prototype.refresh = function () {
     this.$view.addChild(visit(groupTree));
 };
 
-LayoutEditorCMDTool.prototype.runCmd = function () {
+CMDTool.prototype.runCmd = function () {
         this.layoutEditor.runCmd.apply(this.layoutEditor, arguments);
 };
 
-export default LayoutEditorCMDTool;
+export default CMDTool;
