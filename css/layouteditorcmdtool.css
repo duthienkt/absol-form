@@ -10,10 +10,15 @@
     vertical-align: middle;
     border: none;
     border-radius: 0.3em;
+    outline: none;
 }
 
 .as-from-tool-button:not(:disabled):hover {
     background-color: rgba(169, 169, 169, 0.1);
+}
+
+.as-from-tool-button:not(:disabled):active {
+    background-color: rgba(169, 169, 169, 0.2);
 }
 
 .as-from-tool-button>span {
@@ -38,7 +43,15 @@
 }
 
 .as-from-tool-group-buttons{
-    border-right: 1px solid #ddd;
+    margin-right:2px ;
+    
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.as-from-tool-group-buttons:not(:first-child):not(:last-child){
+    border-right: 0.5px solid #ddd;
+    border-left: 0.5px solid #ddd;
 }
 
 .absol-tooltip-root{

@@ -11,7 +11,7 @@ import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
 import FormPreview from './FormPreview';
-import * as LayoutEditorCMD from '../cmds/LayoutEditorCmd';
+import LayoutEditorCMD, { LayoutEditorCmdDescriptors } from '../cmds/LayoutEditorCmd';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -72,9 +72,9 @@ LayoutEditor.prototype.onAttached = function () {
     this.componentPropertiesEditor.attach(this);
     this.undoHistory.attach(this);
     this.componentOtline.attach(this);
-    this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
-    if (this.componentEditTool)
-        this.componentEditTool.start();
+    this.LayoutEditorCMDTool = this.getContext(R.COMPONENT_EDIT_TOOL);
+    if (this.LayoutEditorCMDTool)
+        this.LayoutEditorCMDTool.start();
 };
 
 
@@ -93,13 +93,15 @@ LayoutEditor.prototype.onResume = function () {
     this.componentPropertiesEditor.resume();
     this.componentOtline.resume();
     /**
-     * @type {import('../fragment/ComponentEditTool'.default)}
+     * @type {import('../fragment/LayoutEditorCMDTool'.default)}
      */
-    this.componentEditTool = this.getContext(R.COMPONENT_EDIT_TOOL);
+    this.LayoutEditorCMDTool = this.getContext(R.COMPONENT_EDIT_TOOL);
+    console.log(this.LayoutEditorCMDTool);
 
-    if (this.componentEditTool) {
-        this.componentEditTool.bindWithLayoutEditor(this);
-        this.componentEditTool.start();
+
+    if (this.LayoutEditorCMDTool) {
+        this.LayoutEditorCMDTool.bindWithLayoutEditor(this);
+        this.LayoutEditorCMDTool.start();
     }
 
 
@@ -112,9 +114,9 @@ LayoutEditor.prototype.onPause = function () {
     this.componentPropertiesEditor.pause();
     this.componentOtline.pause();
 
-    if (this.componentEditTool) {
-        this.componentEditTool.pause();
-        this.componentEditTool.bindWithLayoutEditor(undefined);
+    if (this.LayoutEditorCMDTool) {
+        this.LayoutEditorCMDTool.pause();
+        this.LayoutEditorCMDTool.bindWithLayoutEditor(undefined);
     }
 };
 
@@ -435,6 +437,12 @@ LayoutEditor.prototype.findAnchorEditorByComponent = function (comp) {
 };
 
 
+LayoutEditor.prototype.findFocusAnchorEditor = function () {
+    var focusEditor = this.anchorEditors.filter(function (e) { return e.isFocus });
+    return focusEditor[0];
+};
+
+
 LayoutEditor.prototype.getActivatedComponents = function () {
     return this.anchorEditors.map(function (e) {
         return e.component;
@@ -459,9 +467,6 @@ LayoutEditor.prototype.setData = function (data) {
     this.commitHistory('set-data', "Set data");
 };
 
-LayoutEditor.prototype.editLayout = function (component) {
-
-};
 
 LayoutEditor.prototype.autoExpandRootLayout = function () {
     if (this.rootLayout) {
@@ -489,6 +494,78 @@ LayoutEditor.prototype.getComponentTool = function () {
 
 LayoutEditor.prototype.getOutlineTool = function () {
     return this.getContext(R.COMPONENT_OUTLINE);
+};
+
+LayoutEditor.prototype.getCmdNames = function () {
+    return Object.keys(LayoutEditorCMD);
+};
+
+LayoutEditor.prototype.getCmdDescriptor = function (name) {
+    var res = Object.assign({
+        type: 'trigger',
+        desc: 'command: ' + name,
+        icon: 'span.mdi.mdi-apple-keyboard-command'
+    }, LayoutEditorCmdDescriptors[name])
+    if ((name.startsWith('align') || name.startsWith('equalise')) && this.anchorEditors.length < 2) {
+        res.disabled = true;
+    }
+
+    if (name.startsWith('distribute') && this.anchorEditors.length < 3) {
+        res.disabled = true;
+    }
+
+    if (name.match(/^(delete|copy|cut)/) && this.anchorEditors.length < 1) {
+        res.disabled = true;
+    }
+
+    return res;
+};
+
+
+
+LayoutEditor.prototype.getCmdGroupTree = function () {
+    return [
+        [
+            [
+                'alignLeftDedge',
+                'alignHorizontalCenter',
+                'alignRightDedge',
+                'equaliseWidth'
+            ],
+            [
+                'alignTopDedge',
+                'alignVerticalCenter',
+                'alignBottomDedge',
+                'equaliseHeight'
+            ]
+        ],
+        [
+            [
+                'distributeHorizontalLeft',
+                'distributeHorizontalCenter',
+                'distributeHorizontalRight',
+                'distributeHorizontalDistance'
+            ],
+            [
+                'distributeVerticalTop',
+                'distributeVerticalCenter',
+                'distributeVerticalBottom',
+                'distributeVerticalDistance'
+            ]
+        ],
+        [
+            [
+                'preview'
+            ],
+            [
+                'cut',
+                'copy',
+                'paste',
+                'delete'
+            ]
+
+        ]
+    ];
 };
 
 

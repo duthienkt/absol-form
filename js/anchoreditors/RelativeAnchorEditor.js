@@ -52,7 +52,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
     var items = [];
     if (this.layoutEditor.anchorEditors.length > 1) {
         items.push({
-            icon: _('mdi-align-horizontal-left'),
+            icon: 'span.mdi.mdi-align-horizontal-left',
             text: 'Align Left Edges',
             cmd: this.cmd_alignLeftDedge.bind(this)
         });
@@ -67,29 +67,29 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
             cmd: this.cmd_alignRightDedge.bind(this)
         });
         items.push({
-            icon: _('span.mdi.mdi-arrow-expand-horizontal'),
+            icon: 'span.mdi.mdi-arrow-expand-horizontal',
             text: 'Equalise Width',
             cmd: this.cmd_equaliseWidth.bind(this)
         });
 
         items.push('================');
         items.push({
-            icon: _('mdi-align-vertical-top'),
+            icon: 'span.mdi.mdi-align-vertical-top',
             text: 'Align Top Edges',
             cmd: this.cmd_alignTopDedge.bind(this)
         });
         items.push({
-            icon: _('mdi-align-vertical-bottom'),
+            icon: 'span.mdi.mdi-align-vertical-bottom',
             text: 'Align Bottom Edges',
             cmd: this.cmd_alignBottomDedge.bind(this)
         });
         items.push({
-            icon: _('mdi-align-vertical-center'),
+            icon: 'span.mdi.mdi-align-vertical-center',
             text: 'Align Vertical Center',
             cmd: this.cmd_alignVerticalCenter.bind(this)
         });
         items.push({
-            icon: _('span.mdi.mdi-arrow-expand-vertical'),
+            icon: 'span.mdi.mdi-arrow-expand-vertical',
             text: 'Equalise Height',
             cmd: this.cmd_equaliseHeight.bind(this)
         });
@@ -99,17 +99,17 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
 
     if (this.layoutEditor.anchorEditors.length > 2) {
         items.push({
-            icon: _('span.mdi.mdi-distribute-horizontal-left'),
+            icon: 'span.mdi.mdi-distribute-horizontal-left',
             text: 'Distribute Horizontal Left',
             cmd: this.cmd_distributeHorizontalLeft.bind(this)
         });
         items.push({
-            icon: _('span.mdi.mdi-distribute-horizontal-center'),
+            icon: 'span.mdi.mdi-distribute-horizontal-center',
             text: 'Distribute Horizontal Center',
             cmd: this.cmd_distributeHorizontalCenter.bind(this)
         });
         items.push({
-            icon: _('span.mdi.mdi-distribute-horizontal-right'),
+            icon: 'span.mdi.mdi-distribute-horizontal-right',
             text: 'Distribute Horizontal Right',
             cmd: this.cmd_distributeHorizontalRight.bind(this)
         });
@@ -125,26 +125,25 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
 
         items.push('================');
         items.push({
-            icon: _('span.mdi.mdi-distribute-vertical-top'),
+            icon: 'span.mdi.mdi-distribute-vertical-top',
             text: 'Distribute Vertical Top',
             cmd: this.cmd_distributeVerticalTop.bind(this)
         });
         items.push({
-            icon: _('span.mdi.mdi-distribute-vertical-center'),
+            icon: 'span.mdi.mdi-distribute-vertical-center',
             text: 'Distribute Vertical Center',
             cmd: this.cmd_distributeVerticalCenter.bind(this)
         });
         items.push({
-            icon: _('span.mdi.mdi-distribute-vertical-bottom'),
+            icon: 'span.mdi.mdi-distribute-vertical-bottom',
             text: 'Distribute Vertical Bottom',
             cmd: this.cmd_distributeVerticalBottom.bind(this)
         });
         items.push({
-            icon: _(
-                '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
-                <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
-            </svg>'),
+            icon: '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
+                        <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
+                    <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
+                </svg>',
             text: 'Distribute Verlical Distance',
             cmd: this.cmd_distributeVerticalDistance.bind(this)
         });

@@ -69,4 +69,32 @@ BaseEditor.prototype.runCmd = function () {
     return this.cmdRunner.invoke.apply(this.cmdRunner, arguments);
 };
 
+
+BaseEditor.prototype.getCmdNames = function () {
+    return [];
+};
+
+
+BaseEditor.prototype.getCmdDescriptors = function () {
+    var self = this;
+    return this.getCmdNames().reduce(function (ac, name) {
+        ac[name] = self.getCmdDescriptor(name);
+        return ac;
+    }, {});
+};
+
+
+BaseEditor.prototype.getCmdDescriptor = function (name) {
+    return {
+        type: 'trigger',
+        args: [],
+        desc: ''
+    };
+};
+
+
+BaseEditor.prototype.getCmdGroupTree = function () {
+    return [];
+};
+
 export default BaseEditor;

@@ -18,7 +18,7 @@ import QuickMenu from 'absol-acomp/js/QuickMenu';
 import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
-import ComponentEditTool from '../fragment/ComponentEditTool';
+import LayoutEditorCMDTool from '../fragment/LayoutEditorCMDTool';
 import CodeEditor from './CodeEditor';
 
 var _ = Fcore._;
@@ -47,7 +47,7 @@ function FormEditor() {
 
     this.mComponentPicker = new ComponentPicker();
     this.mAttributeEditor = new AttributeEditor();
-    this.mComponentEditTool = new ComponentEditTool();
+    this.mLayoutEditorCMDTool = new LayoutEditorCMDTool();
 
     this.mStyleEditor = new StyleEditor()
         .on('change', this.ev_styleEditorChange.bind(this))
@@ -78,9 +78,9 @@ function FormEditor() {
     this.setContext(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.setContext(R.COMPONENT_PICKER, this.mComponentPicker);
     this.setContext(R.UNDO_HISTORY, this.mUndoHistory);
-    this.setContext(R.COMPONENT_EDIT_TOOL, this.mComponentEditTool);
+    this.setContext(R.COMPONENT_EDIT_TOOL, this.mLayoutEditorCMDTool);
     this.mComponentPicker.attach(this);// share, but not run
-    this.mComponentEditTool.attach(this);
+    this.mLayoutEditorCMDTool.attach(this);
     this.mFormPreview.attach(this);
     this.projectExplorer.attach(this);
 }
