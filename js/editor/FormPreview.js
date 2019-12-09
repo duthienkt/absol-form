@@ -46,31 +46,10 @@ FormPreview.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
     this.$view = _({
+        tag:'bscroller',
         class: 'as-form-preview',
         child: [
             {
-                class: 'as-form-preview-actions',
-                child: [
-                    {
-                        tag: 'button',
-                        class: 'as-form-preview-action-reload',
-                        child: 'span.mdi.mdi-reload',
-                        attr: {
-                            title: "Reload"
-                        }
-                    },
-                    {
-                        tag: 'button',
-                        class: 'as-form-preview-action-eraser',
-                        child: 'span.mdi.mdi-eraser',
-                        attr: {
-                            title: "Clear"
-                        }
-                    }
-                ]
-            },
-            {
-                tag: 'bscroller',
                 class: 'as-form-preview-content'
             }
         ],
