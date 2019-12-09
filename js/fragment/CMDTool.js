@@ -20,7 +20,7 @@ function CMDTool() {
 Object.defineProperties(CMDTool.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 CMDTool.prototype.constructor = CMDTool;
 
-CMDTool.prototype.CONFIG_STORE_KEY = "AS_ComponentEditorTool_config";
+CMDTool.prototype.CONFIG_STORE_KEY = "AS_CMDTool_config";
 CMDTool.prototype.config = {
     windowStyle: {
         left: '320px',
@@ -48,8 +48,7 @@ CMDTool.prototype.ev_windowPosChange = function () {
         width: this.$window.style.width,
         height: this.$window.style.height,
         top: this.$window.style.top,
-        left: this.$window.style.left,
-        minWidth: this.$window.style.minWidth,
+        left: this.$window.style.left
     };
     this.saveConfig();
 };
@@ -85,7 +84,7 @@ CMDTool.prototype.onResume = function () {
     else {
         this.$window.addStyle(this.config.windowStyle).addTo(document.body);
     }
-    this.refresh();
+    this.updateVisiable();
 };
 
 CMDTool.prototype.button = function (object) {
@@ -174,7 +173,7 @@ CMDTool.prototype.getView = function () {
 
     this.$window = _({
         tag: "onscreenwindow",
-        class: "as-form-component-properties-editor-window",
+        class: "as-form-cmd-tool-window",
         props: {
             windowTitle: "Tools",
             windowIcon: "span.mdi.mdi-shape-plus"
@@ -185,15 +184,19 @@ CMDTool.prototype.getView = function () {
             relocation: this.ev_windowPosChange.bind(this)
         }
     });
+   
     this.$view = _({
-        class: "as-form-component-edit-tool",
+        tag:'bscroller',
+        class: "as-form-cmd-tool",
         // child: CMDTool.prototype.extract(this.$dataButton)
+    });
+    $('.absol-onscreen-window-body-container', this.$window, function(e){
+        e.addClass('absol-bscroller');
     });
     if (!this.$dockElt) {
         this.$window.addChild(this.$view);
     }
     this.refresh();
-    // this.updateVisiable();
     return this.$view;
 };
 
@@ -202,8 +205,6 @@ CMDTool.prototype.refresh = function () {
     if (!this.layoutEditor) return;
     this.$view.clearChild();
     this.$buttons = {};
-    var cmdNames = this.layoutEditor.getCmdNames();
-    var descriptors = this.layoutEditor.getCmdDescriptors();
     var groupTree = this.layoutEditor.getCmdGroupTree();
     var self = this;
     function visit(node) {
@@ -223,9 +224,9 @@ CMDTool.prototype.refresh = function () {
                 props: {
                     disabled: !!descriptor.disabled
                 },
-                on:{
-                    click:function(){
-                        self.runCmd.apply(self, [node].concat(descriptor.args||[]));
+                on: {
+                    click: function () {
+                        self.runCmd.apply(self, [node].concat(descriptor.args || []));
                     }
                 }
             });
@@ -236,7 +237,7 @@ CMDTool.prototype.refresh = function () {
 };
 
 CMDTool.prototype.runCmd = function () {
-        this.layoutEditor.runCmd.apply(this.layoutEditor, arguments);
+    this.layoutEditor.runCmd.apply(this.layoutEditor, arguments);
 };
 
 export default CMDTool;

@@ -1,5 +1,6 @@
-
-
+.as-form-cmd-tool-window .absol-onscreen-window-body-container{
+    overflow-y: auto;
+}
 
 .as-from-tool-button {
     font-size: 12px;

@@ -96,9 +96,6 @@ LayoutEditor.prototype.onResume = function () {
      * @type {import('../fragment/CMDTool'.default)}
      */
     this.CMDTool = this.getContext(R.CMD_TOOL);
-    console.log(this.CMDTool);
-
-
     if (this.CMDTool) {
         this.CMDTool.bindWithEditor(this);
         this.CMDTool.start();
@@ -529,6 +526,18 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
     return [
         [
             [
+                [
+                    'preview'
+                ],
+                [
+                    'cut',
+                    'copy',
+                    'paste',
+                    'delete'
+                ]
+    
+            ],
+            [
                 'alignLeftDedge',
                 'alignHorizontalCenter',
                 'alignRightDedge',
@@ -554,19 +563,8 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
                 'distributeVerticalBottom',
                 'distributeVerticalDistance'
             ]
-        ],
-        [
-            [
-                'preview'
-            ],
-            [
-                'cut',
-                'copy',
-                'paste',
-                'delete'
-            ]
-
         ]
+        
     ];
 };
 

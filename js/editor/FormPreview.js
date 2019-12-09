@@ -4,6 +4,7 @@ import '../../css/formpreview.css';
 import R from "../R";
 import Dom from "absol/src/HTML5/Dom";
 import BaseEditor from "../core/BaseEditor";
+import FormPreviewCmd, { FormPreviewCmdDescriptors } from "../cmds/FormPreviewCmd";
 
 
 var _ = Fcore._;
@@ -12,6 +13,7 @@ var $ = Fcore.$;
 function FormPreview() {
     BaseEditor.call(this);
     Assembler.call(this);
+    this.cmdRunner.assign(FormPreviewCmd);
     this.data = null;
     this.dataFlushed = true;
 }
@@ -23,6 +25,21 @@ FormPreview.prototype.constructor = FormPreview;
 
 FormPreview.prototype.onResume = function () {
     this.flushDataToView();
+    /**
+     * @type {import('../fragment/CMDTool').default}
+     */
+    this.cmdTool = this.getContext(R.CMD_TOOL);
+    if (this.cmdTool) {
+        this.cmdTool.bindWithEditor(this);
+        this.cmdTool.resume();
+    }
+};
+
+FormPreview.prototype.onPause = function () {
+    if (this.cmdTool) {
+        this.cmdTool.bindWithEditor(undefined);
+        this.cmdTool.pause();
+    }
 };
 
 FormPreview.prototype.getView = function () {
@@ -62,15 +79,6 @@ FormPreview.prototype.getView = function () {
         }
     });
     this.$content = $('.as-form-preview-content', this.$view);
-
-    this.$refreshBtn = $('.as-form-preview-actions .as-form-preview-action-reload', this.$view)
-        .on('click', this.refresh.bind(this));
-    this.$eraserBtn = $('.as-form-preview-actions .as-form-preview-action-eraser', this.$view)
-        .on('click', function () {
-            self.$content.clearChild();
-            self.$content.removeStyle('width');
-            self.$content.removeStyle('height');
-        });
     this.refresh();
     return this.$view;
 };
@@ -116,7 +124,23 @@ FormPreview.prototype.setData = function (data) {
         this.flushDataToView();
 };
 
+FormPreview.prototype.getCmdNames = function(){
+    return Object.keys(FormPreviewCmd);
+};
 
+FormPreview.prototype.getCmdDescriptor = function (name) {
+    var res = Object.assign({
+        type: 'trigger',
+        desc: 'command: ' + name,
+        icon: 'span.mdi.mdi-apple-keyboard-command'
+    }, FormPreviewCmdDescriptors[name]);
+   
 
+    return res;
+};
+
+FormPreview.prototype.getCmdGroupTree = function () {
+    return ['reload'];
+};
 
 export default FormPreview;
