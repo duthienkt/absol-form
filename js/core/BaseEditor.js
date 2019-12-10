@@ -65,7 +65,7 @@ BaseEditor.prototype.notifyDataChange = function () {
 
 
 
-BaseEditor.prototype.runCmd = function () {
+BaseEditor.prototype.execCmd = function () {
     return this.cmdRunner.invoke.apply(this.cmdRunner, arguments);
 };
 
@@ -88,7 +88,8 @@ BaseEditor.prototype.getCmdDescriptor = function (name) {
     return {
         type: 'trigger',
         args: [],
-        desc: ''
+        desc: '',
+        bindKey: undefined
     };
 };
 

@@ -268,7 +268,7 @@ LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
             }
         }, function (menuEvent) {
             var cmd = menuEvent.menuItem.cmd;
-            self.runCmd(cmd);
+            self.execCmd(cmd);
         });
     }
 };

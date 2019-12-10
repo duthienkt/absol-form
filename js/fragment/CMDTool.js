@@ -226,7 +226,7 @@ CMDTool.prototype.refresh = function () {
                 },
                 on: {
                     click: function () {
-                        self.runCmd.apply(self, [node].concat(descriptor.args || []));
+                        self.execCmd.apply(self, [node].concat(descriptor.args || []));
                     }
                 }
             });
@@ -236,8 +236,8 @@ CMDTool.prototype.refresh = function () {
     this.$view.addChild(visit(groupTree));
 };
 
-CMDTool.prototype.runCmd = function () {
-    this.layoutEditor.runCmd.apply(this.layoutEditor, arguments);
+CMDTool.prototype.execCmd = function () {
+    this.layoutEditor.execCmd.apply(this.layoutEditor, arguments);
 };
 
 export default CMDTool;
