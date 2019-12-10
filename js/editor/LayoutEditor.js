@@ -739,35 +739,5 @@ LayoutEditor.prototype.commitHistory = function (type, description) {
 };
 
 
-LayoutEditor.prototype.preview = function () {
-    if (!this.rootLayout) return;
-    /**
-     * @type {import('./FormEditor').default}
-     */
-    var formEditor = this.getContext(R.FORM_EDITOR);
-    if (!formEditor) return;
-    var tabHolder = formEditor.getEditorHolderByEditor(this);
-    var currentTabIdent = tabHolder.ident;
-    var previewTabIdent = currentTabIdent + '_preview';
-    var previewEditor;
-    var previewTabHolder = formEditor.getEditorHolderByIdent(previewTabIdent);
-    if (previewTabHolder)
-        previewEditor = previewTabHolder.editor;
-
-    if (!previewEditor) {
-        previewEditor = new FormPreview();
-        previewEditor.attach(this);
-        var name = tabHolder.name + ('(Preview)');
-        var desc = tabHolder.desc;
-        formEditor.openEditorTab(previewTabIdent, name, desc, previewEditor, { layoutEditor: this })
-    }
-    else {
-        previewTabHolder.tabframe.requestActive();
-    }
-
-    var data = this.getData();
-    previewEditor.setData(data);
-};
-
 export default LayoutEditor;
 
