@@ -12,6 +12,7 @@ import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
 import FormPreview from './FormPreview';
 import LayoutEditorCMD, { LayoutEditorCmdDescriptors } from '../cmds/LayoutEditorCmd';
+import ClipboardManager from '../ClipboardManager';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -19,7 +20,6 @@ var $ = Fcore.$;
 function LayoutEditor() {
     BaseEditor.call(this);
     Assembler.call(this);
-    this.cmdRunner.assign(LayoutEditorCMD);
     var self = this;
     this.rootLayout = null;
     this.snapshots = [];
@@ -27,6 +27,13 @@ function LayoutEditor() {
     this._changeCommited = true;
     this.setContext(R.LAYOUT_EDITOR, this);
 
+    //setup cmd
+    this.cmdRunner.assign(LayoutEditorCMD);
+    this.ev_clipboardSet = this.ev_clipboardSet.bind(this);
+    Object.keys(LayoutEditorCmdDescriptors).forEach(function (cmd) {
+        if (LayoutEditorCmdDescriptors[cmd].bindKey)
+            self.bindKeyToCmd(LayoutEditorCmdDescriptors[cmd].bindKey.win, cmd);
+    });
 
     /**
      * @type {Array<import('../anchoreditors/AnchorEditor')>}
@@ -100,7 +107,7 @@ LayoutEditor.prototype.onResume = function () {
         this.CMDTool.bindWithEditor(this);
         this.CMDTool.start();
     }
-
+    ClipboardManager.on('set', this.ev_clipboardSet);
 
 };
 
@@ -115,6 +122,7 @@ LayoutEditor.prototype.onPause = function () {
         this.CMDTool.pause();
         this.CMDTool.bindWithEditor(undefined);
     }
+    ClipboardManager.off('set', this.ev_clipboardSet);
 };
 
 LayoutEditor.prototype.onStop = function () {
@@ -127,6 +135,9 @@ LayoutEditor.prototype.onDestroy = function () {
     this.undoHistory.destroy();
     this.componentPropertiesEditor.destroy();
     this.componentOtline.destroy();
+    if (this.autoDestroyInt > 0) {
+        clearInterval(this.autoDestroyInt);
+    }
 };
 
 /**
@@ -143,6 +154,7 @@ LayoutEditor.prototype.getView = function () {
     var self = this;
     this.$view = _({
         class: ['as-layout-editor'],
+        attr: { tabindex: '1' },
         child: [
             {
                 class: 'as-layout-editor-vrule-container',
@@ -174,7 +186,10 @@ LayoutEditor.prototype.getView = function () {
                     ]
                 }
             }
-        ]
+        ],
+        on: {
+            keydown: this.ev_cmdKeyDown.bind(this)
+        }
     });
 
 
@@ -205,6 +220,11 @@ LayoutEditor.prototype.getView = function () {
                 self.setActiveComponent();
             }
         });
+    this.autoDestroyInt = setInterval(function () {
+        if (!self.$view.isDescendantOf(document.body)) {
+            self.destroy();
+        }
+    }, 6900);
     return this.$view;
 };
 
@@ -271,6 +291,11 @@ LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
             self.execCmd(cmd);
         });
     }
+};
+
+
+LayoutEditor.prototype.ev_clipboardSet = function () {
+    this.notifyCmdDescriptorsChange();
 };
 
 LayoutEditor.prototype.updateRuler = function () {
@@ -517,6 +542,10 @@ LayoutEditor.prototype.getCmdDescriptor = function (name) {
         res.disabled = true;
     }
 
+    if (name == 'paste') {
+        res.disabled = !ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
+    }
+
     return res;
 };
 
@@ -540,7 +569,7 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
                     'paste',
                     'delete'
                 ]
-    
+
             ],
             [
                 'alignLeftDedge',
@@ -569,7 +598,7 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
                 'distributeVerticalDistance'
             ]
         ]
-        
+
     ];
 };
 
@@ -600,42 +629,34 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
     layout = layout || this.rootLayout;
     var rootBound = this.rootLayout.view.getBoundingClientRect();
     var layoutBound = layout.view.getBoundingClientRect();
-    var context = {
-        posX: posX - (layoutBound.left - rootBound.left),
-        posY: posY - (layoutBound.top - rootBound.top),
-        layout: layout,
-        layoutBound: layoutBound,
-        rootBound: rootBound,
-        selt: this,
-        constructor: contructor,
-        assembler: this,
-        descript: 'You can set result by your own component. After plugin was called, if result still null, the editor will build the element by tag',
-        preventDefault: function () {
-            this.prevented = true;
-        },
-        prevented: false,
-        addedComponets: [],
-
-        addComponent: function (newComponent, x, y) {
-            this.addedComponets.push(newComponent);
-            layout.addChildByPosition(newComponent, x, y);
-            newComponent.reMeasure();
-        }
-    };
-
-    PluginManager.exec(this, R.PLUGINS.DROP_TO_LAYOUT_EDITOR, context);
-
-    if (!context.prevented) {
-        context.addComponent(this.build({ tag: contructor.prototype.tag }), context.posX, context.posY);
+    var layoutPosX = posX - (layoutBound.left - rootBound.left);
+    var layoutPosY = posY - (layoutBound.top - rootBound.top);
+    var addedComponets = [];
+    if (!(contructor instanceof Array)) {
+        contructor = [contructor];
     }
 
-    this.emit('addcomponent', { type: 'addcomponent', components: context.addedComponets, target: this }, this);
-    this.setActiveComponent.apply(this, context.addedComponets);
+    addedComponets = contructor.map(function (cst) {
+        var comp;
+        if (typeof cst == 'function' && cst.prototype.tag) {
+            comp = self.build({ tag: cst.prototype.tag });
+        }
+        else {
+            comp = self.build(cst);
+        }
+        layout.addChildByPosition(comp, layoutPosX, layoutPosY);
+        comp.reMeasure();
+        return comp;
+    });
+
+
+    this.emit('addcomponent', { type: 'addcomponent', components: addedComponets, target: this }, this);
+    this.setActiveComponent.apply(this, addedComponets);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
     this.componentOtline.updateComponetTree();
 
-    this.commitHistory('add', "Add " + context.addedComponets.map(function (comp) { return comp.getAttribute('name') }).join(', '));
+    this.commitHistory('add', "Add " + addedComponets.map(function (comp) { return comp.getAttribute('name') }).join(', '));
 };
 
 

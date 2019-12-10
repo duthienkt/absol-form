@@ -6,6 +6,7 @@ function BaseEditor() {
     EventEmitter.call(this);
     Fragment.call(this);
     this.cmdRunner = new CMDRunner(this);
+    this.cmdBindKeys = {};
     this.loadConfig();
 }
 
@@ -93,13 +94,44 @@ BaseEditor.prototype.getCmdDescriptor = function (name) {
     };
 };
 
-BaseEditor.prototype.notifyCmdDescriptorsChange = function(){
-    this.emit('cmddescriptorschange', {type:'cmddescriptorschange'}, this);
+BaseEditor.prototype.notifyCmdDescriptorsChange = function () {
+    this.emit('cmddescriptorschange', { type: 'cmddescriptorschange' }, this);
 };
 
 
 BaseEditor.prototype.getCmdGroupTree = function () {
     return [];
 };
+
+BaseEditor.prototype.bindKeyToCmd = function (key, cmd) {
+    console.log(key, cmd);
+    
+   this.cmdBindKeys[key] = cmd;
+};
+
+
+/**
+ * @param {KeyboardEvent}event
+ */
+BaseEditor.prototype.ev_cmdKeyDown = function (event) {
+    var specKeys = [];
+    if (event.ctrlKey)
+        specKeys.push('Ctrl');
+    if (event.shiftKey)
+        specKeys.push('Shift');
+    if (event.altKey)
+        specKeys.push('Alt');
+    var key = event.key;
+    if (key.length == 1) key = key.toUpperCase();
+    var key1 = specKeys.concat([key]).join('-');
+    var key2 = specKeys.concat([event.keyCode]).join('-');
+    console.log(key1);
+    
+    var cmd = this.cmdBindKeys[key1] || this.cmdBindKeys[key2];
+    if (cmd) {
+        this.execCmd(cmd);
+    }
+};
+
 
 export default BaseEditor;

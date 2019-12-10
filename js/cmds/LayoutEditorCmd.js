@@ -1,5 +1,6 @@
 import R from '../R';
 import FormPreview from '../editor/FormPreview';
+import ClipboardManager from '../ClipboardManager';
 
 var LayoutEditorCmd = {};
 LayoutEditorCmd.distributeVerticalDistance = function () {
@@ -163,6 +164,69 @@ LayoutEditorCmd.export2Json = function () {
 
 };
 
+LayoutEditorCmd.cut = function () {
+    if (this.anchorEditors.length < 1) return;
+    var components = this.anchorEditors.map(function (ed) {
+        return ed.component;
+    });
+
+    var components = components.map(function (component) {
+        return component.getData();
+    });
+    ClipboardManager.set(R.CLIPBOARD.COMPONENTS, components);
+
+    //code copy and edit from LayoutEditor.prototype.removeComponent 
+    var self = this;
+    this.anchorEditors.forEach(function (ed) {
+        ed.component.remove();
+        self.emit('removecomponent', { type: 'removecomponent', target: this, component:  ed.component }, this);
+    });
+
+    function visit(node) {
+        if (node.attributes && node.attributes.name) {
+            node.attributes.name = undefined;
+            delete node.attributes.name;
+        }
+        if (node.children)
+            node.children.forEach(visit);
+    }
+    components.forEach(visit);
+
+    this.componentPropertiesEditor.edit(undefined);
+    this.setActiveComponent();
+    this.notifyDataChange();
+    this.componentOtline.updateComponetTree();
+    this.commitHistory('remove', 'Cut ' + components.map(function (c) {
+        return c.getAttribute('name');
+    }).join(', '));
+};
+
+LayoutEditorCmd.copy = function () {
+    if (this.anchorEditors.length < 1) return;
+    var components = this.anchorEditors.map(function (ed) {
+        return ed.component.getData();
+    });
+
+    function visit(node) {
+        if (node.attributes && node.attributes.name) {
+            node.attributes.name = undefined;
+            delete node.attributes.name;
+        }
+        if (node.children)
+            node.children.forEach(visit);
+    }
+    components.forEach(visit);
+    ClipboardManager.set(R.CLIPBOARD.COMPONENTS, components);
+
+};
+
+LayoutEditorCmd.paste = function () {
+    var components = ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
+    if (components)
+        this.addNewComponent(components, 0, 0);
+};
+
+
 export default LayoutEditorCmd;
 
 export var LayoutEditorCmdDescriptors = {
@@ -260,22 +324,27 @@ export var LayoutEditorCmdDescriptors = {
     cut: {
         type: 'trigger',
         icon: 'span.mdi.mdi-content-cut',
-        desc: 'Cut'
+        desc: 'Cut',
+        bindKey: { win: 'Ctrl-X', mac: 'TODO?' }
     },
     copy: {
         type: 'trigger',
         icon: 'span.mdi.mdi-content-copy',
-        desc: 'Copy'
+        desc: 'Copy',
+        bindKey: { win: 'Ctrl-C', mac: 'TODO?' }
     },
     paste: {
         type: 'trigger',
         icon: 'span.mdi.mdi-content-paste',
-        desc: 'Copy'
+        desc: 'Paste',
+        bindKey: { win: 'Ctrl-V', mac: 'TODO?' }
     },
     delete: {
         type: 'trigger',
         icon: 'span.mdi.mdi-delete-variant',
-        desc: 'Delete'
+        desc: 'Delete',
+        bindKey: { win: 'Delete', mac: 'Delete' }
+
     },
     save: {
         type: 'trigger',
