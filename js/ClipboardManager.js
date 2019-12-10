@@ -21,7 +21,7 @@ function ClipboardManager() {
 };
 
 Object.defineProperties(ClipboardManager.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
-ClipboardManager.prototype.constructor
+ClipboardManager.prototype.constructor = ClipboardManager;
 
 ClipboardManager.prototype.LOCAL_STORE_KEY = 'AS_Form_ClipboardManager';
 
