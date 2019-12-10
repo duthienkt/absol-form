@@ -2,7 +2,6 @@ import BaseEditor from "../core/BaseEditor";
 import Fcore from "../core/FCore";
 import Dom from "absol/src/HTML5/Dom";
 import '../../css/CMDTool.css';
-import { LayoutEditorCmdDescriptors } from "../cmds/LayoutEditorCmd";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -30,15 +29,15 @@ CMDTool.prototype.config = {
 };
 
 /**
- * @param {import('../editor/LayoutEditor').default} editor
+ * @param {import('../editor/editor').default} editor
  */
 CMDTool.prototype.bindWithEditor = function (editor) {
     // this.updateVisiable is binded
-    if (this.layoutEditor)
-        this.layoutEditor.off('cmddescriptorschange', this.updateVisiable);
-    this.layoutEditor = editor;
-    if (this.layoutEditor) {
-        this.layoutEditor.on("cmddescriptorschange", this.updateVisiable);
+    if (this.editor)
+        this.editor.off('cmddescriptorschange', this.updateVisiable);
+    this.editor = editor;
+    if (this.editor) {
+        this.editor.on("cmddescriptorschange", this.updateVisiable);
     }
     this.refresh();
 };
@@ -72,7 +71,7 @@ CMDTool.prototype.onPause = function () {
 CMDTool.prototype.updateVisiable = function () {
     var self = this;
     Object.keys(this.$buttons).forEach(function (name) {
-        var descriptor = self.layoutEditor.getCmdDescriptor(name);
+        var descriptor = self.editor.getCmdDescriptor(name);
         self.$buttons[name].disabled = descriptor.disabled;
     });
 };
@@ -202,10 +201,10 @@ CMDTool.prototype.getView = function () {
 
 
 CMDTool.prototype.refresh = function () {
-    if (!this.layoutEditor) return;
+    if (!this.editor) return;
     this.$view.clearChild();
     this.$buttons = {};
-    var groupTree = this.layoutEditor.getCmdGroupTree();
+    var groupTree = this.editor.getCmdGroupTree();
     var self = this;
     function visit(node) {
         if (node instanceof Array) {
@@ -215,7 +214,7 @@ CMDTool.prototype.refresh = function () {
             })
         }
         else {
-            var descriptor = self.layoutEditor.getCmdDescriptor(node);
+            var descriptor = self.editor.getCmdDescriptor(node);
             self.$buttons[node] = _({
                 tag: 'button',
                 class: ['as-from-tool-button'],
@@ -237,7 +236,7 @@ CMDTool.prototype.refresh = function () {
 };
 
 CMDTool.prototype.execCmd = function () {
-    this.layoutEditor.execCmd.apply(this.layoutEditor, arguments);
+    this.editor.execCmd.apply(this.editor, arguments);
 };
 
 export default CMDTool;
