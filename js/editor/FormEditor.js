@@ -178,7 +178,13 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
         editor: editor,
         formEditor: this,
         componentTool: componentTool,
-        outlineTool: outlineTool
+        outlineTool: outlineTool,
+        sync: Promise.resolve(),
+        waitFor: function (aw) {
+            if (!aw.then)
+                aw = Promise.resolve(aw);
+            this.sync = Promise.all([this.sync, aw]);
+        }
     });
     this.editorHolders[ident] = accumulator;
 
@@ -217,12 +223,12 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
 };
 
 
-FormEditor.prototype.getEditorHolderByIdent = function(ident){
+FormEditor.prototype.getEditorHolderByIdent = function (ident) {
     return this.editorHolders[ident];
 };
 
-FormEditor.prototype.getEditorHolderByEditor = function(editor){
-    for (var ident in this.editorHolders){
+FormEditor.prototype.getEditorHolderByEditor = function (editor) {
+    for (var ident in this.editorHolders) {
         if (this.editorHolders[ident].editor == editor) return this.editorHolders[ident];
     }
     return null;
@@ -541,7 +547,7 @@ FormEditor.prototype.ev_dragLeftResizer = function (event) {
 
 
 FormEditor.prototype.ev_keydown = function (event) {
-   
+
 };
 
 FormEditor.prototype.ev_layoutEditorChange = function () {
@@ -561,17 +567,6 @@ FormEditor.prototype.showToolTab = function (ident) {
     });
 };
 
-FormEditor.prototype.setData = function (data) {
-    return
-    this.mLayoutEditor.setData(data);
-    this.mComponentOutline.updateComponetTree();
-};
-
-
-FormEditor.prototype.getData = function () {
-    return
-    return this.mLayoutEditor.getData();
-};
 
 
 FormEditor.prototype.commitHistory = function (type, description) {

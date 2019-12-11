@@ -1,6 +1,7 @@
 import R from '../R';
 import FormPreview from '../editor/FormPreview';
 import ClipboardManager from '../ClipboardManager';
+import PluginManager from '../core/PluginManager';
 
 /**
  * @type {import('../editor/LayoutEditor').default}
@@ -156,7 +157,12 @@ LayoutEditorCmd.preview = function () {
 };
 
 LayoutEditorCmd.save = function () {
-
+    var formEditor = this.getContext(R.FORM_EDITOR);
+    if (formEditor) {
+        var tabHolder = formEditor.getEditorHolderByEditor(this);
+        if (tabHolder)
+            PluginManager.exec(this, R.PLUGINS.SAVE_CONTENT_DATA, tabHolder);
+    }
 };
 
 LayoutEditorCmd.saveAs = function () {
@@ -168,12 +174,12 @@ LayoutEditorCmd.export2Json = function () {
     var formEditor = this.getContext(R.FORM_EDITOR);
     if (formEditor) {
         var tabHolder = formEditor.getEditorHolderByEditor(this);
-        fileName = tabHolder.name.replace(/[\\\/\.\?]/g, '_')+'.json'; 
+        fileName = tabHolder.name.replace(/[\\\/\.\?]/g, '_') + '.json';
     }
 
     var a = document.createElement('a');
     this.$view.appendChild(a);
-    var text = JSON.stringify(this.getData(),null, '    ');
+    var text = JSON.stringify(this.getData(), null, '    ');
     var fileType = 'json'
     var blob = new Blob([text], { type: fileType });
     a.download = fileName;
@@ -379,7 +385,8 @@ export var LayoutEditorCmdDescriptors = {
     save: {
         type: 'trigger',
         icon: 'span.mdi.mdi-content-save',
-        desc: 'Save'
+        desc: 'Save',
+        bindKey: { win: 'Ctrl-S', mac: '//todo' }
     },
     saveAs: {
         type: 'trigger',

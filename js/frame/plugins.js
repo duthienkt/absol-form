@@ -1,5 +1,6 @@
 import XHR from 'absol/src/Network/XHR';
 import CodeEditor from '../editor/CodeEditor';
+import { base64EncodeUnicode } from 'absol/src/Converter/base64';
 
 var WOKSPACE_FOLDER = 'formeditor/workspace';
 
@@ -49,6 +50,18 @@ function lsWorkspace(path) {
     });
 }
 
+function writeFile(path, text){
+    var b64 = base64EncodeUnicode(text);
+    
+    return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
+        cmd: 'echo \''+b64+'\' | base64 -d >'+path,
+        cwd: WOKSPACE_FOLDER
+    })).then(function (out) {
+        console.log(out);
+        
+    });
+};
+
 function catWorkspace(path) {
     return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
         cmd: 'cat "' + path + '"',
@@ -73,11 +86,6 @@ export function PluginProjectExplore(context) {
                     text: 'Open',
                     icon: 'span.mdi.mdi-menu-open',
                     cmd: 'open'
-                },
-                {
-                    text: 'Duplicate',
-                    icon: 'span.mdi.mdi-content-duplicate',
-                    cmd: 'duplicate'
                 }
             ],
             extendStyle: {
@@ -90,8 +98,6 @@ export function PluginProjectExplore(context) {
                     break;
             }
         });
-        // }
-
     }
     context.loadExpTree = function () {
         function visit(rootElt, path) {
@@ -145,8 +151,9 @@ export function PluginProjectExplore(context) {
 
 
 export function PluginLoadContentData(accumulator) {
+    var sync;
     if (accumulator.contentArguments.ext == 'form') {
-        catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
+        sync = catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
             try {
                 var data = JSON.parse(out);
                 accumulator.editor.setData(data);
@@ -157,7 +164,7 @@ export function PluginLoadContentData(accumulator) {
         });
     }
     else if (CodeEditor.prototype.TYPE_MODE[accumulator.contentArguments.ext]) {
-        catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
+        sync = catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
             try {
                 accumulator.editor.setData({ value: out, type: accumulator.contentArguments.ext });
             }
@@ -166,6 +173,27 @@ export function PluginLoadContentData(accumulator) {
             }
         });
     }
-    // console.log(accumulator);
+    accumulator.waitFor(sync);
+}
+
+
+
+export function PluginSaveContentData(accumulator) {
+    if (accumulator.contentArguments.ext == 'form') {
+        writeFile(accumulator.contentArguments.fullPath, JSON.stringify(accumulator.editor.getData(), null, '    ')).then(function (out) {
+            
+        });
+    }
+    // else if (CodeEditor.prototype.TYPE_MODE[accumulator.contentArguments.ext]) {
+    //     catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
+    //         try {
+    //             accumulator.editor.setData({ value: out, type: accumulator.contentArguments.ext });
+    //         }
+    //         catch (error) {
+    //             console.error(error)
+    //         }
+    //     });
+    // }
+    console.log(accumulator);
 
 }
