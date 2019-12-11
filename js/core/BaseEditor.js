@@ -104,8 +104,6 @@ BaseEditor.prototype.getCmdGroupTree = function () {
 };
 
 BaseEditor.prototype.bindKeyToCmd = function (key, cmd) {
-    console.log(key, cmd);
-    
    this.cmdBindKeys[key] = cmd;
 };
 

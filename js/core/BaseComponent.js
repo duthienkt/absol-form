@@ -194,8 +194,9 @@ BaseComponent.prototype.getAcceptsEventNames = function () {
  * @returns {}
  */
 FModel.prototype.getEventDescriptor = function (name) {
-    var functionName = 'getEvent' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
-    return this[functionName] && this[functionName].call(this);
+    // var functionName = 'getEvent' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
+    // return this[functionName] && this[functionName].call(this);
+    return {type:'function'};
 };
 
 BaseComponent.prototype.getAttributeTypeDescriptor = function () {

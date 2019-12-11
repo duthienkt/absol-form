@@ -70,6 +70,9 @@ Button.prototype.getAttributeIconDescriptor = function () {
     };
 };
 
+Button.prototype.getAcceptsEventNames = function () {
+    return ContentScalelessComponent.prototype.getAcceptsEventNames.call(this).concat(['click']);
+};
 
 Button.prototype.measureMinSize = function () {
     var fontSize = this.view.getFontSize();
