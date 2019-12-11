@@ -38,6 +38,8 @@ import LayoutSizeEditor from './js/propertyeditors/LayoutSizeEditor';
 import PluginManager from './js/core/PluginManager';
 import R from './js/R';
 import * as framePlugins from './js/frame/plugins';
+import LayoutEditorCmd from './js/cmds/LayoutEditorCmd';
+import FormPreviewCmd, { FormPreviewCmdDescriptors } from './js/cmds/FormPreviewCmd';
 export default {
     framePlugin:framePlugins,
     R: R,
@@ -50,6 +52,9 @@ export default {
     PropertyEditor: PropertyEditor,
     StyleEditor: StyleEditor,
     LayoutSizeEditor: LayoutSizeEditor,
+    LayoutEditorCmd: LayoutEditorCmd,
+    FormPreviewCmd: FormPreviewCmd,
+    FormPreviewCmdDescriptors: FormPreviewCmdDescriptors,
     PluginManager: PluginManager,
     FViewable: FViewable,
     FNode: FNode,

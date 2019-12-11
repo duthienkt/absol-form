@@ -45,6 +45,7 @@ function LayoutEditor() {
         self.applyData(event.item.data);
         self.updateAnchor();
         self.notifyCmdDescriptorsChange();
+        self.notifyUnsaved();
         // self.mComponentOutline.updateComponetTree();
     });
     this.setContext(R.UNDO_HISTORY, this.undoHistory);// because it had it's ContextManager
@@ -65,6 +66,8 @@ function LayoutEditor() {
             },
             stopchange: function (event) {
                 self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '');
+                self.notifyUnsaved();
+
             }
         });
 }
@@ -96,6 +99,12 @@ LayoutEditor.prototype.onStart = function () {
 
 LayoutEditor.prototype.onResume = function () {
     /**
+     * @type {import('./FormEditor').default}
+     */
+    this.formEditor = this.getContext(R.FORM_EDITOR);
+
+    this.selfHolder = this.formEditor.getEditorHolderByEditor(this);
+    /**
      * @type {import('./UndoHistory').default}
      */
     this.undoHistory.resume();
@@ -110,7 +119,7 @@ LayoutEditor.prototype.onResume = function () {
         this.CMDTool.start();
     }
     ClipboardManager.on('set', this.ev_clipboardSet);
-
+    this.getView().focus();
 };
 
 
@@ -125,6 +134,7 @@ LayoutEditor.prototype.onPause = function () {
         this.CMDTool.bindWithEditor(undefined);
     }
     ClipboardManager.off('set', this.ev_clipboardSet);
+    this.getView().blur();
 };
 
 LayoutEditor.prototype.onStop = function () {
@@ -389,6 +399,7 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
                 }
             }
             self.commitHistory('move', 'Move/Resize component');
+            self.notifyUnsaved();
         })
         .on('focus', function (event) {
             self.componentPropertiesEditor.edit(this.component);
@@ -662,8 +673,9 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
     this.componentOtline.updateComponetTree();
-
     this.commitHistory('add', "Add " + addedComponets.map(function (comp) { return comp.getAttribute('name') }).join(', '));
+    this.notifyUnsaved();
+
 };
 
 
@@ -675,6 +687,7 @@ LayoutEditor.prototype.clearRootLayout = function () {
     this.notifyDataChange();
     this.componentOtline.updateComponetTree();
     this.commitHistory('remove', 'Remove all components');
+    this.notifyUnsaved();
 };
 
 
@@ -699,6 +712,7 @@ LayoutEditor.prototype.removeComponent = function () {
         this.commitHistory('remove', 'Remove ' + removedComponents.map(function (c) {
             return c.getAttribute('name');
         }).join(', '));
+        this.notifyUnsaved();
     }
 };
 
@@ -714,6 +728,7 @@ LayoutEditor.prototype.moveUpComponent = function (comp) {
     this.notifyDataChange();
     this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' up');
+    this.notifyUnsaved();
 };
 
 
@@ -728,7 +743,7 @@ LayoutEditor.prototype.moveDownComponent = function (comp) {
     this.notifyDataChange();
     this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' down');
-
+    this.notifyUnsaved();
 };
 
 
@@ -743,6 +758,7 @@ LayoutEditor.prototype.moveToBottomComponent = function (comp) {
     this.notifyDataChange();
     this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to bottom');
+    this.notifyUnsaved();
 };
 
 
@@ -757,8 +773,16 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
     this.notifyDataChange();
     this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to top');
+    this.notifyUnsaved();
 };
 
+LayoutEditor.prototype.notifyUnsaved = function () {
+    this.selfHolder.tabframe.modified = true;
+};
+
+LayoutEditor.prototype.notifySaved = function () {
+    this.selfHolder.tabframe.modified = false;
+};
 
 
 LayoutEditor.prototype.commitHistory = function (type, description) {

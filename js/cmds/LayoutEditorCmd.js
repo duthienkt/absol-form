@@ -163,6 +163,7 @@ LayoutEditorCmd.save = function () {
         if (tabHolder)
             PluginManager.exec(this, R.PLUGINS.SAVE_CONTENT_DATA, tabHolder);
     }
+    this.notifySaved();
 };
 
 LayoutEditorCmd.saveAs = function () {
@@ -222,6 +223,7 @@ LayoutEditorCmd.cut = function () {
     this.componentPropertiesEditor.edit(undefined);
     this.setActiveComponent();
     this.notifyDataChange();
+    this.notifyUnsaved();
     this.componentOtline.updateComponetTree();
     this.commitHistory('cut', 'Cut ' + components.map(function (c) {
         return c.getAttribute('name');
@@ -248,8 +250,9 @@ LayoutEditorCmd.copy = function () {
 
 LayoutEditorCmd.paste = function () {
     var components = ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
-    if (components)
+    if (components){
         this.addNewComponent(components, 0, 0);
+    }
 };
 
 LayoutEditorCmd.undo = function () {

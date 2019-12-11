@@ -69,6 +69,7 @@ CMDTool.prototype.onPause = function () {
 };
 
 CMDTool.prototype.updateVisiable = function () {
+    if (!this.editor) return;
     var self = this;
     Object.keys(this.$buttons).forEach(function (name) {
         var descriptor = self.editor.getCmdDescriptor(name);
