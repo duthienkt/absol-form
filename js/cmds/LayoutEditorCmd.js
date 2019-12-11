@@ -2,6 +2,9 @@ import R from '../R';
 import FormPreview from '../editor/FormPreview';
 import ClipboardManager from '../ClipboardManager';
 
+/**
+ * @type {import('../editor/LayoutEditor').default}
+ */
 var LayoutEditorCmd = {};
 LayoutEditorCmd.distributeVerticalDistance = function () {
     var editor = this.findFocusAnchorEditor();
@@ -179,7 +182,7 @@ LayoutEditorCmd.cut = function () {
     var self = this;
     this.anchorEditors.forEach(function (ed) {
         ed.component.remove();
-        self.emit('removecomponent', { type: 'removecomponent', target: this, component:  ed.component }, this);
+        self.emit('removecomponent', { type: 'removecomponent', target: this, component: ed.component }, this);
     });
 
     function visit(node) {
@@ -224,6 +227,14 @@ LayoutEditorCmd.paste = function () {
     var components = ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
     if (components)
         this.addNewComponent(components, 0, 0);
+};
+
+LayoutEditorCmd.undo = function(){
+    this.undoHistory.undo();
+};
+
+LayoutEditorCmd.redo = function(){
+    this.undoHistory.redo();
 };
 
 
@@ -360,5 +371,17 @@ export var LayoutEditorCmdDescriptors = {
         type: 'trigger',
         icon: 'span.mdi.mdi-cloud-download-outline',
         desc: 'Export To JSON'
+    },
+    undo: {
+        type: 'trigger',
+        icon: 'span.mdi.mdi-undo',
+        desc: 'Undo',
+        bindKey: { win: 'Ctrl-Z', mac: 'TODO?' }
+    },
+    redo: {
+        type: 'trigger',
+        icon: 'span.mdi.mdi-redo',
+        desc: 'Redo',
+        bindKey: { win: 'Ctrl-Y', mac: 'TODO?' }
     }
 };

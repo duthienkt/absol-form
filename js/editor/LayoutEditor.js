@@ -39,12 +39,14 @@ function LayoutEditor() {
      * @type {Array<import('../anchoreditors/AnchorEditor')>}
      */
     this.anchorEditors = [];
-    this.undoHistory = new UndoHistory()
-        .on('checkout', function (event) {
-            self.applyData(event.item.data);
-            self.updateAnchor();
-            // self.mComponentOutline.updateComponetTree();
-        });
+
+    this.undoHistory = new UndoHistory();
+    this.undoHistory.on('checkout', function (event) {
+        self.applyData(event.item.data);
+        self.updateAnchor();
+        self.notifyCmdDescriptorsChange();
+        // self.mComponentOutline.updateComponetTree();
+    });
     this.setContext(R.UNDO_HISTORY, this.undoHistory);// because it had it's ContextManager
 
     this.componentOtline = new ComponentOutline();
@@ -533,17 +535,18 @@ LayoutEditor.prototype.getCmdDescriptor = function (name) {
     if ((name.startsWith('align') || name.startsWith('equalise')) && this.anchorEditors.length < 2) {
         res.disabled = true;
     }
-
-    if (name.startsWith('distribute') && this.anchorEditors.length < 3) {
+    else if (name.startsWith('distribute') && this.anchorEditors.length < 3) {
         res.disabled = true;
-    }
-
-    if (name.match(/^(delete|copy|cut)/) && this.anchorEditors.length < 1) {
+    } else if (name.match(/^(delete|copy|cut)/) && this.anchorEditors.length < 1) {
         res.disabled = true;
-    }
-
-    if (name == 'paste') {
+    } else if (name == 'paste') {
         res.disabled = !ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
+    }
+    else if (name == 'undo') {
+        res.disabled = this.undoHistory.lastItemIndex <= 0;
+    }
+    else if (name == 'redo') {
+        res.disabled = this.undoHistory.lastItemIndex >= this.undoHistory.items.length - 1;
     }
 
     return res;
@@ -562,6 +565,10 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
                     'save',
                     'saveAs',
                     'export2Json'
+                ],
+                [
+                    'undo',
+                    'redo'
                 ],
                 [
                     'cut',
