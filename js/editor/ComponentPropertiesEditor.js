@@ -6,6 +6,7 @@ import R from "../R";
 import StyleEditor from "./StyleEditor";
 import AllPropertyEditor from "./AllPropertyEditor";
 import Dom from "absol/src/HTML5/Dom";
+import EventEditor from "./EventEditor";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -23,6 +24,7 @@ function ComponentPropertiesEditor() {
     }
     this.attributeEditor = new AttributeEditor().on(repeatEvents);
     this.styleEditor = new StyleEditor().on(repeatEvents);
+    this.eventEditor = new EventEditor().on(repeatEvents);
     this.allPropertyEditor = new AllPropertyEditor().on(repeatEvents);
 
     this.$dockElt = null;
@@ -89,7 +91,8 @@ ComponentPropertiesEditor.prototype.getView = function () {
                 class: 'absol-bscroller',
                 attr: {
                     name: 'Event'
-                }
+                },
+                child: this.eventEditor.getView()  
             },
             {
                 tag: 'tabframe',
@@ -109,9 +112,14 @@ ComponentPropertiesEditor.prototype.getView = function () {
 
 ComponentPropertiesEditor.prototype.onAttached = function () {
     this.setContext(R.ATTRIBUTE_EDITOR, this.attributeEditor);
+    this.setContext(R.STYLE_EDITOR, this.styleEditor);
+    this.setContext(R.ALL_PROPERTY_EDITOR, this.allPropertyEditor);
+    this.setContext(R.EVENT_EDITOR, this.eventEditor);
     this.attributeEditor.attach(this);
-    // this.attributeEditor.attach(this);
-}
+    this.eventEditor.attach(this);
+    this.styleEditor.attach(this);
+    this.allPropertyEditor.attach(this);
+};
 
 ComponentPropertiesEditor.prototype.onStart = function () {
     this.getView();
@@ -150,6 +158,7 @@ ComponentPropertiesEditor.prototype.edit = function (comp) {
     this.styleEditor.edit(comp);
     this.attributeEditor.edit(comp);
     this.allPropertyEditor.edit(comp);
+    this.eventEditor.edit(comp);
 };
 
 
