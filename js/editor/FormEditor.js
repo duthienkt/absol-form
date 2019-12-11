@@ -46,35 +46,9 @@ function FormEditor() {
     this.mFormPreview = new FormPreview();
 
     this.mComponentPicker = new ComponentPicker();
-    this.mAttributeEditor = new AttributeEditor();
     this.mCMDTool = new CMDTool();
 
-    this.mStyleEditor = new StyleEditor()
-        .on('change', this.ev_styleEditorChange.bind(this))
-        .on('stopchange', function (event) {
-            self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
-        }
-        );
-
-    this.mAllPropertyEditor = new AllPropertyEditor().on('stopchange', function (event) {
-        self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
-    }
-    );
-    this.mAllPropertyEditor.on('change', function (event) {
-        self.mLayoutEditor.autoExpandRootLayout();
-        if (self._focusElement) self._focusElement.reMeasure();
-        if (event.name == 'vAlign' || event.name == 'hAlign')
-            self.mLayoutEditor.updateAnchor();
-        else
-            self.mLayoutEditor.updateAnchorPosition();
-        self.mStyleEditor.notifyChange();
-        self.mAttributeEditor.notifyChange();
-        self.emit('change', Object.assign({ formEditor: this }, event), self);
-        Dom.updateResizeSystem();
-    }).on('stopchange', function (event) {
-        self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '')
-    }
-    );
+    
     this.setContext(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.setContext(R.COMPONENT_PICKER, this.mComponentPicker);
     this.setContext(R.UNDO_HISTORY, this.mUndoHistory);
@@ -268,7 +242,6 @@ FormEditor.prototype.getView = function () {
                             click: this.showToolTab.bind(this, 'tab-component')
                         }
                     },
-
                     {
                         tag: 'button',
                         child: 'span.mdi.mdi-view-list',
@@ -460,12 +433,6 @@ FormEditor.prototype.getView = function () {
 };
 
 
-
-
-FormEditor.prototype.ev_addComponent = function () {
-    this.mComponentOutline.updateComponetTree();
-};
-
 FormEditor.prototype.ev_styleEditorChange = function (event) {
     // this.mLayoutEditor.autoExpandRootLayout();
     if (this._focusElement) this._focusElement.reMeasure();
@@ -486,9 +453,6 @@ FormEditor.prototype.setComponentProperty = function (name, value) {
 FormEditor.prototype.getComponentProperty = function (name) {
     return this.component.getAttribute(name);
 };
-
-
-
 
 
 FormEditor.prototype.ev_resize = function () {
@@ -567,38 +531,6 @@ FormEditor.prototype.showToolTab = function (ident) {
     });
 };
 
-
-
-FormEditor.prototype.commitHistory = function (type, description) {
-    this.mUndoHistory.commit(type, this.getData(), description, new Date());
-};
-
-
-FormEditor.prototype.addComponent = function (data) {
-    if (this.mLayoutEditor.rootLayout) {
-        var newComponent = this.mLayoutEditor.build(data);
-        this.mLayoutEditor.rootLayout.addChild(newComponent);
-        this.mLayoutEditor.activeComponent(newComponent);
-        this.commitHistory('add', 'Add' + newComponent.tag);
-    }
-};
-
-FormEditor.prototype.notifyAllChange = function () {
-    this.mStyleEditor.notifyChange();
-    this.mAttributeEditor.notifyChange();
-    this.mAllPropertyEditor.notifyChange();
-    this.emit('change', Object.assign({}, { formEditor: this }), this);
-}
-
-FormEditor.prototype.notifyStyleChange = function () {
-    this.mStyleEditor.notifyChange();
-    this.emit('change', Object.assign({}, { formEditor: this }), this);
-
-};
-
-FormEditor.prototype.notifyAttributeChange = function () {
-    this.emit('change', Object.assign({}, { formEditor: this }), this);
-};
 
 
 export default FormEditor; 
