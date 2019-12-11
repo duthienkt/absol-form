@@ -183,13 +183,13 @@ CMDTool.prototype.getView = function () {
             relocation: this.ev_windowPosChange.bind(this)
         }
     });
-   
+
     this.$view = _({
-        tag:'bscroller',
+        tag: 'bscroller',
         class: "as-form-cmd-tool",
         // child: CMDTool.prototype.extract(this.$dataButton)
     });
-    $('.absol-onscreen-window-body-container', this.$window, function(e){
+    $('.absol-onscreen-window-body-container', this.$window, function (e) {
         e.addClass('absol-bscroller');
     });
     if (!this.$dockElt) {
@@ -215,10 +215,14 @@ CMDTool.prototype.refresh = function () {
         }
         else {
             var descriptor = self.editor.getCmdDescriptor(node);
+            var title = descriptor.desc;
+            if (descriptor.bindKey && descriptor.bindKey.win) {
+                title += ' (' + descriptor.bindKey.win + ')';
+            }
             self.$buttons[node] = _({
                 tag: 'button',
                 class: ['as-from-tool-button'],
-                attr: { title: descriptor.desc },
+                attr: { title: title },
                 child: descriptor.icon,
                 props: {
                     disabled: !!descriptor.disabled

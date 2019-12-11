@@ -538,56 +538,10 @@ FormEditor.prototype.ev_dragLeftResizer = function (event) {
 
 
 
-// FormEditor.prototype.ev_preDragRightResizer = function (event) {
-//     this.$rightSiteResizer.addStyle({
-//         width: '100px',
-//         right: 'calc(' + this.style.rightSizeWidth + 'em - 50px)'
-//     });
-
-//     this._dragRightMovingDate = {
-//         width: this.style.rightSizeWidth,
-//         fontSize: this.$view.getFontSize(),
-//         bound: this.$view.getBoundingClientRect()
-//     };
-// };
-
-// FormEditor.prototype.ev_endDragRightResizer = function (event) {
-//     this.$rightSiteResizer.addStyle({
-//         right: 'calc(' + this.style.rightSizeWidth + 'em - 0.2em)'
-//     }).removeStyle('width');
-//     this._dragRightMovingDate = undefined;
-//     delete this._dragRightMovingDate;
-// };
-
-// FormEditor.prototype.ev_dragRightResizer = function (event) {
-//     var dxEm = event.moveDXem;
-//     var newWidth = this._dragRightMovingDate.width - dxEm;
-//     this.$rightSiteResizer.addStyle({
-//         width: '100px',
-//         right: 'calc(' + newWidth + 'em - 50px)'
-//     });
-
-//     this.style.rightSizeWidth = Math.max(this.style.rightSizeMinWidth, Math.min(this._dragRightMovingDate.bound.width / 3 / this._dragRightMovingDate.fontSize, newWidth));
-//     this.$rightSiteCtn.addStyle('width', this.style.rightSizeWidth + 'em');
-//     this.$editorSpaceCtn.addStyle('right', this.style.rightSizeWidth + 0.2 + 'em');
-//     window.dispatchEvent(new Event('resize'));
-// };
-
 
 
 FormEditor.prototype.ev_keydown = function (event) {
-    this._lastKeydownTime = this._lastKeydownTime || 0;
-    var now = new Date().getTime();
-    if (now - this._lastKeydownTime > 100) {
-        if (event.ctrlKey && event.key == 'z') {
-            this._lastKeydownTime = now;
-            this.mUndoHistory.undo();
-        }
-        else if (event.ctrlKey && event.key == 'y') {
-            this._lastKeydownTime = now;
-            this.mUndoHistory.redo();
-        }
-    }
+   
 };
 
 FormEditor.prototype.ev_layoutEditorChange = function () {
