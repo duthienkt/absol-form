@@ -233,7 +233,8 @@ UndoHistoryItem.prototype.typeIcon = {
     'set-data': 'span.mdi.mdi-open-in-app',
     'move-resize': 'span.mdi.mdi-move-resize',
     'move-order': 'span.mdi.mdi-arrow-up-down-bold',
-    'clear': 'span.mdi.mdi-check-outline'
+    'clear': 'span.mdi.mdi-check-outline',
+    'cut': 'span.mdi.mdi-content-cut'
 };
 
 

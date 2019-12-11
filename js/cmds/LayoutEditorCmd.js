@@ -164,6 +164,24 @@ LayoutEditorCmd.saveAs = function () {
 };
 
 LayoutEditorCmd.export2Json = function () {
+    var fileName = 'exported.json';
+    var formEditor = this.getContext(R.FORM_EDITOR);
+    if (formEditor) {
+        var tabHolder = formEditor.getEditorHolderByEditor(this);
+        fileName = tabHolder.name.replace(/[\\\/\.\?]/g, '_')+'.json'; 
+    }
+
+    var a = document.createElement('a');
+    this.$view.appendChild(a);
+    var text = JSON.stringify(this.getData(),null, '    ');
+    var fileType = 'json'
+    var blob = new Blob([text], { type: fileType });
+    a.download = fileName;
+    a.href = URL.createObjectURL(blob);
+    a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
+    a.style.display = "none";
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove() }, 1500)
 
 };
 
@@ -173,10 +191,10 @@ LayoutEditorCmd.cut = function () {
         return ed.component;
     });
 
-    var components = components.map(function (component) {
+    var componentsData = components.map(function (component) {
         return component.getData();
     });
-    ClipboardManager.set(R.CLIPBOARD.COMPONENTS, components);
+    ClipboardManager.set(R.CLIPBOARD.COMPONENTS, componentsData);
 
     //code copy and edit from LayoutEditor.prototype.removeComponent 
     var self = this;
@@ -193,20 +211,20 @@ LayoutEditorCmd.cut = function () {
         if (node.children)
             node.children.forEach(visit);
     }
-    components.forEach(visit);
+    componentsData.forEach(visit);
 
     this.componentPropertiesEditor.edit(undefined);
     this.setActiveComponent();
     this.notifyDataChange();
     this.componentOtline.updateComponetTree();
-    this.commitHistory('remove', 'Cut ' + components.map(function (c) {
+    this.commitHistory('cut', 'Cut ' + components.map(function (c) {
         return c.getAttribute('name');
     }).join(', '));
 };
 
 LayoutEditorCmd.copy = function () {
     if (this.anchorEditors.length < 1) return;
-    var components = this.anchorEditors.map(function (ed) {
+    var componentsData = this.anchorEditors.map(function (ed) {
         return ed.component.getData();
     });
 
@@ -218,9 +236,8 @@ LayoutEditorCmd.copy = function () {
         if (node.children)
             node.children.forEach(visit);
     }
-    components.forEach(visit);
-    ClipboardManager.set(R.CLIPBOARD.COMPONENTS, components);
-
+    componentsData.forEach(visit);
+    ClipboardManager.set(R.CLIPBOARD.COMPONENTS, componentsData);
 };
 
 LayoutEditorCmd.paste = function () {
@@ -229,11 +246,11 @@ LayoutEditorCmd.paste = function () {
         this.addNewComponent(components, 0, 0);
 };
 
-LayoutEditorCmd.undo = function(){
+LayoutEditorCmd.undo = function () {
     this.undoHistory.undo();
 };
 
-LayoutEditorCmd.redo = function(){
+LayoutEditorCmd.redo = function () {
     this.undoHistory.redo();
 };
 
@@ -330,7 +347,9 @@ export var LayoutEditorCmdDescriptors = {
     preview: {
         type: 'trigger',
         icon: 'span.mdi.mdi-play',
-        desc: 'Preview'
+        desc: 'Preview',
+        bindKey: { win: 'Ctrl-K', mac: 'TODO?' }
+
     },
     cut: {
         type: 'trigger',
@@ -370,7 +389,8 @@ export var LayoutEditorCmdDescriptors = {
     export2Json: {
         type: 'trigger',
         icon: 'span.mdi.mdi-cloud-download-outline',
-        desc: 'Export To JSON'
+        desc: 'Export To JSON',
+        bindKey: { win: 'Ctrl-Shift-E', mac: 'TODO?' }
     },
     undo: {
         type: 'trigger',

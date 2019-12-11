@@ -125,11 +125,11 @@ BaseEditor.prototype.ev_cmdKeyDown = function (event) {
     if (key.length == 1) key = key.toUpperCase();
     var key1 = specKeys.concat([key]).join('-');
     var key2 = specKeys.concat([event.keyCode]).join('-');
-    console.log(key1);
     
     var cmd = this.cmdBindKeys[key1] || this.cmdBindKeys[key2];
     if (cmd) {
         this.execCmd(cmd);
+        event.preventDefault();
     }
 };
 
