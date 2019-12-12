@@ -6,3 +6,6 @@
 .as-component-outline-node-focus>.absol-exp-node {
     background-color: rgba(185, 235, 20, 0.3);
 }
+.as-component-outline{
+    outline: none;
+}
