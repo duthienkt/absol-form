@@ -167,6 +167,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
             cmd();
             self.layoutEditor.notifyDataChange();
         }
+        self.layoutEditor.getView().focus();
     });
     event.stopPropagation();
 };
