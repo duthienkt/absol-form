@@ -45,7 +45,7 @@ WindowManager.prototype.reIndex = function () {
     this.windowHolders.sort(function (a, b) {
         return a.zIndex + a.delta - b.zIndex - b.delta;
     });
-    while (this.windowHolders.length > 0 && this.windowHolders[0].delta < 0) this.windowHolders.pop();
+    while (this.windowHolders.length > 0 && this.windowHolders[0].delta < 0) this.windowHolders.shift();
     var holder;
     for (var i = 0; i < this.windowHolders.length; ++i) {
         holder = this.windowHolders[i];
