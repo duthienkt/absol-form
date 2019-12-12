@@ -3,14 +3,14 @@ import EventEmitter from "absol/src/HTML5/EventEmitter";
 import Context from "absol/src/AppPattern/Context";
 import R from "../R";
 import '../../css/componentoutline.css';
+import BaseEditor from "../core/BaseEditor";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 
 function ComponentOutline() {
-    Context.call(this);
-    EventEmitter.call(this);
+    BaseEditor.call(this);
     this.$view = null;
     /**
      * @type {import('./LayoutEditor').default}
@@ -22,14 +22,13 @@ function ComponentOutline() {
     this._lastPressTime = 0;
 }
 
-Object.defineProperties(ComponentOutline.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
-Object.defineProperties(ComponentOutline.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
+Object.defineProperties(ComponentOutline.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 ComponentOutline.prototype.constructor = ComponentOutline;
 
 
 ComponentOutline.prototype.onStart = function () {
     this.layoutEditor = this.getContext(R.LAYOUT_EDITOR);
-    
+
 };
 
 ComponentOutline.prototype.ev_contextNode = function (comp, event) {
@@ -103,6 +102,7 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
                 self.moveToBottom(comp);
                 break;
         }
+        setTimeout(self.$view.focus.bind(self.$view), 20);
     });
 };
 
@@ -220,7 +220,7 @@ ComponentOutline.prototype.updateComponentStatus = function () {
 ComponentOutline.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
-        tag:'bscroller',
+        tag: 'bscroller',
         class: ['as-component-outline'],
         attr: {
             tabindex: '1'
@@ -250,6 +250,8 @@ ComponentOutline.prototype.ev_keydown = function (event) {
             if (this.$focusNode) this.selectPrev(this.$focusNode.__comp__);
             break;
     }
+    this.layoutEditor.ev_cmdKeyDown(event);
+    setTimeout(this.$view.focus.bind(this.$view), 10);
 };
 
 
