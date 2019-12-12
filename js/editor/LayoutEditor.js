@@ -426,8 +426,9 @@ LayoutEditor.prototype.setActiveComponent = function () {
     while (this.anchorEditors.length < arguments.length) {
         var editor = this._newAnchorEditor(arguments[this.anchorEditors.length]);
         this.anchorEditors.push(editor);
-        editor.focus();
     }
+    if (this.anchorEditors.length > 0)
+        this.anchorEditors[this.anchorEditors.length - 1].focus();
     this.componentOtline.updateComponentStatus();
     this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
     this.notifyCmdDescriptorsChange();

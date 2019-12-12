@@ -250,7 +250,7 @@ LayoutEditorCmd.copy = function () {
 
 LayoutEditorCmd.paste = function () {
     var components = ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
-    if (components){
+    if (components) {
         this.addNewComponent(components, 0, 0);
     }
 };
@@ -261,6 +261,19 @@ LayoutEditorCmd.undo = function () {
 
 LayoutEditorCmd.redo = function () {
     this.undoHistory.redo();
+};
+
+LayoutEditorCmd.selectAll = function () {
+    var now = new Date().getTime();
+    var comp;
+    if (this.anchorEditors.length == 0) {
+        comp = this.rootLayout.children;
+    }
+    else {
+        comp = (this.findNearestLayoutParent(this.anchorEditors[0].component.parent) || this.rootLayout).children;
+    }
+    
+    this.setActiveComponent.apply(this, comp);
 };
 
 
@@ -413,5 +426,10 @@ export var LayoutEditorCmdDescriptors = {
         icon: 'span.mdi.mdi-redo',
         desc: 'Redo',
         bindKey: { win: 'Ctrl-Y', mac: 'TODO?' }
+    },
+    selectAll: {
+        type: 'trigger',
+        desc: 'Select All',
+        bindKey: { win: 'Ctrl-A', mac: 'TODO?' }
     }
 };
