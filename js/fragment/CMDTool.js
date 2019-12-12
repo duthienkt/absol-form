@@ -2,6 +2,7 @@ import BaseEditor from "../core/BaseEditor";
 import Fcore from "../core/FCore";
 import Dom from "absol/src/HTML5/Dom";
 import '../../css/CMDTool.css';
+import WindowManager from "../dom/WindowManager";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -64,7 +65,7 @@ CMDTool.prototype.onPause = function () {
 
     }
     else {
-        this.$window.selfRemove();
+        WindowManager.remove(this.$window);
     }
 };
 
@@ -82,7 +83,7 @@ CMDTool.prototype.onResume = function () {
 
     }
     else {
-        this.$window.addStyle(this.config.windowStyle).addTo(document.body);
+        WindowManager.add(this.$window.addStyle(this.config.windowStyle));
     }
     this.updateVisiable();
 };
@@ -173,6 +174,9 @@ CMDTool.prototype.getView = function () {
 
     this.$window = _({
         tag: "onscreenwindow",
+        attr:{
+            tabIndex:'1'
+        },
         class: "as-form-cmd-tool-window",
         props: {
             windowTitle: "Tools",
@@ -181,7 +185,8 @@ CMDTool.prototype.getView = function () {
         on: {
             sizechange: this.ev_windowPosChange.bind(this),
             drag: this.ev_windowPosChange.bind(this),
-            relocation: this.ev_windowPosChange.bind(this)
+            relocation: this.ev_windowPosChange.bind(this),
+            keydown: this.ev_cmdKeyDown.bind(this)
         }
     });
 
@@ -244,4 +249,8 @@ CMDTool.prototype.execCmd = function () {
     this.editor.execCmd.apply(this.editor, arguments);
 };
 
+
+CMDTool.prototype.ev_cmdKeyDown = function(event){
+    this.editor.ev_cmdKeyDown(event);//repeat event
+}
 export default CMDTool;

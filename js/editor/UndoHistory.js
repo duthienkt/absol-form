@@ -5,6 +5,7 @@ import '../../css/undohistory.css';
 import R from "../R";
 import BaseEditor from "../core/BaseEditor";
 import Dom from "absol/src/HTML5/Dom";
+import WindowManager from "../dom/WindowManager";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -22,9 +23,9 @@ UndoHistory.prototype.constructor = UndoHistory;
 UndoHistory.prototype.CONFIG_STORE_KEY = "AS_UndoHistory_config";
 
 UndoHistory.prototype.config = {
-    windowStyle:{
+    windowStyle: {
         left: '57px',
-        top:Dom.getScreenSize().height - 230 + 'px'
+        top: Dom.getScreenSize().height - 230 + 'px'
     }
 };
 
@@ -45,13 +46,14 @@ UndoHistory.prototype.ev_clickMinimizeBtn = function () {
 
 UndoHistory.prototype.ev_windowPosChange = function () {
     this.config.windowStyle = { width: this.$view.style.width, height: this.$view.style.height, top: this.$view.style.top, left: this.$view.style.left };
-    this.saveConfig(); 
+    this.saveConfig();
 };
 
 UndoHistory.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
         tag: 'onscreenwindow',
+        attr: { tabIndex: '1' },
         class: ['as-undo-history', 'as-minimize-x'],
         props: {
             windowTitle: 'Undo Manager',
@@ -107,6 +109,7 @@ UndoHistory.prototype.getView = function () {
             sizechange: this.ev_windowPosChange.bind(this),
             drag: this.ev_windowPosChange.bind(this),
             relocation: this.ev_windowPosChange.bind(this),
+            keydown: this.ev_cmdKeyDown.bind(this)
         }
     });
     this.$view.$dockBtn.on('click', this.ev_clickDockBtn.bind(this));
@@ -124,13 +127,14 @@ UndoHistory.prototype.getView = function () {
 
 
 UndoHistory.prototype.onResume = function () {
+    this.editor = this.getContext(R.HAS_CMD_EDITOR);
     var view = this.getView();
-    view.addStyle(this.config.windowStyle).addTo(document.body);
-    view.addTo(document.body);
+    WindowManager.add(view.addStyle(this.config.windowStyle))
 };
 
 UndoHistory.prototype.onPause = function () {
-    this.getView().remove();
+    this.editor = undefined;
+    WindowManager.remove(this.getView());
 };
 
 
@@ -205,6 +209,12 @@ UndoHistory.prototype.renew = function () {
         lastItem.getView().remove();
     }
 };
+
+
+UndoHistory.prototype.ev_cmdKeyDown = function (event) {
+    this.editor && this.editor.ev_cmdKeyDown(event);
+};
+
 
 /**
  * @param {UndoHistory}parent

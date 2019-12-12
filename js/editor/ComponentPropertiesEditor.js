@@ -7,6 +7,7 @@ import StyleEditor from "./StyleEditor";
 import AllPropertyEditor from "./AllPropertyEditor";
 import Dom from "absol/src/HTML5/Dom";
 import EventEditor from "./EventEditor";
+import WindowManager from "../dom/WindowManager";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -131,7 +132,7 @@ ComponentPropertiesEditor.prototype.onPause = function () {
 
     }
     else {
-        this.$window.selfRemove();
+        WindowManager.remove(this.$window);
     }
 };
 
@@ -140,7 +141,7 @@ ComponentPropertiesEditor.prototype.onResume = function () {
 
     }
     else {
-        this.$window.addStyle(this.config.windowStyle).addTo(document.body);
+        WindowManager.add(this.$window.addStyle(this.config.windowStyle))
     }
 };
 

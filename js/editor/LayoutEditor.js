@@ -26,6 +26,7 @@ function LayoutEditor() {
     this.snapshotsIndex = 0;
     this._changeCommited = true;
     this.setContext(R.LAYOUT_EDITOR, this);
+    this.setContext(R.HAS_CMD_EDITOR, this);
 
     //setup cmd
     this.cmdRunner.assign(LayoutEditorCMD);
