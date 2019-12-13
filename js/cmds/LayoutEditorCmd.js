@@ -272,7 +272,7 @@ LayoutEditorCmd.selectAll = function () {
     else {
         comp = (this.findNearestLayoutParent(this.anchorEditors[0].component.parent) || this.rootLayout).children;
     }
-    
+
     this.setActiveComponent.apply(this, comp);
 };
 
@@ -305,8 +305,8 @@ export var LayoutEditorCmdDescriptors = {
     },
     distributeHorizontalDistance: {
         icon: '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                    <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
-                    <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
+                    <path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\
+                    <path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\
                 </svg>',
         type: 'trigger',
         desc: "Distribute Horizontal Distance"
