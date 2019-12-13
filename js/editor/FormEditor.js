@@ -9,9 +9,6 @@ import Dom from 'absol/src/HTML5/Dom';
 
 import ComponentPicker from './ComponentPicker';
 import R from '../R';
-import AttributeEditor from './AttributeEditor';
-import StyleEditor from './StyleEditor';
-import AllPropertyEditor from './AllPropertyEditor';
 import FormPreview from './FormPreview';
 import { randomIdent } from 'absol/src/String/stringGenerate';
 import QuickMenu from 'absol-acomp/js/QuickMenu';
@@ -20,6 +17,7 @@ import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
 import CMDTool from '../fragment/CMDTool';
 import CodeEditor from './CodeEditor';
+import FormEditorCmd from '../cmds/FormEditorCmd';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -29,13 +27,13 @@ function FormEditor() {
     this.prefix = randomIdent(16) + "_";
     this.setContext(R.FORM_EDITOR, this);
     var self = this;
+    this.cmdRunner.assign(FormEditorCmd);
     this.style = {
         leftSizeWidth: 16,//em
         leftSizeMinWidth: 10,
 
         rightSizeWidth: 23,//em
         rightSizeMinWidth: 15,
-
     };
 
     this.projectExplorer = new ProjectExplorer();
@@ -48,7 +46,7 @@ function FormEditor() {
     this.mComponentPicker = new ComponentPicker();
     this.mCMDTool = new CMDTool();
 
-    
+
     this.setContext(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.setContext(R.COMPONENT_PICKER, this.mComponentPicker);
     this.setContext(R.UNDO_HISTORY, this.mUndoHistory);
@@ -84,8 +82,6 @@ FormEditor.prototype.onStop = function () {
 
 FormEditor.prototype.onPause = function () {
     this.projectExplorer.pause();
-
-
 };
 
 
@@ -102,7 +98,7 @@ FormEditor.prototype.config = {
 
 FormEditor.prototype.openProject = function (name) {
     this.projectExplorer.openProject(name)
-}
+};
 
 
 FormEditor.prototype.openItem = function (type, ident, name, contentArguments, desc) {
@@ -128,6 +124,7 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
     }
     return this.editorHolders[ident];
 };
+
 
 FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumulator) {
     var self = this;
@@ -201,12 +198,14 @@ FormEditor.prototype.getEditorHolderByIdent = function (ident) {
     return this.editorHolders[ident];
 };
 
+
 FormEditor.prototype.getEditorHolderByEditor = function (editor) {
     for (var ident in this.editorHolders) {
         if (this.editorHolders[ident].editor == editor) return this.editorHolders[ident];
     }
     return null;
 };
+
 
 FormEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -380,8 +379,10 @@ FormEditor.prototype.getView = function () {
 
     QuickMenu.toggleWhenClick(this.quickToolTabMenu, {
         onSelect: function (item) {
-            console.log(item.text);
-
+            var cmd = item.cmd;
+            if (cmd) {
+                self.execCmd(cmd);
+            }
         },
         getMenuProps: function () {
             return {
@@ -389,11 +390,11 @@ FormEditor.prototype.getView = function () {
                     'font-size': '14px'
                 },
                 items: [
-                    { text: "Close All", icon: 'span.mdi.mdi-close-box-multiple-outline' },
-                    { text: "Close Saved", icon: 'span.mdi.mdi-progress-close' },
-                    { text: "Save All and Close", icon: 'span.mdi.mdi-content-save-all-outline' }
+                    { text: "Close All", icon: 'span.mdi.mdi-close-box-multiple-outline', cmd: 'closeAll' },
+                    { text: "Close Saved", icon: 'span.mdi.mdi-progress-close', cmd: 'closeSaved' },
+                    { text: "Save All and Close", icon: 'span.mdi.mdi-content-save-all-outline', cmd: 'saveAllNClose' }
                 ]
-            }
+            };
         }
     });
 
@@ -478,7 +479,8 @@ FormEditor.prototype.setLeftSiteWidthPercent = function (value) {
                 this.$leftSiteResizer.addStyle('left', 'calc(' + this.config.leftSiteWidthPercent + "% - 0.1em)");
         }
     }
-}
+};
+
 
 FormEditor.prototype.ev_preDragLeftResizer = function (event) {
     this.$leftSiteResizer.addStyle({
