@@ -157,7 +157,7 @@ RelativeLayout.prototype.measureMinSize = function () {
  * @param {Number} posY
  */
 RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
-    this.addChild(child)
+    this.addChild(child);
     posX = Math.max(0, Math.min(this.style.width - child.style.width, posX));
     posY = Math.max(0, Math.min(this.style.height - child.style.height, posY));
     child.setStyle('left', posX);
@@ -166,17 +166,17 @@ RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
 
 
 
-RelativeLayout.prototype.getAcceptsAttributeNames = function(){
+RelativeLayout.prototype.getAcceptsAttributeNames = function () {
     var res = ScalableComponent.prototype.getAcceptsAttributeNames.call(this);
-    if (this.attributes.formType){
+    if (this.attributes.formType) {
         res = ['formType'].concat(res);
     }
     return res;
 };
 
-RelativeLayout.prototype.getAttributeFormTypeDescriptor = function(){
+RelativeLayout.prototype.getAttributeFormTypeDescriptor = function () {
     return {
-        type:'const',
+        type: 'const',
         value: this.attributes.formType
     }
 };
