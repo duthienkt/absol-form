@@ -6,3 +6,28 @@
 .as-resize-box.as-focus .as-resize-box-dot {
     background: rgb(255, 174, 0);
 }
+
+
+.as-align-vertical-line {
+    margin-left: 0.5px;
+    border-left: solid 1px rgba(255, 100, 100, 0.2);
+}
+
+
+.as-align-horizontal-line {
+    margin-top: 0.5px;
+    border-top: solid 1px rgba(255, 100, 100, 0.2);
+}
+
+.as-align-vertical-line,
+.as-align-horizontal-line {
+    position: absolute;
+    box-sizing: border-box;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.as-align-vertical-line.as-active,
+.as-align-horizontal-line.as-active {
+    border-color: rgba(255, 100, 100, 0.9);
+}

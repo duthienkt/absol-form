@@ -42,6 +42,7 @@ function RelativeAnchorEditor(layoutEditor) {
     this.$rightAlignLine = _('hline');
     this.movingData = null;
     this.isFocus = false;
+    this.snapDistance = 2;
 }
 
 Object.defineProperties(RelativeAnchorEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
@@ -291,6 +292,7 @@ RelativeAnchorEditor.prototype.updatePosition = function () {
 RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
     this.component.reMeasure();
+    var snapLines = this.getSnapLines();
     this.movingData = {
         x0: event.clientX - bound.left,
         y0: event.clientY - bound.top,
@@ -301,17 +303,25 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         style0: Object.assign({}, this.component.style),
         comp: this.component,
         isChange: false,
+        snapLines: snapLines,
+        $snapXLines: [],
+        $snapYLines: [],
+        nearestYVal: 10000000,
+        nearestY: [],
+        nearestXVal: 10000000,
+        nearestX: [],
     };
     if (userAction) {
         this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event.originEvent || event, repeatEvent: event, target: this }, this);
         this.$modal.addTo(document.body);
+        this._updateSnapLines();
     }
 };
 
 
 
-RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
 
+RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     var movingData = this.movingData;
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
     var x = event.clientX - bound.left;
@@ -440,6 +450,7 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     }
     if (userAction) {
         this.emit('moving', { taget: this, type: 'moving', originEvent: event.originEvent || event, repeatEvent: event, target: this, repeatEvent: event }, this);
+        this._updateSnapLines();
     }
 };
 
@@ -448,11 +459,203 @@ RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
     if (this.movingData.isChange) {
         this.emit('change', { type: 'change', target: this, component: this.movingData.comp, originEvent: event.originEvent || event, repeatEvent: event }, this);
     }
-    this.movingData = undefined;
+
     if (userAction) {
         this.emit('endmove', { taget: this, type: 'moving', originEvent: event.originEvent || event, target: this, repeatEvent: event }, this);
         this.$modal.remove();
+        this.movingData.$snapYLines.forEach(function (e) {
+            e.remove();
+        });
+        this.movingData.$snapXLines.forEach(function (e) {
+            e.remove();
+        });
+        if (this.movingData.nearestXVal <= this.snapDistance) {
+            var firsLineX = this.movingData.nearestX[0];
+            if (firsLineX.flat | 1) {
+                this.alignLeftDedge(firsLineX.value, true);
+            }
+            else if (firsLineX.flat | 2) {
+                this.alignHorizontalCenter(2 * firsLineX.value - this.layoutEditor.rootLayout.style.width , true);
+            }
+            else if (firsLineX.flat | 4) {
+                this.alignRightDedge(firsLineX.value);
+            }
+        }
+
+        if (this.movingData.nearestYVal <= this.snapDistance) {
+            var firsLineY = this.movingData.nearestY[0];
+            if (firsLineY.flat | 1) {
+                this.alignTopDedge(firsLineY.value, true);
+            }
+            else if (firsLineY.flat | 2) {
+                this.alignVerticalCenter(2 * firsLineY.value - this.layoutEditor.rootLayout.style.height, true);
+            }
+            else if (firsLineY.flat | 4) {
+                this.alignBottomDedge(firsLineY.value, true);
+            }
+        }
+    };
+
+    this.movingData = undefined;
+
+
+};
+
+
+RelativeAnchorEditor.prototype._updateSnapLines = function () {
+    // as-align-horizontal-lin
+    var nearestYVal = 10000;
+    var nearestY = [];
+    var top = this.component.style.top;
+    var middleY = this.component.style.top + this.component.style.height / 2;
+    var bottom = this.component.style.top + this.component.style.height;
+    var yLines = this.movingData.snapLines.y;
+    var line;
+    var dist;
+    var yIsSmaller;
+    for (var i = 0; i < yLines.length; ++i) {
+        line = yLines[i];
+        if (line.flat & 1) {
+            dist = Math.abs(line.value - top);
+            if (dist < nearestYVal) {
+                nearestY = [line];
+                nearestYVal = dist;
+                yIsSmaller = line.value < top;
+            }
+            else if (dist == nearestYVal && (line.value < top) == yIsSmaller) {
+                nearestY.push(line);
+            }
+        }
+        else if (line.flat & 2) {
+            dist = Math.abs(line.value - middleY);
+            if (dist < nearestYVal) {
+                nearestY = [line];
+                nearestYVal = dist;
+                yIsSmaller = line.value < middleY;
+            }
+            else if (dist == nearestYVal && (line.value < middleY) == yIsSmaller) {
+                nearestY.push(line);
+            }
+        }
+        else if (line.flat & 4) {
+            dist = Math.abs(line.value - bottom);
+            if (dist < nearestYVal) {
+                nearestY = [line];
+                nearestYVal = dist;
+                yIsSmaller = line.value < bottom;
+            }
+            else if (dist == nearestYVal && (line.value < bottom) == yIsSmaller) {
+                nearestY.push(line);
+            }
+        }
+        // if 
     }
+
+    var layoutBound = this.layoutEditor.rootLayout.view.getBoundingClientRect();
+    var forcegroundBound = this.layoutEditor.$forceground.getBoundingClientRect();
+    while (this.movingData.$snapYLines.length < nearestY.length) {
+        this.movingData.$snapYLines.push(_({
+            class: 'as-align-horizontal-line',
+            style: {
+                left: layoutBound.left - forcegroundBound.left + 'px',
+                width: layoutBound.width + 'px',
+            }
+        }).addTo(this.layoutEditor.$forceground));
+    }
+
+    while (this.movingData.$snapYLines.length > nearestY.length) {
+        this.movingData.$snapYLines.pop().remove();
+    }
+
+
+    for (var i = 0; i < nearestY.length; ++i) {
+        this.movingData.$snapYLines[i].addStyle('top', layoutBound.left - forcegroundBound.left + nearestY[i].value + 'px');
+        if (nearestYVal <= this.snapDistance) {
+            this.movingData.$snapYLines[i].addClass('as-active');
+        }
+        else {
+            this.movingData.$snapYLines[i].removeClass('as-active');
+        }
+    }
+    this.movingData.nearestY = nearestY;
+    this.movingData.nearestYVal = nearestYVal;
+
+    var nearestXVal = 10000;
+    var nearestX = [];
+    var left = this.component.style.left;
+    var middleX = this.component.style.left + this.component.style.width / 2;
+    var right = this.component.style.left + this.component.style.width;
+    var xLines = this.movingData.snapLines.x;
+    var line;
+    var dist;
+    var xIsSmaller;
+    for (var i = 0; i < xLines.length; ++i) {
+        line = xLines[i];
+        if (line.flat & 1) {
+            dist = Math.abs(line.value - left);
+            if (dist < nearestXVal) {
+                nearestX = [line];
+                nearestXVal = dist;
+                xIsSmaller = line.value < left;
+            }
+            else if (dist == nearestXVal && (line.value < left) == xIsSmaller) {
+                nearestX.push(line);
+            }
+        }
+        else if (line.flat & 2) {
+            dist = Math.abs(line.value - middleX);
+            if (dist < nearestXVal) {
+                nearestX = [line];
+                nearestXVal = dist;
+                xIsSmaller = line.value < middleX;
+            }
+            else if (dist == nearestXVal && (line.value < middleX) == xIsSmaller) {
+                nearestX.push(line);
+            }
+        }
+        else if (line.flat & 4) {
+            dist = Math.abs(line.value - right);
+            if (dist < nearestXVal) {
+                nearestX = [line];
+                nearestXVal = dist;
+                xIsSmaller = line.value < right;
+
+            }
+            else if (dist == nearestXVal && (line.value < right) == xIsSmaller) {
+                nearestX.push(line);
+            }
+        }
+        // if 
+    }
+
+    var layoutBound = this.layoutEditor.rootLayout.view.getBoundingClientRect();
+    var forcegroundBound = this.layoutEditor.$forceground.getBoundingClientRect();
+    while (this.movingData.$snapXLines.length < nearestX.length) {
+        this.movingData.$snapXLines.push(_({
+            class: 'as-align-vertical-line',
+            style: {
+                top: layoutBound.top - forcegroundBound.top + 'px',
+                height: layoutBound.height + 'px',
+            }
+        }).addTo(this.layoutEditor.$forceground));
+    }
+
+    while (this.movingData.$snapXLines.length > nearestX.length) {
+        this.movingData.$snapXLines.pop().remove();
+    }
+
+
+    for (var i = 0; i < nearestX.length; ++i) {
+        this.movingData.$snapXLines[i].addStyle('left', layoutBound.left - forcegroundBound.left + nearestX[i].value + 'px');
+        if (nearestXVal <= this.snapDistance) {
+            this.movingData.$snapXLines[i].addClass('as-active');
+        }
+        else {
+            this.movingData.$snapXLines[i].removeClass('as-active');
+        }
+    }
+    this.movingData.nearestX = nearestX;
+    this.movingData.nearestXVal = nearestXVal;
 };
 
 
@@ -943,6 +1146,7 @@ RelativeAnchorEditor.prototype.cmd_distributeVerticalTop = function () {
     this.layoutEditor.commitHistory('move', 'Distribute Vertical Top');
 };
 
+
 RelativeAnchorEditor.prototype.cmd_distributeVerticalCenter = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
@@ -1020,6 +1224,55 @@ RelativeAnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
         curentTop += editor.component.style.height + distance;
     }
     this.layoutEditor.commitHistory('move', 'Distribute Vertical Distance');
+};
+
+
+
+
+/**
+ * @returns {{x:Array<{components:Array, value:Number}>, y:Array<{components:Array, value:Number}, flat:Number>}}
+ */
+RelativeAnchorEditor.prototype.getSnapLines = function () {
+    var children = this.component.parent.children;
+    var xComp = [];
+    var yComp = [];
+    var comp;
+    for (var i = 0; i < children.length; ++i) {
+        comp = children[i];
+        if (this.component == comp) continue;
+        comp.reMeasure();
+        xComp.push({ component: comp, value: comp.style.left, flat: 1 });
+        xComp.push({ component: comp, value: comp.style.left + comp.style.width / 2, flat: 2 });
+        xComp.push({ component: comp, value: comp.style.left + comp.style.width, flat: 4 });
+
+        yComp.push({ component: comp, value: comp.style.top, flat: 1 });
+        yComp.push({ component: comp, value: comp.style.top + comp.style.height / 2, flat: 2 });
+        yComp.push({ component: comp, value: comp.style.top + comp.style.height, flat: 4 });
+    }
+
+    var cmp = function (a, b) {
+        return a.value - b.value;
+    };
+    xComp.sort(cmp);
+    yComp.sort(cmp);
+
+    var reducer = function (ac, cr) {
+        if (ac.last.value != cr.value) {
+            ac.last = { components: [cr.component], value: cr.value, flat: 0 };
+            ac.result.push(ac.last);
+        }
+        else {
+            if (ac.last.components.indexOf(cr.component) < 0)
+                ac.last.components.push(cr.component);
+        }
+        ac.last.flat = ac.last.flat | cr.flat;
+        return ac;
+    };
+
+    return {
+        x: xComp.reduce(reducer, { result: [], last: { value: -1000000, components: [], flat: 0 } }).result,
+        y: yComp.reduce(reducer, { result: [], last: { value: -1000000, components: [], flat: 0 } }).result
+    };
 };
 
 
