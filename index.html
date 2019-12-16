@@ -38,26 +38,27 @@
 </head>
 
 <body>
-    <script src="./absol/absol_form.js?date=3150"></script>
-    <div class="form-editor-container"></div>
-
-    <script class="viewable">
-
-        absol.form.PluginManager.push(absol.form.R.PLUGINS.PROJECT_EXPLORER,absol.form.framePlugin.PluginProjectExplore);
-        absol.form.PluginManager.push(absol.form.R.PLUGINS.LOAD_CONTENT_DATA,absol.form.framePlugin.PluginLoadContentData);
-        absol.form.PluginManager.push(absol.form.R.PLUGINS.SAVE_CONTENT_DATA,absol.form.framePlugin.PluginSaveContentData);
-
-    </script>
-
     <script>
-        var mFormEditor = new absol.form.FormEditor();
-        mFormEditor.getView().addTo(absol.$('.form-editor-container'));
-        mFormEditor.start();
-        mFormEditor.openProject('GetStarted')
+        document.write(`
+            <scr`+ `ipt src="./absol/absol_form.js?date=` + (Math.random() * 1000000 >> 0) + `"></s` + `cript>
+                <div class="form-editor-container"></div>
+            <sc`+ `ript class="viewable">
+
+                absol.form.PluginManager.push(absol.form.R.PLUGINS.PROJECT_EXPLORER,absol.form.framePlugin.PluginProjectExplore);
+                absol.form.PluginManager.push(absol.form.R.PLUGINS.LOAD_CONTENT_DATA,absol.form.framePlugin.PluginLoadContentData);
+                absol.form.PluginManager.push(absol.form.R.PLUGINS.SAVE_CONTENT_DATA,absol.form.framePlugin.PluginSaveContentData);
+
+            </scr`+ `ipt>
+
+            <script>
+                var mFormEditor = new absol.form.FormEditor();
+                mFormEditor.getView().addTo(absol.$('.form-editor-container'));
+                mFormEditor.start();
+                mFormEditor.openProject('GetStarted')
+            </scr`+ `ipt>
+            <sc`+ `ript src="//absol.cf/absol/demo/autohightlighting.js"></scri` + `pt>`)
     </script>
 
-
-    <script src="//absol.cf/absol/demo/autohightlighting.js"></script>
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 import BaseEditor from "../core/BaseEditor";
 import Fcore from "../core/FCore";
 import Dom from "absol/src/HTML5/Dom";
-import '../../css/CMDTool.css';
+import '../../css/cmdtool.css';
 import WindowManager from "../dom/WindowManager";
 
 var _ = Fcore._;
