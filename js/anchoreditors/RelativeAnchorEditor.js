@@ -473,13 +473,13 @@ RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
             var firsLineX = this.movingData.nearestX[0];
 
             if (firsLineX.flat & 1) {
-                this.alignLeftDedge(firsLineX.value, true);
+                this.alignLeftDedge(firsLineX.value, this.movingData.body);
             }
             else if (firsLineX.flat & 2) {
-                this.alignHorizontalCenter(this.layoutEditor.rootLayout.style.width - 2 * firsLineX.value, true);
+                this.alignHorizontalCenter(this.layoutEditor.rootLayout.style.width - 2 * firsLineX.value);
             }
             else if (firsLineX.flat & 4) {
-                this.alignRightDedge(this.layoutEditor.rootLayout.style.width - firsLineX.value);
+                this.alignRightDedge(this.layoutEditor.rootLayout.style.width - firsLineX.value, this.movingData.body);
             }
         }
 
@@ -487,20 +487,18 @@ RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
             var firsLineY = this.movingData.nearestY[0];
 
             if (firsLineY.flat & 1) {
-                this.alignTopDedge(firsLineY.value, true);
+                this.alignTopDedge(firsLineY.value, this.movingData.body);
             }
             else if (firsLineY.flat & 2) {
-                this.alignVerticalCenter(this.layoutEditor.rootLayout.style.height - 2 * firsLineY.value, true);
+                this.alignVerticalCenter(this.layoutEditor.rootLayout.style.height - 2 * firsLineY.value);
             }
             else if (firsLineY.flat & 4) {
-                this.alignBottomDedge(this.layoutEditor.rootLayout.style.height - firsLineY.value, true);
+                this.alignBottomDedge(this.layoutEditor.rootLayout.style.height - firsLineY.value, this.movingData.body);
             }
         }
     };
 
     this.movingData = undefined;
-
-
 };
 
 
@@ -515,9 +513,10 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
     var line;
     var dist;
     var yIsSmaller;
+    var option = this.movingData.option;
     for (var i = 0; i < yLines.length; ++i) {
         line = yLines[i];
-        if (line.flat & 1) {
+        if ((line.flat & 1) && (option.body || option.top)) {
             dist = Math.abs(line.value - top);
             if (dist < nearestYVal) {
                 nearestY = [line];
@@ -528,7 +527,7 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
                 nearestY.push(line);
             }
         }
-        else if (line.flat & 2) {
+        else if ((line.flat & 2) && (option.body)) {
             dist = Math.abs(line.value - middleY);
             if (dist < nearestYVal) {
                 nearestY = [line];
@@ -539,7 +538,7 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
                 nearestY.push(line);
             }
         }
-        else if (line.flat & 4) {
+        else if ((line.flat & 4) && (option.body || option.bottom)) {
             dist = Math.abs(line.value - bottom);
             if (dist < nearestYVal) {
                 nearestY = [line];
@@ -593,7 +592,7 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
     var xIsSmaller;
     for (var i = 0; i < xLines.length; ++i) {
         line = xLines[i];
-        if (line.flat & 1) {
+        if ((line.flat & 1) && (option.body || option.left)) {
             dist = Math.abs(line.value - left);
             if (dist < nearestXVal) {
                 nearestX = [line];
@@ -604,7 +603,7 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
                 nearestX.push(line);
             }
         }
-        else if (line.flat & 2) {
+        else if ((line.flat & 2) && (option.body)) {
             dist = Math.abs(line.value - middleX);
             if (dist < nearestXVal) {
                 nearestX = [line];
@@ -615,7 +614,7 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
                 nearestX.push(line);
             }
         }
-        else if (line.flat & 4) {
+        else if ((line.flat & 4) && (option.body || option.right)) {
             dist = Math.abs(line.value - right);
             if (dist < nearestXVal) {
                 nearestX = [line];
@@ -755,7 +754,6 @@ RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue, keepSize) {
     }
     this.updatePosition();
     this.component.reMeasure();
-    console.log(Object.assign({}, this.component.style))
 };
 
 

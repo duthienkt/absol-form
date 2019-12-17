@@ -698,6 +698,10 @@ LayoutEditor.prototype.removeComponent = function () {
     var comp;
     for (var i = 0; i < arguments.length; ++i) {
         comp = arguments[i];
+        if (comp == this.rootLayout) {
+            console.warn('Don\'t remove root layout');
+            continue;
+        }
         comp.remove();
         removedComponents.push(comp);
         var anchorEditor = this.findAnchorEditorByComponent(comp);
