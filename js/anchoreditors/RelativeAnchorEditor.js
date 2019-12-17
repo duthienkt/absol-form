@@ -471,27 +471,29 @@ RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
         });
         if (this.movingData.nearestXVal <= this.snapDistance) {
             var firsLineX = this.movingData.nearestX[0];
-            if (firsLineX.flat | 1) {
+
+            if (firsLineX.flat & 1) {
                 this.alignLeftDedge(firsLineX.value, true);
             }
-            else if (firsLineX.flat | 2) {
-                this.alignHorizontalCenter(2 * firsLineX.value - this.layoutEditor.rootLayout.style.width , true);
+            else if (firsLineX.flat & 2) {
+                this.alignHorizontalCenter(this.layoutEditor.rootLayout.style.width - 2 * firsLineX.value, true);
             }
-            else if (firsLineX.flat | 4) {
-                this.alignRightDedge(firsLineX.value);
+            else if (firsLineX.flat & 4) {
+                this.alignRightDedge(this.layoutEditor.rootLayout.style.width - firsLineX.value);
             }
         }
 
         if (this.movingData.nearestYVal <= this.snapDistance) {
             var firsLineY = this.movingData.nearestY[0];
-            if (firsLineY.flat | 1) {
+
+            if (firsLineY.flat & 1) {
                 this.alignTopDedge(firsLineY.value, true);
             }
-            else if (firsLineY.flat | 2) {
-                this.alignVerticalCenter(2 * firsLineY.value - this.layoutEditor.rootLayout.style.height, true);
+            else if (firsLineY.flat & 2) {
+                this.alignVerticalCenter(this.layoutEditor.rootLayout.style.height - 2 * firsLineY.value, true);
             }
-            else if (firsLineY.flat | 4) {
-                this.alignBottomDedge(firsLineY.value, true);
+            else if (firsLineY.flat & 4) {
+                this.alignBottomDedge(this.layoutEditor.rootLayout.style.height - firsLineY.value, true);
             }
         }
     };
@@ -726,14 +728,20 @@ RelativeAnchorEditor.prototype.cmd_equaliseWidth = function () {
 };
 
 
-RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue) {
+RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue, keepSize) {
     if (!this.component) return;
     this.component.reMeasure();
+    var lLeft = this.component.style.left;
+    var lRight = this.component.style.right;
     var currentHAlign = this.component.getStyle('hAlign');
     switch (currentHAlign) {
         case 'left':
+            this.component.setStyle('left', leftValue); break;
         case 'fixed':
             this.component.setStyle('left', leftValue);
+            if (keepSize) {
+                this.component.setStyle('right', lRight - (leftValue - lLeft));
+            }
             break;
         case 'right':
             this.component.setStyle('right', this.component.getStyle('right') + (leftValue - this.component.getStyle('left')));
@@ -747,18 +755,25 @@ RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue) {
     }
     this.updatePosition();
     this.component.reMeasure();
+    console.log(Object.assign({}, this.component.style))
 };
 
 
-RelativeAnchorEditor.prototype.alignRightDedge = function (rightValue) {
+RelativeAnchorEditor.prototype.alignRightDedge = function (rightValue, keepSize) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentHAlign = this.component.getStyle('hAlign');
-
+    var lLeft = this.component.style.left;
+    var lRight = this.component.style.right;
     switch (currentHAlign) {
         case 'right':
+            this.component.setStyle('right', rightValue);
+            break;
         case 'fixed':
             this.component.setStyle('right', rightValue);
+            if (keepSize) {
+                this.component.setStyle('left', lLeft - (rightValue - lRight));
+            }
             break;
         case 'left':
             this.component.setStyle('left', this.component.getStyle('left') - (rightValue - this.component.getStyle('right')));
@@ -900,14 +915,21 @@ RelativeAnchorEditor.prototype.cmd_equaliseHeight = function () {
 
 
 
-RelativeAnchorEditor.prototype.alignTopDedge = function (topValue) {
+RelativeAnchorEditor.prototype.alignTopDedge = function (topValue, keepSize) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentVAlign = this.component.getStyle('vAlign');
+    var lTop = this.component.style.top;
+    var lBottom = this.component.style.bottom;
     switch (currentVAlign) {
         case 'top':
+            this.component.setStyle('top', topValue);
+            break;
         case 'fixed':
             this.component.setStyle('top', topValue);
+            if (keepSize) {
+                this.component.setStyle('bottom', lBottom - (topValue - lTop));
+            }
             break;
         case 'bottom':
             this.component.setStyle('bottom', this.component.getStyle('bottom') + (topValue - this.component.getStyle('top')));
@@ -925,15 +947,20 @@ RelativeAnchorEditor.prototype.alignTopDedge = function (topValue) {
 };
 
 
-RelativeAnchorEditor.prototype.alignBottomDedge = function (bottomValue) {
+RelativeAnchorEditor.prototype.alignBottomDedge = function (bottomValue, keepSize) {
     if (!this.component) return;
     this.component.reMeasure();
     var currentVAlign = this.component.getStyle('vAlign');
 
     switch (currentVAlign) {
         case 'bottom':
+            this.component.setStyle('bottom', bottomValue);
+            break;
         case 'fixed':
             this.component.setStyle('bottom', bottomValue);
+            if (keepSize) {
+                this.component.setStyle('top', lTop - (bottomValue - lBottom));
+            }
             break;
         case 'top':
             this.component.setStyle('top', this.component.getStyle('top') - (bottomValue - this.component.getStyle('bottom')));
