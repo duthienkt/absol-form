@@ -1258,6 +1258,7 @@ RelativeAnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
  * @returns {{x:Array<{components:Array, value:Number}>, y:Array<{components:Array, value:Number}, flat:Number>}}
  */
 RelativeAnchorEditor.prototype.getSnapLines = function () {
+    if (!this.component.parent) return { x: [], y: [] };
     var children = this.component.parent.children;
     var xComp = [];
     var yComp = [];
