@@ -20,8 +20,8 @@ Text.prototype.onCreate = function () {
     this.style.font = undefined;
     this.style.fontStyle = undefined;
     this.style.textSize = 0;
-
-}
+    this.style.textAlign = 'left';
+};
 
 Text.prototype.render = function () {
     return _('div.absol-bscroller');
@@ -73,13 +73,21 @@ Text.prototype.setStyleTextSize = function (value) {
     return value;
 };
 
+Text.prototype.setStyleTextAlign = function (value) {
+    if (['left', 'center', 'right'.indexOf(value) >= 0])
+        this.view.addStyle('text-align', value);
+    else
+        this.view.addStyle('text-align', 'left');
+    return value;
+};
+
 
 Text.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text']);
 };
 
 Text.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize']);
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textAlign']);
 };
 
 
@@ -111,6 +119,12 @@ Text.prototype.getStyleTextSizeDescriptor = function () {
         type: "number",
         min: 0,
         max: 1000
+    };
+};
+
+Text.prototype.getStyleTextAlignDescriptor = function () {
+    return {
+        type: "textAlign"
     };
 };
 

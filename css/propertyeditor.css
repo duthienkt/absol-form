@@ -37,3 +37,16 @@
 .as-property-editor>table>tbody>tr>td>textarea{
     width: 100% !important;
 }
+
+
+.as-property-editor-text-align-input{
+    font-size: 1.5em;
+    width: 1.2em;
+    height: 1.2em;
+    padding: 0;
+    margin: 0;
+    box-sizing: content-box;
+    border: solid 1px #ddd;
+    background-color: rgba(169, 169, 172, 0);
+    outline: none;
+}

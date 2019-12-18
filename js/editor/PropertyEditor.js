@@ -8,6 +8,7 @@ import ListEditor from './ListEditor';
 import { FONT_ITEMS } from '../font/GoogleFont';
 import { getMaterialDesignIconNames } from '../font/MaterialDesignIcons';
 import '../dom/FontIconInput';
+import QuickMenu from 'absol-acomp/js/QuickMenu';
 
 // FontIconPicker
 
@@ -478,7 +479,7 @@ PropertyEditor.prototype.createIconInputRow = function (name, descriptor) {
                     on: {
                         change: function (event) {
                             console.log(this.value);
-                            
+
                             self.setProperty(name, this.value);
                             self.notifyChange(name, this);
                         }
@@ -518,6 +519,70 @@ PropertyEditor.prototype.createListInputRow = function (name, descriptor) {
 };
 
 
+PropertyEditor.prototype.createTextAlignInputRow = function (name, descriptor) {
+    var self = this;
+    var icons = {
+        left: 'mdi-format-align-left',
+        right: 'mdi-format-align-right',
+        center: 'mdi-format-align-center'
+    };
+    var res = _({
+        tag: 'tr',
+        child: [
+            {
+                tag: 'td',
+                child: { text: name }
+            },
+            {
+                tag: 'td',
+                attr: { colspan: '3' },
+                child: {
+                    tag: 'button',
+                    class: 'as-property-editor-text-align-input',
+                    child: 'span.mdi'
+                }
+            }
+        ]
+    });
+    var $button = $('.as-property-editor-text-align-input', res);
+    var $icon = $('span.mdi', $button);
+    var lasIconClass = icons[this.getProperty(name)] || icons.left;
+    $icon.addClass(lasIconClass);
+    var self = this;
+    QuickMenu.toggleWhenClick($button, {
+        getMenuProps: function () {
+            return {
+                items: [
+                    {
+                        text: 'Left',
+                        icon: 'span.mdi.mdi-format-align-left',
+                        menuData: 'left'
+                    },
+                    {
+                        text: 'Center',
+                        icon: 'span.mdi.mdi-format-align-center',
+                        menuData: 'center'
+                    },
+                    {
+                        text: 'Right',
+                        icon: 'span.mdi.mdi-format-align-right',
+                        menuData: 'right'
+
+                    }
+                ]
+            }
+        },
+        onSelect: function (item) {
+            $icon.removeClass(lasIconClass);
+            lasIconClass = icons[item.menuData];
+            $icon.addClass(lasIconClass);
+            self.setProperty(name, item.menuData);
+        }
+    });
+    return res;
+};
+
+
 PropertyEditor.prototype.createNotSupportInputRow = function (name, descriptor) {
     var res = _({
         tag: 'tr',
@@ -549,34 +614,35 @@ PropertyEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
         class: 'as-property-editor',
-        child:{
-        tag: 'table',
-        child: [
-            {
-                tag: 'thead',
-                child: [
+        child: {
+            tag: 'table',
+            child: [
+                {
+                    tag: 'thead',
+                    child: [
 
-                    {
-                        tag: 'tr',
-                        child: [
-                            {
-                                tag: 'td',
-                                child: { text: "key" }
-                            },
-                            {
-                                tag: 'td',
-                                attr: { colspan: '3' },
-                                child: { text: 'value' }
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                tag: 'tbody'
-            }
-        ]
-    }});
+                        {
+                            tag: 'tr',
+                            child: [
+                                {
+                                    tag: 'td',
+                                    child: { text: "key" }
+                                },
+                                {
+                                    tag: 'td',
+                                    attr: { colspan: '3' },
+                                    child: { text: 'value' }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    tag: 'tbody'
+                }
+            ]
+        }
+    });
     this.$body = $('tbody', this.$view);
     return this.$view;
 }
