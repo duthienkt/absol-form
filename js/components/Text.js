@@ -1,8 +1,10 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import { FONT_FACES_BY_NAME } from "../font/GoogleFont";
+import showdown from 'showdown';
 
 var _ = Fcore._;
+
+var showDownConverter = new showdown.Converter();
 
 function Text() {
     ScalableComponent.call(this);
@@ -17,7 +19,8 @@ Text.prototype.menuIcon = "span.mdi.mdi-format-color-text";
 Text.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.text = this.attributes.name;
-    this.style.font = undefined;
+    this.attributes.textDecode = 'none',
+        this.style.font = undefined;
     this.style.fontStyle = undefined;
     this.style.textSize = 0;
     this.style.textAlign = 'left';
@@ -29,9 +32,28 @@ Text.prototype.render = function () {
 
 
 Text.prototype.setAttributeText = function (value) {
-    this.view.clearChild().addChild(_({ text: value }));
+    console.log(value, this.attributes.textDecode);
+    
+    switch (this.attributes.textDecode) {
+        case 'html':
+            this.view.innerHTML = value;
+            break;
+        case 'markdown':
+            this.view.innerHTML = showDownConverter.makeHtml(value).trim().replace(/(^<p>)|(<\/p>$)/, '');
+            break;
+        default:
+            this.view.clearChild().addChild(_({ text: value }));
+    }
     return value;
 };
+
+
+Text.prototype.setAttributeTextDecode = function (value) {
+    this.attributes.textDecode = value;
+    this.setAttributeText(this.attributes.text);//update
+    return value;
+};
+
 
 Text.prototype.setStyleFont = function (value) {
     if (value)
@@ -83,7 +105,7 @@ Text.prototype.setStyleTextAlign = function (value) {
 
 
 Text.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text', 'textDecode']);
 };
 
 Text.prototype.getAcceptsStyleNames = function () {
@@ -95,6 +117,14 @@ Text.prototype.getAttributeTextDescriptor = function () {
     return {
         type: "text",
         long: true
+    };
+};
+
+
+Text.prototype.getAttributeTextDecodeDescriptor = function () {
+    return {
+        type: "enum",
+        values: ['none', 'markdown', 'html']
     };
 };
 
@@ -121,6 +151,7 @@ Text.prototype.getStyleTextSizeDescriptor = function () {
         max: 1000
     };
 };
+
 
 Text.prototype.getStyleTextAlignDescriptor = function () {
     return {

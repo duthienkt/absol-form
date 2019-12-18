@@ -23,6 +23,7 @@ Label.prototype.SUPPORT_EVENT_NAMES = ['change'];
 Label.prototype.onCreate = function(){
     ContentScalelessComponent.prototype.onCreate.call(this);
     this.attributes.text = this.attributes.name;
+    this.style.height = 15;
 };
 
 

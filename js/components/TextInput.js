@@ -37,11 +37,13 @@ TextInput.prototype.onCreate = function () {
     this.setStyleTextAlign.textAlign = 'left';
     this.attributes.value = '';
     this.attributes.placeHolder = '';
+    this.style.textType = 'normal';
 };
 
 
+
 TextInput.prototype.render = function () {
-    return _('input[type="text"]');
+    return _('input[type="text"][autocomplete="off"]');
 };
 
 
@@ -59,26 +61,9 @@ TextInput.prototype.getStyleFontStyleDescriptor = Text.prototype.getStyleFontSty
 TextInput.prototype.setStyleTextSize = Text.prototype.setStyleTextSize;
 TextInput.prototype.getStyleTextSizeDescriptor = Text.prototype.getStyleTextSizeDescriptor;
 
+TextInput.prototype.setStyleTextAlign = Text.prototype.setStyleTextAlign;
+TextInput.prototype.getStyleTextAlignDescriptor = Text.prototype.getStyleTextAlignDescriptor;
 
-
-
-TextInput.prototype.getStyleTextAlignDescriptor = function () {
-    return {
-        type: "enum",
-        values: ['left', 'center', 'right', 'unset']
-    };
-};
-
-TextInput.prototype.setStyleTextAlign = function (value) {
-    if (['left', 'center', 'right'].indexOf(value) >= 0) {
-        this.view.addStyle('text-align', value);
-    }
-    else {
-        value = 'unset';
-        this.view.removeStyle('text-align', value);
-    }
-    return value;
-};
 
 TextInput.prototype.setAttributeValue = function (value) {
     this.view.value = value;
@@ -91,9 +76,17 @@ TextInput.prototype.setAttributePlaceHolder = function (value) {
     return value;
 };
 
+TextInput.prototype.setAttributeTextType = function (value) {
+    if (['normal', 'password'].indexOf(value) < 0) value = 'normal';
+    this.view.attr('type', ({ normal: 'text', password: 'password' })[value]);
+    if (value == 'password') this.view.attr('autocomplete', 'new-password');
+    else this.view.attr('autocomplete', undefined);
+    return value;
+};
+
 
 TextInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'placeHolder']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'placeHolder', 'textType']);
 };
 
 
@@ -106,6 +99,14 @@ TextInput.prototype.getAttributeValueDescriptor = function () {
 TextInput.prototype.getAttributePlaceHolderDescriptor = function () {
     return {
         type: "text"
+    }
+};
+
+
+TextInput.prototype.getAttributeTextTypeDescriptor = function () {
+    return {
+        type: "enum",
+        values: ['normal', 'password']
     }
 };
 
