@@ -33,8 +33,6 @@ Text.prototype.render = function () {
 
 
 Text.prototype.setAttributeText = function (value) {
-    console.log(value, this.attributes.textDecode);
-
     switch (this.attributes.textDecode) {
         case 'html':
             this.view.innerHTML = value;
