@@ -15,12 +15,11 @@ function ProjectExplorer() {
         _: _,
         $: $
     };
-    PluginManager.exec(this, R.PLUGINS.PROJECT_EXPLORER, this.pluginContext);
 
     this.data = {
-        projectName: null,
-        formList: []
+        projectName: null
     };
+    PluginManager.exec(this, R.PLUGINS.PROJECT_EXPLORER, this.pluginContext);
 }
 
 Object.defineProperties(ProjectExplorer.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
@@ -46,7 +45,11 @@ ProjectExplorer.prototype.getView = function () {
 };
 
 ProjectExplorer.prototype.openProject = function (value) {
-    this.data.projectName = value || "Unknown";
+    if (typeof value == 'string')
+        this.data = { projectName: value || "Unknown" };
+    else {
+        this.data = value || {};
+    }
     if (this.$view) {
         this.$droppanel.name = this.data.projectName;
         this.loadExpTree();
@@ -61,7 +64,7 @@ ProjectExplorer.prototype.loadExpTree = function () {
 
 ProjectExplorer.prototype.openItem = function (type, ident, name, contentArguments, desc) {
     var formEditor = this.getContext(R.FORM_EDITOR);
-    if (formEditor){
+    if (formEditor) {
         formEditor.openItem(type, ident, name, contentArguments, desc);
     }
 };
