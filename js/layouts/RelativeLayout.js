@@ -205,13 +205,13 @@ RelativeLayout.prototype.setStyleBackgroundImage = function (value) {
     return value;
 };
 
-RelativeLayout.prototype.getStyleBackgroundColorDescriptor = function (value) {
+RelativeLayout.prototype.getStyleBackgroundColorDescriptor = function () {
     return {
         type: 'color'
     };
 };
 
-RelativeLayout.prototype.getStyleBackgroundImageDescriptor = function (value) {
+RelativeLayout.prototype.getStyleBackgroundImageDescriptor = function () {
     return {
         type: 'text'
     };
