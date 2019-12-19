@@ -17,6 +17,7 @@ Button.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.text = this.attributes.name;
     this.attributes.icon = 'span.mdi.mdi-format-font';
+    this.style.colorTheme = 'default';
 };
 
 Button.prototype.onCreated = function () {
@@ -39,6 +40,25 @@ Button.prototype.setStyleHeight = function (value) {
     return res;
 };
 
+Button.prototype.setStyleColorTheme = function (value) {
+    var view = this.view;
+    ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link', 'default'].forEach(function (name) {
+        view.removeClass(name);
+    });
+    if (['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link', 'default'].indexOf(value) < 0) value = 'default';
+    view.addClass(value);
+    return value;
+};
+
+
+
+Button.prototype.getStyleColorThemeDescriptor = function (value) {
+    return {
+        type: 'enum',
+        values: ['default', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link']
+    }
+};
+
 
 Button.prototype.setAttributeText = function (value) {
     this.view.text = value;
@@ -54,6 +74,10 @@ Button.prototype.setAttributeIcon = function (value) {
 
 Button.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text', 'icon']);
+};
+
+Button.prototype.getAcceptsStyleNames = function () {
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['colorTheme']);
 };
 
 
