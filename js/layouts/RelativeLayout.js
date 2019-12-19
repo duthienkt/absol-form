@@ -25,6 +25,8 @@ RelativeLayout.prototype.create = function () {
     ScalableComponent.prototype.create.call(this);
     this.style.vAlign = 'fixed';
     this.style.hAlign = 'fixed';
+    this.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+    this.style.backgroundImage = '';
 };
 
 RelativeLayout.prototype.getAnchorConstructor = function () {
@@ -179,6 +181,40 @@ RelativeLayout.prototype.getAttributeFormTypeDescriptor = function () {
         type: 'const',
         value: this.attributes.formType
     }
+};
+
+
+RelativeLayout.prototype.getAcceptsStyleNames = function () {
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['backgroundColor', 'backgroundImage']);
+};
+
+RelativeLayout.prototype.setStyleBackgroundColor = function (value) {
+    this.view.addStyle('backgroundColor', value);
+    return value;
+};
+
+RelativeLayout.prototype.setStyleBackgroundImage = function (value) {
+    if (value && value.length > 0){
+        this.view.addStyle('backgroundImage', 'url(' + value + ')');
+        this.view.addStyle('backgroundSize', '100% 100%');
+    }
+    else{
+        this.view.removeStyle('backgroundImage');
+        this.view.removeStyle('backgroundSize');
+    }
+    return value;
+};
+
+RelativeLayout.prototype.getStyleBackgroundColorDescriptor = function (value) {
+    return {
+        type: 'color'
+    };
+};
+
+RelativeLayout.prototype.getStyleBackgroundImageDescriptor = function (value) {
+    return {
+        type: 'text'
+    };
 };
 
 export default RelativeLayout;
