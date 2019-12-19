@@ -11,9 +11,10 @@
   "author": "Pham Quoc Du Thien",
   "license": "ISC",
   "dependencies": {
-    "absol": "^1.9.12",
-    "absol-acomp": "^0.8.5",
+    "absol": "^1.10.2",
+    "absol-acomp": "^0.8.6",
     "absol-brace": "^0.9.1",
+    "absol-colorpicker": "^0.1.0",
     "showdown": "^1.9.1"
   },
   "devDependencies": {
