@@ -478,10 +478,8 @@ PropertyEditor.prototype.createIconInputRow = function (name, descriptor) {
                     },
                     on: {
                         change: function (event) {
-                            console.log(this.value);
-
                             self.setProperty(name, this.value);
-                            self.notifyChange(name, this);
+                            self.notifyStopChange(name, this);
                         }
                     }
                 }
@@ -577,8 +575,52 @@ PropertyEditor.prototype.createTextAlignInputRow = function (name, descriptor) {
             lasIconClass = icons[item.menuData];
             $icon.addClass(lasIconClass);
             self.setProperty(name, item.menuData);
+            self.notifyStopChange(name);
         }
     });
+    return res;
+};
+
+PropertyEditor.prototype.createColorInputRow = function (name, descriptor) {
+    console.log(this.getProperty(name));
+
+    var self = this;
+    var icons = {
+        left: 'mdi-format-align-left',
+        right: 'mdi-format-align-right',
+        center: 'mdi-format-align-center'
+    };
+    var res = _({
+        tag: 'tr',
+        child: [
+            {
+                tag: 'td',
+                child: { text: name }
+            },
+            {
+                tag: 'td',
+                attr: { colspan: '3' },
+                child: {
+                    tag: 'colorpickerbutton',
+                    on: {
+                        change: function (event) {
+                            self.setProperty(name, '#'+event.value.toHex8());
+                            self.notifyChange(name);
+                        },
+                        stopchange: function(event){
+                            self.notifyStopChange(name);
+                        }
+                    },
+                    props: {
+                        value: this.getProperty(name),
+                        mode: 'RGBA'
+                    }
+                }
+               
+            }
+        ]
+    });
+
     return res;
 };
 
