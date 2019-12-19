@@ -39,6 +39,22 @@
 
 <body>
     <script>
+        var FormEditorPreconfig = {
+            extendAttributes: {
+                target: {
+                    getValue: null,//use default,
+                    setValue: null,
+                    getDescriptor: function () {
+                        return { type: 'text' }
+                    },
+                    getDefault: function () {
+                        return '';
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
         document.write(`
             <scr`+ `ipt src="./absol/absol_form.js?date=` + (Math.random() * 1000000 >> 0) + `"></s` + `cript>
                 <div class="form-editor-container"></div>
