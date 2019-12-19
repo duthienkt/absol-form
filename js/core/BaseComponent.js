@@ -3,6 +3,10 @@ import FViewable from './FViewable';
 import FNode from './FNode';
 import FModel from './FModel';
 import PluginManager from './PluginManager';
+import FormEditorPreconfig from '../FormEditorPreconfig';
+
+var extendAttributeNames = Object.keys(FormEditorPreconfig.extendAttributes);
+
 
 function BaseComponent() {
     EventEmitter.call(this);
@@ -23,6 +27,16 @@ Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptor
 Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(FModel.prototype));
 BaseComponent.prototype.constructor = BaseComponent;
 
+extendAttributeNames.forEach(function (name) {
+    var prototyConfig = FormEditorPreconfig.extendAttributes[name];
+    if (prototyConfig.setValue)
+        BaseComponent.prototype['setAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1)] = prototyConfig.setValue;
+    if (prototyConfig.getValue)
+        BaseComponent.prototype['getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1)] = prototyConfig.getValue;
+    if (prototyConfig.getDescriptor)
+        BaseComponent.prototype['getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor'] = prototyConfig.getDescriptor;
+    else console.console.error('FormEditorPreconfig.extendAttributes["' + name + '"] must contains getDescriptor function');
+});
 
 
 BaseComponent.prototype.tag = "BaseComponent";
@@ -37,6 +51,11 @@ BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 BaseComponent.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
+    var self = this;
+    extendAttributeNames.forEach(function (name) {
+        var func = FormEditorPreconfig.extendAttributes[name].getDefault;
+        if (func) self.attributes[name] = func.call(self);
+    });
 };
 
 BaseComponent.prototype.onCreated = function () {
@@ -182,7 +201,7 @@ BaseComponent.prototype.measureMinSize = function () {
 }
 
 BaseComponent.prototype.getAcceptsAttributeNames = function () {
-    return ["type", "name"];
+    return ["type", "name"].concat(extendAttributeNames);
 };
 
 BaseComponent.prototype.getAcceptsEventNames = function () {
@@ -196,7 +215,7 @@ BaseComponent.prototype.getAcceptsEventNames = function () {
 BaseComponent.prototype.getEventDescriptor = function (name) {
     // var functionName = 'getEvent' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
     // return this[functionName] && this[functionName].call(this);
-    return {type:'function'};
+    return { type: 'function' };
 };
 
 BaseComponent.prototype.getAttributeTypeDescriptor = function () {

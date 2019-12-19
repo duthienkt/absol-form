@@ -40,8 +40,10 @@ import R from './js/R';
 import * as framePlugins from './js/frame/plugins';
 import LayoutEditorCmd from './js/cmds/LayoutEditorCmd';
 import FormPreviewCmd, { FormPreviewCmdDescriptors } from './js/cmds/FormPreviewCmd';
+import FormEditorPreconfig from './js/FormEditorPreconfig';
 export default {
-    framePlugin:framePlugins,
+    FormEditorPreconfig: FormEditorPreconfig,
+    framePlugin: framePlugins,
     R: R,
     AllPropertyEditor: AllPropertyEditor,
     AttributeEditor: AttributeEditor,
