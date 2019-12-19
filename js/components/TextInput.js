@@ -38,6 +38,9 @@ TextInput.prototype.onCreate = function () {
     this.attributes.value = '';
     this.attributes.placeHolder = '';
     this.style.textType = 'normal';
+    this.style.textColor = 'black';
+    this.style.textSize = 0;
+    this.style.textAlign = 'left';
 };
 
 
@@ -63,6 +66,15 @@ TextInput.prototype.getStyleTextSizeDescriptor = Text.prototype.getStyleTextSize
 
 TextInput.prototype.setStyleTextAlign = Text.prototype.setStyleTextAlign;
 TextInput.prototype.getStyleTextAlignDescriptor = Text.prototype.getStyleTextAlignDescriptor;
+
+TextInput.prototype.setStyleTextColor = Text.prototype.setStyleTextColor;
+TextInput.prototype.getStyleTextColorDescriptor = Text.prototype.getStyleTextColorDescriptor;
+
+
+
+TextInput.prototype.getAcceptsStyleNames = function () {
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textAlign', 'textColor']);
+};
 
 
 TextInput.prototype.setAttributeValue = function (value) {

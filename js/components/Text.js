@@ -19,11 +19,12 @@ Text.prototype.menuIcon = "span.mdi.mdi-format-color-text";
 Text.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.text = this.attributes.name;
-    this.attributes.textDecode = 'none',
-        this.style.font = undefined;
+    this.attributes.textDecode = 'none';
+    this.style.font = undefined;
     this.style.fontStyle = undefined;
     this.style.textSize = 0;
     this.style.textAlign = 'left';
+    this.style.textColor = 'black';
 };
 
 Text.prototype.render = function () {
@@ -33,7 +34,7 @@ Text.prototype.render = function () {
 
 Text.prototype.setAttributeText = function (value) {
     console.log(value, this.attributes.textDecode);
-    
+
     switch (this.attributes.textDecode) {
         case 'html':
             this.view.innerHTML = value;
@@ -104,12 +105,18 @@ Text.prototype.setStyleTextAlign = function (value) {
 };
 
 
+Text.prototype.setStyleTextColor = function (value) {
+    this.view.addStyle('color', value);
+    return value;
+};
+
+
 Text.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text', 'textDecode']);
 };
 
 Text.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textAlign']);
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textAlign', 'textColor']);
 };
 
 
@@ -156,6 +163,12 @@ Text.prototype.getStyleTextSizeDescriptor = function () {
 Text.prototype.getStyleTextAlignDescriptor = function () {
     return {
         type: "textAlign"
+    };
+};
+
+Text.prototype.getStyleTextColorDescriptor = function () {
+    return {
+        type: "color"
     };
 };
 
