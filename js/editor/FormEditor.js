@@ -82,12 +82,30 @@ FormEditor.prototype.onStop = function () {
 
 FormEditor.prototype.onPause = function () {
     this.projectExplorer.pause();
+    var self = this;
+    this.runningEditorsIsPaused = Object.keys(this.editorHolders).filter(function (id) {
+        var holder = self.editorHolders[id];
+        if (holder.editor && holder.editor.state == 'RUNNING') {
+            holder.editor.pause();
+            return true;
+        }
+    });
+
 };
 
 
 FormEditor.prototype.onResume = function () {
     this.projectExplorer.resume();
-
+    var self = this;
+    if (this.runningEditorsIsPaused) {
+        this.runningEditorsIsPaused.forEach(function (id) {
+            var holder = self.editorHolders[id];
+            if (holder.editor && holder.editor.state.match('PAUSE')) {
+                holder.editor.resume();
+            }
+        });
+        this.runningEditorsIsPaused = [];
+    }
 };
 
 
