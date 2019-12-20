@@ -1,15 +1,16 @@
-import Context from "absol/src/AppPattern/Context";
+
 import EventEmitter from "absol/src/HTML5/EventEmitter";
 import Fcore from "../core/FCore";
 import '../../css/projectexplorer.css';
 import PluginManager from "../core/PluginManager";
 import R from "../R";
+import BaseEditor from "../core/BaseEditor";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 function ProjectExplorer() {
-    Context.call(this);
+    BaseEditor.call(this);
     this.pluginContext = {
         self: this,
         _: _,
@@ -22,11 +23,12 @@ function ProjectExplorer() {
     PluginManager.exec(this, R.PLUGINS.PROJECT_EXPLORER, this.pluginContext);
 }
 
-Object.defineProperties(ProjectExplorer.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
+Object.defineProperties(ProjectExplorer.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 Object.defineProperties(ProjectExplorer.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 EventEmitter.prototype.constructor = ProjectExplorer;
 
 ProjectExplorer.prototype.getView = function () {
+    var self = this;
     if (this.$view) return this.$view;
     this.$view = _({
         class: 'as-form-explorer',
@@ -39,10 +41,30 @@ ProjectExplorer.prototype.getView = function () {
     });
 
     this.$droppanel = $('droppanel', this.$view);
+    /** before new feature release, I cheated here */
+
+    this.$cmdCtn = _('.absol-drop-panel-head-cmd-button-container');
+    this.$reloadCmdBtn = _({
+        tag: 'button',
+        child: 'span.mdi.mdi-reload',
+        on: {
+            click: this.loadExpTree.bind(this)
+        }
+    }).addTo(this.$cmdCtn);
+    this.$droppanel.$head.addChild(this.$cmdCtn);
+    var clickCallback = this.$droppanel.$head._azar_extendEvents.nonprioritize.click[0].callback;
+    this.$droppanel.$head.off('click', clickCallback)
+        .on('click', function (event) {
+            if (!EventEmitter.hitElement(self.$cmdCtn, event)){
+                clickCallback.apply(this, arguments);
+            }
+        });
+
     if (this.data.projectName != null)
         this.loadExpTree();
     return this.$view;
 };
+
 
 ProjectExplorer.prototype.openProject = function (value) {
     if (typeof value == 'string')

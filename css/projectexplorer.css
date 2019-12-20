@@ -6,7 +6,7 @@
     line-height: 1.5;
 }
 
-.absol-drop-panel-head svg{
+.absol-drop-panel-head svg {
     width: 0.8em;
     height: 0.8em;
     line-height: 1.5;
@@ -15,4 +15,48 @@
 
 .as-form-explorer .absol-exp-tree {
     font-size: 14px;
+}
+
+.as-form-explorer .absol-drop-panel-head {
+    position: relative;
+}
+
+.as-form-explorer .absol-drop-panel-head-cmd-button-container {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right: 9px;
+}
+
+.as-form-explorer .absol-drop-panel-head-cmd-button-container>button {
+    width: 1.5em;
+    height: 1.5em;
+    font-size: 1em;
+    margin-left: 0.3em;
+    padding: 0;
+    background-color: transparent;
+    vertical-align: middle;
+    border: none;
+    border-radius: 0.3em;
+    outline: none;
+}
+
+
+.as-form-explorer .absol-drop-panel-head-cmd-button-container>button:hover{
+    background-color: rgba(169, 169, 169, 0.1);
+}
+
+
+.as-form-explorer .absol-drop-panel-head-cmd-button-container>button:hover{
+    background-color: rgba(169, 169, 169, 0.2);
+}
+
+
+.as-form-explorer .absol-drop-panel-head-cmd-button-container>button>span{
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.as-form-explorer .absol-drop-panel-head-cmd-button-container>button>span{
+    font-size: 1.2em;
 }
