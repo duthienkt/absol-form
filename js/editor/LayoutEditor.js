@@ -13,6 +13,7 @@ import ComponentOutline from './ComponentOutline';
 import FormPreview from './FormPreview';
 import LayoutEditorCMD, { LayoutEditorCmdDescriptors } from '../cmds/LayoutEditorCmd';
 import ClipboardManager from '../ClipboardManager';
+import EventEmitter from 'absol/src/HTML5/EventEmitter';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -28,9 +29,11 @@ function LayoutEditor() {
     this.setContext(R.LAYOUT_EDITOR, this);
     this.setContext(R.HAS_CMD_EDITOR, this);
 
+    this.ev_clipboardSet = this.ev_clipboardSet.bind(this);
+    this.ev_mouseFinishForceGround = this.ev_mouseFinishForceGround.bind(this);
+    this.ev_mouseMoveForceGround = this.ev_mouseMoveForceGround.bind(this);
     //setup cmd
     this.cmdRunner.assign(LayoutEditorCMD);
-    this.ev_clipboardSet = this.ev_clipboardSet.bind(this);
     Object.keys(LayoutEditorCmdDescriptors).forEach(function (cmd) {
         if (LayoutEditorCmdDescriptors[cmd].bindKey)
             self.bindKeyToCmd(LayoutEditorCmdDescriptors[cmd].bindKey.win, cmd);
@@ -225,7 +228,7 @@ LayoutEditor.prototype.getView = function () {
 
 
     this.$forceground = $('.as-layout-editor-forceground', this.$view)
-        .on('click', this.ev_clickForceground.bind(this));
+        .on('mousedown', this.ev_mousedownForceGround.bind(this));
 
     this.$editorSpaceCtn = $('.as-layout-editor-space-container', this.$view)
         .on('click', function (ev) {
@@ -238,8 +241,149 @@ LayoutEditor.prototype.getView = function () {
             self.destroy();
         }
     }, 6900);
+
+    this.$mouseSelectingBox = _('.as-layout-editor-mouse-selecting-box');
     return this.$view;
 };
+
+LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
+    if (!EventEmitter.isMouseLeft(event)) return;
+    if (event.target != this.$forceground) return;
+    $(document.body).on('mouseup', this.ev_mouseFinishForceGround)
+        .on('mouseleave', this.ev_mouseFinishForceGround)
+        .on('mousemove', this.ev_mouseMoveForceGround);
+    this.$mouseSelectingBox.addTo(this.$forceground);
+    var forcegroundBound = this.$forceground.getBoundingClientRect();
+    this._forgroundMovingData = {
+        left: event.clientX - forcegroundBound.left,
+        top: event.clientY - forcegroundBound.top,
+        width: 0,
+        height: 0,
+        event0: event
+    };
+    this.$mouseSelectingBox.addStyle({
+        left: this._forgroundMovingData.left + 'px',
+        top: this._forgroundMovingData.top + 'px',
+        width: '0',
+        height: '0'
+    });
+};
+
+
+LayoutEditor.prototype.ev_mouseMoveForceGround = function (event) {
+    var forcegroundBound = this.$forceground.getBoundingClientRect();
+    this._forgroundMovingData.width = event.clientX - forcegroundBound.left - this._forgroundMovingData.left;
+    this._forgroundMovingData.height = event.clientY - forcegroundBound.top - this._forgroundMovingData.top;
+    this.$mouseSelectingBox.addStyle({
+        width: this._forgroundMovingData.width + 'px',
+        height: this._forgroundMovingData.height + 'px'
+    });
+};
+
+
+LayoutEditor.prototype.ev_mouseFinishForceGround = function (event) {
+    $(document.body).off('mouseup', this.ev_mouseFinishForceGround)
+        .off('mouseleave', this.ev_mouseFinishForceGround)
+        .off('mousemove', this.ev_mouseMoveForceGround);
+    this.$mouseSelectingBox.remove();
+    //find all rectangle
+    var clickComps = [];
+    var boundComps = [];
+    var event0 = this._forgroundMovingData.event0;
+    var left = Math.min(event0.clientX, event.clientX);
+    var right = Math.max(event0.clientX, event.clientX);
+    var top = Math.min(event0.clientY, event.clientY);
+    var bottom = Math.max(event0.clientY, event.clientY);
+
+    var children = this.rootLayout.children;
+    if (this.anchorEditors.length > 0) {
+        children = (this.findNearestLayoutParent(this.anchorEditors[this.anchorEditors.length - 1].component.parent) || this.rootLayout).children;
+    }
+    var comp, compBound;
+    var scoreClick;
+    var scoreBound;
+    for (var i = 0; i < children.length; ++i) {
+        comp = children[i];
+        compBound = comp.view.getBoundingClientRect();
+        scoreBound = 0;
+        scoreClick = 0;
+        if (compBound.left == left) {
+            scoreBound++;
+            scoreClick++;
+        }
+        else if (compBound.left > left) {
+            scoreBound++;
+        }
+        else {
+            scoreClick++;
+        }
+
+        if (compBound.right == right) {
+            scoreBound++;
+            scoreClick++;
+        }
+        else if (compBound.right < right) {
+            scoreBound++;
+        }
+        else {
+            scoreClick++;
+        }
+
+        if (compBound.top == top) {
+            scoreBound++;
+            scoreClick++;
+        }
+        else if (compBound.top > top) {
+            scoreBound++;
+        }
+        else {
+            scoreClick++;
+        }
+
+        if (compBound.bottom == bottom) {
+            scoreBound++;
+            scoreClick++;
+        }
+        else if (compBound.bottom < bottom) {
+            scoreBound++;
+        }
+        else {
+            scoreClick++;
+        }
+
+        if (scoreBound == 4)
+            boundComps.push(comp);
+
+        if (scoreClick == 4)
+            clickComps.push(comp);
+    }
+
+    var self = this;
+    if (boundComps.length > 0) {
+        if (event.shiftKey)
+            this.toggleActiveComponent.apply(this, boundComps.filter(function (comp) {
+                return !self.findAnchorEditorByComponent(comp);
+            }));
+        else
+            this.setActiveComponent.apply(this, boundComps);
+    }
+    else if (clickComps.length > 0) {
+        if (event.shiftKey) {
+            this.toggleActiveComponent(clickComps[clickComps.length - 1]);
+        }
+        else {
+            this.setActiveComponent(clickComps[clickComps.length - 1]);
+        }
+    }
+    else {
+        if (!event.shiftKey)
+            this.setActiveComponent();
+    }
+
+
+
+};
+
 
 LayoutEditor.prototype.ev_clickPreviewBtn = function (button, event) {
     var next = {
