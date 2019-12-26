@@ -28,14 +28,18 @@ function PropertyEditor() {
     this.object = null;
     this.propertyNames = [];
     this.$needUpdate = [];// all element which had .as-need-update
+    this.queuePools = {};
 }
+
 Object.defineProperties(PropertyEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
 Object.defineProperties(PropertyEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 PropertyEditor.prototype.constructor = PropertyEditor;
 
+PropertyEditor.prototype.pools = {};//share object
 
-PropertyEditor.prototype.onStart = function () {
 
+PropertyEditor.prototype.onDestroy = function () {
+    this.flushAllToPools();
 };
 
 
@@ -66,8 +70,41 @@ PropertyEditor.prototype.getPropertyNames = function () {
     return Object.keys(this.object);
 };
 
+PropertyEditor.prototype.flushAllToPools = function () {
+    var self = this;
+    Object.keys(this.queuePools).forEach(function (key) {
+        self.pools[key] = self.pools[key] === undefined ? [] : self.pools[key];
+        var all = self.queuePools[key].splice(0);
+        self.pools[key].push.apply(self.pools[key], all);
+    });
+};
+
+
+PropertyEditor.prototype.assignToPool = function (key, value) {
+    this.queuePools[key] = this.queuePools[key] === undefined ? [] : this.queuePools[key];
+    if (value.__pool_assign__) {
+        console.warn("Pool: reassign object", key, value);
+    }
+    else {
+        value.__pool_assign__ = true;
+        this.queuePools[key].push(value);
+    }
+};
+
+
+PropertyEditor.prototype.putOnceFromPool = function (key) {
+    var res = null;
+    if (this.pools[key] && this.pools[key].length > 0) {
+        res = this.pools[key].pop();
+    }
+    if (res) res.__pool_assign__ = false;
+    return res;
+};
+
+
 PropertyEditor.prototype.loadAttributes = function () {
     var self = this;
+    this.flushAllToPools();
     self.$body.clearChild();
     this.propertyNames = [];
     this.$rows = [];
@@ -84,6 +121,7 @@ PropertyEditor.prototype.loadAttributes = function () {
         var rowElt = self[functionName](name, descriptor);
         rowElt.addTo(self.$body);
         self.$rows.push(rowElt);
+
     });
 
     $('.as-need-update', this.$body, function (elt) {
@@ -140,8 +178,35 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
     return res;
 };
 
+
 PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
     var self = this;
+    var fontInput = this.putOnceFromPool('font_input');
+
+    if (fontInput === null) {
+        fontInput = _({
+            tag: 'selectmenu',
+            class: 'as-need-update',
+            props: {
+                items: [{ text: 'None', value: undefined }].concat(FONT_ITEMS),
+                notifyChange: function () {
+                    var value = self.getProperty(name);
+                    if (value != this.value) {
+                        this.value = value;
+                    }
+                },
+                value: this.getProperty(name)
+            },
+            on: {
+                change: function () {
+                    self.setProperty(name, this.value);
+                    self.notifyChange(name, this);
+                    self.notifyStopChange(name);
+                }
+            }
+        });
+    }
+    this.assignToPool('font_input', fontInput);
     var res = _({
         tag: 'tr',
         child: [
@@ -151,27 +216,7 @@ PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
             },
             {
                 tag: 'td',
-                child: {
-                    tag: 'selectmenu',
-                    class: 'as-need-update',
-                    props: {
-                        items: [{ text: 'None', value: undefined }].concat(FONT_ITEMS),
-                        notifyChange: function () {
-                            var value = self.getProperty(name);
-                            if (value != this.value) {
-                                this.value = value;
-                            }
-                        },
-                        value: this.getProperty(name)
-                    },
-                    on: {
-                        change: function () {
-                            self.setProperty(name, this.value);
-                            self.notifyChange(name, this);
-                            self.notifyStopChange(name);
-                        }
-                    }
-                }
+                child: fontInput
             }
         ]
     });
@@ -582,8 +627,6 @@ PropertyEditor.prototype.createTextAlignInputRow = function (name, descriptor) {
 };
 
 PropertyEditor.prototype.createColorInputRow = function (name, descriptor) {
-    console.log(this.getProperty(name));
-
     var self = this;
     var icons = {
         left: 'mdi-format-align-left',
@@ -604,10 +647,10 @@ PropertyEditor.prototype.createColorInputRow = function (name, descriptor) {
                     tag: 'colorpickerbutton',
                     on: {
                         change: function (event) {
-                            self.setProperty(name, '#'+event.value.toHex8());
+                            self.setProperty(name, '#' + event.value.toHex8());
                             self.notifyChange(name);
                         },
-                        stopchange: function(event){
+                        stopchange: function (event) {
                             self.notifyStopChange(name);
                         }
                     },
@@ -616,7 +659,7 @@ PropertyEditor.prototype.createColorInputRow = function (name, descriptor) {
                         mode: 'RGBA'
                     }
                 }
-               
+
             }
         ]
     });

@@ -93,7 +93,7 @@ ComponentPropertiesEditor.prototype.getView = function () {
                 attr: {
                     name: 'Event'
                 },
-                child: this.eventEditor.getView()  
+                child: this.eventEditor.getView()
             },
             {
                 tag: 'tabframe',
@@ -124,7 +124,18 @@ ComponentPropertiesEditor.prototype.onAttached = function () {
 
 ComponentPropertiesEditor.prototype.onStart = function () {
     this.getView();
-}
+    this.attributeEditor.start();
+    this.eventEditor.start();
+    this.styleEditor.start();
+    this.allPropertyEditor.start();
+};
+
+ComponentPropertiesEditor.prototype.onDestroy = function () {
+    this.attributeEditor.destroy();
+    this.eventEditor.destroy();
+    this.styleEditor.destroy();
+    this.allPropertyEditor.destroy();
+};
 
 ComponentPropertiesEditor.prototype.onPause = function () {
     //todo
@@ -134,6 +145,10 @@ ComponentPropertiesEditor.prototype.onPause = function () {
     else {
         WindowManager.remove(this.$window);
     }
+    this.attributeEditor.pause();
+    this.eventEditor.pause();
+    this.styleEditor.pause();
+    this.allPropertyEditor.pause();
 };
 
 ComponentPropertiesEditor.prototype.onResume = function () {
@@ -143,6 +158,11 @@ ComponentPropertiesEditor.prototype.onResume = function () {
     else {
         WindowManager.add(this.$window.addStyle(this.config.windowStyle))
     }
+
+    this.attributeEditor.resume();
+    this.eventEditor.resume();
+    this.styleEditor.resume();
+    this.allPropertyEditor.resume();
 };
 
 
