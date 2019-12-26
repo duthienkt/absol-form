@@ -274,10 +274,32 @@ LayoutEditor.prototype.ev_mouseMoveForceGround = function (event) {
     var forcegroundBound = this.$forceground.getBoundingClientRect();
     this._forgroundMovingData.width = event.clientX - forcegroundBound.left - this._forgroundMovingData.left;
     this._forgroundMovingData.height = event.clientY - forcegroundBound.top - this._forgroundMovingData.top;
-    this.$mouseSelectingBox.addStyle({
-        width: this._forgroundMovingData.width + 'px',
-        height: this._forgroundMovingData.height + 'px'
-    });
+    if (this._forgroundMovingData.width < 0) {
+        this.$mouseSelectingBox.addStyle({
+            left: this._forgroundMovingData.left + this._forgroundMovingData.width + 'px',
+            width: - this._forgroundMovingData.width + 'px',
+        });
+    }
+    else {
+        this.$mouseSelectingBox.addStyle({
+            left: this._forgroundMovingData.left + 'px',
+            width: this._forgroundMovingData.width + 'px',
+        });
+
+
+    }
+    if (this._forgroundMovingData.height < 0) {
+        this.$mouseSelectingBox.addStyle({
+            top: this._forgroundMovingData.top + this._forgroundMovingData.height + 'px',
+            height: - this._forgroundMovingData.height + 'px',
+        });
+    }
+    else {
+        this.$mouseSelectingBox.addStyle({
+            top: this._forgroundMovingData.top + 'px',
+            height: this._forgroundMovingData.height + 'px',
+        });
+    }
 };
 
 
