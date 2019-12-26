@@ -129,14 +129,16 @@ Text.prototype.getAttributeTextDescriptor = function () {
 Text.prototype.getAttributeTextDecodeDescriptor = function () {
     return {
         type: "enum",
-        values: ['none', 'markdown', 'html']
+        values: ['none', 'markdown', 'html'],
+        sign:'TextDecode'
     };
 };
 
 
 Text.prototype.getStyleFontDescriptor = function () {
     return {
-        type: "font"
+        type: "font",
+        sign: 'TextFont'
     };
 };
 
@@ -145,7 +147,8 @@ Text.prototype.getStyleFontStyleDescriptor = function () {
     return {
         type: "enum",
         values: ['Regular',
-            'Italic', 'Bold', 'Bold italic']
+            'Italic', 'Bold', 'Bold italic'],
+        sign: 'FontStyle'
     };
 };
 

@@ -118,7 +118,8 @@ TextInput.prototype.getAttributePlaceHolderDescriptor = function () {
 TextInput.prototype.getAttributeTextTypeDescriptor = function () {
     return {
         type: "enum",
-        values: ['normal', 'password']
+        values: ['normal', 'password'],
+        sign:'InputTextType'
     }
 };
 

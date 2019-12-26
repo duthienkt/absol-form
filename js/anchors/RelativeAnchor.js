@@ -65,7 +65,8 @@ RelativeAnchor.prototype.getStyleHAlignDescriptor = function () {
     return {
         type: 'enum',
         values: ['left', 'right', 'center', 'fixed'],
-        disabled: false
+        disabled: false,
+        sign:'RelativeAnchor_HAlign'
     }
 };
 
@@ -73,8 +74,9 @@ RelativeAnchor.prototype.getStyleVAlignDescriptor = function () {
     return {
         type: 'enum',
         values: ['top', 'bottom', 'center', 'fixed'],
-        disabled: false
-    }
+        disabled: false,
+        sign:'RelativeAnchor_VAlign'
+    };
 };
 
 

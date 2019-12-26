@@ -121,7 +121,6 @@ PropertyEditor.prototype.loadAttributes = function () {
         var rowElt = self[functionName](name, descriptor);
         rowElt.addTo(self.$body);
         self.$rows.push(rowElt);
-
     });
 
     $('.as-need-update', this.$body, function (elt) {
@@ -141,54 +140,13 @@ PropertyEditor.prototype.notifyChangeToProperties = function (name, from) {
 
 PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
     var self = this;
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                child: {
-                    tag: 'selectmenu',
-                    class: 'as-need-update',
-                    props: {
-                        items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
-                        notifyChange: function () {
-                            var value = self.getProperty(name);
-                            if (value != this.value) {
-                                this.value = value;
-                            }
-                        },
-                        value: this.getProperty(name)
-                    },
-                    on: {
-                        change: function () {
-                            self.setProperty(name, this.value);
-                            self.notifyChange(name, this);
-                            self.notifyStopChange(name);
-                        }
-                    }
-                }
-            }
-        ]
-    });
-
-    return res;
-};
-
-
-PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
-    var self = this;
-    var fontInput = this.putOnceFromPool('font_input');
-
-    if (fontInput === null) {
-        fontInput = _({
+    var selectMenu = descriptor.sign ? this.putOnceFromPool(descriptor.sign) : null;
+    if (selectMenu === null) {
+        selectMenu = _({
             tag: 'selectmenu',
             class: 'as-need-update',
             props: {
-                items: [{ text: 'None', value: undefined }].concat(FONT_ITEMS),
+                items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
                 notifyChange: function () {
                     var value = self.getProperty(name);
                     if (value != this.value) {
@@ -206,7 +164,59 @@ PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
             }
         });
     }
-    this.assignToPool('font_input', fontInput);
+    if (descriptor.sign)
+        this.assignToPool(descriptor.sign, selectMenu);
+    selectMenu.value = this.getProperty(name);
+
+    var res = _({
+        tag: 'tr',
+        child: [
+            {
+                tag: 'td',
+                child: { text: name }
+            },
+            {
+                tag: 'td',
+                child: selectMenu
+            }
+        ]
+    });
+
+    return res;
+};
+
+
+PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
+    var self = this;
+
+    var fontInput = descriptor.sign ? this.putOnceFromPool(descriptor.sign) : null;
+
+    if (fontInput === null) {
+        fontInput = _({
+            tag: 'selectmenu',
+            class: 'as-need-update',
+            props: {
+                items: [{ text: 'None', value: undefined }].concat(FONT_ITEMS),
+                notifyChange: function () {
+                    var value = self.getProperty(name);
+                    if (value != this.value) {
+                        this.value = value;
+                    }
+                },
+
+            },
+            on: {
+                change: function () {
+                    self.setProperty(name, this.value);
+                    self.notifyChange(name, this);
+                    self.notifyStopChange(name);
+                }
+            }
+        });
+    }
+    if (descriptor.sign)
+        this.assignToPool(descriptor.sign, fontInput);
+    fontInput.value = this.getProperty(name);
     var res = _({
         tag: 'tr',
         child: [
@@ -424,6 +434,42 @@ PropertyEditor.prototype.createDateInputRow = function (name, descriptor) {
 
 PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
     var self = this;
+    var numberInput = this.putOnceFromPool("NUMBER_INPUT");//same with all sign
+    if (numberInput === null) {
+        numberInput = _({
+            tag: 'numberinput',
+            class: 'as-need-update',
+            props: {
+
+                notifyChange: function () {
+                    var value = self.getProperty(name);
+                    if (value === null)
+                        this.value = descriptor.defaultValue;
+                    else
+                        this.value = value;
+                    this.disabled = self.getPropertyDescriptor(name).disabled;
+                }
+            },
+            on: {
+                change: function (event) {
+                    if (event.by == 'keyup') return;
+                    if (!descriptor.livePreview && event.by == 'long_press_button') return;
+                    self.setProperty(name, this.value);
+                    self.notifyChange(name, this);
+                    if (event.by != 'long_press_button')
+                        self.notifyStopChange(name);
+                }
+            }
+        }
+        );
+    }
+    if (descriptor.sign)
+        this.assignToPool(descriptor.sign, fontInput);
+    numberInput.min = typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity;
+    numberInput.max = typeof (descriptor.max) == 'number' ? descriptor.max : Infinity;
+    numberInput.value = this.getProperty(name);
+    numberInput.disabled = descriptor.disabled;
+
     var res = _({
         tag: 'tr',
         child: [
@@ -434,36 +480,9 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
             {
                 tag: 'td',
                 attr: descriptor.nullable ? { colspan: '2' } : { colspan: '3' },
-                child:
-                {
-                    tag: 'numberinput',
-                    class: 'as-need-update',
-                    props: {
-                        min: typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity,
-                        max: typeof (descriptor.max) == 'number' ? descriptor.max : Infinity,
-                        value: self.getProperty(name),
-                        disabled: descriptor.disabled,
-                        notifyChange: function () {
-                            var value = self.getProperty(name);
-                            if (value === null)
-                                this.value = descriptor.defaultValue;
-                            else
-                                this.value = value;
-                            this.disabled = self.getPropertyDescriptor(name).disabled;
-                        }
-                    },
-                    on: {
-                        change: function (event) {
-                            if (event.by == 'keyup') return;
-                            if (!descriptor.livePreview && event.by == 'long_press_button') return;
-                            self.setProperty(name, this.value);
-                            self.notifyChange(name, this);
-                            if (event.by != 'long_press_button')
-                                self.notifyStopChange(name);
-                        }
-                    }
-                }
+                child: numberInput
             }
+
         ].concat(descriptor.nullable ? [{
             tag: 'td',
             child: [
@@ -690,8 +709,6 @@ PropertyEditor.prototype.createNotSupportInputRow = function (name, descriptor) 
             }
         ]
     });
-
-
     return res;
 };
 
