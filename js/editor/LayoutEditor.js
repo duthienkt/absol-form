@@ -5,15 +5,14 @@ import Fcore from '../core/FCore';
 import '../dom/HLine';
 import '../dom/VLine';
 import R from '../R';
-import PluginManager from '../core/PluginManager';
 import BaseEditor from '../core/BaseEditor';
 import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
-import FormPreview from './FormPreview';
 import LayoutEditorCMD, { LayoutEditorCmdDescriptors } from '../cmds/LayoutEditorCmd';
 import ClipboardManager from '../ClipboardManager';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
+import Rectangle from 'absol/src/Math/Rectangle';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -32,6 +31,7 @@ function LayoutEditor() {
     this.ev_clipboardSet = this.ev_clipboardSet.bind(this);
     this.ev_mouseFinishForceGround = this.ev_mouseFinishForceGround.bind(this);
     this.ev_mouseMoveForceGround = this.ev_mouseMoveForceGround.bind(this);
+    this.ev_clickEditorSpaceCtn = this.ev_clickEditorSpaceCtn.bind(this);
     //setup cmd
     this.cmdRunner.assign(LayoutEditorCMD);
     Object.keys(LayoutEditorCmdDescriptors).forEach(function (cmd) {
@@ -231,11 +231,7 @@ LayoutEditor.prototype.getView = function () {
         .on('mousedown', this.ev_mousedownForceGround.bind(this));
 
     this.$editorSpaceCtn = $('.as-layout-editor-space-container', this.$view)
-        .on('click', function (ev) {
-            if (ev.target == this) {
-                self.setActiveComponent();
-            }
-        });
+        .on('click', this.ev_clickEditorSpaceCtn);
     this.autoDestroyInt = setInterval(function () {
         if (!self.$view.isDescendantOf(document.body)) {
             self.destroy();
@@ -246,12 +242,21 @@ LayoutEditor.prototype.getView = function () {
     return this.$view;
 };
 
+LayoutEditor.prototype.ev_clickEditorSpaceCtn = function (event) {
+    if (event.target == this.$editorSpaceCtn) {
+        this.setActiveComponent();
+    }
+};
+
 LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
     if (!EventEmitter.isMouseLeft(event)) return;
     if (event.target != this.$forceground) return;
     var hitComponent = this.findComponentsByMousePostion(event.clientX, event.clientY);
     if (hitComponent) {
-        this.setActiveComponent(hitComponent);
+        if (event.shiftKey)
+            this.toggleActiveComponent(hitComponent);
+        else
+            this.setActiveComponent(hitComponent);
         var anchorEditor = this.anchorEditors[this.anchorEditors.length - 1];
         //cheating
         var repeatedEvent = EventEmitter.copyEvent(event, { target: $('.as-resize-box-body', anchorEditor.$resizeBox), preventDefault: event.preventDefault.bind(event) });
@@ -261,6 +266,7 @@ LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
         $(document.body).on('mouseup', this.ev_mouseFinishForceGround)
             .on('mouseleave', this.ev_mouseFinishForceGround)
             .on('mousemove', this.ev_mouseMoveForceGround);
+        this.$editorSpaceCtn.off('click', this.ev_clickEditorSpaceCtn);
         this.$mouseSelectingBox.addTo(this.$forceground);
         var forcegroundBound = this.$forceground.getBoundingClientRect();
         this._forgroundMovingData = {
@@ -320,99 +326,40 @@ LayoutEditor.prototype.ev_mouseFinishForceGround = function (event) {
     $(document.body).off('mouseup', this.ev_mouseFinishForceGround)
         .off('mouseleave', this.ev_mouseFinishForceGround)
         .off('mousemove', this.ev_mouseMoveForceGround);
+    setTimeout(this.$editorSpaceCtn.on.bind(this.$editorSpaceCtn, 'click', this.ev_clickEditorSpaceCtn), 10);
     this.$mouseSelectingBox.remove();
     //find all rectangle
-    var clickComps = [];
-    var boundComps = [];
+    var selectedComp = [];
     var event0 = this._forgroundMovingData.event0;
     var left = Math.min(event0.clientX, event.clientX);
     var right = Math.max(event0.clientX, event.clientX);
     var top = Math.min(event0.clientY, event.clientY);
     var bottom = Math.max(event0.clientY, event.clientY);
 
+    var selectRect = new Rectangle(left, top, right - left, bottom - top);
+
     var children = this.rootLayout.children;
     if (this.anchorEditors.length > 0) {
         children = (this.findNearestLayoutParent(this.anchorEditors[this.anchorEditors.length - 1].component.parent) || this.rootLayout).children;
     }
-    var comp, compBound;
-    var scoreClick;
-    var scoreBound;
+    var comp, compRect;
+
     for (var i = 0; i < children.length; ++i) {
         comp = children[i];
-        compBound = comp.view.getBoundingClientRect();
-        scoreBound = 0;
-        scoreClick = 0;
-        if (compBound.left == left) {
-            scoreBound++;
-            scoreClick++;
-        }
-        else if (compBound.left > left) {
-            scoreBound++;
-        }
-        else {
-            scoreClick++;
-        }
-
-        if (compBound.right == right) {
-            scoreBound++;
-            scoreClick++;
-        }
-        else if (compBound.right < right) {
-            scoreBound++;
-        }
-        else {
-            scoreClick++;
-        }
-
-        if (compBound.top == top) {
-            scoreBound++;
-            scoreClick++;
-        }
-        else if (compBound.top > top) {
-            scoreBound++;
-        }
-        else {
-            scoreClick++;
-        }
-
-        if (compBound.bottom == bottom) {
-            scoreBound++;
-            scoreClick++;
-        }
-        else if (compBound.bottom < bottom) {
-            scoreBound++;
-        }
-        else {
-            scoreClick++;
-        }
-
-        if (scoreBound == 4)
-            boundComps.push(comp);
-
-        if (scoreClick == 4)
-            clickComps.push(comp);
+        compRect = Rectangle.fromClientRect(comp.view.getBoundingClientRect());
+        if (compRect.isCollapse(selectRect))
+            selectedComp.push(comp);
     }
 
     var self = this;
-    if (boundComps.length > 0) {
-        if (event.shiftKey)
-            this.toggleActiveComponent.apply(this, boundComps.filter(function (comp) {
-                return !self.findAnchorEditorByComponent(comp);
-            }));
-        else
-            this.setActiveComponent.apply(this, boundComps);
-    }
-    else if (clickComps.length > 0) {
-        if (event.shiftKey) {
-            this.toggleActiveComponent(clickComps[clickComps.length - 1]);
-        }
-        else {
-            this.setActiveComponent(clickComps[clickComps.length - 1]);
-        }
+
+    if (event.shiftKey) {
+        this.toggleActiveComponent.apply(this, selectedComp.filter(function (comp) {
+            return !self.findAnchorEditorByComponent(comp);
+        }));
     }
     else {
-        if (!event.shiftKey)
-            this.setActiveComponent();
+        this.setActiveComponent.apply(this, selectedComp);
     }
 };
 
@@ -425,7 +372,7 @@ LayoutEditor.prototype.ev_clickPreviewBtn = function (button, event) {
     var buttonTitle = {
         'interact': 'Interact Mode',
         'design': 'Design Mode'
-    }
+    };
     this.setMode(next[this.mode]);
     this.$previewBtn.attr('title', buttonTitle[this.mode]);
 };
@@ -433,30 +380,6 @@ LayoutEditor.prototype.ev_clickPreviewBtn = function (button, event) {
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
     this.updateRuler();
 };
-
-
-LayoutEditor.prototype.ev_clickForceground = function (event) {
-    if (event.target != this.$forceground) return;
-    var hitComponent;
-    var self = this;
-    function visit(node) {
-        var bound = node.view.getBoundingClientRect();
-        if (bound.left <= event.clientX && bound.right >= event.clientX
-            && bound.top <= event.clientY && bound.bottom >= event.clientY) {
-            hitComponent = node;
-        }
-        if (node.children && (!node.attributes.formType || node == self.rootLayout))
-            node.children.forEach(visit);
-    }
-    visit(this.rootLayout, true);
-
-    if (hitComponent) {
-        if (event.shiftKey)
-            this.toggleActiveComponent(hitComponent);
-        else this.setActiveComponent(hitComponent);
-    }
-};
-
 
 
 LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
@@ -588,13 +511,8 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
             self.notifyUnsaved();
         })
         .on('focus', function (event) {
-            var now = new Date().getTime();
             self.componentPropertiesEditor.edit(this.component);
-            console.log(new Date().getTime() - now);
-
             self.emit('focuscomponent', { type: 'focuscomponent', component: this.component, originEvent: event, target: self }, self);
-            console.log(new Date().getTime() - now);
-
         })
         .on('change', function (event) {
             self.notifyDataChange();
