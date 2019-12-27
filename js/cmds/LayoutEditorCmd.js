@@ -199,7 +199,9 @@ LayoutEditorCmd.cut = function () {
     });
 
     var componentsData = components.map(function (component) {
-        return component.getData();
+        var data = component.getData();
+        data.bound = component.view.getBoundingClientRect().toJSON();
+        return data;
     });
     ClipboardManager.set(R.CLIPBOARD.COMPONENTS, componentsData);
 
@@ -233,7 +235,9 @@ LayoutEditorCmd.cut = function () {
 LayoutEditorCmd.copy = function () {
     if (this.anchorEditors.length < 1) return;
     var componentsData = this.anchorEditors.map(function (ed) {
-        return ed.component.getData();
+        var data = ed.component.getData();
+        data.bound = ed.component.view.getBoundingClientRect().toJSON();
+        return data;
     });
 
     function visit(node) {
@@ -244,6 +248,7 @@ LayoutEditorCmd.copy = function () {
         if (node.children)
             node.children.forEach(visit);
     }
+    
     componentsData.forEach(visit);
     ClipboardManager.set(R.CLIPBOARD.COMPONENTS, componentsData);
 };
