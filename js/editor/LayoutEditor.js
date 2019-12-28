@@ -824,6 +824,10 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
 
             ],
             [
+                'editRootLayout',
+                'selectAll'
+            ],
+            [
                 'alignLeftDedge',
                 'alignHorizontalCenter',
                 'alignRightDedge',

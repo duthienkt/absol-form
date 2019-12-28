@@ -281,10 +281,20 @@ LayoutEditorCmd.selectAll = function () {
     this.setActiveComponent.apply(this, comp);
 };
 
+LayoutEditorCmd.editRootLayout = function(){
+    this.editLayout(this.rootLayout);
+    this.setActiveComponent(this.rootLayout);
+}
+
 
 export default LayoutEditorCmd;
 
 export var LayoutEditorCmdDescriptors = {
+    editRootLayout:{
+        type:'trigger',
+        desc:"Edit Root Layout",
+        icon:'span.mdi.mdi-border-outside'
+    },
     distributeVerticalDistance: {
         type: 'trigger',
         desc: "Distribute Verlical Distance",
@@ -435,6 +445,7 @@ export var LayoutEditorCmdDescriptors = {
     selectAll: {
         type: 'trigger',
         desc: 'Select All',
+        icon: 'span.mdi.mdi-select-all',
         bindKey: { win: 'Ctrl-A', mac: 'TODO?' }
     }
 };
