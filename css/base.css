@@ -21,7 +21,8 @@
 }
 
 
-.as-center-cell>.as-relative-layout{
+.as-center-cell>.as-relative-layout,
+.as-center-cell>.absol-bscroller{
     display: inline-block;
 }
 
