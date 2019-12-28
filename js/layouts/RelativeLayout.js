@@ -1,6 +1,6 @@
 import RelativeAnchor from "../anchors/RelativeAnchor";
 import Fcore from "../core/FCore";
-import ScalableComponent from "../core/ScalableComponent";
+import BaseLayout from "../core/BaseLayout";
 import RelativeAnchorEditor from "../anchoreditors/RelativeAnchorEditor";
 
 var _ = Fcore._;
@@ -8,11 +8,11 @@ var _ = Fcore._;
 
 
 function RelativeLayout() {
-    ScalableComponent.call(this);
+    BaseLayout.call(this);
 
 }
 
-Object.defineProperties(RelativeLayout.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
+Object.defineProperties(RelativeLayout.prototype, Object.getOwnPropertyDescriptors(BaseLayout.prototype));
 RelativeLayout.prototype.constructor = RelativeLayout;
 
 RelativeLayout.prototype.tag = 'RelativeLayout';
@@ -21,13 +21,6 @@ RelativeLayout.prototype.menuIcon = 'span.mdi.mdi-relative-scale';
 RelativeLayout.prototype.TOP_CLASS_NAME = 'as-relative-layout';
 RelativeLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
-RelativeLayout.prototype.create = function () {
-    ScalableComponent.prototype.create.call(this);
-    this.style.vAlign = 'fixed';
-    this.style.hAlign = 'fixed';
-    this.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-    this.style.backgroundImage = '';
-};
 
 RelativeLayout.prototype.getAnchorConstructor = function () {
     return RelativeAnchor;
@@ -168,53 +161,5 @@ RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
 
 
 
-RelativeLayout.prototype.getAcceptsAttributeNames = function () {
-    var res = ScalableComponent.prototype.getAcceptsAttributeNames.call(this);
-    if (this.attributes.formType) {
-        res = ['formType'].concat(res);
-    }
-    return res;
-};
-
-RelativeLayout.prototype.getAttributeFormTypeDescriptor = function () {
-    return {
-        type: 'const',
-        value: this.attributes.formType
-    }
-};
-
-
-RelativeLayout.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['backgroundColor', 'backgroundImage']);
-};
-
-RelativeLayout.prototype.setStyleBackgroundColor = function (value) {
-    this.view.addStyle('backgroundColor', value);
-    return value;
-};
-
-RelativeLayout.prototype.setStyleBackgroundImage = function (value) {
-    if (value && value.length > 0){
-        this.view.addStyle('backgroundImage', 'url(' + value + ')');
-        this.view.addStyle('backgroundSize', '100% 100%');
-    }
-    else{
-        this.view.removeStyle('backgroundImage');
-        this.view.removeStyle('backgroundSize');
-    }
-    return value;
-};
-
-RelativeLayout.prototype.getStyleBackgroundColorDescriptor = function () {
-    return {
-        type: 'color'
-    };
-};
-
-RelativeLayout.prototype.getStyleBackgroundImageDescriptor = function () {
-    return {
-        type: 'text'
-    };
-};
 
 export default RelativeLayout;

@@ -1,5 +1,5 @@
 import Fcore from "../core/FCore";
-import ScalableComponent from "../core/ScalableComponent";
+import BaseLayout from "../core/BaseLayout";
 import LinearAnchor from "../anchors/LinearAnchor";
 import LinearAnchorEditor from "../anchoreditors/LinearAnchorEditor";
 
@@ -8,11 +8,11 @@ var _ = Fcore._;
 
 
 function LinearLayout() {
-    ScalableComponent.call(this);
+    BaseLayout.call(this);
 
 }
 
-Object.defineProperties(LinearLayout.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
+Object.defineProperties(LinearLayout.prototype, Object.getOwnPropertyDescriptors(BaseLayout.prototype));
 LinearLayout.prototype.constructor = LinearLayout;
 
 LinearLayout.prototype.tag = 'LinearLayout';
@@ -21,11 +21,6 @@ LinearLayout.prototype.menuIcon = 'span.mdi.mdi-post-outline';
 LinearLayout.prototype.TOP_CLASS_NAME = 'as-linear-layout';
 LinearLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
-LinearLayout.prototype.create = function () {
-    ScalableComponent.prototype.create.call(this);
-    this.style.vAlign = 'fixed';
-    this.style.hAlign = 'fixed';
-};
 
 LinearLayout.prototype.getAnchorConstructor = function () {
     return LinearAnchor;
@@ -113,19 +108,5 @@ LinearLayout.prototype.addChildByPosition = function (child, posX, posY) {
     }
 };
 
-LinearLayout.prototype.getAcceptsAttributeNames = function(){
-    var res = ScalableComponent.getAcceptsAttributeNames.call(this);
-    if (this.attributes.formType){
-        res = ['formType'].concat(res);
-    }
-    return res;
-};
-
-LinearLayout.prototype.getAttributFormTypeDescriptor = function(){
-    return {
-        type:'const',
-        value: this.attributes.formType
-    }
-};
 
 export default LinearLayout;
