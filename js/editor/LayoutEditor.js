@@ -34,6 +34,7 @@ function LayoutEditor() {
     this.ev_mouseMoveForceGround = this.ev_mouseMoveForceGround.bind(this);
     this.ev_clickEditorSpaceCtn = this.ev_clickEditorSpaceCtn.bind(this);
     this.ev_mouseMove = this.ev_mouseMove.bind(this);
+    this.ev_dblclickCurtain = this.ev_dblclickCurtain.bind(this);
     //setup cmd
     this.cmdRunner.assign(LayoutEditorCMD);
     Object.keys(LayoutEditorCmdDescriptors).forEach(function (cmd) {
@@ -248,10 +249,18 @@ LayoutEditor.prototype.getView = function () {
 
     this.$mouseSelectingBox = _('.as-layout-editor-mouse-selecting-box');
 
-    this.$curtainLeft = _('.as-layout-editor-curtain').addTo(this.$forceground);
-    this.$curtainRight = _('.as-layout-editor-curtain').addTo(this.$forceground);
-    this.$curtainTop = _('.as-layout-editor-curtain').addTo(this.$forceground);
-    this.$curtainBottom = _('.as-layout-editor-curtain').addTo(this.$forceground);
+    this.$curtainLeft = _('.as-layout-editor-curtain')
+        .on('dblclick', this.ev_dblclickCurtain)
+        .addTo(this.$forceground);
+    this.$curtainRight = _('.as-layout-editor-curtain')
+        .on('dblclick', this.ev_dblclickCurtain)
+        .addTo(this.$forceground);
+    this.$curtainTop = _('.as-layout-editor-curtain')
+        .on('dblclick', this.ev_dblclickCurtain)
+        .addTo(this.$forceground);
+    this.$curtainBottom = _('.as-layout-editor-curtain')
+        .on('dblclick', this.ev_dblclickCurtain)
+        .addTo(this.$forceground);
     return this.$view;
 };
 
@@ -373,9 +382,10 @@ LayoutEditor.prototype.ev_mouseFinishForceGround = function (event) {
 
     var selectRect = new Rectangle(left, top, right - left, bottom - top);
 
-    var children = this.rootLayout.children;
+    var children = this.editingLayout.children;
+
     if (this.anchorEditors.length > 0) {
-        children = (this.findNearestLayoutParent(this.anchorEditors[this.anchorEditors.length - 1].component.parent) || this.rootLayout).children;
+        children = this.editingLayout.children;
     }
     var comp, compRect;
 
@@ -442,6 +452,12 @@ LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
 
 LayoutEditor.prototype.ev_clipboardSet = function () {
     this.notifyCmdDescriptorsChange();
+};
+
+
+LayoutEditor.prototype.ev_dblclickCurtain = function (event) {
+    var parentLayout = this.findNearestLayoutParent(this.editingLayout.parent);
+    if (parentLayout) this.editLayout(parentLayout);
 };
 
 
@@ -545,7 +561,7 @@ LayoutEditor.prototype.findComponentsByName = function (name, from) {
 };
 
 LayoutEditor.prototype.findComponentsByMousePostion = function (clientX, clientY) {
-    var children = this.rootLayout.children;
+    var children = this.editingLayout.children;
     var child, childBound;
     for (var i = children.length - 1; i >= 0; --i) {
         child = children[i];
@@ -730,7 +746,12 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 };
 
 
-LayoutEditor.prototype.editLayou = function (layout) {
+LayoutEditor.prototype.editLayout = function (layout) {
+    this.editingLayout = layout;
+    console.log(layout);
+
+    this.setActiveComponent();
+    this.updateEditing();
 };
 
 
@@ -830,7 +851,6 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
                 'distributeVerticalDistance'
             ]
         ]
-
     ];
 };
 
@@ -854,11 +874,7 @@ LayoutEditor.prototype.findNearestLayoutParent = function (comp) {
  */
 LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
     var self = this;
-    var layout;
-    if (this.anchorEditors.length > 0) {
-        layout = this.findNearestLayoutParent(this.anchorEditors[this.anchorEditors.length - 1].component);
-    }
-    layout = layout || this.rootLayout;
+    var layout = this.editingLayout;
     var rootBound = this.rootLayout.view.getBoundingClientRect();
     var layoutBound = layout.view.getBoundingClientRect();
     var layoutPosX = posX - (layoutBound.left - rootBound.left);
@@ -880,7 +896,6 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
         comp.reMeasure();
         return comp;
     });
-
 
     this.emit('addcomponent', { type: 'addcomponent', components: addedComponets, target: this }, this);
     this.setActiveComponent.apply(this, addedComponets);

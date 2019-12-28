@@ -71,10 +71,20 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
                 text: 'Move To Bottom',
                 cmd: 'move-to-bottom'
             },
-            '=================',
-
-
+            '================='
         ].concat(items)
+    }
+
+    if (comp.isLayout) {
+        items = [{
+            icon: 'span.mdi.mdi-square-edit-outline',
+            text: 'Edit Layout',
+            cmd: 'edit_layout',
+            extendStyle: {
+                color: 'blue'
+            }
+        },
+            '=============='].concat(items);
     }
     event.stopPropagation();
     event.showContextMenu({
@@ -100,6 +110,9 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
                 break;
             case 'move-to-bottom':
                 self.moveToBottom(comp);
+                break;
+            case 'edit_layout':
+                self.layoutEditor.editLayout(comp);
                 break;
         }
         setTimeout(self.$view.focus.bind(self.$view), 20);
@@ -134,10 +147,15 @@ ComponentOutline.prototype.updateComponetTree = function () {
     }
 
     function onPressNode(comp, event) {
-        if (event.shiftKey)
+        var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
+        if (event.shiftKey && parentLayout == self.layoutEditor.editingLayout)
             self.layoutEditor.toggleActiveComponent(comp);
-        else
+        else {
+            if (parentLayout != self.layoutEditor.editingLayout) {
+                self.layoutEditor.editLayout(parentLayout);
+            }
             self.layoutEditor.setActiveComponent(comp);
+        }
     }
 
     function visit(expTree, comp) {
