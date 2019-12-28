@@ -441,12 +441,12 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
             class: 'as-need-update',
             props: {
                 notifyChange: function () {
-                    var value = self.getProperty(name);
+                    var value = this.peditor.getProperty(name);
                     if (value === null)
                         this.value = descriptor.defaultValue;
                     else
                         this.value = value;
-                    this.disabled = self.getPropertyDescriptor(name).disabled;
+                    this.disabled = this.peditor.getPropertyDescriptor(name).disabled;
                 }
             },
             on: {
