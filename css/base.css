@@ -21,6 +21,10 @@
 }
 
 
+.as-center-cell>.as-relative-layout{
+    display: inline-block;
+}
+
 
 /*
     width: auto | set
