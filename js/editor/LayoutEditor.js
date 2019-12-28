@@ -22,6 +22,7 @@ function LayoutEditor() {
     Assembler.call(this);
     var self = this;
     this.rootLayout = null;
+    this.editingLayout = null;
     this.snapshots = [];
     this.snapshotsIndex = 0;
     this._changeCommited = true;
@@ -32,6 +33,7 @@ function LayoutEditor() {
     this.ev_mouseFinishForceGround = this.ev_mouseFinishForceGround.bind(this);
     this.ev_mouseMoveForceGround = this.ev_mouseMoveForceGround.bind(this);
     this.ev_clickEditorSpaceCtn = this.ev_clickEditorSpaceCtn.bind(this);
+    this.ev_mouseMove = this.ev_mouseMove.bind(this);
     //setup cmd
     this.cmdRunner.assign(LayoutEditorCMD);
     Object.keys(LayoutEditorCmdDescriptors).forEach(function (cmd) {
@@ -204,7 +206,8 @@ LayoutEditor.prototype.getView = function () {
             }
         ],
         on: {
-            keydown: this.ev_cmdKeyDown.bind(this)
+            keydown: this.ev_cmdKeyDown.bind(this),
+            mousemove: this.ev_mouseMove
         }
     });
 
@@ -220,12 +223,17 @@ LayoutEditor.prototype.getView = function () {
     this.$hruler.measureElement($('.as-relative-layout', this.$view));
     this.$spaceCtn = $('.as-layout-editor-space-container', this.$view)
         .on('scroll', this.ev_layoutCtnScroll.bind(this));
+    this.$hrulerMouse = _('.as-hruler-mouse').addTo(this.$hruler);
+    this.$hrulerEditing = _('.as-hruler-editing').addTo(this.$hruler);
+
 
     this.$vruler = $('vruler', this.$view);
     this.$vruler.measureElement($('.as-relative-layout', this.$view));
+    this.$vrulerMouse = _('.as-vruler-mouse').addTo(this.$vruler);
+    this.$vrulerEditing = _('.as-vruler-editing').addTo(this.$vruler);
+
 
     this.$layoutCtn = $('.as-layout-editor-layout-container', this.$view);
-
 
     this.$forceground = $('.as-layout-editor-forceground', this.$view)
         .on('mousedown', this.ev_mousedownForceGround.bind(this));
@@ -239,14 +247,31 @@ LayoutEditor.prototype.getView = function () {
     }, 6900);
 
     this.$mouseSelectingBox = _('.as-layout-editor-mouse-selecting-box');
+
+    this.$curtainLeft = _('.as-layout-editor-curtain').addTo(this.$forceground);
+    this.$curtainRight = _('.as-layout-editor-curtain').addTo(this.$forceground);
+    this.$curtainTop = _('.as-layout-editor-curtain').addTo(this.$forceground);
+    this.$curtainBottom = _('.as-layout-editor-curtain').addTo(this.$forceground);
     return this.$view;
 };
+
+
+/**
+ * @param {MouseEvent} event
+ */
+LayoutEditor.prototype.ev_mouseMove = function (event) {
+    var vruleBound = this.$vruler.getBoundingClientRect();
+    this.$vrulerMouse.addStyle('top', event.clientY - vruleBound.top - 1 - 1 + 'px');
+    this.$hrulerMouse.addStyle('left', event.clientX - vruleBound.left - 1 - 1 + 'px');
+};
+
 
 LayoutEditor.prototype.ev_clickEditorSpaceCtn = function (event) {
     if (event.target == this.$editorSpaceCtn) {
         this.setActiveComponent();
     }
 };
+
 
 LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
     if (!EventEmitter.isMouseLeft(event)) return;
@@ -258,9 +283,21 @@ LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
         else
             this.setActiveComponent(hitComponent);
         var anchorEditor = this.anchorEditors[this.anchorEditors.length - 1];
+
         //cheating
         var repeatedEvent = EventEmitter.copyEvent(event, { target: $('.as-resize-box-body', anchorEditor.$resizeBox), preventDefault: event.preventDefault.bind(event) });
         anchorEditor.$resizeBox.eventHandler.mouseDownBody(repeatedEvent);
+
+        // prevent auto toggle with click event
+        anchorEditor.preventClick = true;
+        anchorEditor.once('click', function () {
+            setTimeout(function () {
+                anchorEditor.preventClick = false;
+            }, 1)
+        });
+        anchorEditor.$resizeBox.on('endmove', function () {
+            anchorEditor.preventClick = false;
+        });
     }
     else {
         $(document.body).on('mouseup', this.ev_mouseFinishForceGround)
@@ -284,9 +321,6 @@ LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
         });
     }
 };
-
-
-
 
 
 LayoutEditor.prototype.ev_mouseMoveForceGround = function (event) {
@@ -323,6 +357,7 @@ LayoutEditor.prototype.ev_mouseMoveForceGround = function (event) {
 
 
 LayoutEditor.prototype.ev_mouseFinishForceGround = function (event) {
+
     $(document.body).off('mouseup', this.ev_mouseFinishForceGround)
         .off('mouseleave', this.ev_mouseFinishForceGround)
         .off('mousemove', this.ev_mouseMoveForceGround);
@@ -410,6 +445,69 @@ LayoutEditor.prototype.ev_clipboardSet = function () {
 };
 
 
+LayoutEditor.prototype.updateEditing = function () {
+    var hruleBound = this.$hruler.getBoundingClientRect();
+    var vruleBound = this.$vruler.getBoundingClientRect();
+    var editingBound = this.editingLayout.view.getBoundingClientRect();
+    this.$hrulerEditing.addStyle({
+        left: editingBound.left - hruleBound.left - 1 + 'px',
+        width: editingBound.width + 'px'
+    });
+
+    this.$vrulerEditing.addStyle({
+        top: editingBound.top - vruleBound.top - 1 + 'px',
+        height: editingBound.height + 'px'
+    });
+
+    var foregroundBound = this.$forceground.getBoundingClientRect();
+    if (this.editingLayout == this.rootLayout) {
+        this.$curtainLeft.addStyle({
+            visibility: 'hidden'
+        });
+        this.$curtainBottom.addStyle({
+            visibility: 'hidden'
+        });
+
+        this.$curtainRight.addStyle({
+            visibility: 'hidden'
+        });
+
+        this.$curtainTop.addStyle({
+            visibility: 'hidden'
+        });
+
+    }
+    else {
+        this.$curtainLeft.addStyle({
+            left: '0',
+            top: '0',
+            width: editingBound.left - foregroundBound.left + 'px',
+            height: editingBound.bottom - foregroundBound.top + 'px'
+        }).removeStyle('visibility');
+
+        this.$curtainBottom.addStyle({
+            left: '0',
+            top: editingBound.bottom - foregroundBound.top + 'px',
+            width: editingBound.right - foregroundBound.left + 'px',
+            height: foregroundBound.bottom - editingBound.bottom + 'px'
+        }).removeStyle('visibility');
+
+        this.$curtainRight.addStyle({
+            left: editingBound.right - foregroundBound.left + 'px',
+            top: editingBound.top - foregroundBound.top + 'px',
+            width: foregroundBound.right - editingBound.right + 'px',
+            height: foregroundBound.bottom - editingBound.top + 'px'
+        }).removeStyle('visibility');
+
+        this.$curtainTop.addStyle({
+            left: editingBound.left - foregroundBound.left + 'px',
+            top: '0',
+            width: foregroundBound.right - editingBound.left + 'px',
+            height: editingBound.top - foregroundBound.top + 'px'
+        }).removeStyle('visibility');
+    }
+};
+
 LayoutEditor.prototype.updateRuler = function () {
     this.$vruler.update();
     this.$hruler.update();
@@ -469,12 +567,13 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
     var AnchorEditor = this.findNearestLayoutParent(component.parent || this.rootLayout).getAnchorEditorConstructor();
     //craete new, repeat event to other active anchor editor
     var editor = new AnchorEditor(this).on('click', function (event) {
+        if (editor.preventClick) return;
         if (this.component)
-            if (self.anchorEditors.length > 1)
-                self.toggleActiveComponent(this.component);
-            else {
-                self.setActiveComponent(this.component);
+            if (event.shiftKey) {
+                self.toggleActiveComponent(this.component)
             }
+            else
+                self.setActiveComponent(this.component);
     })//todo: implement in AnchorEditor
         .on('beginmove', function (event) {
             var repeatEvent = event.repeatEvent;
@@ -599,11 +698,14 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 LayoutEditor.prototype.applyData = function (data) {
     var self = this;
     this.rootLayout = this.build(data);
+    this.editingLayout = this.rootLayout;
     this.$layoutCtn.clearChild().addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
+    this.updateEditing();
     this.componentOtline.updateComponetTree();
+
     this.emit('change', { type: 'change', target: this, data: data }, this);
 };
 
@@ -627,6 +729,9 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
     }
 };
 
+
+LayoutEditor.prototype.editLayou = function (layout) {
+};
 
 
 LayoutEditor.prototype.getData = function () {
@@ -784,7 +889,6 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
     this.componentOtline.updateComponetTree();
     this.commitHistory('add', "Add " + addedComponets.map(function (comp) { return comp.getAttribute('name') }).join(', '));
     this.notifyUnsaved();
-
 };
 
 
