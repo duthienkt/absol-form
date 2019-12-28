@@ -147,12 +147,14 @@ ComponentOutline.prototype.updateComponetTree = function () {
     }
 
     function onPressNode(comp, event) {
+        console.log(comp);
+        
         var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
         if (event.shiftKey && parentLayout == self.layoutEditor.editingLayout)
             self.layoutEditor.toggleActiveComponent(comp);
         else {
             if (parentLayout != self.layoutEditor.editingLayout) {
-                self.layoutEditor.editLayout(parentLayout);
+                self.layoutEditor.editLayout(parentLayout|| self.layoutEditor.rootLayout);
             }
             self.layoutEditor.setActiveComponent(comp);
         }
@@ -193,7 +195,7 @@ ComponentOutline.prototype.updateComponetTree = function () {
                 __isRoot__: true
             },
             on: {
-                press: onPressNode
+                press: onPressNode.bind(null, this.layoutEditor.rootLayout)
             }
         });
         this.$expNodes.push(this.$exptree);

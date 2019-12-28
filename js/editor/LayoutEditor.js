@@ -747,9 +747,8 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 
 
 LayoutEditor.prototype.editLayout = function (layout) {
+    if (!layout) throw new Error("Layout must be not null");
     this.editingLayout = layout;
-    console.log(layout);
-
     this.setActiveComponent();
     this.updateEditing();
 };
