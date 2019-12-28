@@ -84,13 +84,15 @@ Button.prototype.getAcceptsStyleNames = function () {
 Button.prototype.getAttributeTextDescriptor = function () {
     return {
         type: "text",
+        sign: 'SimpleText'
     };
 };
 
 
 Button.prototype.getAttributeIconDescriptor = function () {
     return {
-        type: "icon"
+        type: "icon",
+        sign:"SimpleIcon"
     };
 };
 

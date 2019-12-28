@@ -463,7 +463,7 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
         );
     }
     if (descriptor.sign)
-        this.assignToPool(descriptor.sign, fontInput);
+        this.assignToPool(descriptor.sign, numberInput);
     numberInput.min = typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity;
     numberInput.max = typeof (descriptor.max) == 'number' ? descriptor.max : Infinity;
     numberInput.value = this.getProperty(name);

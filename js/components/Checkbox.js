@@ -63,7 +63,8 @@ CheckBox.prototype.setStyleHeight = function (value) {
 
 CheckBox.prototype.getAttributeCheckedDescriptor = function () {
     return {
-        type: "bool"
+        type: "bool",
+        sign: "NotDependentBool"
     };
 };
 

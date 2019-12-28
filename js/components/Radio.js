@@ -72,7 +72,8 @@ Radio.prototype.setAttributeGroupName = function (value) {
 Radio.prototype.getAttributeGroupNameDescriptor = function () {
     return {
         type: "text",
-        regex: /[a-zA-Z0-9\_\-]+/
+        regex: /[a-zA-Z0-9\_\-]+/,
+        sign:"RadioGroupIndent"
     };
 };
 
@@ -84,7 +85,8 @@ Radio.prototype.setAttributValue = function (value) {
 
 Radio.prototype.getAttributeValueDescriptor = function () {
     return {
-        type: "text"
+        type: "text",
+        sign:"RadioValue"
     };
 };
 

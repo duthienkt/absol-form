@@ -121,7 +121,8 @@ Text.prototype.getAcceptsStyleNames = function () {
 Text.prototype.getAttributeTextDescriptor = function () {
     return {
         type: "text",
-        long: true
+        long: true,
+        sign:"HyperText"
     };
 };
 
@@ -156,20 +157,23 @@ Text.prototype.getStyleTextSizeDescriptor = function () {
     return {
         type: "number",
         min: 0,
-        max: 1000
+        max: 1000,
+        sign:"TextSign"
     };
 };
 
 
 Text.prototype.getStyleTextAlignDescriptor = function () {
     return {
-        type: "textAlign"
+        type: "textAlign",
+        sign:"TextAlign"
     };
 };
 
 Text.prototype.getStyleTextColorDescriptor = function () {
     return {
-        type: "color"
+        type: "color",
+        sign:"TextColor"
     };
 };
 

@@ -20,10 +20,19 @@ TextArea.prototype.render = function () {
 
 
 
-TextArea.prototype.getAttributeValueDescriptor = function(){
+TextArea.prototype.getAttributeValueDescriptor = function () {
     return {
-        type:"text",
-        long:true
+        type: "text",
+        long: true,
+        sign: "SimpleTextLong"
+    }
+};
+
+TextArea.prototype.getAttributePlaceHolderDescriptor = function () {
+    return {
+        type: "text",
+        long: true,
+        sign: "SimpleTextLong"
     }
 };
 

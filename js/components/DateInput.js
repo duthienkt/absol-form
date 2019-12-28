@@ -63,7 +63,8 @@ DateInput.prototype.getAttributeValueDescriptor = function () {
     return {
         type: 'date',
         nullable: true,
-        defaultValue: beginOfDay(new Date())
+        defaultValue: beginOfDay(new Date()),
+        sign:'SimpleDate'
     }
 };
 

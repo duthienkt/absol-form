@@ -104,13 +104,15 @@ TextInput.prototype.getAcceptsAttributeNames = function () {
 
 TextInput.prototype.getAttributeValueDescriptor = function () {
     return {
-        type: "text"
+        type: "text",
+        sign:"SimpleText"
     }
 };
 
 TextInput.prototype.getAttributePlaceHolderDescriptor = function () {
     return {
-        type: "text"
+        type: "text",
+        sign: "SimpleText"
     }
 };
 

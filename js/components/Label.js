@@ -68,7 +68,8 @@ Label.prototype.getAcceptsAttributeNames = function(){
 
 Label.prototype.getAttributeTextDescriptor = function(){
     return {
-        type:"text"
+        type:"text",
+        sign:"SimpleText"
     }
 };
 

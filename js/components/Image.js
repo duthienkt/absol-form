@@ -48,7 +48,8 @@ Image.prototype.getAcceptsAttributeNames = function () {
 Image.prototype.getAttributeSrcDescriptor = function () {
     return {
         type: "text",
-        long: true
+        long: true,
+        sign:'SimpleUrl'
     };
 };
 
@@ -59,11 +60,5 @@ Image.prototype.getAttributeNaturalSizeDescriptor = function () {
     }
 };
 
-// Image.prototype.getAttributeRealSizeDescriptor = function () {
-//     return {
-//         type: 'const',
-//         value: this.naturalWidth + ' x ' + this.naturalHeight
-//     }
-// };
 
 export default Image;
