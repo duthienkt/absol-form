@@ -104,7 +104,7 @@ BaseEditor.prototype.getCmdGroupTree = function () {
 };
 
 BaseEditor.prototype.bindKeyToCmd = function (key, cmd) {
-   this.cmdBindKeys[key] = cmd;
+    this.cmdBindKeys[key] = cmd;
 };
 
 
@@ -123,10 +123,9 @@ BaseEditor.prototype.ev_cmdKeyDown = function (event) {
     if (key.length == 1) key = key.toUpperCase();
     var key1 = specKeys.concat([key]).join('-');
     var key2 = specKeys.concat([event.keyCode]).join('-');
-    
     var cmd = this.cmdBindKeys[key1] || this.cmdBindKeys[key2];
     if (cmd) {
-        this.execCmd(cmd);
+        this.execCmd(cmd, event);
         event.preventDefault();
     }
 };
