@@ -157,9 +157,9 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
             },
             on: {
                 change: function () {
-                    self.setProperty(name, this.value);
-                    self.notifyChange(name, this);
-                    self.notifyStopChange(name);
+                    this.peditor.setProperty(name, this.value);
+                    this.peditor.notifyChange(name, this);
+                    this.peditor.notifyStopChange(name);
                 }
             }
         });
@@ -167,7 +167,7 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
     if (descriptor.sign)
         this.assignToPool(descriptor.sign, selectMenu);
     selectMenu.value = this.getProperty(name);
-
+    selectMenu.peditor = this;
     var res = _({
         tag: 'tr',
         child: [
@@ -202,14 +202,13 @@ PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
                     if (value != this.value) {
                         this.value = value;
                     }
-                },
-
+                }
             },
             on: {
                 change: function () {
-                    self.setProperty(name, this.value);
-                    self.notifyChange(name, this);
-                    self.notifyStopChange(name);
+                    this.peditor.setProperty(name, this.value);
+                    this.peditor.notifyChange(name, this);
+                    this.peditor.notifyStopChange(name);
                 }
             }
         });
@@ -217,6 +216,7 @@ PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
     if (descriptor.sign)
         this.assignToPool(descriptor.sign, fontInput);
     fontInput.value = this.getProperty(name);
+    fontInput.peditor = this;
     var res = _({
         tag: 'tr',
         child: [
@@ -440,7 +440,6 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
             tag: 'numberinput',
             class: 'as-need-update',
             props: {
-
                 notifyChange: function () {
                     var value = self.getProperty(name);
                     if (value === null)
@@ -454,10 +453,10 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
                 change: function (event) {
                     if (event.by == 'keyup') return;
                     if (!descriptor.livePreview && event.by == 'long_press_button') return;
-                    self.setProperty(name, this.value);
-                    self.notifyChange(name, this);
+                    this.peditor.setProperty(name, this.value);
+                    this.peditor.notifyChange(name, this);
                     if (event.by != 'long_press_button')
-                        self.notifyStopChange(name);
+                    this.peditor.notifyStopChange(name);
                 }
             }
         }
@@ -469,6 +468,7 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
     numberInput.max = typeof (descriptor.max) == 'number' ? descriptor.max : Infinity;
     numberInput.value = this.getProperty(name);
     numberInput.disabled = descriptor.disabled;
+    numberInput.peditor = this;
 
     var res = _({
         tag: 'tr',
