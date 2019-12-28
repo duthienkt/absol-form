@@ -1,7 +1,7 @@
 import Fcore from '../core/FCore';
-import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import '../../css/anchoreditor.css';
 import '../dom/Icons';
+import BaseAnchorEditor from '../core/BaseAnchorEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -12,10 +12,8 @@ var $ = Fcore.$;
  * @param {import('../editor/LayoutEditor').default} layoutEditor 
  */
 function RelativeAnchorEditor(layoutEditor) {
-    EventEmitter.call(this);
+    BaseAnchorEditor.call(this, layoutEditor);
     var self = this;
-    this.layoutEditor = layoutEditor;
-    this.component = null;
     this.$modal = _({
         style: {
             zIndex: '10000000',
@@ -45,7 +43,7 @@ function RelativeAnchorEditor(layoutEditor) {
     this.snapDistance = 2;
 }
 
-Object.defineProperties(RelativeAnchorEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
+Object.defineProperties(RelativeAnchorEditor.prototype, Object.getOwnPropertyDescriptors(BaseAnchorEditor.prototype));
 RelativeAnchorEditor.prototype.constructor = RelativeAnchorEditor;
 
 RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
@@ -151,6 +149,14 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
         items.push('================');
     }
 
+    if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
+        items.push({
+            icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
+            text: 'Edit Layout',
+            cmd: this.cmd_layoutEdit.bind(this)
+        });
+    }
+
     items.push({
         icon: 'span.mdi.mdi-delete-variant[style="color:red"]',
         text: 'Delete',
@@ -194,11 +200,6 @@ RelativeAnchorEditor.prototype.blur = function () {
     this.emit('blur', { type: 'blur', target: this }, this);
 };
 
-RelativeAnchorEditor.prototype.edit = function (component) {
-    this.component = component;
-    if (!this.component) this.blur();
-    this.update();
-};
 
 RelativeAnchorEditor.prototype.update = function () {
     if (this.component) {
@@ -657,15 +658,6 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
     }
     this.movingData.nearestX = nearestX;
     this.movingData.nearestXVal = nearestXVal;
-};
-
-
-RelativeAnchorEditor.prototype.cmd_delete = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var components = editors.map(function (e) {
-        return e.component;
-    });
-    this.layoutEditor.removeComponent.apply(this.layoutEditor, components);
 };
 
 

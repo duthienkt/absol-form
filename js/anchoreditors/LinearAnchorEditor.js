@@ -1,7 +1,8 @@
 import Fcore from '../core/FCore';
-import EventEmitter from 'absol/src/HTML5/EventEmitter';
+
 import '../../css/anchoreditor.css';
 import '../dom/Icons';
+import BaseAnchorEditor from '../core/BaseAnchorEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -12,10 +13,8 @@ var $ = Fcore.$;
  * @param {import('../editor/LayoutEditor').default} layoutEditor 
  */
 function LinearAnchorEditor(layoutEditor) {
-    EventEmitter.call(this);
+    BaseAnchorEditor.call(this, layoutEditor);
     var self = this;
-    this.layoutEditor = layoutEditor;
-    this.component = null;
     this.$modal = _({
         style: {
             zIndex: '10000000',
@@ -45,7 +44,7 @@ function LinearAnchorEditor(layoutEditor) {
     this.isFocus = false;
 }
 
-Object.defineProperties(LinearAnchorEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
+Object.defineProperties(LinearAnchorEditor.prototype, Object.getOwnPropertyDescriptors(BaseAnchorEditor.prototype));
 LinearAnchorEditor.prototype.constructor = LinearAnchorEditor;
 
 
@@ -152,6 +151,16 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
         });
         items.push('================');
     }
+    // is a layout
+    console.log(this.layoutEditor.anchorEditors.length , this.layoutEditor.anchorEditors[0].component.reMeasureChild);
+    
+    if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
+        items.push({
+            icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
+            text: 'Edit Layout',
+            cmd: this.cmd_layoutEdit.bind(this)
+        });
+    }
 
     items.push({
         icon: 'span.mdi.mdi-delete-variant[style="color:red"]',
@@ -217,11 +226,7 @@ LinearAnchorEditor.prototype.blur = function () {
     this.emit('blur', { type: 'blur', target: this }, this);
 };
 
-LinearAnchorEditor.prototype.edit = function (component) {
-    this.component = component;
-    if (!this.component) this.blur();
-    this.update();
-};
+
 
 LinearAnchorEditor.prototype.update = function () {
     if (this.component) {
@@ -416,13 +421,6 @@ LinearAnchorEditor.prototype.ev_endMove = function (userAction, event) {
 };
 
 
-LinearAnchorEditor.prototype.cmd_delete = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var components = editors.map(function (e) {
-        return e.component;
-    });
-    this.layoutEditor.removeComponent.apply(this.layoutEditor, components);
-};
 
 
 LinearAnchorEditor.prototype.cmd_alignLeftDedge = function () {
