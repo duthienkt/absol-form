@@ -504,6 +504,7 @@ RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
 
 
 RelativeAnchorEditor.prototype._updateSnapLines = function () {
+    return;//todo
     // as-align-horizontal-lin
     var nearestYVal = 10000;
     var nearestY = [];
