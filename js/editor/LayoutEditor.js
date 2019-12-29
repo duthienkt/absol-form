@@ -296,6 +296,7 @@ LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
         //cheating
         var repeatedEvent = EventEmitter.copyEvent(event, { target: $('.as-resize-box-body', anchorEditor.$resizeBox), preventDefault: event.preventDefault.bind(event) });
         anchorEditor.$resizeBox.eventHandler.mouseDownBody(repeatedEvent);
+        this.$view.focus();// layouteditor may be not focus before, prevent default effect make it not focus
 
         // prevent auto toggle with click event
         anchorEditor.preventClick = true;
