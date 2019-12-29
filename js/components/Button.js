@@ -1,5 +1,6 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
+import Text from "./Text";
 
 var _ = Fcore._;
 
@@ -13,11 +14,19 @@ Button.prototype.constructor = Button;
 Button.prototype.tag = "Button";
 Button.prototype.menuIcon = "span.mdi.mdi-alpha-b-box";
 
+
+Button.prototype.setStyleFont = Text.prototype.setStyleFont;
+Button.prototype.getStyleFontDescriptor = Text.prototype.getStyleFontDescriptor;
+
+Button.prototype.setStyleTextSize = Text.prototype.setStyleTextSize;
+Button.prototype.getStyleTextSizeDescriptor = Text.prototype.getStyleTextSizeDescriptor;
+
 Button.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.text = this.attributes.name;
     this.attributes.icon = 'span.mdi.mdi-format-font';
     this.style.colorTheme = 'default';
+    this.style.font = 'none';
 };
 
 Button.prototype.onCreated = function () {
@@ -77,7 +86,7 @@ Button.prototype.getAcceptsAttributeNames = function () {
 };
 
 Button.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['colorTheme']);
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font','textSize', 'colorTheme']);
 };
 
 
@@ -92,7 +101,7 @@ Button.prototype.getAttributeTextDescriptor = function () {
 Button.prototype.getAttributeIconDescriptor = function () {
     return {
         type: "icon",
-        sign:"SimpleIcon"
+        sign: "SimpleIcon"
     };
 };
 
