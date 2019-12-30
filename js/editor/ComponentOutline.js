@@ -1,6 +1,4 @@
 import Fcore from "../core/FCore";
-import EventEmitter from "absol/src/HTML5/EventEmitter";
-import Context from "absol/src/AppPattern/Context";
 import R from "../R";
 import '../../css/componentoutline.css';
 import BaseEditor from "../core/BaseEditor";
@@ -43,7 +41,8 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
     }];
     var anchorEditor = this.layoutEditor.findAnchorEditorByComponent(comp);
     if (anchorEditor) {
-        anchorEditor.focus()
+        anchorEditor.focus();
+        this.updateComponentStatus();
     }
     else {
         this.layoutEditor.setActiveComponent(comp);
@@ -95,9 +94,7 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
     }, function (event) {
         switch (event.menuItem.cmd) {
             case "delete":
-                if (comp.parent) {
-                    self.layoutEditor.removeComponent(comp);
-                }
+               self.layoutEditor.execCmd('delete');
                 break;
             case 'move-to-top':
                 self.moveToTop(comp);
@@ -147,8 +144,6 @@ ComponentOutline.prototype.updateComponetTree = function () {
     }
 
     function onPressNode(comp, event) {
-        console.log(comp);
-        
         var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
         if (event.shiftKey && parentLayout == self.layoutEditor.editingLayout)
             self.layoutEditor.toggleActiveComponent(comp);
