@@ -2,6 +2,7 @@ import Fcore from '../core/FCore';
 import '../../css/anchoreditor.css';
 import '../dom/Icons';
 import BaseAnchorEditor from '../core/BaseAnchorEditor';
+import { LayoutEditorCmdDescriptors } from '../cmds/LayoutEditorCmd';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -49,104 +50,48 @@ RelativeAnchorEditor.prototype.constructor = RelativeAnchorEditor;
 RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
     var self = this;
     var items = [];
+    function makeItem(name) {
+        if (name === null) return '=====';
+        var cmdDescriptor = LayoutEditorCmdDescriptors[name];
+        var res = {
+            icon: cmdDescriptor.icon,
+            text: cmdDescriptor.desc,
+            cmd: name
+        };
+        if (cmdDescriptor.bindKey && cmdDescriptor.bindKey.win) {
+            res.key = cmdDescriptor.bindKey.win;
+        }
+        return res;
+    }
     if (this.layoutEditor.anchorEditors.length > 1) {
-        items.push({
-            icon: 'span.mdi.mdi-align-horizontal-left',
-            text: 'Align Left Edges',
-            cmd: this.cmd_alignLeftDedge.bind(this)
-        });
-        items.push({
-            icon: _('mdi-align-horizontal-center'),
-            text: 'Align Horizontal Center',
-            cmd: this.cmd_alignHorizontalCenter.bind(this)
-        });
-        items.push({
-            icon: _('mdi-align-horizontal-right'),
-            text: 'Align Right Edges',
-            cmd: this.cmd_alignRightDedge.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-arrow-expand-horizontal',
-            text: 'Equalise Width',
-            cmd: this.cmd_equaliseWidth.bind(this)
-        });
-
-        items.push('================');
-        items.push({
-            icon: 'span.mdi.mdi-align-vertical-top',
-            text: 'Align Top Edges',
-            cmd: this.cmd_alignTopDedge.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-align-vertical-bottom',
-            text: 'Align Bottom Edges',
-            cmd: this.cmd_alignBottomDedge.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-align-vertical-center',
-            text: 'Align Vertical Center',
-            cmd: this.cmd_alignVerticalCenter.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-arrow-expand-vertical',
-            text: 'Equalise Height',
-            cmd: this.cmd_equaliseHeight.bind(this)
-        });
-        items.push('================');
+        items.push.apply(items, [
+            'alignLeftDedge',
+            'alignHorizontalCenter',
+            'alignRightDedge',
+            'equaliseWidth',
+            null,
+            'alignTopDedge',
+            'alignVerticalCenter',
+            'alignBottomDedge',
+            'equaliseHeight',
+            null
+        ].map(makeItem));
     }
 
 
     if (this.layoutEditor.anchorEditors.length > 2) {
-        items.push({
-            icon: 'span.mdi.mdi-distribute-horizontal-left',
-            text: 'Distribute Horizontal Left',
-            cmd: this.cmd_distributeHorizontalLeft.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-distribute-horizontal-center',
-            text: 'Distribute Horizontal Center',
-            cmd: this.cmd_distributeHorizontalCenter.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-distribute-horizontal-right',
-            text: 'Distribute Horizontal Right',
-            cmd: this.cmd_distributeHorizontalRight.bind(this)
-        });
-        items.push({
-            icon: _(
-                '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                <path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\
-                <path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\
-            </svg>'),
-            text: 'Distribute Horizontal Distance',
-            cmd: this.cmd_distributeHorizontalDistance.bind(this)
-        });
-
-        items.push('================');
-        items.push({
-            icon: 'span.mdi.mdi-distribute-vertical-top',
-            text: 'Distribute Vertical Top',
-            cmd: this.cmd_distributeVerticalTop.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-distribute-vertical-center',
-            text: 'Distribute Vertical Center',
-            cmd: this.cmd_distributeVerticalCenter.bind(this)
-        });
-        items.push({
-            icon: 'span.mdi.mdi-distribute-vertical-bottom',
-            text: 'Distribute Vertical Bottom',
-            cmd: this.cmd_distributeVerticalBottom.bind(this)
-        });
-        items.push({
-            icon: '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                        <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
-                    <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
-                </svg>',
-            text: 'Distribute Verlical Distance',
-            cmd: this.cmd_distributeVerticalDistance.bind(this)
-        });
-        items.push('================');
+        items.push.apply(items, [
+            'distributeHorizontalLeft',
+            'distributeHorizontalCenter',
+            'distributeHorizontalRight',
+            'distributeHorizontalDistance',
+            null,
+            'distributeVerticalTop',
+            'distributeVerticalCenter',
+            'distributeVerticalBottom',
+            'distributeVerticalDistance',
+            null
+        ].map(makeItem));
     }
 
     if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
@@ -173,6 +118,9 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
         if (typeof cmd == 'function') {
             cmd();
             self.layoutEditor.notifyDataChange();
+        }
+        else if (typeof cmd == 'string') {
+            self.layoutEditor.execCmd(cmd);
         }
         self.layoutEditor.getView().focus();
     });

@@ -348,7 +348,7 @@ export var LayoutEditorCmdDescriptors = {
     },
     alignVerticalCenter: {
         type: 'trigger',
-        icon: 'mdi-align-vertical-center',
+        icon: 'span.mdi.mdi-align-vertical-center',
         desc: 'Align Vertical Center'
     },
     alignBottomDedge: {
@@ -373,7 +373,7 @@ export var LayoutEditorCmdDescriptors = {
     },
     alignRightDedge: {
         type: 'trigger',
-        icon: 'mdi-align-horizontal-right',
+        icon: 'span.mdi.mdi-align-horizontal-right',
         desc: 'Align Right Edges',
     },
     alignLeftDedge: {
@@ -447,5 +447,10 @@ export var LayoutEditorCmdDescriptors = {
         desc: 'Select All',
         icon: 'span.mdi.mdi-select-all',
         bindKey: { win: 'Ctrl-A', mac: 'TODO?' }
+    },
+    sendBackward:{
+        type:'trigger',
+        desc: 'Send Backward',
+        icon: 'span.mdi.mdi-arrange-send-backward'
     }
 };
