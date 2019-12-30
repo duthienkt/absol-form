@@ -270,8 +270,9 @@ LayoutEditor.prototype.getView = function () {
  */
 LayoutEditor.prototype.ev_mouseMove = function (event) {
     var vruleBound = this.$vruler.getBoundingClientRect();
+    var hruleBound = this.$hruler.getBoundingClientRect();
     this.$vrulerMouse.addStyle('top', event.clientY - vruleBound.top - 1 - 1 + 'px');
-    this.$hrulerMouse.addStyle('left', event.clientX - vruleBound.left - 1 - 1 + 'px');
+    this.$hrulerMouse.addStyle('left', event.clientX - hruleBound.left - 1 - 1 + 'px');
 };
 
 

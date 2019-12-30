@@ -205,6 +205,11 @@
     vertical-align: bottom;
 }
 
+.as-component-content-scaleless-cell{
+    font-size: inherit;
+    font-style: inherit;
+    font-family: inherit;
+}
 
 
 
