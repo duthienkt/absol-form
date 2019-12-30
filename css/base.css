@@ -22,7 +22,7 @@
 
 
 .as-center-cell>.as-relative-layout,
-.as-center-cell>.absol-bscroller{
+.as-center-cell>.absol-bscroller {
     display: inline-block;
 }
 
@@ -139,6 +139,7 @@
 .as-base-component {
     pointer-events: all;
     box-sizing: border-box;
+    text-align: left;
 }
 
 .as-base-component textarea {
@@ -153,6 +154,67 @@
 .as-component-content-scaleless-cell {
     display: table-cell;
     width: 100%;
+}
+
+.as-component-content-scaleless.as-align-left-top>.as-component-content-scaleless-cell {
+    text-align: left;
+    vertical-align: top;
+}
+
+.as-component-content-scaleless.as-align-right-top>.as-component-content-scaleless-cell {
+    text-align: right;
+    vertical-align: top;
+}
+
+.as-component-content-scaleless.as-align-center-top>.as-component-content-scaleless-cell {
+    text-align: center;
+    vertical-align: top;
+}
+
+
+.as-component-content-scaleless.as-align-left-center>.as-component-content-scaleless-cell {
+    text-align: left;
+    vertical-align: middle;
+}
+
+.as-component-content-scaleless.as-align-right-center>.as-component-content-scaleless-cell {
+    text-align: right;
+    vertical-align: middle;
+}
+
+.as-component-content-scaleless.as-align-center-center>.as-component-content-scaleless-cell {
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+
+
+.as-component-content-scaleless.as-align-left-bottom>.as-component-content-scaleless-cell {
+    text-align: left;
+    vertical-align: bottom;
+}
+
+.as-component-content-scaleless.as-align-right-bottom>.as-component-content-scaleless-cell {
+    text-align: right;
+    vertical-align: bottom;
+}
+
+.as-component-content-scaleless.as-align-center-bottom>.as-component-content-scaleless-cell {
+    text-align: center;
+    vertical-align: bottom;
+}
+
+
+
+
+.as-component-content-scaleless-cell>div {
+    display: inline-block;
+}
+
+.as-base-component label {
+    font-family: inherit;
+    font-size: inherit;
 }
 
 .as-linear-layout::before {

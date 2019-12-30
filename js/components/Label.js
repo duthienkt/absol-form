@@ -25,14 +25,13 @@ Label.prototype.onCreate = function(){
     this.style.font = undefined;
     this.style.fontStyle = undefined;
     this.style.textSize = 0;
-    this.style.textAlign = 'left';
     this.style.textColor = 'black'
 };
 
 
 
 Label.prototype.getAcceptsStyleNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsStyleNames.call(this).concat(['textAlign', 'font', 'fontStyle', 'textSize', 'textColor']);
+    return ContentScalelessComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textColor']);
 };
 
 
@@ -45,8 +44,6 @@ Label.prototype.getStyleFontStyleDescriptor = Text.prototype.getStyleFontStyleDe
 Label.prototype.setStyleTextSize = Text.prototype.setStyleTextSize;
 Label.prototype.getStyleTextSizeDescriptor = Text.prototype.getStyleTextSizeDescriptor;
 
-Label.prototype.setStyleTextAlign = Text.prototype.setStyleTextAlign;
-Label.prototype.getStyleTextAlignDescriptor = Text.prototype.getStyleTextAlignDescriptor;
 
 Label.prototype.setStyleTextColor = Text.prototype.setStyleTextColor;
 Label.prototype.getStyleTextColorDescriptor = Text.prototype.getStyleTextColorDescriptor;

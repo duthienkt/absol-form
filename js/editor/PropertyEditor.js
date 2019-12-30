@@ -8,6 +8,7 @@ import ListEditor from './ListEditor';
 import { FONT_ITEMS } from '../font/GoogleFont';
 import '../dom/FontIconInput';
 import QuickMenu from 'absol-acomp/js/QuickMenu';
+import { base64EncodeUnicode } from 'absol/src/Converter/base64';
 
 // FontIconPicker
 
@@ -453,7 +454,7 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
                     this.peditor.setProperty(name, this.value);
                     this.peditor.notifyChange(name, this);
                     if (event.by != 'long_press_button')
-                    this.peditor.notifyStopChange(name);
+                        this.peditor.notifyStopChange(name);
                 }
             }
         }
@@ -635,6 +636,115 @@ PropertyEditor.prototype.createTextAlignInputRow = function (name, descriptor) {
             $icon.removeClass(lasIconClass);
             lasIconClass = icons[item.menuData];
             $icon.addClass(lasIconClass);
+            self.setProperty(name, item.menuData);
+            self.notifyStopChange(name);
+        }
+    });
+    return res;
+};
+
+
+PropertyEditor.prototype.createBoxAlignInputRow = function (name, descriptor) {
+    var self = this;
+    var icons = {
+        lefttop: 'm0 0v24h24v-24zm1 1h22v22h-22zm2 2h10.3v2h-10.3v-2m0 4h14v2h-14v-2m0 4h9.9v2h-9.9v-2',
+        centertop: 'm24 24v-24h-24v24zm-1-1h-22v-22h22zm-6.05-18h-9.9v-2h9.9v2m2.05 4h-14v-2h14v2m-1.85 4h-10.3v-2h10.3v2',
+        righttop: 'm24 0v24h-24v-24zm-1 1h-22v22h22zm-2 2h-10.3v2h10.3v-2m0 4h-14v2h14v-2m0 4h-9.9v2h9.9v-2',
+        leftcenter: 'm0 24v-24h24v24zm1-1h22v-22h-22zm2-6h10.3v-2h-10.3v2m0-4h14v-2h-14v2m0-4h9.9v-2h-9.9v2',
+        centercenter: 'm0 24v-24h24v24zm1-1h22v-22h-22zm6.05-14h9.9v-2h-9.9v2m-2.05 4h14v-2h-14v2m1.85 4h10.3v-2h-10.3v2',
+        rightcenter: 'm24 24v-24h-24v24zm-1-1h-22v-22h22zm-2-6h-10.3v-2h10.3v2m0-4h-14v-2h14v2m0-4h-9.9v-2h9.9v2',
+        leftbottom: 'm0 24v-24h24v24zm1-1h22v-22h-22zm2-2h10.3v-2h-10.3v2m0-4h14v-2h-14v2m0-4h9.9v-2h-9.9v2',
+        centerbottom: 'm24 0v24h-24v-24zm-1 1h-22v22h22zm-6.05 18h-9.9v2h9.9v-2m2.05-4h-14v2h14v-2m-1.85-4h-10.3v2h10.3v-2',
+        rightbottom: 'm24 24v-24h-24v24zm-1-1h-22v-22h22zm-2-2h-10.3v-2h10.3v2m0-4h-14v-2h14v2m0-4h-9.9v-2h9.9v2'
+    };
+    function makeIcon(path) {
+        var data = '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
+                    <path d="'+ path + '" style="stroke-width:0"/>\
+                </svg>';
+        return {
+            tag: 'img',
+            style: {
+                'image-rendering': 'pixelated'
+            },
+            props: {
+                src: 'data:image/svg+xml;base64,' + base64EncodeUnicode(data)
+            }
+        }
+    }
+    var res = _({
+        tag: 'tr',
+        child: [
+            {
+                tag: 'td',
+                child: { text: name }
+            },
+            {
+                tag: 'td',
+                attr: { colspan: '3' },
+                child: {
+                    tag: 'button',
+                    class: 'as-property-editor-text-align-input',
+                }
+            }
+        ]
+    });
+    var $button = $('.as-property-editor-text-align-input', res);
+    $button.addChild(_(makeIcon(icons[this.getProperty(name)] || icons.lefttop)));
+    var self = this;
+    QuickMenu.toggleWhenClick($button, {
+        getMenuProps: function () {
+            return {
+                items: [
+                    {
+                        text: 'Left-Top',
+                        icon: makeIcon(icons.lefttop),
+                        menuData: 'lefttop'
+                    },
+                    {
+                        text: 'Center-Top',
+                        icon: makeIcon(icons.centertop),
+                        menuData: 'centertop'
+                    },
+                    {
+                        text: 'Right-Top',
+                        icon: makeIcon(icons.righttop),
+                        menuData: 'righttop'
+                    },
+                    {
+                        text: 'Left-Center',
+                        icon: makeIcon(icons.leftcenter),
+                        menuData: 'leftcenter'
+                    },
+                    {
+                        text: 'Center-Center',
+                        icon: makeIcon(icons.centercenter),
+                        menuData: 'centercenter'
+                    },
+                    {
+                        text: 'Right-Center',
+                        icon: makeIcon(icons.rightcenter),
+                        menuData: 'rightcenter'
+                    },
+                    {
+                        text: 'Left-Botttom',
+                        icon: makeIcon(icons.leftbottom),
+                        menuData: 'leftbottom'
+                    },
+                    {
+                        text: 'Center-Botttom',
+                        icon: makeIcon(icons.centerbottom),
+                        menuData: 'centerbottom'
+                    },
+                    {
+                        text: 'Right-Botttom',
+                        icon: makeIcon(icons.rightbottom),
+                        menuData: 'rightbottom'
+                    }
+                ]
+            }
+        },
+        onSelect: function (item) {
+            $button.clearChild().addChild(_(makeIcon(icons[item.menuData])));
             self.setProperty(name, item.menuData);
             self.notifyStopChange(name);
         }
