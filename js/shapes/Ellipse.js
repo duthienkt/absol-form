@@ -1,65 +1,60 @@
-import Fcore from "../core/FCore";
-import ScalableComponent from "../core/ScalableComponent";
 import Svg from "absol/src/HTML5/Svg";
+import BaseShape from "../core/BaseShape";
 
 var _ = Svg.ShareInstance._;
 var $ = Svg.ShareInstance.$;
 
-function Circle() {
-    ScalableComponent.call(this);
+function Ellipse() {
+    BaseShape.call(this);
 }
 
-Object.defineProperties(Circle.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-Circle.prototype.constructor = Circle;
+Object.defineProperties(Ellipse.prototype, Object.getOwnPropertyDescriptors(BaseShape.prototype));
+Ellipse.prototype.constructor = Ellipse;
 
-Circle.prototype.tag = "Circle";
-Circle.prototype.menuIcon = "span.mdi.mdi-image-outline";
+Ellipse.prototype.tag = "Ellipse";
+Ellipse.prototype.menuIcon = "span.mdi.mdi-ellipse-outline";
 
-Circle.prototype.onCreate = function () {
-    ScalableComponent.prototype.onCreate.call(this);
+
+
+Ellipse.prototype.renderContent = function () {
+    return _('ellipse');
 };
 
-Circle.prototype.onCreated = function () {
-    this.$circle = $('ellipse', this.view);
-    ScalableComponent.prototype.onCreated.call(this);
+
+Ellipse.prototype.setStyleFillColor = function (value) {
+    value = BaseShape.prototype.setStyleFillColor.call(this, value);
+    if (this.$content)
+        this.$content.addStyle('fill', value);
+    return value;
+};
+
+
+Ellipse.prototype.setStyleStrokeColor = function (value) {
+    value = BaseShape.prototype.setStyleFillColor.call(this, value);
+    if (this.$content)
+        this.$content.addStyle('stroke', value);
+    return value;
+};
+
+Ellipse.prototype.setStyleStrokeWidth = function (value) {
+    value = BaseShape.prototype.setStyleStrokeWidth.call(this, value);
+    if (this.$content)
+        this.$content.addStyle('strokeWidth', value + '');
     this.updateShape();
+    return value;
 };
 
-Circle.prototype.render = function () {
-    return _({
-        tag: 'svg',
-        child: 'ellipse '
-    });
-};
-
-
-Circle.prototype.setStyleWidth = function (value) {
-    var res = ScalableComponent.prototype.setStyleWidth.call(this, value);
-    this.updateShape();
-    return res;
-};
-
-
-Circle.prototype.setStyleHeight = function (value) {
-    var res = ScalableComponent.prototype.setStyleWidth.call(this, value);
-    this.updateShape();
-    return res;
-};
-
-Circle.prototype.updateShape = function () {
+Ellipse.prototype.updateShape = function () {
     if (!this.view) return;
     var bound = this.view.getBoundingClientRect();
-    
-    this.$circle.addStyle({
+    this.$content.addStyle({
         cx: bound.width / 2 + '',
         cy: bound.height / 2 + '',
-        rx: bound.width / 2 + '',
-        ry: bound.height / 2 + ''
+        rx: (bound.width - this.style.strokeWidth - 0.1) / 2 + '',// prevent miss some pixel
+        ry: (bound.height - this.style.strokeWidth - 0.1) / 2 + ''
     });
 };
 
 
 
-
-
-export default Circle;
+export default Ellipse;

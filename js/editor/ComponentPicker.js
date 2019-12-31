@@ -21,7 +21,8 @@ import Button from "../components/Button";
 import Table from "../components/Table";
 import LinearLayout from "../layouts/LinearLayout";
 import PluginManager from "../core/PluginManager";
-import Circle from "../shapes/Circle";
+import Ellipse from "../shapes/Ellipse";
+import Rectangle from "../shapes/Rectangle";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -241,9 +242,17 @@ ComponentPicker.prototype.getView = function () {
                         {
                             tag: 'exptree',
                             props: {
-                                name: "Circle",
-                                icon: Label.prototype.menuIcon,
-                                componentConstructor: Circle
+                                name: "Ellipse",
+                                icon: Ellipse.prototype.menuIcon,
+                                componentConstructor: Ellipse
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Rectangle",
+                                icon: Rectangle.prototype.menuIcon,
+                                componentConstructor: Rectangle
                             }
                         }
                     ]
