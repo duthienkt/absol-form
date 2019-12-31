@@ -21,6 +21,7 @@ import Button from "../components/Button";
 import Table from "../components/Table";
 import LinearLayout from "../layouts/LinearLayout";
 import PluginManager from "../core/PluginManager";
+import Circle from "../shapes/Circle";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -40,7 +41,7 @@ Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescript
 ComponentPicker.prototype.constructor = ComponentPicker;
 
 
-ComponentPicker.prototype.bindWithEditor = function(editor){
+ComponentPicker.prototype.bindWithEditor = function (editor) {
     this.layoutEditor = editor;
 }
 
@@ -223,6 +224,26 @@ ComponentPicker.prototype.getView = function () {
                                 name: "Button",
                                 icon: Button.prototype.menuIcon,
                                 componentConstructor: Button
+                            }
+                        }
+                    ]
+                },
+                {
+                    tag: 'exptree',
+                    props: {
+                        name: 'shapes',
+                        status: 'open'
+                    },
+                    on: {
+                        press: toggleGroup
+                    },
+                    child: [
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "Circle",
+                                icon: Label.prototype.menuIcon,
+                                componentConstructor: Circle
                             }
                         }
                     ]

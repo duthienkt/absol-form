@@ -14,6 +14,7 @@ import Text from "../components/Text";
 import TextArea from "../components/TextArea";
 import TextInput from "../components/TextInput";
 import LinearLayout from "../layouts/LinearLayout";
+import Circle from "../shapes/Circle";
 
 function Assembler() {
     this.constructors = {};
@@ -31,6 +32,7 @@ function Assembler() {
     this.addConstructor(TextInput);
     this.addConstructor(LinearLayout);
     this.addConstructor(RelativeLayout);
+    this.addConstructor(Circle);
 };
 
 
