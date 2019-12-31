@@ -23,6 +23,7 @@ import LinearLayout from "../layouts/LinearLayout";
 import PluginManager from "../core/PluginManager";
 import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
+import ChainLayout from "../layouts/ChainLayout";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -92,6 +93,14 @@ ComponentPicker.prototype.getView = function () {
                                 name: "LinearLayout",
                                 icon: LinearLayout.prototype.menuIcon,
                                 componentConstructor: LinearLayout
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: "ChainLayout",
+                                icon: ChainLayout.prototype.menuIcon,
+                                componentConstructor: ChainLayout
                             }
                         }
                     ]

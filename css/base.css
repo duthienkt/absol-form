@@ -205,7 +205,7 @@
     vertical-align: bottom;
 }
 
-.as-component-content-scaleless-cell{
+.as-component-content-scaleless-cell {
     font-size: inherit;
     font-style: inherit;
     font-family: inherit;
@@ -231,4 +231,21 @@
 
 .as-linear-anchor-box {
     display: block;
+}
+
+
+.as-chain-anchor-box {
+    display: inline-block;
+}
+
+.as-chain-anchor-box.as-valign-top {
+    vertical-align: top;
+}
+
+.as-chain-anchor-box.as-valign-center {
+    vertical-align: middle;
+}
+
+.as-chain-anchor-box.as-valign-bottom {
+    vertical-align: bottom;
 }

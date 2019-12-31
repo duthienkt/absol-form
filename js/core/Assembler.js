@@ -16,6 +16,7 @@ import TextInput from "../components/TextInput";
 import LinearLayout from "../layouts/LinearLayout";
 import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
+import ChainLayout from "../layouts/ChainLayout";
 
 function Assembler() {
     this.constructors = {};
@@ -33,6 +34,7 @@ function Assembler() {
     this.addConstructor(TextInput);
     this.addConstructor(LinearLayout);
     this.addConstructor(RelativeLayout);
+    this.addConstructor(ChainLayout);
     this.addConstructor(Ellipse);
     this.addConstructor(Rectangle);
 };
