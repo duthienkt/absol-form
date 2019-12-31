@@ -74,8 +74,6 @@ ContentScalelessComponent.prototype.setStyleBoxAlign = function (value) {
     if (accepts.indexOf(value) < 0) value = 'lefttop';
     var lastClass = this.BOX_ALIGN_CLASSES[this.style.boxAlign];
     if (lastClass) this.view.removeClass(lastClass);
-    console.log(value, this.BOX_ALIGN_CLASSES[value]);
-
     this.view.addClass(this.BOX_ALIGN_CLASSES[value]);
     return value;
 };
