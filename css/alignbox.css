@@ -1,0 +1,12 @@
+.as-align-box {
+    display: table;
+}
+
+.as-align-box-cell {
+    display: table-cell;
+}
+
+.as-align-box-cell>.as-relative-layout,
+.as-align-box-cell>.absol-bscroller {
+    display: inline-block;
+}

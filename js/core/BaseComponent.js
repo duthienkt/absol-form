@@ -184,9 +184,9 @@ BaseComponent.prototype.getAcceptsStyleNames = function () {
 
 BaseComponent.prototype.getStyleDescriptor = function (name) {
     var res;
-    res = FViewable.prototype.getStyleDescriptor.call(this, name);
     if (this.anchor)
-        res = res || this.anchor.getStyleDescriptor(name);
+        res = this.anchor.getStyleDescriptor(name);
+    res = res || FViewable.prototype.getStyleDescriptor.call(this, name);
     return res;
 };
 
@@ -233,5 +233,33 @@ BaseComponent.prototype.getAttributeNameDescriptor = function () {
     };
 };
 
+
+BaseComponent.prototype.setStyle = function (name, value) {
+    var functionName = 'setStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
+    if (this.anchor && this.anchor[functionName]) {//anchor will handle this
+        value = this.anchor[functionName](value);
+    }
+    // self handle
+    return FViewable.prototype.setStyle.call(this, name, value);
+};
+
+BaseComponent.prototype.setStyleWidth = function (value) {
+    if (this.anchor) return value;// let anchor do that
+    if (typeof value == "number")
+        this.view.addStyle('width', value + 'px');
+    else
+        this.view.addStyle('width', value);
+    return value;
+};
+
+
+BaseComponent.prototype.setStyleHeight = function (value) {
+    if (this.anchor) return value;// let anchor do that
+    if (typeof value == "number")
+        this.view.addStyle('height', value + 'px');
+    else
+        this.view.addStyle('height', value);
+    return value;
+};
 
 export default BaseComponent;

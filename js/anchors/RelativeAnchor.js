@@ -1,5 +1,7 @@
 import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
+import '../../css/relativeanchor.css';
+import '../../css/alignbox.css';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -9,12 +11,6 @@ var $ = Fcore.$;
  */
 function RelativeAnchor() {
     FViewable.call(this);
-    this.style.hAlign = this.HALIGN_VALUE[0];
-    this.style.vAlign = this.VALIGN_VALUE[0];
-    this.style.left = 0;
-    this.style.right = 0;
-    this.style.top = 0;
-    this.style.bottom = 0;
     this.childNode = null;
 
     //for quick binding render
@@ -66,7 +62,7 @@ RelativeAnchor.prototype.getStyleHAlignDescriptor = function () {
         type: 'enum',
         values: ['left', 'right', 'center', 'fixed'],
         disabled: false,
-        sign:'RelativeAnchor_HAlign'
+        sign: 'RelativeAnchor_HAlign'
     }
 };
 
@@ -75,7 +71,7 @@ RelativeAnchor.prototype.getStyleVAlignDescriptor = function () {
         type: 'enum',
         values: ['top', 'bottom', 'center', 'fixed'],
         disabled: false,
-        sign:'RelativeAnchor_VAlign'
+        sign: 'RelativeAnchor_VAlign'
     };
 };
 
@@ -85,7 +81,7 @@ RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'right',
+        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'right',
         livePreview: true
     };
 };
@@ -96,7 +92,7 @@ RelativeAnchor.prototype.getStyleRightDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.hAlign == 'center' || this.style.hAlign == 'left',
+        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'left',
         livePreview: true
     };
 };
@@ -107,7 +103,7 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'bottom',
+        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'bottom',
         livePreview: true
     };
 };
@@ -118,7 +114,7 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
         type: 'number',
         min: -Infinity,
         max: Infinity,
-        disabled: this.style.vAlign == 'center' || this.style.vAlign == 'top',
+        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'top',
         livePreview: true
     };
 };
@@ -126,11 +122,11 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
 
 
 RelativeAnchor.prototype.setStyleHAlign = function (value) {
-    if (this.style.hAlign == value) return value;
+    if (this.childNode.style.hAlign == value) return value;
     if (!this.HALIGN_VALUE.includes(value)) value = this.HALIGN_VALUE[0];
-    this.view.removeClass(this.HALIGN_CLASS_NAMES[this.style.hAlign]);
-    this.style.hAlign = value;
-    this.view.addClass(this.HALIGN_CLASS_NAMES[this.style.hAlign]);
+    this.view.removeClass(this.HALIGN_CLASS_NAMES[this.childNode.style.hAlign]);
+    this.childNode.style.hAlign = value;
+    this.view.addClass(this.HALIGN_CLASS_NAMES[this.childNode.style.hAlign]);
     this.updateHAlignStyle();
     return value;
 };
@@ -138,11 +134,11 @@ RelativeAnchor.prototype.setStyleHAlign = function (value) {
 
 
 RelativeAnchor.prototype.setStyleVAlign = function (value) {
-    if (this.style.vAlign == value) return value;
+    if (this.childNode.style.vAlign == value) return value;
     if (!this.VALIGN_VALUE.includes(value)) value = this.VALIGN_VALUE[0];
 
-    this.view.removeClass(this.VALIGN_CLASS_NAMES[this.style.vAlign]);
-    if (this.style.vAlign == 'center') {
+    this.view.removeClass(this.VALIGN_CLASS_NAMES[this.childNode.style.vAlign]);
+    if (this.childNode.style.vAlign == 'center') {
         this.view.clearChild();
         this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
         this.$containter = this.view;
@@ -152,16 +148,16 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
         }
     }
 
-    this.style.vAlign = value;
-    this.view.addClass(this.VALIGN_CLASS_NAMES[this.style.vAlign]);
-    if (this.style.vAlign == 'center') {
+    this.childNode.style.vAlign = value;
+    this.view.addClass(this.VALIGN_CLASS_NAMES[this.childNode.style.vAlign]);
+    if (this.childNode.style.vAlign == 'center') {
         this.view.clearChild();
         this.view.addChild(_({
-            class: 'as-center-table',
-            child: '.as-center-cell'
+            class: 'as-align-box',
+            child: '.as-align-box-cell'
         }
         ));
-        this.viewBinding.$containter = '.as-center-cell';
+        this.viewBinding.$containter = '.as-align-box-cell';
         this.$containter = $(this.viewBinding.$containter, this.view);
         if (this.childNode) {
             this.$containter.addChild(this.childNode.view);
@@ -172,60 +168,98 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
 };
 
 RelativeAnchor.prototype.setStyleLeft = function (value) {
-    if (this.style.hAlign != 'center' && this.style.hAlign != 'right') {
+    if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'right') {
         this.view.addStyle('left', value + 'px');
     }
-    else  this.view.removeStyle('left');
+    else this.view.removeStyle('left');
     return value;
 };
 
 
 
 RelativeAnchor.prototype.setStyleRight = function (value) {
-    if (this.style.hAlign != 'center' && this.style.hAlign != 'left') {
+    if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'left') {
         this.view.addStyle('right', value + 'px');
     }
-    else  this.view.removeStyle('right');
+    else this.view.removeStyle('right');
 
     return value;
 };
 
 RelativeAnchor.prototype.setStyleTop = function (value) {
-    if (this.style.vAlign != 'center' && this.style.vAlign != 'bottom') {
+    if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'bottom') {
         this.view.addStyle('top', value + 'px');
     }
-    else  this.view.removeStyle('top');
+    else this.view.removeStyle('top');
 
     return value;
 };
 
 
 RelativeAnchor.prototype.setStyleBottom = function (value) {
-    if (this.style.vAlign != 'center'&& this.style.vAlign != 'top') {
+    if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'top') {
         this.view.addStyle('bottom', value + 'px');
     }
-    else  this.view.removeStyle('bottom');
+    else this.view.removeStyle('bottom');
 
     return value;
 };
 
+
+RelativeAnchor.prototype.setStyleWidth = function (value) {
+    var styleValue = value >= 0 ? value + 'px' : value;
+    if (this.childNode.style.vAlign == 'center') {
+        this.childNode.view.removeStyle('width');
+        if (this.hAlign == 'fixed') {
+            this.$containter.removeStyle('width', styleValue);
+        }
+        else {
+            this.$containter.addStyle('width', styleValue);
+        }
+    }
+    else {
+        if (this.childNode.style.hAlign == 'center') {
+            this.childNode.view.addStyle('width', styleValue);
+        }
+        else {
+            this.childNode.view.removeStyle('width');
+            if (this.hAlign == 'fixed') {
+                this.$containter.removeStyle('width', styleValue);
+            }
+            else {
+                this.$containter.addStyle('width', styleValue);
+            }
+        }
+    }
+    return value;
+};
+
+RelativeAnchor.prototype.setStyleHeight = function (value) {
+    var styleValue = value >= 0 ? value + 'px' : value;
+    if (this.childNode.style.vAlign == 'center') {
+        this.childNode.view.addStyle('height', styleValue);// set height to cell will be fail
+    }
+    else {
+        this.childNode.view.removeStyle('height');
+        if (this.vAlign == 'fixed') {
+            this.view.removeStyle('height', styleValue);
+        }
+        else {
+            this.view.addStyle('height', styleValue);
+        }
+    }
+    return value;
+};
 
 
 RelativeAnchor.prototype.TOP_CLASS_NAME = 'as-relative-anchor-box';
 
 RelativeAnchor.prototype.render = function () {
     var layout = {
-        class: [this.TOP_CLASS_NAME, this.HALIGN_CLASS_NAMES[this.style.hAlign], this.VALIGN_CLASS_NAMES[this.style.vAlign]]
+        class: [this.TOP_CLASS_NAME]
     };
 
     this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
-    if (this.style.vAlign == 'center') {
-        layout.child = {
-            class: 'as-center-table',
-            child: 'as-center-cell'
-        };
-        this.viewBinding.$containter = '.as-center-cell';
-    }
     return _(layout);
 };
 
@@ -241,11 +275,19 @@ RelativeAnchor.prototype.attachChild = function (child) {
     }
 
     if (child.anchor) throw new Error("Detach anchorBox first");
+    //preinit
     this.childNode = child;
+    this.childNode.style.left = this.childNode.style.left || 0;
+    this.childNode.style.right = this.childNode.style.right || 0;
+    this.childNode.style.top = this.childNode.style.top || 0;
+    this.childNode.style.bottom = this.childNode.style.bottom || 0;
+    this.childNode.style.vAlign = 'top';
+    this.childNode.style.hAlign = 'left';
     child.anchor = this;
     this.$containter.addChild(child.view);
     child.onAnchorAttached();
 };
+
 
 RelativeAnchor.prototype.detachChild = function () {
     if (this.childNode) {
@@ -275,21 +317,23 @@ RelativeAnchor.prototype.VALIGN_ACCEPT_STYLE = {
 };
 
 RelativeAnchor.prototype.updateVAlignStyle = function () {
-    for (var key in this.VALIGN_ACCEPT_STYLE[this.style.vAlign]) {
-        if (this.VALIGN_ACCEPT_STYLE[this.style.vAlign][key]) {
-            this.view.addStyle(key, this.style[key] + 'px');
+    for (var key in this.VALIGN_ACCEPT_STYLE[this.childNode.style.vAlign]) {
+        if (this.VALIGN_ACCEPT_STYLE[this.childNode.style.vAlign][key]) {
+            this.view.addStyle(key, this.childNode.style[key] + 'px');
         }
         else {
             this.view.removeStyle(key);
         }
     }
+    this.setStyle('width', this.childNode.style.width);
+    this.setStyle('height', this.childNode.style.height);
 };
 
 
 RelativeAnchor.prototype.updateHAlignStyle = function () {
-    for (var key in this.HALIGN_ACCEPT_STYLE[this.style.hAlign]) {
-        if (this.HALIGN_ACCEPT_STYLE[this.style.hAlign][key]) {
-            this.view.addStyle(key, this.style[key] + 'px');
+    for (var key in this.HALIGN_ACCEPT_STYLE[this.childNode.style.hAlign]) {
+        if (this.HALIGN_ACCEPT_STYLE[this.childNode.style.hAlign][key]) {
+            this.view.addStyle(key, this.childNode.style[key] + 'px');
         }
         else {
             this.view.removeStyle(key);

@@ -1,19 +1,8 @@
-.as-center-table {
-    display: table;
-}
-
-.as-center-cell {
-    display: table-cell;
-}
-
 .as-relative-layout {
     position: relative;
 }
 
-.as-relative-layout>.as-relative-anchor-box {
-    position: absolute;
-    z-index: 1;
-}
+
 
 
 .as-relative-anchor-box {
@@ -21,55 +10,13 @@
 }
 
 
-.as-center-cell>.as-relative-layout,
-.as-center-cell>.absol-bscroller {
-    display: inline-block;
-}
 
 
-/*
-    width: auto | set
-    left: set
-    right: unset,
-*/
-.as-relative-layout>.as-relative-anchor-box.as-halign-left {
-    left: 0;
-}
 
-/*
-    width: auto | set
-    right: set
-    left: unset,
-*/
-.as-relative-layout>.as-relative-anchor-box.as-halign-right {
-    right: 0;
-}
-
-/*
-    left: unset
-    right: unset
-    width: auto | set
-    warning: inner element should be set text-align to default to prevent error 
-*/
-.as-relative-layout>.as-relative-anchor-box.as-halign-center {
-    left: 0;
-    right: 0;
-    text-align: center;
-}
-
-/*
-    left: set
-    right: set
-    width: unset
-*/
-.as-relative-layout>.as-relative-anchor-box.as-halign-fixed {
-    left: 0;
-    right: 0;
-}
 
 .as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-base-component,
-.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-center-table,
-.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-center-table>.as-center-cell>.as-base-component {
+.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-align-box,
+.as-relative-layout>.as-relative-anchor-box.as-halign-fixed>.as-align-box>.as-align-box-cell>.as-base-component {
     width: 100%;
 }
 
@@ -102,15 +49,6 @@
     bottom: 0;
 }
 
-/*
-    bottom: set
-    height: unset
-    top: set
-*/
-.as-relative-layout>.as-relative-anchor-box.as-valign-fixed {
-    bottom: 0;
-    top: 0
-}
 
 .as-relative-layout>.as-relative-anchor-box.as-valign-fixed>* {
     height: 100%;
@@ -122,16 +60,14 @@
     bottom: 0;
 }
 
-.as-relative-layout>.as-relative-anchor-box.as-valign-center>.as-center-table {
+.as-relative-layout>.as-relative-anchor-box.as-valign-center>.as-align-box {
     height: 100%;
 }
 
-.as-relative-layout>.as-relative-anchor-box.as-valign-center>.as-center-table>.as-center-cell {
-    vertical-align: middle;
-}
 
 
-.as-relative-layout>.as-relative-anchor-box.as-valign-center.as-halign-center>.as-center-table {
+
+.as-relative-layout>.as-relative-anchor-box.as-valign-center.as-halign-center>.as-align-box {
     width: 100%;
 }
 
