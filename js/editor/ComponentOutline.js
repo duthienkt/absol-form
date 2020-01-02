@@ -94,7 +94,7 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
     }, function (event) {
         switch (event.menuItem.cmd) {
             case "delete":
-               self.layoutEditor.execCmd('delete');
+                self.layoutEditor.execCmd('delete');
                 break;
             case 'move-to-top':
                 self.moveToTop(comp);
@@ -144,14 +144,20 @@ ComponentOutline.prototype.updateComponetTree = function () {
     }
 
     function onPressNode(comp, event) {
-        var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
-        if (event.shiftKey && parentLayout == self.layoutEditor.editingLayout)
-            self.layoutEditor.toggleActiveComponent(comp);
+        var target = event.target;
+        if ((this.status == 'open' || this.status == 'close') && this.$node.$iconCtn.getBoundingClientRect().left > event.clientX - 3) {
+            this.status = this.status == 'open' ? 'close' : 'open';
+        }
         else {
-            if (parentLayout != self.layoutEditor.editingLayout) {
-                self.layoutEditor.editLayout(parentLayout|| self.layoutEditor.rootLayout);
+            var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
+            if (event.shiftKey && parentLayout == self.layoutEditor.editingLayout)
+                self.layoutEditor.toggleActiveComponent(comp);
+            else {
+                if (parentLayout != self.layoutEditor.editingLayout) {
+                    self.layoutEditor.editLayout(parentLayout || self.layoutEditor.rootLayout);
+                }
+                self.layoutEditor.setActiveComponent(comp);
             }
-            self.layoutEditor.setActiveComponent(comp);
         }
     }
 
@@ -168,12 +174,13 @@ ComponentOutline.prototype.updateComponetTree = function () {
                 });
                 childElt.getNode().defineEvent(['contextmenu']);
                 childElt.getNode().on({
-                    click: onPressNode.bind(null, childComp),
+                    click: onPressNode.bind(childElt, childComp),
                     contextmenu: self.ev_contextNode.bind(self, childComp)
                 });
                 expTree.addChild(childElt);
                 self.$expNodes.push(childElt);
                 visit(childElt, childComp);
+                expTree.status = 'open';
             });
         }
     }
@@ -188,11 +195,9 @@ ComponentOutline.prototype.updateComponetTree = function () {
                 name: this.layoutEditor.rootLayout.getAttribute('name'),
                 __comp__: this.layoutEditor.rootLayout,
                 __isRoot__: true
-            },
-            on: {
-                press: onPressNode.bind(null, this.layoutEditor.rootLayout)
             }
         });
+        this.$exptree.on('press', onPressNode.bind(this.$exptree, this.layoutEditor.rootLayout))
         this.$expNodes.push(this.$exptree);
         visit(this.$exptree, this.layoutEditor.rootLayout);
         if (this.$view) {
@@ -223,7 +228,6 @@ ComponentOutline.prototype.updateComponentStatus = function () {
             else {
                 nodeElt.removeClass('as-component-outline-node-focus');
             }
-
         }
         else {
             nodeElt.removeClass('as-component-outline-node-selected');
