@@ -60,9 +60,6 @@
     bottom: 0;
 }
 
-.as-relative-layout>.as-relative-anchor-box.as-valign-center>.as-align-box {
-    height: 100%;
-}
 
 
 
@@ -81,7 +78,7 @@
 .as-base-component textarea {
     resize: none;
     font-style: inherit;
-    font-size: initial;
+    font-size: inherit;
     font-weight: inherit;
     color: inherit;
     font-family: inherit;
@@ -96,7 +93,7 @@
     display: table-cell;
     width: 100%;
     font-style: inherit;
-    font-size: initial;
+    font-size: inherit;
     font-weight: inherit;
     color: inherit;
     font-family: inherit;
@@ -153,7 +150,7 @@
 
 .as-component-content-scaleless-cell {
     font-style: inherit;
-    font-size: initial;
+    font-size: inherit;
     font-weight: inherit;
     color: inherit;
     font-family: inherit;
@@ -164,7 +161,7 @@
 .as-component-content-scaleless-cell>div {
     display: inline-block;
     font-style: inherit;
-    font-size: initial;
+    font-size: inherit;
     font-weight: inherit;
     color: inherit;
     font-family: inherit;
@@ -172,7 +169,7 @@
 
 .as-base-component label {
     font-style: inherit;
-    font-size: initial;
+    font-size: inherit;
     font-weight: inherit;
     color: inherit;
     font-family: inherit;
