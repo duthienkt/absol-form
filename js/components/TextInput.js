@@ -41,6 +41,7 @@ TextInput.prototype.onCreate = function () {
     this.style.textColor = 'black';
     this.style.textSize = 0;
     this.style.textAlign = 'left';
+    this.style.font = 'None';
 };
 
 
