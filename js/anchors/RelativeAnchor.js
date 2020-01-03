@@ -122,10 +122,11 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
 
 
 RelativeAnchor.prototype.setStyleHAlign = function (value) {
-    if (this.childNode.style.hAlign == value) return value;
+    if (this.style.hAlign == value) return value;
     if (!this.HALIGN_VALUE.includes(value)) value = this.HALIGN_VALUE[0];
-    this.view.removeClass(this.HALIGN_CLASS_NAMES[this.childNode.style.hAlign]);
+    this.view.removeClass(this.HALIGN_CLASS_NAMES[this.style.hAlign]);
     this.childNode.style.hAlign = value;
+    this.style.hAlign = value;//really sync
     this.view.addClass(this.HALIGN_CLASS_NAMES[this.childNode.style.hAlign]);
     this.updateHAlignStyle();
     return value;
@@ -134,11 +135,11 @@ RelativeAnchor.prototype.setStyleHAlign = function (value) {
 
 
 RelativeAnchor.prototype.setStyleVAlign = function (value) {
-    if (this.childNode.style.vAlign == value) return value;
+    if (this.style.vAlign == value) return value;
     if (!this.VALIGN_VALUE.includes(value)) value = this.VALIGN_VALUE[0];
 
     this.view.removeClass(this.VALIGN_CLASS_NAMES[this.childNode.style.vAlign]);
-    if (this.childNode.style.vAlign == 'center') {
+    if (this.style.vAlign == 'center') {
         this.view.clearChild();
         this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
         this.$containter = this.view;
@@ -149,6 +150,7 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
     }
 
     this.childNode.style.vAlign = value;
+    this.style.vAlign = value;
     this.view.addClass(this.VALIGN_CLASS_NAMES[this.childNode.style.vAlign]);
     if (this.childNode.style.vAlign == 'center') {
         this.view.clearChild();
@@ -209,7 +211,7 @@ RelativeAnchor.prototype.setStyleBottom = function (value) {
 RelativeAnchor.prototype.setStyleWidth = function (value) {
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign == 'center') {
-        if (this.childNode.style.hAlign == 'center'){
+        if (this.childNode.style.hAlign == 'center') {
             this.view.removeStyle('width');
             this.childNode.view.addStyle('width', styleValue);
         }
@@ -288,10 +290,14 @@ RelativeAnchor.prototype.attachChild = function (child) {
     this.childNode.style.right = this.childNode.style.right || 0;
     this.childNode.style.top = this.childNode.style.top || 0;
     this.childNode.style.bottom = this.childNode.style.bottom || 0;
-    this.childNode.style.vAlign = 'top';
-    this.childNode.style.hAlign = 'left';
+    this.childNode.style.vAlign = this.childNode.style.vAlign || 'top';
+    this.childNode.style.hAlign = this.childNode.style.hAlign || 'left';
     child.anchor = this;
     this.$containter.addChild(child.view);
+    console.log(this.childNode.view, this.childNode.style.vAlign);
+    
+    this.setStyleVAlign(this.childNode.style.vAlign);
+    this.setStyleHAlign(this.childNode.style.hAlign);
     child.onAnchorAttached();
 };
 
