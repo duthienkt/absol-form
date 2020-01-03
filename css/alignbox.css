@@ -7,6 +7,9 @@
 }
 
 .as-align-box-cell>.as-relative-layout,
-.as-align-box-cell>.absol-bscroller {
+.as-align-box-cell>.absol-bscroller,
+.as-align-box-cell>.as-linear-layout,
+.as-align-box-cell>.as-chain-layout
+ {
     display: inline-block;
 }

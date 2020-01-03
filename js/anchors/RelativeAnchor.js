@@ -209,12 +209,17 @@ RelativeAnchor.prototype.setStyleBottom = function (value) {
 RelativeAnchor.prototype.setStyleWidth = function (value) {
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign == 'center') {
-        this.childNode.view.removeStyle('width');
-        if (this.hAlign == 'fixed') {
-            this.$containter.removeStyle('width', styleValue);
+        if (this.childNode.style.hAlign == 'center'){
+            this.view.removeStyle('width');
+            this.childNode.view.addStyle('width', styleValue);
+        }
+        else if (this.childNode.style.hAlign == 'fixed') {
+            this.view.removeStyle('width');
+            this.childNode.view.removeStyle('width');
         }
         else {
-            this.$containter.addStyle('width', styleValue);
+            this.childNode.view.addStyle('width', styleValue);
+            this.view.removeStyle('width');
         }
     }
     else {
@@ -238,6 +243,7 @@ RelativeAnchor.prototype.setStyleWidth = function (value) {
 RelativeAnchor.prototype.setStyleHeight = function (value) {
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign == 'center') {
+        this.view.removeStyle('height');
         this.childNode.view.addStyle('height', styleValue);// set height to cell will be fail
     }
     else {
@@ -344,5 +350,32 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
     this.setStyle('height', this.childNode.style.height);
 };
 
+
+
+
+RelativeAnchor.prototype.getStyleWidthDescriptor = function () {
+    return {
+        type: 'measure'
+        // disabled: this.style.hAlign == 'fixed',
+        // type: 'number',
+        // min: this.measureMinSize().width,
+        // max: Infinity,
+        // livePreview: true
+        // type:'text'
+
+    };
+};
+
+RelativeAnchor.prototype.getStyleHeightDescriptor = function () {
+    return {
+        type: 'measure'
+        // disabled: this.style.vAlign == 'fixed',
+        // type: 'number',
+        // min: this.measureMinSize().height,
+        // max: Infinity,
+        // livePreview: true
+        // type:'text'
+    };
+};
 
 export default RelativeAnchor;
