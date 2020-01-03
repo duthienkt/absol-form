@@ -220,8 +220,8 @@ RelativeAnchor.prototype.setStyleWidth = function (value) {
             this.childNode.view.removeStyle('width');
         }
         else {
-            this.childNode.view.addStyle('width', styleValue);
-            this.view.removeStyle('width');
+            this.view.addStyle('width', styleValue);
+            this.childNode.view.removeStyle('width');
         }
     }
     else {
