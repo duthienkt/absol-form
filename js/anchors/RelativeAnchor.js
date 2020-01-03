@@ -170,8 +170,9 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
 };
 
 RelativeAnchor.prototype.setStyleLeft = function (value) {
+    var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'right') {
-        this.view.addStyle('left', value + 'px');
+        this.view.addStyle('left', styleValue);
     }
     else this.view.removeStyle('left');
     return value;
@@ -180,8 +181,9 @@ RelativeAnchor.prototype.setStyleLeft = function (value) {
 
 
 RelativeAnchor.prototype.setStyleRight = function (value) {
+    var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'left') {
-        this.view.addStyle('right', value + 'px');
+        this.view.addStyle('right', styleValue);
     }
     else this.view.removeStyle('right');
 
@@ -189,18 +191,19 @@ RelativeAnchor.prototype.setStyleRight = function (value) {
 };
 
 RelativeAnchor.prototype.setStyleTop = function (value) {
+    var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'bottom') {
-        this.view.addStyle('top', value + 'px');
+        this.view.addStyle('top', styleValue);
     }
     else this.view.removeStyle('top');
-
     return value;
 };
 
 
 RelativeAnchor.prototype.setStyleBottom = function (value) {
+    var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'top') {
-        this.view.addStyle('bottom', value + 'px');
+        this.view.addStyle('bottom', styleValue);
     }
     else this.view.removeStyle('bottom');
 
@@ -295,7 +298,7 @@ RelativeAnchor.prototype.attachChild = function (child) {
     child.anchor = this;
     this.$containter.addChild(child.view);
     console.log(this.childNode.view, this.childNode.style.vAlign);
-    
+
     this.setStyleVAlign(this.childNode.style.vAlign);
     this.setStyleHAlign(this.childNode.style.hAlign);
     child.onAnchorAttached();
