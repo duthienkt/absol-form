@@ -308,7 +308,7 @@ FormEditor.prototype.getView = function () {
                         },
                         {
                             tag: 'tabframe',
-                            class: ['as-form-left-tool-site-tab'],
+                            class: ['as-form-left-tool-site-tab', 'absol-bscroller'],
                             attr: {
                                 name: 'Component',
                                 id: this.prefix + 'tab-component',

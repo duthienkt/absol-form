@@ -25,6 +25,7 @@ Text.prototype.onCreate = function () {
     this.style.textSize = 0;
     this.style.textAlign = 'left';
     this.style.textColor = 'black';
+    this.style.font = 'None';
 };
 
 Text.prototype.render = function () {

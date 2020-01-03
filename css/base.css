@@ -80,6 +80,11 @@
 
 .as-base-component textarea {
     resize: none;
+    font-style: inherit;
+    font-size: initial;
+    font-weight: inherit;
+    color: inherit;
+    font-family: inherit;
 }
 
 .as-component-content-scaleless,
@@ -90,6 +95,11 @@
 .as-component-content-scaleless-cell {
     display: table-cell;
     width: 100%;
+    font-style: inherit;
+    font-size: initial;
+    font-weight: inherit;
+    color: inherit;
+    font-family: inherit;
 }
 
 .as-component-content-scaleless.as-align-left-top>.as-component-content-scaleless-cell {
@@ -142,8 +152,10 @@
 }
 
 .as-component-content-scaleless-cell {
-    font-size: inherit;
     font-style: inherit;
+    font-size: initial;
+    font-weight: inherit;
+    color: inherit;
     font-family: inherit;
 }
 
@@ -151,11 +163,19 @@
 
 .as-component-content-scaleless-cell>div {
     display: inline-block;
+    font-style: inherit;
+    font-size: initial;
+    font-weight: inherit;
+    color: inherit;
+    font-family: inherit;
 }
 
 .as-base-component label {
+    font-style: inherit;
+    font-size: initial;
+    font-weight: inherit;
+    color: inherit;
     font-family: inherit;
-    font-size: inherit;
 }
 
 .as-linear-layout::before {
