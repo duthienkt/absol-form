@@ -220,14 +220,15 @@ RelativeAnchor.prototype.setStyleWidth = function (value) {
     else {
         if (this.childNode.style.hAlign == 'center') {
             this.childNode.view.addStyle('width', styleValue);
+            this.view.removeStyle('width');
         }
         else {
             this.childNode.view.removeStyle('width');
             if (this.hAlign == 'fixed') {
-                this.$containter.removeStyle('width', styleValue);
+                this.view.removeStyle('width', styleValue);
             }
             else {
-                this.$containter.addStyle('width', styleValue);
+                this.view.addStyle('width', styleValue);
             }
         }
     }
@@ -339,12 +340,9 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
             this.view.removeStyle(key);
         }
     }
+    this.setStyle('width', this.childNode.style.width);
+    this.setStyle('height', this.childNode.style.height);
 };
-
-
-
-
-
 
 
 export default RelativeAnchor;
