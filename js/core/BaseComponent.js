@@ -240,6 +240,15 @@ BaseComponent.prototype.setStyle = function (name, value) {
     return FViewable.prototype.setStyle.apply(this, [name, value].concat(Array.prototype.slice.call(arguments, 2)));
 };
 
+BaseComponent.prototype.getStyle = function (name) {
+    var functionName = 'getStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
+    if (this.anchor && this.anchor[functionName]) {//anchor will handle this
+        return this.anchor.getStyle.apply(this.anchor, arguments);
+    }
+    // self handle
+    return FViewable.prototype.getStyle.apply(this, arguments);
+};
+
 BaseComponent.prototype.setStyleWidth = function (value) {
     if (this.anchor) return value;// let anchor do that
     if (typeof value == "number")

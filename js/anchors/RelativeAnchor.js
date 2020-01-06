@@ -211,6 +211,49 @@ RelativeAnchor.prototype.setStyleBottom = function (value) {
 };
 
 
+RelativeAnchor.prototype.getStyleWidth = function (unit) {
+    if (unit == 'px') {
+        if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'wrap_content' || typeof this.childNode.style.width != 'number')
+            return this.view.getBoundingClientRect().width;
+        else {
+            return this.childNode.style.width;
+        }
+    }
+    else if (unit == '%') {
+        if (this.childNode.style.hAlign == 'match_parent') return 100;
+        else if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'wrap_content' || ((typeof this.childNode.style.width == 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
+            return this.childNode.view.getBoundingClientRect().width * 100 / this.childNode.parent.view.getBoundingClientRect().width;
+        }
+        else {
+            return parseFloat(this.childNode.style.width.replace('%', ''));
+        }
+    } else
+        return this.childNode.style.width;
+};
+
+
+
+RelativeAnchor.prototype.getStyleHeight = function (unit) {
+    if (unit == 'px') {
+        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || typeof this.style.height != 'number')
+            return this.view.getBoundingClientRect().height;
+        else {
+            return this.style.height;
+        }
+    }
+    else if (unit == '%') {
+        if (this.style.vAlign == 'match_parent') return 100;
+        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
+            return this.childNode.view.getBoundingClientRect().height * 100 / this.childNode.parent.view.getBoundingClientRect().height;
+        }
+        else {
+            return parseFloat(this.style.height.replace('%', ''));
+        }
+    } else
+        return this.style.height;
+};
+
+
 RelativeAnchor.prototype.setStyleWidth = function (value) {
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign == 'center') {
@@ -245,7 +288,10 @@ RelativeAnchor.prototype.setStyleWidth = function (value) {
     return value;
 };
 
+
 RelativeAnchor.prototype.setStyleHeight = function (value) {
+    if (value == 'match_parent') value = '100%';
+    else if (value == 'wrap_content') value = 'auto';
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign == 'center') {
         this.view.removeStyle('height');
@@ -262,6 +308,7 @@ RelativeAnchor.prototype.setStyleHeight = function (value) {
     }
     return value;
 };
+
 
 
 RelativeAnchor.prototype.TOP_CLASS_NAME = 'as-relative-anchor-box';
@@ -364,21 +411,20 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
 
 RelativeAnchor.prototype.getStyleWidthDescriptor = function () {
     return {
-        type: 'measure'
-        // disabled: this.style.hAlign == 'fixed',
+        type: 'measureSize',
+        disabled: this.style.hAlign == 'fixed',
         // type: 'number',
         // min: this.measureMinSize().width,
         // max: Infinity,
         // livePreview: true
         // type:'text'
-
     };
 };
 
 RelativeAnchor.prototype.getStyleHeightDescriptor = function () {
     return {
-        type: 'measure'
-        // disabled: this.style.vAlign == 'fixed',
+        type: 'measureSize',
+        disabled: this.style.vAlign == 'fixed'
         // type: 'number',
         // min: this.measureMinSize().height,
         // max: Infinity,
