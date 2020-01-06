@@ -17,7 +17,7 @@ FModel.prototype.getAcceptsAttributeNames = function () {
  */
 FModel.prototype.getAttributeDescriptor = function (name) {
     var functionName = 'getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
-    return this[functionName] && this[functionName].call(this);
+    return this[functionName] && this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
 };
 
 /**
@@ -27,7 +27,7 @@ FModel.prototype.getAttributeDescriptors = function () {
     var result = {};
     var names = this.getAcceptsAttributeNames();
     var key;
-    for (var i = 0; i< names.length; ++i){
+    for (var i = 0; i < names.length; ++i) {
         key = names[i];
         result[key] = this.getAttributeDescriptor(key);
     }
@@ -43,8 +43,8 @@ FModel.prototype.getAttributeDescriptors = function () {
 FModel.prototype.setAttribute = function (name, value) {
     var functionName = 'setAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1);
     var res = value;
-    if (this[functionName]){
-        res = this[functionName].call(this, value);
+    if (this[functionName]) {
+        res = this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
     }
     if (res === undefined) {
         delete this.attributes[name];
@@ -62,6 +62,10 @@ FModel.prototype.setAttribute = function (name, value) {
  * @returns {} value which is set 
  */
 FModel.prototype.getAttribute = function (name) {
+    var functionName = 'getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1);
+    if (this[functionName]) {
+        return this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
+    }
     return this.attributes[name];
 };
 

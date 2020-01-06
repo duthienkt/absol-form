@@ -21,7 +21,7 @@ FViewable.prototype.render = function () {
  */
 FViewable.prototype.getStyleDescriptor = function (name) {
     var functionName = 'getStyle' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
-    return this[functionName] && this[functionName].call(this);
+    return this[functionName] && this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
 };
 
 
@@ -51,7 +51,7 @@ FViewable.prototype.setStyle = function (name, value) {
     var functionName = 'setStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
     var res = value;
     if (this[functionName]) {
-        res = this[functionName].call(this, value);
+        res = this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
     }
     if (res === undefined) {
         delete this.style[name];
@@ -68,6 +68,10 @@ FViewable.prototype.setStyle = function (name, value) {
  * @returns {} value which is set 
  */
 FViewable.prototype.getStyle = function (name) {
+    var functionName = 'getStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
+    if (this[functionName]) {
+        return this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
+    }
     return this.style[name];
 };
 

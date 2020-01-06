@@ -74,7 +74,6 @@ BaseComponent.prototype.onAnchorDetached = function () {
 
 BaseComponent.prototype.onAttached = function (parent) {
     this.updateStyle();
-
 };
 
 BaseComponent.prototype.updateStyle = function () {
@@ -185,8 +184,8 @@ BaseComponent.prototype.getAcceptsStyleNames = function () {
 BaseComponent.prototype.getStyleDescriptor = function (name) {
     var res;
     if (this.anchor)
-        res = this.anchor.getStyleDescriptor(name);
-    res = res || FViewable.prototype.getStyleDescriptor.call(this, name);
+        res = this.anchor.getStyleDescriptor.apply(this.anchor, arguments);
+    res = res || FViewable.prototype.getStyleDescriptor.apply(this, arguments);
     return res;
 };
 
@@ -213,8 +212,6 @@ BaseComponent.prototype.getAcceptsEventNames = function () {
  * @returns {}
  */
 BaseComponent.prototype.getEventDescriptor = function (name) {
-    // var functionName = 'getEvent' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
-    // return this[functionName] && this[functionName].call(this);
     return { type: 'function' };
 };
 
@@ -237,10 +234,10 @@ BaseComponent.prototype.getAttributeNameDescriptor = function () {
 BaseComponent.prototype.setStyle = function (name, value) {
     var functionName = 'setStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
     if (this.anchor && this.anchor[functionName]) {//anchor will handle this
-        value = this.anchor[functionName](value);
+        value = this.anchor.setStyle.apply(this.anchor, arguments);
     }
     // self handle
-    return FViewable.prototype.setStyle.call(this, name, value);
+    return FViewable.prototype.setStyle.apply(this, [name, value].concat(Array.prototype.slice.call(arguments, 2)));
 };
 
 BaseComponent.prototype.setStyleWidth = function (value) {
