@@ -797,7 +797,8 @@ PropertyEditor.prototype.createColorInputRow = function (name, descriptor) {
 };
 
 
-PropertyEditor.prototype.createMeasureInputRow = function (name, descriptor) {
+PropertyEditor.prototype.createMeasureSizeInputRow = function (name, descriptor) {
+    var self = this;
     var res = _({
         tag: 'tr',
         class: 'as-need-update',
@@ -811,10 +812,7 @@ PropertyEditor.prototype.createMeasureInputRow = function (name, descriptor) {
                 attr: { colspan: '2' },
                 child: [
                     {
-                        tag: 'numberinput',
-                        props: {
-                            value: this.getProperty(name)
-                        }
+                        tag: 'numberinput'
                     }
                 ]
             },
@@ -826,12 +824,66 @@ PropertyEditor.prototype.createMeasureInputRow = function (name, descriptor) {
                         verticalAlign: 'middle'
                     },
                     props: {
-                        items: [{ text: 'px', value: 'px' }, { text: '%', value: '%' }, { text: 'other', value: 'other' }]
+                        items: [
+                            { text: 'px', value: 'px' },
+                            { text: '%', value: '%' },
+                            { text: 'match_parent', value: 'match_parent' },
+                            { text: 'wrap_content', value: 'wrap_content' }
+                        ]
                     }
                 }
             }
         ]
     });
+
+
+    var numberElt = $('numberinput', res)
+        .on('change', function () {
+            switch (typeSelectElt.value) {
+                case '%': self.setProperty(name, this.value + '%'); break;
+                case 'px': self.setProperty(name, this.value); break;
+            }
+            self.notifyChange(name);
+        })
+        .on('stopchange', function () {
+            switch (typeSelectElt.value) {
+                case '%': self.setProperty(name, this.value + '%'); break;
+                case 'px': self.setProperty(name, this.value); break;
+            }
+            self.notifyStopChange(name);
+        });
+
+    var typeSelectElt = $('selectmenu', res)
+        .on('change', function (event) {
+            if (this.value == 'match_parent' || this.value == 'wrap_content') {
+                self.setProperty(name, this.value);
+                numberElt.disabled = true;
+            }
+            else {
+                numberElt.disabled = false;
+                console.log(this.value, self.getProperty(name, this.value));
+                numberElt.value = self.getProperty(name, this.value);
+            }
+        });
+
+    var value = this.getProperty(name);
+    if (typeof value == 'number') {
+        numberElt.value = value;
+        typeSelectElt.value = 'px';
+    }
+    else if (typeof value == 'string') {
+        if (value.match(/\%$/)) {
+            typeSelectElt.value = '%';
+            numberElt.value = parseFloat(value.replace('%', ''));
+        }
+        else if (value == 'match_parent' || value != 'wrap_content') {
+            typeSelectElt.value = value;
+        }
+        else {
+            console.error("Unknow typeof " + name, value);
+        }
+
+    }
     return res;
 };
 

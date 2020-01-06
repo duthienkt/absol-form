@@ -13,13 +13,13 @@ StyleEditor.prototype.setProperty = function (name, value) {
 };
 
 
-StyleEditor.prototype.getProperty = function (name) {
-    return this.object.getStyle(name);
+StyleEditor.prototype.getProperty = function () {
+    return this.object.getStyle.apply(this.object, arguments);
 };
 
 
 StyleEditor.prototype.getPropertyDescriptor = function (name) {
-    return this.object.getStyleDescriptor(name);
+    return this.object.getStyleDescriptor.apply(this.object, arguments);
 };
 
 
