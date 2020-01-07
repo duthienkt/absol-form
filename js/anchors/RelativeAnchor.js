@@ -178,7 +178,7 @@ RelativeAnchor.prototype.setStyleLeft = function (value, unit) {
     }
     else if (unit == '%') {
         if (typeof this.childNode.style.left == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().width + '%' / 100;
+            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
@@ -233,7 +233,7 @@ RelativeAnchor.prototype.setStyleRight = function (value, unit) {
     }
     else if (unit == '%') {
         if (typeof this.childNode.style.right == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().width + '%' / 100;
+            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
@@ -286,7 +286,7 @@ RelativeAnchor.prototype.setStyleTop = function (value, unit) {
     }
     else if (unit == '%') {
         if (typeof this.childNode.style.top == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().height + '%' / 100;
+            value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
@@ -341,7 +341,7 @@ RelativeAnchor.prototype.setStyleBottom = function (value, unit) {
     }
     else if (unit == '%') {
         if (typeof this.childNode.style.bottom == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().height + '%' / 100;
+            value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
@@ -431,7 +431,17 @@ RelativeAnchor.prototype.getStyleHeight = function (unit) {
 };
 
 
-RelativeAnchor.prototype.setStyleWidth = function (value) {
+RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.childNode.style.width == 'string') && this.childNode.style.width.match(/\%$/)) {
+            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.childNode.style.width == 'number') {
+            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
+        }
+    }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign == 'center') {
         if (this.childNode.style.hAlign == 'center') {
@@ -466,7 +476,17 @@ RelativeAnchor.prototype.setStyleWidth = function (value) {
 };
 
 
-RelativeAnchor.prototype.setStyleHeight = function (value) {
+RelativeAnchor.prototype.setStyleHeight = function (value, unit) {
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.childNode.style.height == 'string') && this.childNode.style.height.match(/\%$/)) {
+            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.childNode.style.height == 'number') {
+            value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
+        }
+    }
     if (value == 'match_parent') value = '100%';
     else if (value == 'wrap_content') value = 'auto';
     var styleValue = value >= 0 ? value + 'px' : value;
