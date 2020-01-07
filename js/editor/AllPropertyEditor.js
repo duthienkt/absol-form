@@ -23,7 +23,7 @@ AllPropertyEditor.prototype.getProperty = function (name) {
     if (this.propertyGroup.attributes[name])
         return this.object.getAttribute(this.propertyGroup.attributes[name]);
     if (this.propertyGroup.style[name])
-        return this.object.getStyle(this.propertyGroup.style[name], Array.prototype.slice.call(arguments, 1));
+        return this.object.getStyle.apply(this.object, [this.propertyGroup.style[name]].concat(Array.prototype.slice.call(arguments, 1)));
     throw new Error('not found ' + name);
 };
 

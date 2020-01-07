@@ -861,29 +861,133 @@ PropertyEditor.prototype.createMeasureSizeInputRow = function (name, descriptor)
             }
             else {
                 numberElt.disabled = false;
-                console.log(this.value, self.getProperty(name, this.value));
-                numberElt.value = self.getProperty(name, this.value);
+                var value = self.getProperty(name, this.value);
+                numberElt.value = value;
+                if (this.value == '%') {
+                    self.setProperty(name, value + '%');
+                }
+                else {
+                    self.setProperty(name, value);
+                }
             }
         });
 
-    var value = this.getProperty(name);
-    if (typeof value == 'number') {
-        numberElt.value = value;
-        typeSelectElt.value = 'px';
-    }
-    else if (typeof value == 'string') {
-        if (value.match(/\%$/)) {
-            typeSelectElt.value = '%';
-            numberElt.value = parseFloat(value.replace('%', ''));
-        }
-        else if (value == 'match_parent' || value != 'wrap_content') {
-            typeSelectElt.value = value;
-        }
-        else {
-            console.error("Unknow typeof " + name, value);
-        }
 
+    res.notifyChange = function () {
+        var value = self.getProperty(name);
+        if (typeof value == 'number') {
+            numberElt.value = value;
+            typeSelectElt.value = 'px';
+        }
+        else if (typeof value == 'string') {
+            if (value.match(/\%$/)) {
+                typeSelectElt.value = '%';
+                numberElt.value = parseFloat(value.replace('%', ''));
+            }
+            else if (value == 'match_parent' || value != 'wrap_content') {
+                typeSelectElt.value = value;
+            }
+            else {
+                console.error("Unknow typeof " + name, value);
+            }
+        }
     }
+
+    res.notifyChange();
+
+    return res;
+};
+
+
+PropertyEditor.prototype.createMeasurePositionInputRow = function (name, descriptor) {
+    var self = this;
+    var res = _({
+        tag: 'tr',
+        class: 'as-need-update',
+        child: [
+            {
+                tag: 'td',
+                child: { text: name }
+            },
+            {
+                tag: 'td',
+                attr: { colspan: '2' },
+                child: [
+                    {
+                        tag: 'numberinput'
+                    }
+                ]
+            },
+            {
+                tag: 'td',
+                child: {
+                    tag: 'selectmenu',
+                    style: {
+                        verticalAlign: 'middle'
+                    },
+                    props: {
+                        items: [
+                            { text: 'px', value: 'px' },
+                            { text: '%', value: '%' },
+                        ]
+                    }
+                }
+            }
+        ]
+    });
+
+
+    var numberElt = $('numberinput', res)
+        .on('change', function () {
+            switch (typeSelectElt.value) {
+                case '%': self.setProperty(name, this.value + '%'); break;
+                case 'px': self.setProperty(name, this.value); break;
+            }
+            self.notifyChange(name);
+        })
+        .on('stopchange', function () {
+            switch (typeSelectElt.value) {
+                case '%': self.setProperty(name, this.value + '%'); break;
+                case 'px': self.setProperty(name, this.value); break;
+            }
+            self.notifyStopChange(name);
+        });
+
+    var typeSelectElt = $('selectmenu', res)
+        .on('change', function (event) {
+            var value = self.getProperty(name, this.value);
+            numberElt.value = value;
+            if (this.value == '%') {
+                self.setProperty(name, value + '%');
+            }
+            else {
+                self.setProperty(name, value);
+            }
+        });
+
+
+    res.notifyChange = function () {
+        var value = self.getProperty(name);
+        if (typeof value == 'number') {
+            numberElt.value = value;
+            typeSelectElt.value = 'px';
+        }
+        else if (typeof value == 'string') {
+            if (value.match(/\%$/)) {
+                typeSelectElt.value = '%';
+                numberElt.value = parseFloat(value.replace('%', ''));
+            }
+            else if (value == 'match_parent' || value != 'wrap_content') {
+                typeSelectElt.value = value;
+            }
+            else {
+                console.error("Unknow typeof " + name, value);
+            }
+        }
+    }
+
+    res.notifyChange();
+
     return res;
 };
 
