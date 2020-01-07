@@ -195,10 +195,15 @@ RelativeAnchorEditor.prototype.update = function () {
     }
 };
 
+
 RelativeAnchorEditor.prototype.updatePosition = function () {
     if (this.component) {
         var bound = this.layoutEditor.$forceground.getBoundingClientRect();
         var compBound = this.component.view.getBoundingClientRect();
+        var styleLeft = this.component.getStyle('left', 'px');
+        var styleTop = this.component.getStyle('top', 'px');
+        var styleRight = this.component.getStyle('right', 'px');
+        var styleBottom = this.component.getStyle('bottom', 'px');
         this.$resizeBox.addStyle({
             left: compBound.left - bound.left + 'px',
             top: compBound.top - bound.top + 'px',
@@ -208,29 +213,29 @@ RelativeAnchorEditor.prototype.updatePosition = function () {
 
         if (this.$leftAlignLine.parentNode)
             this.$leftAlignLine.addStyle({
-                left: compBound.left - bound.left - this.component.style.left + 'px',
-                width: this.component.style.left + 'px',
+                left: compBound.left - bound.left - styleLeft + 'px',
+                width: styleLeft + 'px',
                 top: compBound.top - bound.top + compBound.height / 2 + 'px',
             });
 
         if (this.$rightAlignLine.parentNode)
             this.$rightAlignLine.addStyle({
                 left: compBound.right - bound.left + 'px',
-                width: this.component.style.right + 'px',
+                width: styleRight + 'px',
                 top: compBound.top - bound.top + compBound.height / 2 + 'px',
             });
 
         if (this.$topAlignLine.parentNode)
             this.$topAlignLine.addStyle({
-                top: compBound.top - bound.top - this.component.style.top + 'px',
-                height: this.component.style.top + 'px',
+                top: compBound.top - bound.top - styleTop + 'px',
+                height: styleTop + 'px',
                 left: compBound.left - bound.left + compBound.width / 2 + 'px',
             });
 
         if (this.$bottomAlignLine.parentNode)
             this.$bottomAlignLine.addStyle({
                 top: compBound.bottom - bound.top + 'px',
-                height: this.component.style.bottom + 'px',
+                height: styleBottom + 'px',
                 left: compBound.left - bound.left + compBound.width / 2 + 'px',
             });
     }
@@ -249,7 +254,18 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         dy: 0,
         option: event.option,
         styleDescriptors: this.component.getStyleDescriptors(),
-        style0: Object.assign({}, this.component.style),
+        style0: Object.assign(
+            {},
+            this.component.style,
+            {
+                left: this.component.getStyle('left', 'px'),
+                right: this.component.getStyle('right', 'px'),
+                top: this.component.getStyle('top', 'px'),
+                bottom: this.component.getStyle('bottom', 'px'),
+                width: this.component.getStyle('width', 'px'),
+                height: this.component.getStyle('height', 'px'),
+            }
+        ),
         comp: this.component,
         isChange: false,
         snapLines: snapLines,
@@ -266,7 +282,6 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         this._updateSnapLines();
     }
 };
-
 
 
 
@@ -327,12 +342,12 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     var positionIsChange = false;
 
     if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
-        movingData.comp.setStyle('left', Math.max(0, movingData.style0.left + movingData.dx));
+        movingData.comp.setStyle('left', Math.max(0, movingData.style0.left + movingData.dx), 'px');
         positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.right && !movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
-        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx));
+        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx), 'px');
         positionIsChange = true;
 
     }
@@ -340,52 +355,52 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
         if (movingData.option.left) {
             if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width - movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width - movingData.dx * 2), 'px');
             }
             else {
-                movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx));
+                movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx), 'px');
             }
             positionIsChange = true;
         }
         if (movingData.option.right) {
             if (movingData.styleDescriptors.left && !!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx * 2), 'px');
                 //center align
             }
             else {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx), 'px');
             }
             positionIsChange = true;
         }
     }
 
     if (movingData.styleDescriptors.top && !movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
-        movingData.comp.setStyle('top', Math.max(0, movingData.style0.top + movingData.dy));
+        movingData.comp.setStyle('top', Math.max(0, movingData.style0.top + movingData.dy), 'px');
         positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.bottom && !movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
-        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom - movingData.dy));
+        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom - movingData.dy), 'px');
         positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.height && !movingData.styleDescriptors.height.disabled) {
         if (movingData.option.top) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy * 2), 'px');
             }
             else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy), 'px');
             }
             positionIsChange = true;
 
         }
         if (movingData.option.bottom) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy * 2), 'px');
             }
             else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy), 'px');
             }
             positionIsChange = true;
         }

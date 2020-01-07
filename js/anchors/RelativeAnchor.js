@@ -78,7 +78,7 @@ RelativeAnchor.prototype.getStyleVAlignDescriptor = function () {
 
 RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
     return {
-        type: 'number',
+        type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
         disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'right',
@@ -89,7 +89,7 @@ RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
 
 RelativeAnchor.prototype.getStyleRightDescriptor = function () {
     return {
-        type: 'number',
+        type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
         disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'left',
@@ -100,10 +100,10 @@ RelativeAnchor.prototype.getStyleRightDescriptor = function () {
 
 RelativeAnchor.prototype.getStyleTopDescriptor = function () {
     return {
-        type: 'number',
+        type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'bottom',
+        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'bottom',
         livePreview: true
     };
 };
@@ -111,10 +111,10 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
 
 RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
     return {
-        type: 'number',
+        type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'top',
+        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'top',
         livePreview: true
     };
 };
@@ -169,6 +169,7 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
     return value;
 };
 
+
 RelativeAnchor.prototype.setStyleLeft = function (value) {
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'right') {
@@ -177,6 +178,40 @@ RelativeAnchor.prototype.setStyleLeft = function (value) {
     else this.view.removeStyle('left');
     return value;
 };
+
+
+RelativeAnchor.prototype.getStyleLeft = function (unit) {
+    if (unit == 'px') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'right'
+            || this.childNode.style.left === undefined
+            || this.childNode.style.left === null
+            || (typeof this.childNode.style.left != 'number')) {
+            return this.childNode.view.getBoundingClientRect().left - this.childNode.parent.view.getBoundingClientRect().left;
+        }
+        else {
+            return this.childNode.style.left;
+        }
+    }
+    else if (unit == '%') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'right'
+            || this.childNode.style.left === undefined
+            || this.childNode.style.left === null
+            || (typeof this.childNode.style.left != 'string')
+            || (typeof this.childNode.style.left == 'string' && typeof this.childNode.style.left.match(/\%$/))) {
+            var parentBound = this.childNode.parent.view.getBoundingClientRect();
+            var nodeBound = this.childNode.view.getBoundingClientRect();
+            return (nodeBound.left - parentBound.left) * 100 / parentBound.width;
+        }
+        else {
+            return parseFloat(this.childNode.style.left.replace('%', ''));
+        }
+    }
+    else
+        return this.childNode.style.left;
+};
+
 
 
 
@@ -190,6 +225,39 @@ RelativeAnchor.prototype.setStyleRight = function (value) {
     return value;
 };
 
+
+RelativeAnchor.prototype.getStyleRight = function (unit) {
+    if (unit == 'px') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'left'
+            || this.childNode.style.right === undefined
+            || this.childNode.style.right === null
+            || (typeof this.childNode.style.right != 'number')) {
+            return this.childNode.parent.view.getBoundingClientRect().right - this.childNode.view.getBoundingClientRect().right;
+        }
+        else {
+            return this.childNode.style.right;
+        }
+    }
+    else if (unit == '%') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'left'
+            || this.childNode.style.right === undefined
+            || this.childNode.style.right === null
+            || (typeof this.childNode.style.right != 'string')
+            || (typeof this.childNode.style.right == 'string' && typeof this.childNode.style.right.match(/\%$/))) {
+            var parentBound = this.childNode.parent.view.getBoundingClientRect();
+            var nodeBound = this.childNode.view.getBoundingClientRect();
+            return (parentBound.right - nodeBound.right) * 100 / parentBound.width;
+        }
+        else {
+            return parseFloat(this.childNode.style.right.replace('%', ''));
+        }
+    }
+    else
+        return this.childNode.style.right;
+};
+
 RelativeAnchor.prototype.setStyleTop = function (value) {
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'bottom') {
@@ -200,6 +268,41 @@ RelativeAnchor.prototype.setStyleTop = function (value) {
 };
 
 
+
+RelativeAnchor.prototype.getStyleTop = function (unit) {
+    if (unit == 'px') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'bottom'
+            || this.childNode.style.top === undefined
+            || this.childNode.style.top === null
+            || (typeof this.childNode.style.top != 'number')) {
+            return this.childNode.view.getBoundingClientRect().top - this.childNode.parent.view.getBoundingClientRect().top;
+        }
+        else {
+            return this.childNode.style.top;
+        }
+    }
+    else if (unit == '%') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'bottom'
+            || this.childNode.style.top === undefined
+            || this.childNode.style.top === null
+            || (typeof this.childNode.style.top != 'string')
+            || (typeof this.childNode.style.top == 'string' && typeof this.childNode.style.top.match(/\%$/))) {
+            var parentBound = this.childNode.parent.view.getBoundingClientRect();
+            var nodeBound = this.childNode.view.getBoundingClientRect();
+            return (nodeBound.top - parentBound.top) * 100 / parentBound.height;
+        }
+        else {
+            return parseFloat(this.childNode.style.top.replace('%', ''));
+        }
+    }
+    else
+        return this.childNode.style.top;
+};
+
+
+
 RelativeAnchor.prototype.setStyleBottom = function (value) {
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'top') {
@@ -208,6 +311,39 @@ RelativeAnchor.prototype.setStyleBottom = function (value) {
     else this.view.removeStyle('bottom');
 
     return value;
+};
+
+
+RelativeAnchor.prototype.getStyleBottom = function (unit) {
+    if (unit == 'px') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'top'
+            || this.childNode.style.bottom === undefined
+            || this.childNode.style.bottom === null
+            || (typeof this.childNode.style.bottom != 'number')) {
+            return this.childNode.parent.view.getBoundingClientRect().bottom - this.childNode.view.getBoundingClientRect().bottom;
+        }
+        else {
+            return this.childNode.style.bottom;
+        }
+    }
+    else if (unit == '%') {
+        if (this.childNode.style.hAlign == 'center'
+            || this.childNode.style.hAlign == 'top'
+            || this.childNode.style.bottom === undefined
+            || this.childNode.style.bottom === null
+            || (typeof this.childNode.style.bottom != 'string')
+            || (typeof this.childNode.style.bottom == 'string' && typeof this.childNode.style.bottom.match(/\%$/))) {
+            var parentBound = this.childNode.parent.view.getBoundingClientRect();
+            var nodeBound = this.childNode.view.getBoundingClientRect();
+            return (parentBound.bottom - nodeBound.bottom) * 100 / parentBound.height;
+        }
+        else {
+            return parseFloat(this.childNode.style.bottom.replace('%', ''));
+        }
+    }
+    else
+        return this.childNode.style.bottom;
 };
 
 
@@ -412,12 +548,7 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
 RelativeAnchor.prototype.getStyleWidthDescriptor = function () {
     return {
         type: 'measureSize',
-        disabled: this.style.hAlign == 'fixed',
-        // type: 'number',
-        // min: this.measureMinSize().width,
-        // max: Infinity,
-        // livePreview: true
-        // type:'text'
+        disabled: this.style.hAlign == 'fixed'
     };
 };
 
@@ -425,11 +556,6 @@ RelativeAnchor.prototype.getStyleHeightDescriptor = function () {
     return {
         type: 'measureSize',
         disabled: this.style.vAlign == 'fixed'
-        // type: 'number',
-        // min: this.measureMinSize().height,
-        // max: Infinity,
-        // livePreview: true
-        // type:'text'
     };
 };
 
