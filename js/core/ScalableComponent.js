@@ -16,12 +16,6 @@ ScalableComponent.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'le
 
 ScalableComponent.prototype.onCreate = function () {
     BaseComponent.prototype.onCreate.call(this);
-    this.style.hAlign = 'left';
-    this.style.vAlign = 'top'
-    this.style.left = 0;
-    this.style.right = 0;
-    this.style.top = 0;
-    this.style.bottom = 0;
     this.style.height = 30;
     this.style.width = 69;
 };
@@ -30,8 +24,6 @@ ScalableComponent.prototype.onCreate = function () {
 ScalableComponent.prototype.getAcceptsStyleNames = function () {
     return BaseComponent.prototype.getAcceptsStyleNames.call(this).concat(['width', 'height']);
 };
-
-
 
 
 export default ScalableComponent;
