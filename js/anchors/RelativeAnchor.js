@@ -103,7 +103,7 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'bottom',
+        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'bottom',
         livePreview: true
     };
 };
@@ -114,7 +114,7 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'top',
+        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'top',
         livePreview: true
     };
 };
