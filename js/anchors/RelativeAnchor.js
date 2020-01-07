@@ -170,7 +170,17 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
 };
 
 
-RelativeAnchor.prototype.setStyleLeft = function (value) {
+RelativeAnchor.prototype.setStyleLeft = function (value, unit) {
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.childNode.style.left == 'string') && this.childNode.style.left.match(/\%$/)) {
+            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.childNode.style.left == 'number') {
+            value = value * this.childNode.parent.view.getBoundingClientRect().width + '%' / 100;
+        }
+    }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'right') {
         this.view.addStyle('left', styleValue);
@@ -215,7 +225,17 @@ RelativeAnchor.prototype.getStyleLeft = function (unit) {
 
 
 
-RelativeAnchor.prototype.setStyleRight = function (value) {
+RelativeAnchor.prototype.setStyleRight = function (value, unit) {
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.childNode.style.right == 'string') && this.childNode.style.right.match(/\%$/)) {
+            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.childNode.style.right == 'number') {
+            value = value * this.childNode.parent.view.getBoundingClientRect().width + '%' / 100;
+        }
+    }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'left') {
         this.view.addStyle('right', styleValue);
@@ -258,7 +278,17 @@ RelativeAnchor.prototype.getStyleRight = function (unit) {
         return this.childNode.style.right;
 };
 
-RelativeAnchor.prototype.setStyleTop = function (value) {
+RelativeAnchor.prototype.setStyleTop = function (value, unit) {
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.childNode.style.top == 'string') && this.childNode.style.top.match(/\%$/)) {
+            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.childNode.style.top == 'number') {
+            value = value * this.childNode.parent.view.getBoundingClientRect().height + '%' / 100;
+        }
+    }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'bottom') {
         this.view.addStyle('top', styleValue);
@@ -271,8 +301,8 @@ RelativeAnchor.prototype.setStyleTop = function (value) {
 
 RelativeAnchor.prototype.getStyleTop = function (unit) {
     if (unit == 'px') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'bottom'
+        if (this.childNode.style.vAlign == 'center'
+            || this.childNode.style.vAlign == 'bottom'
             || this.childNode.style.top === undefined
             || this.childNode.style.top === null
             || (typeof this.childNode.style.top != 'number')) {
@@ -283,8 +313,8 @@ RelativeAnchor.prototype.getStyleTop = function (unit) {
         }
     }
     else if (unit == '%') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'bottom'
+        if (this.childNode.style.vAlign == 'center'
+            || this.childNode.style.vAlign == 'bottom'
             || this.childNode.style.top === undefined
             || this.childNode.style.top === null
             || (typeof this.childNode.style.top != 'string')
@@ -303,7 +333,17 @@ RelativeAnchor.prototype.getStyleTop = function (unit) {
 
 
 
-RelativeAnchor.prototype.setStyleBottom = function (value) {
+RelativeAnchor.prototype.setStyleBottom = function (value, unit) {
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.childNode.style.bottom == 'string') && this.childNode.style.bottom.match(/\%$/)) {
+            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.childNode.style.bottom == 'number') {
+            value = value * this.childNode.parent.view.getBoundingClientRect().height + '%' / 100;
+        }
+    }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'top') {
         this.view.addStyle('bottom', styleValue);
@@ -315,9 +355,10 @@ RelativeAnchor.prototype.setStyleBottom = function (value) {
 
 
 RelativeAnchor.prototype.getStyleBottom = function (unit) {
+
     if (unit == 'px') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'top'
+        if (this.childNode.style.vAlign == 'center'
+            || this.childNode.style.vAlign == 'top'
             || this.childNode.style.bottom === undefined
             || this.childNode.style.bottom === null
             || (typeof this.childNode.style.bottom != 'number')) {
@@ -328,8 +369,8 @@ RelativeAnchor.prototype.getStyleBottom = function (unit) {
         }
     }
     else if (unit == '%') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'top'
+        if (this.childNode.style.vAlign == 'center'
+            || this.childNode.style.vAlign == 'top'
             || this.childNode.style.bottom === undefined
             || this.childNode.style.bottom === null
             || (typeof this.childNode.style.bottom != 'string')
@@ -480,8 +521,6 @@ RelativeAnchor.prototype.attachChild = function (child) {
     this.childNode.style.hAlign = this.childNode.style.hAlign || 'left';
     child.anchor = this;
     this.$containter.addChild(child.view);
-    console.log(this.childNode.view, this.childNode.style.vAlign);
-
     this.setStyleVAlign(this.childNode.style.vAlign);
     this.setStyleHAlign(this.childNode.style.hAlign);
     child.onAnchorAttached();
