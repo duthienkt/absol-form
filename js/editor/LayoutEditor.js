@@ -614,6 +614,7 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
             }
             self.notifyDataChange();
             self.componentPropertiesEditor.styleEditor.notifyChangeToProperties();
+            self.componentPropertiesEditor.allPropertyEditor.notifyChangeToProperties();
         })
         .on('endmove', function (event) {
             var originEvent = event.originEvent;
