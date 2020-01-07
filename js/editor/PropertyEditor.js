@@ -225,6 +225,9 @@ PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
             },
             {
                 tag: 'td',
+                attr:{
+                    colspan:"3"
+                },
                 child: fontInput
             }
         ]
