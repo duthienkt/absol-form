@@ -19,7 +19,9 @@ var $ = Fcore.$;
 function PropertyEditor() {
     Context.call(this);
     EventEmitter.call(this);
+    this.dependents = {};
     this.$view = null;
+    this.propertyHolders = {};
     /**
      * @type {import('../core/BaseComponent').default}
      */
@@ -104,6 +106,7 @@ PropertyEditor.prototype.loadAttributes = function () {
     var self = this;
     this.flushAllToPools();
     self.$body.clearChild();
+    this.clearAllDependents();
     this.propertyNames = [];
     this.$rows = [];
     this.$needUpdate = [];
@@ -111,14 +114,22 @@ PropertyEditor.prototype.loadAttributes = function () {
     this.propertyNames = this.getPropertyNames();
     this.propertyNames.forEach(function (name) {
         var descriptor = self.getPropertyDescriptor(name);
-        var functionName = 'create' + camelCaseToPascalCase(descriptor.type) + 'InputRow';
+        var functionName = 'load' + camelCaseToPascalCase(descriptor.type) + 'Property';
+        var cell = _('td');
+
         if (!self[functionName]) {
             // throw new Error('Not support type' + descriptor.type + '!')
-            functionName = 'createNotSupportInputRow';
+            functionName = 'loadNotSupportedProperty';
         };
-        var rowElt = self[functionName](name, descriptor);
+        var rowElt = _({
+            tag: 'tr',
+            child: [
+                { tag: 'td', child: { text: name } },
+                cell
+            ]
+        })
         rowElt.addTo(self.$body);
-        self.$rows.push(rowElt);
+        self.propertyHolders[name] = self[functionName](name, descriptor, cell, cell);
     });
 
     $('.as-need-update', this.$body, function (elt) {
@@ -126,18 +137,31 @@ PropertyEditor.prototype.loadAttributes = function () {
     });
 };
 
-PropertyEditor.prototype.notifyChangeToProperties = function (name, from) {
-    var e;
-    for (var i = 0; i < this.$needUpdate.length; ++i) {
-        e = this.$needUpdate[i];
-        if (e.notifyChange)
-            e.notifyChange(name, from);
-    }
+
+PropertyEditor.prototype.loadNotSupportedProperty = function (name, descriptor, cell, cellElt) {
+    cellElt.addChild(_({ text: 'Not supported ' }))
+        .addChild(_({
+            tag: 'strong',
+            child: { text: descriptor.type }
+        }));
+    return {};
 };
 
 
-PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
+// PropertyEditor.prototype.notifyChangeToProperties = function (name, from) {
+//     var e;
+//     for (var i = 0; i < this.$needUpdate.length; ++i) {
+//         e = this.$needUpdate[i];
+//         if (e.notifyChange)
+//             e.notifyChange(name, from);
+//     }
+// };
+
+
+
+PropertyEditor.prototype.loadEnumProperty = function (name, descriptor, cell) {
     var self = this;
+    var res = {};
     var selectMenu = descriptor.sign ? this.putOnceFromPool(descriptor.sign) : null;
     if (selectMenu === null) {
         selectMenu = _({
@@ -161,34 +185,21 @@ PropertyEditor.prototype.createEnumInputRow = function (name, descriptor) {
         this.assignToPool(descriptor.sign, selectMenu);
     selectMenu.value = this.getProperty(name);
     selectMenu.peditor = this;
-    selectMenu.notifyChange = function () {
+    res.requestUpdate = function () {
         var value = self.getProperty(name);
         if (value != this.value) {
-            this.value = value;
+            selectMenu.value = value;
         }
     };
-
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child: selectMenu
-            }
-        ]
-    });
+    cell.addChild(selectMenu);
 
     return res;
 };
 
 
-PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadFontProperty = function (name, descriptor, cell) {
     var self = this;
+    var res = {};
     var fontInput = descriptor.sign ? this.putOnceFromPool(descriptor.sign) : null;
     if (fontInput === null) {
         fontInput = _({
@@ -210,231 +221,147 @@ PropertyEditor.prototype.createFontInputRow = function (name, descriptor) {
         this.assignToPool(descriptor.sign, fontInput);
     fontInput.value = this.getProperty(name);
     fontInput.peditor = this;
-    fontInput.notifyChange = function () {
+
+    res.elt = fontInput;
+    cell.addChild(res.elt);
+    res.requestUpdate = function () {
         var value = self.getProperty(name);
-        if (value != this.value) {
-            this.value = value;
+        if (value != fontInput.value) {
+            fontInput.value = value;
         }
     };
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr:{
-                    colspan:"3"
-                },
-                child: fontInput
-            }
-        ]
-    });
 
     return res;
 };
 
 
-PropertyEditor.prototype.createConstInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadConstProperty = function (name, descriptor, cell) {
     var self = this;
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child:
-                {
-                    tag: 'strong',
-                    class: 'as-need-update',
-                    props: {
-                        notifyChange: function () {
-                            var descriptor = self.getPropertyDescriptor(name);
-                            if (typeof (descriptor.value) == 'object' && descriptor.value.then) {
-                                descriptor.value.then(function (value) {
-                                    res.$text.clearChild().addChild(_({ text: value + '' }));
-                                });
-                            }
-                            else {
-                                res.$text.clearChild().addChild(_({ text: descriptor.value + '' }));
-                            }
-                        }
-                    }
-                }
-            }
-        ]
+    var res = {};
+    res.elt = _({
+        tag: 'strong',
+        child: { text: '' + descriptor.value }
     });
-
-    res.$text = $('strong', res);
-    if (typeof (descriptor.value) == 'object' && descriptor.value.then) {
-        descriptor.value.then(function (value) {
-            res.$text.clearChild().addChild(_({ text: value + '' }));
-        });
-    }
-    else {
-        res.$text.clearChild().addChild(_({ text: descriptor.value + '' }));
-    }
-
+    cell.addChild(res.elt);
     return res;
 };
 
-PropertyEditor.prototype.createTextInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadTextProperty = function (name, descriptor, cell) {
     var self = this;
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
+    var res = {};
+    res.elt = _({
+        tag: descriptor.long ? 'textarea' : 'input',
+        attr: { type: 'text' },
+        on: {
+            keyup: function () {
+                self.setProperty(name, this.value);
+                self.notifyChange(name, this);
             },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child:
-                {
-                    tag: descriptor.long ? 'textarea' : 'input',
-                    class: 'as-need-update',
-                    attr: { type: 'text' },
-                    props: {
-                        value: this.getProperty(name),
-                        notifyChange: function () {
-                            var value = self.getProperty(name);
-                            if (value != this.value) {
-                                this.value = value;
-                            }
-                        }
-                    },
-                    on: {
-                        keyup: function () {
-                            self.setProperty(name, this.value);
-                            self.notifyChange(name, this);
-                        },
-                        change: function () {
-                            self.notifyStopChange(name);
-                        }
-                    }
-                }
+            change: function () {
+                self.notifyStopChange(name);
             }
-        ]
+        }
     });
+    cell.addChild(res.elt);
+    res.requestUpdate = function () {
+        var value = self.getProperty(name);
+        if (value != this.value) {
+            res.elt.value = value;
+        }
+    };
+    res.requestUpdate();
     return res;
 };
 
 
-PropertyEditor.prototype.createBoolInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadBoolProperty = function (name, descriptor, cell) {
     var self = this;
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child:
-                {
-                    tag: 'checkboxbutton',
-                    class: 'as-need-update',
-                    props: {
-                        checked: this.getProperty(name),
-                        notifyChange: function () {
-                            var value = self.getProperty(name);
-                            if (value != this.checked) {
-                                this.checked = value;
-                            }
-                        }
-                    },
-                    on: {
-                        change: function () {
-                            self.setProperty(name, this.checked);
-                            self.notifyChange(name, this);
-                            self.notifyStopChange(name);
-                        }
-                    }
-                }
+    var res = {};
+    res.elt = _({
+        tag: 'checkboxbutton',
+        class: 'as-need-update',
+        props: {
+            checked: this.getProperty(name),
+            notifyChange: function () {
+
             }
-        ]
+        },
+        on: {
+            change: function () {
+                self.setProperty(name, this.checked);
+                self.notifyChange(name, this);
+                self.notifyStopChange(name);
+            }
+        }
     });
+
+    res.requestUpdate = function () {
+        var value = self.getProperty(name);
+        if (value != res.elt.checked) {
+            res.elt.checked = value;
+        }
+    };
+
+    cell.addChild(res.elt);
     return res;
 };
 
 
-PropertyEditor.prototype.createDateInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadDateProperty = function (name, descriptor, cell) {
     var self = this;
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: descriptor.nullable ? { colspan: '2' } : { colspan: '3' },
-                child:
-                {
-                    tag: 'calendarinput',
-                    class: 'as-need-update',
-
-                    props: {
-                        disabled: descriptor.disabled,
-                        value: self.getProperty(name),
-                        notifyChange: function () {
-                            var value = self.getProperty(name);
-                            if (!value) this.value = null;
-                            else this.value = value;
-                            this.disabled = self.getPropertyDescriptor(name).disabled;
-                        }
-                    },
-                    on: {
-                        change: function () {
-                            self.setProperty(name, this.value);
-                            self.notifyChange(name, this);
-                            self.notifyStopChange(name);
-                        }
-                    }
-                }
+    var res = {};
+    res.calendarInput = _({
+        tag: 'calendarinput',
+        props: {
+            disabled: descriptor.disabled,
+            value: self.getProperty(name),
+        },
+        on: {
+            change: function () {
+                self.setProperty(name, this.value);
+                self.notifyChange(name, this);
+                res.nullCheckElt.checked = false;
+                self.notifyStopChange(name);
             }
-        ].concat(descriptor.nullable ? [{
-            tag: 'td',
-            child: [
-                { text: 'NULL ' },
-                {
-                    tag: 'checkboxbutton',
-                    class: 'as-need-update',
-                    props: {
-                        checked: !self.getProperty(name),
-                        notifyChange: function () {
-                            this.checked = !self.getProperty(name);
-                        }
-                    },
-                    on: {
-                        change: function () {
-                            if (this.checked) {
-                                self.setProperty(name, null);
-                            }
-                            else {
-                                self.setProperty(name, beginOfDay(new Date()));
-                            }
-                            self.notifyChange(name, this);
-                            self.notifyStopChange(name);
-                        }
-                    }
-                }]
-        }] : [])
+        }
     });
+    cell.addChild(res.calendarInput);
+    res.nullCheckElt = _({
+        tag: 'checkbox',
+        style: { marginLeft: '10px' },
+        props: {
+            text: 'NULL'
+        },
+        on: {
+            change: function () {
+                if (this.checked) {
+                    self.setProperty(name, null);
+                }
+                else {
+                    self.setProperty(name, beginOfDay(new Date()));
+                }
+                self.notifyChange(name, this);
+                self.notifyStopChange(name);
+            }
+        }
+    });
+    cell.addChild(res.nullCheckElt);
+
+    res.requestUpdate = function () {
+        var value = self.getProperty(name);
+        if (!value) {
+            res.calendarInput.value = null;
+            res.nullCheckElt.checked = true;
+        }
+        else {
+            res.calendarInput.value = value; res.nullCheckElt.checked = false;
+        }
+        res.calendarInput.disabled = self.getPropertyDescriptor(name).disabled;
+    };
     return res;
 };
 
-PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadNumberProperty = function (name, descriptor, cell) {
     var self = this;
     var numberInput = this.putOnceFromPool("NUMBER_INPUT");//same with all sign
     if (numberInput === null) {
@@ -465,155 +392,88 @@ PropertyEditor.prototype.createNumberInputRow = function (name, descriptor) {
     numberInput.disabled = descriptor.disabled;
     numberInput._propertyName = name;
     numberInput.peditor = this;
-    numberInput.notifyChange = function () {
-        var value = this.peditor.getProperty(name);
+    var res = { elt: numberInput };
+    res.requestUpdate = function () {
+        var value = self.getProperty(name);
         if (value === null)
-            this.value = descriptor.defaultValue;
+            res.elt.value = descriptor.defaultValue;
         else
-            this.value = value;
-        this.disabled = this.peditor.getPropertyDescriptor(name).disabled;
+            res.elt.value = value;
+        res.elt.disabled = self.getPropertyDescriptor(name).disabled;
     }
-
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: descriptor.nullable ? { colspan: '2' } : { colspan: '3' },
-                child: numberInput
-            }
-
-        ].concat(descriptor.nullable ? [{
-            tag: 'td',
-            child: [
-                { text: 'NULL ' },
-                {
-                    tag: 'checkboxbutton',
-                    class: 'as-need-update',
-                    props: {
-                        checked: self.getProperty(name) === null,
-                        notifyChange: function () {
-                            this.checked = self.getProperty(name) === null;
-                        }
-                    },
-                    on: {
-                        change: function () {
-                            if (this.checked) {
-                                self.setProperty(name, null);
-                            }
-                            else {
-                                self.setProperty(name, descriptor.defaultValue);
-                            }
-                            self.notifyChange(name, this);
-                        }
-                    }
-                }]
-        }] : [])
-    });
+    cell.addChild(res.elt);
+    //todo NULL
     return res;
 };
 
 
-PropertyEditor.prototype.createIconInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadIconProperty = function (name, descriptor, cell) {
     var self = this;
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child:
-                {
-                    tag: 'fonticoninput',
-                    class: 'as-need-update',
-                    props: {
-                        min: typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity,
-                        max: typeof (descriptor.max) == 'number' ? descriptor.max : Infinity,
-                        value: self.getProperty(name),
-                        disabled: descriptor.disabled,
-                        notifyChange: function () {
-                            var value = self.getProperty(name);
-                            this.value = value;
-                        }
-                    },
-                    on: {
-                        change: function (event) {
-                            self.setProperty(name, this.value);
-                            self.notifyStopChange(name, this);
-                        }
-                    }
-                }
+    var res = {};
+    //todo: disabled
+    res.elt = _({
+        tag: 'fonticoninput',
+        class: 'as-need-update',
+        props: {
+            value: self.getProperty(name),
+            disabled: descriptor.disabled
+        },
+        on: {
+            change: function (event) {
+                self.setProperty(name, this.value);
+                self.notifyStopChange(name, this);
             }
-        ]
+        }
     });
+    cell.addChild(res.elt);
+    res.requestUpdate = function () {
+        res.elt.value = self.getProperty(name);
+    };
     return res;
 };
 
 
-PropertyEditor.prototype.createListInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadListProperty = function (name, descriptor, cell) {
     var self = this;
     var listEditor = new ListEditor();
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child: listEditor.getView()
-            }
-        ]
-    });
+    var res = {};
+    res.elt = listEditor.getView();
+    cell.addChild(res.elt);
     listEditor.on('change', function () {
         self.setProperty(name, this.getData());
         self.notifyStopChange(name);
     });
     listEditor.start();
+    // res.
     listEditor.setData(this.getProperty(name));
     return res;
 };
 
 
-PropertyEditor.prototype.createTextAlignInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadTextAlignProperty = function (name, descriptor, cell) {
     var self = this;
     var icons = {
         left: 'mdi-format-align-left',
         right: 'mdi-format-align-right',
         center: 'mdi-format-align-center'
     };
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child: {
-                    tag: 'button',
-                    class: 'as-property-editor-text-align-input',
-                    child: 'span.mdi'
-                }
-            }
-        ]
+    var res = {};
+    res.elt = _({
+        tag: 'button',
+        class: 'as-property-editor-text-align-input',
+        child: 'span.mdi'
     });
-    var $button = $('.as-property-editor-text-align-input', res);
+    cell.addChild(res.elt);
+
+    var $button = res.elt;
     var $icon = $('span.mdi', $button);
     var lasIconClass = icons[this.getProperty(name)] || icons.left;
     $icon.addClass(lasIconClass);
+    res.requestUpdate = function () {
+        $icon.removeClass(lasIconClass);
+        lasIconClass = icons[self.getProperty(name)] || icons.left;
+        $icon.addClass(lasIconClass);
+    };
     var self = this;
     QuickMenu.toggleWhenClick($button, {
         getMenuProps: function () {
@@ -650,7 +510,7 @@ PropertyEditor.prototype.createTextAlignInputRow = function (name, descriptor) {
 };
 
 
-PropertyEditor.prototype.createBoxAlignInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadBoxAlignProperty = function (name, descriptor, cell) {
     var self = this;
     var icons = {
         lefttop: 'm0 0v24h24v-24zm1 1h22v22h-22zm2 2h10.3v2h-10.3v-2m0 4h14v2h-14v-2m0 4h9.9v2h-9.9v-2',
@@ -677,27 +537,12 @@ PropertyEditor.prototype.createBoxAlignInputRow = function (name, descriptor) {
             }
         }
     }
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child: {
-                    tag: 'button',
-                    class: 'as-property-editor-text-align-input',
-                }
-            }
-        ]
-    });
-    var $button = $('.as-property-editor-text-align-input', res);
-    $button.addChild(_(makeIcon(icons[this.getProperty(name)] || icons.lefttop)));
-    var self = this;
-    QuickMenu.toggleWhenClick($button, {
+
+    var res = {};
+    res.elt = _('button.as-property-editor-text-align-input', res);
+    cell.addChild(res.elt);
+    res.elt.addChild(_(makeIcon(icons[this.getProperty(name)] || icons.lefttop)));
+    QuickMenu.toggleWhenClick(res.elt, {
         getMenuProps: function () {
             return {
                 items: [
@@ -750,238 +595,124 @@ PropertyEditor.prototype.createBoxAlignInputRow = function (name, descriptor) {
             }
         },
         onSelect: function (item) {
-            $button.clearChild().addChild(_(makeIcon(icons[item.menuData])));
+            res.elt.clearChild().addChild(_(makeIcon(icons[item.menuData])));
             self.setProperty(name, item.menuData);
             self.notifyStopChange(name);
         }
     });
-    return res;
-};
 
-PropertyEditor.prototype.createColorInputRow = function (name, descriptor) {
-    var self = this;
-    var icons = {
-        left: 'mdi-format-align-left',
-        right: 'mdi-format-align-right',
-        center: 'mdi-format-align-center'
+    res.requestUpdate = function () {
+        res.elt.clearChild().addChild(_(makeIcon(icons[self.getProperty(name)] || icons.lefttop)));
     };
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child: {
-                    tag: 'colorpickerbutton',
-                    on: {
-                        change: function (event) {
-                            self.setProperty(name, '#' + event.value.toHex8());
-                            self.notifyChange(name);
-                        },
-                        stopchange: function (event) {
-                            self.notifyStopChange(name);
-                        }
-                    },
-                    props: {
-                        value: this.getProperty(name),
-                        mode: 'RGBA'
-                    }
-                }
-
-            }
-        ]
-    });
-
     return res;
 };
 
 
-PropertyEditor.prototype.createMeasureSizeInputRow = function (name, descriptor) {
+PropertyEditor.prototype.loadColorProperty = function (name, descriptor, cell) {
     var self = this;
-    var res = _({
-        tag: 'tr',
-        class: 'as-need-update',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
+    var res = {};
+    res.elt = _({
+        tag: 'colorpickerbutton',
+        on: {
+            change: function (event) {
+                self.setProperty(name, '#' + event.value.toHex8());
+                self.notifyChange(name);
             },
-            {
-                tag: 'td',
-                attr: { colspan: '2' },
-                child: [
-                    {
-                        tag: 'numberinput'
-                    }
-                ]
-            },
-            {
-                tag: 'td',
-                child: {
-                    tag: 'selectmenu',
-                    style: {
-                        verticalAlign: 'middle'
-                    },
-                    props: {
-                        items: [
-                            { text: 'px', value: 'px' },
-                            { text: '%', value: '%' },
-                            { text: 'match_parent', value: 'match_parent' },
-                            { text: 'wrap_content', value: 'wrap_content' }
-                        ]
-                    }
-                }
+            stopchange: function (event) {
+                self.notifyStopChange(name);
             }
-        ]
+        },
+        props: {
+            value: 'transparent',
+            mode: 'RGBA'
+        }
     });
 
+    cell.addChild(res.elt);
 
-    var numberElt = $('numberinput', res)
-        .on('change', function () {
-            switch (typeSelectElt.value) {
-                case '%': self.setProperty(name, this.value + '%'); break;
-                case 'px': self.setProperty(name, this.value); break;
-            }
-            self.notifyChange(name);
-        })
+    res.requestUpdate = function () {
+        res.elt.value = self.getProperty(name);
+    };
+
+    res.requestUpdate();
+    return res;
+};
+
+
+PropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, cell) {
+    var self = this;
+    var res = {};
+    cell.addStyle('white-space', 'nowrap');
+    res.numberInputElt = _('numberinput').addStyle('margin-right', '5px');
+    res.typeSelectElt = _({
+        tag: 'selectmenu',
+        style: {
+            verticalAlign: 'middle'
+        },
+        props: {
+            items: [
+                { text: 'px', value: 'px' },
+                { text: '%', value: '%' },
+                { text: 'match_parent', value: 'match_parent' },
+                { text: 'wrap_content', value: 'wrap_content' }
+            ]
+        }
+    });
+
+    cell.addChild(res.numberInputElt)
+        .addChild(res.typeSelectElt);
+    res.numberInputElt.on('change', function (event) {
+        if (event.by == 'keyup') return;
+        switch (res.typeSelectElt.value) {
+            case '%': self.setProperty(name, this.value + '%'); break;
+            case 'px': self.setProperty(name, this.value); break;
+        }
+        self.notifyChange(name);
+        if (event.by != 'long_press_button')
+            self.notifyStopChange(name);
+    })
         .on('stopchange', function () {
-            switch (typeSelectElt.value) {
+            switch (res.typeSelectElt.value) {
                 case '%': self.setProperty(name, this.value + '%'); break;
                 case 'px': self.setProperty(name, this.value); break;
             }
             self.notifyStopChange(name);
         });
 
-    var typeSelectElt = $('selectmenu', res)
-        .on('change', function (event) {
-            if (this.value == 'match_parent' || this.value == 'wrap_content') {
-                self.setProperty(name, this.value);
-                numberElt.disabled = true;
-            }
-            else {
-                numberElt.disabled = false;
-                var value = self.getProperty(name, this.value);
-                numberElt.value = value;
-                if (this.value == '%') {
-                    self.setProperty(name, value + '%');
-                }
-                else {
-                    self.setProperty(name, value);
-                }
-            }
-        });
-
-
-    res.notifyChange = function () {
-        var value = self.getProperty(name);
-        if (typeof value == 'number') {
-            numberElt.value = value;
-            typeSelectElt.value = 'px';
+    res.typeSelectElt.on('change', function (event) {
+        if (this.value == 'match_parent' || this.value == 'wrap_content') {
+            self.setProperty(name, this.value);
+            res.numberInputElt.disabled = true;
         }
-        else if (typeof value == 'string') {
-            if (value.match(/\%$/)) {
-                typeSelectElt.value = '%';
-                numberElt.value = parseFloat(value.replace('%', ''));
-            }
-            else if (value == 'match_parent' || value != 'wrap_content') {
-                typeSelectElt.value = value;
-            }
-            else {
-                console.error("Unknow typeof " + name, value);
-            }
-        }
-    }
-
-    res.notifyChange();
-
-    return res;
-};
-
-
-PropertyEditor.prototype.createMeasurePositionInputRow = function (name, descriptor) {
-    var self = this;
-    var res = _({
-        tag: 'tr',
-        class: 'as-need-update',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '2' },
-                child: [
-                    {
-                        tag: 'numberinput'
-                    }
-                ]
-            },
-            {
-                tag: 'td',
-                child: {
-                    tag: 'selectmenu',
-                    style: {
-                        verticalAlign: 'middle'
-                    },
-                    props: {
-                        items: [
-                            { text: 'px', value: 'px' },
-                            { text: '%', value: '%' },
-                        ]
-                    }
-                }
-            }
-        ]
-    });
-
-
-    var numberElt = $('numberinput', res)
-        .on('change', function () {
-            switch (typeSelectElt.value) {
-                case '%': self.setProperty(name, this.value + '%'); break;
-                case 'px': self.setProperty(name, this.value); break;
-            }
-            self.notifyChange(name);
-        })
-        .on('stopchange', function () {
-            switch (typeSelectElt.value) {
-                case '%': self.setProperty(name, this.value + '%'); break;
-                case 'px': self.setProperty(name, this.value); break;
-            }
-            self.notifyStopChange(name);
-        });
-
-    var typeSelectElt = $('selectmenu', res)
-        .on('change', function (event) {
+        else {
+            res.numberInputElt.disabled = false;
             var value = self.getProperty(name, this.value);
-            numberElt.value = value;
+            res.numberInputElt.value = value;
             if (this.value == '%') {
                 self.setProperty(name, value + '%');
             }
             else {
                 self.setProperty(name, value);
             }
-        });
+        }
+    });
 
 
-    res.notifyChange = function () {
+    res.requestUpdate = function () {
         var value = self.getProperty(name);
         if (typeof value == 'number') {
-            numberElt.value = value;
-            typeSelectElt.value = 'px';
+            res.numberInputElt.value = value;
+            res.typeSelectElt.value = 'px';
         }
         else if (typeof value == 'string') {
             if (value.match(/\%$/)) {
-                typeSelectElt.value = '%';
-                numberElt.value = parseFloat(value.replace('%', ''));
+                res.typeSelectElt.value = '%';
+                res.numberInputElt.value = parseFloat(value.replace('%', ''));
+                res.numberInputElt.disabled = false;
             }
             else if (value == 'match_parent' || value != 'wrap_content') {
-                typeSelectElt.value = value;
+                res.numberInputElt.disabled = true;
+                res.typeSelectElt.value = value;
             }
             else {
                 console.error("Unknow typeof " + name, value);
@@ -989,36 +720,90 @@ PropertyEditor.prototype.createMeasurePositionInputRow = function (name, descrip
         }
     }
 
-    res.notifyChange();
-
+    res.requestUpdate();
     return res;
 };
 
 
-PropertyEditor.prototype.createNotSupportInputRow = function (name, descriptor) {
-    var res = _({
-        tag: 'tr',
-        child: [
-            {
-                tag: 'td',
-                child: { text: name }
-            },
-            {
-                tag: 'td',
-                attr: { colspan: '3' },
-                child: [{
-
-                    text: 'Not support ',
-                }, {
-                    tag: 'strong',
-                    child: { text: descriptor.type }
-                }
-                ]
-            }
-        ]
+PropertyEditor.prototype.loadMeasurePositionProperty = function (name, descriptor, cell) {
+    var self = this;
+    var res = {};
+    cell.addStyle('white-space', 'nowrap');
+    res.numberInputElt = _('numberinput').addStyle('margin-right', '5px');
+    res.typeSelectElt = _({
+        tag: 'selectmenu',
+        style: {
+            verticalAlign: 'middle'
+        },
+        props: {
+            items: [
+                { text: 'px', value: 'px' },
+                { text: '%', value: '%' }
+            ]
+        }
     });
+
+    cell.addChild(res.numberInputElt)
+        .addChild(res.typeSelectElt);
+    res.numberInputElt.on('change', function (event) {
+        if (event.by == 'keyup') return;
+        switch (res.typeSelectElt.value) {
+            case '%': self.setProperty(name, this.value + '%'); break;
+            case 'px': self.setProperty(name, this.value); break;
+        }
+        self.notifyChange(name);
+        if (event.by != 'long_press_button')
+            self.notifyStopChange(name);
+    })
+        .on('stopchange', function () {
+            switch (res.typeSelectElt.value) {
+                case '%': self.setProperty(name, this.value + '%'); break;
+                case 'px': self.setProperty(name, this.value); break;
+            }
+            self.notifyStopChange(name);
+        });
+
+    res.typeSelectElt.on('change', function (event) {
+        if (this.value == 'match_parent' || this.value == 'wrap_content') {
+            self.setProperty(name, this.value);
+            res.numberInputElt.disabled = true;
+        }
+        else {
+            res.numberInputElt.disabled = false;
+            var value = self.getProperty(name, this.value);
+            res.numberInputElt.value = value;
+            if (this.value == '%') {
+                self.setProperty(name, value + '%');
+            }
+            else {
+                self.setProperty(name, value);
+            }
+        }
+    });
+
+
+    res.requestUpdate = function () {
+        var value = self.getProperty(name);
+        if (typeof value == 'number') {
+            res.numberInputElt.value = value;
+            res.typeSelectElt.value = 'px';
+        }
+        else if (typeof value == 'string') {
+            if (value.match(/\%$/)) {
+                res.typeSelectElt.value = '%';
+                res.numberInputElt.value = parseFloat(value.replace('%', ''));
+            }
+            else {
+                console.error("Unknow typeof " + name, value);
+            }
+        }
+    }
+
+    res.requestUpdate();
     return res;
 };
+
+
 
 PropertyEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
@@ -1055,17 +840,57 @@ PropertyEditor.prototype.getView = function () {
     });
     this.$body = $('tbody', this.$view);
     return this.$view;
+};
+
+
+PropertyEditor.prototype.clearAllDependents = function () {
+    for (var key in this.dependents)
+        delete this.dependents[key];
+};
+
+
+/**
+ * @param {String} propertyName
+ * @param {Array<String>} dependencyProperties
+ */
+PropertyEditor.prototype.addDepents = function (propertyName, dependencyProperties) {
+    var dependencyProperty;
+    for (var i = 0; i < dependencyProperties.length; ++i) {
+        dependencyProperty = dependencyProperties[i];
+        this.dependents[dependencyProperty] = this.dependents[dependencyProperty] || {};
+        this.dependents[dependencyProperty][propertyName] = true;
+    }
+};
+
+PropertyEditor.prototype.updateDependentsOf = function (name, excludes) {
+    excludes = excludes || {};
+    excludes[name] = true;
+    for (var dependentPropertyName in this.dependents[name]) {
+        if (!excludes[name] && this.propertyHolders[dependentPropertyName]) {
+            excludes[name] = true;
+            if (this.propertyHolders[dependentPropertyName].requestUpdate)
+                this.propertyHolders[dependentPropertyName].requestUpdate();
+            this.updateProperty(dependentPropertyName, excludes);
+        }
+    }
+};
+
+PropertyEditor.prototype.updatePropertyRecursive = function (name) {
+    if (!this.propertyHolders[name]) return;
+    if (this.propertyHolders[name].requestUpdate)
+        this.propertyHolders[name].requestUpdate();
+    this.updateDependentsOf(name);
 }
 
 
 PropertyEditor.prototype.notifyChange = function (name, from) {
-    this.notifyChangeToProperties(name, from);
     this.emit('change', { type: 'change', target: this, from: from, name: name, object: this.object }, this);
 };
 
+
 PropertyEditor.prototype.notifyStopChange = function (name) {
     this.emit('stopchange', { type: 'stopchange', name: name, object: this.object }, this);
-}
+};
 
 
 export default PropertyEditor;

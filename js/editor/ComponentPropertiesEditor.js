@@ -23,10 +23,24 @@ function ComponentPropertiesEditor() {
             self.emit('stopchange', Object.assign({ componentPropertiesEditor: self }, event), self);
         }
     }
-    this.attributeEditor = new AttributeEditor().on(repeatEvents);
-    this.styleEditor = new StyleEditor().on(repeatEvents);
-    this.eventEditor = new EventEditor().on(repeatEvents);
-    this.allPropertyEditor = new AllPropertyEditor().on(repeatEvents);
+    this.attributeEditor = new AttributeEditor().on(repeatEvents)
+        .on('stopchange', function (event) {
+            self.allPropertyEditor.updatePropertyRecursive(event.name);
+        });
+    this.styleEditor = new StyleEditor().on(repeatEvents)
+        .on('stopchange', function (event) {
+            self.allPropertyEditor.updatePropertyRecursive(event.name);
+        });
+    this.eventEditor = new EventEditor().on(repeatEvents)
+        .on('stopchange', function (event) {
+            self.allPropertyEditor.updatePropertyRecursive(event.name);
+        });
+    this.allPropertyEditor = new AllPropertyEditor().on(repeatEvents)
+        .on('stopchange', function (event) {
+            self.attributeEditor.updatePropertyRecursive(event.name);
+            self.styleEditor.updatePropertyRecursive(event.name);
+            self.eventEditor.updatePropertyRecursive(event.name);
+        });
 
     this.$dockElt = null;
     this.component = undefined;
