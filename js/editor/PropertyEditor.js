@@ -114,9 +114,11 @@ PropertyEditor.prototype.loadAttributes = function () {
     this.propertyNames = this.getPropertyNames();
     this.propertyNames.forEach(function (name) {
         var descriptor = self.getPropertyDescriptor(name);
+        if (descriptor.dependency) {
+            self.addDepents(name, descriptor.dependency);
+        }
         var functionName = 'load' + camelCaseToPascalCase(descriptor.type) + 'Property';
         var cell = _('td');
-
         if (!self[functionName]) {
             // throw new Error('Not support type' + descriptor.type + '!')
             functionName = 'loadNotSupportedProperty';
@@ -131,10 +133,6 @@ PropertyEditor.prototype.loadAttributes = function () {
         rowElt.addTo(self.$body);
         self.propertyHolders[name] = self[functionName](name, descriptor, cell, cell);
     });
-
-    $('.as-need-update', this.$body, function (elt) {
-        self.$needUpdate.push(elt);
-    });
 };
 
 
@@ -148,14 +146,11 @@ PropertyEditor.prototype.loadNotSupportedProperty = function (name, descriptor, 
 };
 
 
-// PropertyEditor.prototype.notifyChangeToProperties = function (name, from) {
-//     var e;
-//     for (var i = 0; i < this.$needUpdate.length; ++i) {
-//         e = this.$needUpdate[i];
-//         if (e.notifyChange)
-//             e.notifyChange(name, from);
-//     }
-// };
+PropertyEditor.prototype.notifyChangeToProperties = function (name, from) {
+    // console.log(name);
+
+    // this.updatePropertyRecursive(name);
+};
 
 
 
@@ -166,7 +161,6 @@ PropertyEditor.prototype.loadEnumProperty = function (name, descriptor, cell) {
     if (selectMenu === null) {
         selectMenu = _({
             tag: 'selectmenu',
-            class: 'as-need-update',
             props: {
                 items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
 
@@ -699,6 +693,8 @@ PropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, c
 
 
     res.requestUpdate = function () {
+        var descriptor = self.getPropertyDescriptor(name);
+        if (descriptor.disabled) res.numberInputElt.disabled = !!descriptor.disabled;
         var value = self.getProperty(name);
         if (typeof value == 'number') {
             res.numberInputElt.value = value;
@@ -783,18 +779,34 @@ PropertyEditor.prototype.loadMeasurePositionProperty = function (name, descripto
 
 
     res.requestUpdate = function () {
-        var value = self.getProperty(name);
-        if (typeof value == 'number') {
+        var descriptor = self.getPropertyDescriptor(name);
+        res.numberInputElt.disabled = !!descriptor.disabled;
+        var value;
+        if (descriptor.disabled) {
+            value = self.getProperty(name, res.typeSelectElt.value);
             res.numberInputElt.value = value;
-            res.typeSelectElt.value = 'px';
-        }
-        else if (typeof value == 'string') {
-            if (value.match(/\%$/)) {
-                res.typeSelectElt.value = '%';
-                res.numberInputElt.value = parseFloat(value.replace('%', ''));
+            //set-back
+            if (res.typeSelectElt.value == 'px') {
+                self.setProperty(name, value);
             }
-            else {
-                console.error("Unknow typeof " + name, value);
+            else if (res.typeSelectElt.value == '%') {
+                self.setProperty(name, value + '%');
+            }
+        }
+        else {
+            value = self.getProperty(name);
+            if (typeof value == 'number') {
+                res.numberInputElt.value = value;
+                res.typeSelectElt.value = 'px';
+            }
+            else if (typeof value == 'string') {
+                if (value.match(/\%$/)) {
+                    res.typeSelectElt.value = '%';
+                    res.numberInputElt.value = parseFloat(value.replace('%', ''));
+                }
+                else {
+                    console.error("Unknow typeof " + name, value);
+                }
             }
         }
     }
@@ -866,11 +878,12 @@ PropertyEditor.prototype.updateDependentsOf = function (name, excludes) {
     excludes = excludes || {};
     excludes[name] = true;
     for (var dependentPropertyName in this.dependents[name]) {
-        if (!excludes[name] && this.propertyHolders[dependentPropertyName]) {
-            excludes[name] = true;
-            if (this.propertyHolders[dependentPropertyName].requestUpdate)
+        if (!excludes[dependentPropertyName] && this.propertyHolders[dependentPropertyName]) {
+            excludes[dependentPropertyName] = true;
+            if (this.propertyHolders[dependentPropertyName].requestUpdate) {
                 this.propertyHolders[dependentPropertyName].requestUpdate();
-            this.updateProperty(dependentPropertyName, excludes);
+            }
+            this.updateDependentsOf(dependentPropertyName, excludes);
         }
     }
 };
@@ -884,6 +897,7 @@ PropertyEditor.prototype.updatePropertyRecursive = function (name) {
 
 
 PropertyEditor.prototype.notifyChange = function (name, from) {
+    this.updateDependentsOf(name);
     this.emit('change', { type: 'change', target: this, from: from, name: name, object: this.object }, this);
 };
 
