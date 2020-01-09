@@ -613,8 +613,10 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
                 }
             }
             self.notifyDataChange();
-            self.componentPropertiesEditor.styleEditor.notifyChangeToProperties();
-            self.componentPropertiesEditor.allPropertyEditor.notifyChangeToProperties();
+            self.componentPropertiesEditor.styleEditor.updatePropertyRecursive('vAlign');
+            self.componentPropertiesEditor.styleEditor.updatePropertyRecursive('hAlign');
+            self.componentPropertiesEditor.allPropertyEditor.updatePropertyRecursive('vAlign');
+            self.componentPropertiesEditor.allPropertyEditor.updatePropertyRecursive('hAlign');
         })
         .on('endmove', function (event) {
             var originEvent = event.originEvent;
