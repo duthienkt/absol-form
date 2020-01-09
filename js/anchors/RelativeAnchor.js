@@ -82,7 +82,8 @@ RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
         min: -Infinity,
         max: Infinity,
         disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'right',
-        livePreview: true
+        livePreview: true,
+        dependency: ['hAlign', 'right', 'width']
     };
 };
 
@@ -93,7 +94,8 @@ RelativeAnchor.prototype.getStyleRightDescriptor = function () {
         min: -Infinity,
         max: Infinity,
         disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'left',
-        livePreview: true
+        livePreview: true,
+        dependency: ['hAlign', 'left', 'width']
     };
 };
 
@@ -464,7 +466,7 @@ RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
         }
         else {
             this.childNode.view.removeStyle('width');
-            if (this.hAlign == 'fixed') {
+            if (this.childNode.style.hAlign == 'fixed') {
                 this.view.removeStyle('width', styleValue);
             }
             else {
@@ -496,7 +498,7 @@ RelativeAnchor.prototype.setStyleHeight = function (value, unit) {
     }
     else {
         this.childNode.view.removeStyle('height');
-        if (this.vAlign == 'fixed') {
+        if (this.childNode.style.vAlign == 'fixed') {
             this.view.removeStyle('height', styleValue);
         }
         else {
@@ -607,7 +609,8 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
 RelativeAnchor.prototype.getStyleWidthDescriptor = function () {
     return {
         type: 'measureSize',
-        disabled: this.style.hAlign == 'fixed'
+        disabled: this.style.hAlign == 'fixed',
+        dependency: ['hAlign', 'left', 'right']
     };
 };
 
