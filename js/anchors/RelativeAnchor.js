@@ -106,7 +106,8 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
         min: -Infinity,
         max: Infinity,
         disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'bottom',
-        livePreview: true
+        livePreview: true,
+        dependency: ['vAlign', 'bottom', 'height']
     };
 };
 
@@ -117,7 +118,8 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
         min: -Infinity,
         max: Infinity,
         disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'top',
-        livePreview: true
+        livePreview: true,
+        dependency: ['vAlign', 'top', 'height']
     };
 };
 
@@ -444,6 +446,9 @@ RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
+    if (value == 'match_parent') value = '100%';
+    else if (value == 'wrap_content') value = 'auto';
+
     var styleValue = value >= 0 ? value + 'px' : value;
     if (this.childNode.style.vAlign == 'center') {
         if (this.childNode.style.hAlign == 'center') {
@@ -617,7 +622,8 @@ RelativeAnchor.prototype.getStyleWidthDescriptor = function () {
 RelativeAnchor.prototype.getStyleHeightDescriptor = function () {
     return {
         type: 'measureSize',
-        disabled: this.style.vAlign == 'fixed'
+        disabled: this.style.vAlign == 'fixed',
+        dependency: ['vAlign', 'top', 'bottom']
     };
 };
 
