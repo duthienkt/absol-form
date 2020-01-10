@@ -249,8 +249,18 @@ BaseComponent.prototype.getStyle = function (name) {
     return FViewable.prototype.getStyle.apply(this, arguments);
 };
 
-BaseComponent.prototype.setStyleWidth = function (value) {
+BaseComponent.prototype.setStyleWidth = function (value, unit) {
     if (this.anchor) return value;// let anchor do that
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.style.width == 'string') && this.style.width.match(/\%$/)) {
+            value = value * 100 / this.view.parentElement.getBoundingClientRect().width + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.style.width == 'number') {
+            value = value * this.view.parentElement.getBoundingClientRect().width / 100 + '%';
+        }
+    }
     if (typeof value == "number")
         this.view.addStyle('width', value + 'px');
     else
@@ -259,13 +269,78 @@ BaseComponent.prototype.setStyleWidth = function (value) {
 };
 
 
-BaseComponent.prototype.setStyleHeight = function (value) {
+BaseComponent.prototype.setStyleHeight = function (value, unit) {
     if (this.anchor) return value;// let anchor do that
+    if (unit == 'px') {//value must be a number
+        if ((typeof this.style.height == 'string') && this.style.height.match(/\%$/)) {
+            value = value * 100 / this.view.parentElement.getBoundingClientRect().height + '%';
+        }
+    }
+    else if (unit == '%') {
+        if (typeof this.style.height == 'number') {
+            value = value * this.view.parentElement.getBoundingClientRect().height / 100 + '%';
+        }
+    }
+    if (value == 'match_parent') value = '100%';
+    else if (value == 'wrap_content') value = 'auto';
     if (typeof value == "number")
         this.view.addStyle('height', value + 'px');
     else
         this.view.addStyle('height', value);
     return value;
+};
+
+
+
+BaseComponent.prototype.getStyleWidth = function (unit) {
+    if (unit == 'px') {
+        if (this.style.hAlign == 'fixed' || this.style.hAlign == 'wrap_content' || typeof this.style.width != 'number')
+            return this.view.getBoundingClientRect().width;
+        else {
+            return this.style.width;
+        }
+    }
+    else if (unit == '%') {
+        if (this.style.hAlign == 'match_parent') return 100;
+        else if (this.style.hAlign == 'fixed' || this.style.hAlign == 'wrap_content' || ((typeof this.style.width == 'string') && (!this.style.width.match(/\%$/))) || (typeof this.style.width != 'string')) {
+            return this.view.getBoundingClientRect().width * 100 / this.view.parentElement.getBoundingClientRect().width;
+        }
+        else {
+            return parseFloat(this.style.width.replace('%', ''));
+        }
+    } else
+        return this.style.width;
+};
+
+
+BaseComponent.prototype.getStyleHeight = function (unit) {
+    if (unit == 'px') {
+        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || typeof this.style.height != 'number')
+            return this.view.getBoundingClientRect().height;
+        else {
+            return this.style.height;
+        }
+    }
+    else if (unit == '%') {
+        if (this.style.vAlign == 'match_parent') return 100;
+        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
+            return this.view.getBoundingClientRect().height * 100 / this.view.parentElement.getBoundingClientRect().height;
+        }
+        else {
+            return parseFloat(this.style.height.replace('%', ''));
+        }
+    } else
+        return this.style.height;
+};
+
+
+BaseComponent.prototype.getStyleWidthDescriptor = function () {
+    return { type: 'measureSize' };
+};
+
+BaseComponent.prototype.getStyleHeightDescriptor = function () {
+    return { type: 'measureSize' };
+
 };
 
 export default BaseComponent;
