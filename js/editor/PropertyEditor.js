@@ -113,7 +113,7 @@ PropertyEditor.prototype.loadAttributes = function () {
     if (!this.object) return;
     this.propertyNames = this.getPropertyNames();
     this.propertyNames.forEach(function (name) {
-        var descriptor = self.getPropertyDescriptor(name);
+        var descriptor = self.getPropertyDescriptor(name)||{type:"NoDescriptor"};
         if (descriptor.dependency) {
             self.addDepents(name, descriptor.dependency);
         }
