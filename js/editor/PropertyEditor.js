@@ -112,6 +112,7 @@ PropertyEditor.prototype.loadAttributes = function () {
     this.$needUpdate = [];
     if (!this.object) return;
     this.propertyNames = this.getPropertyNames();
+    this.propertyHolders = {};
     this.propertyNames.forEach(function (name) {
         var descriptor = self.getPropertyDescriptor(name)||{type:"NoDescriptor"};
         if (descriptor.dependency) {
@@ -145,12 +146,6 @@ PropertyEditor.prototype.loadNotSupportedProperty = function (name, descriptor, 
     return {};
 };
 
-
-PropertyEditor.prototype.notifyChangeToProperties = function (name, from) {
-    // console.log(name);
-
-    // this.updatePropertyRecursive(name);
-};
 
 
 
