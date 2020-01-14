@@ -213,7 +213,7 @@ RelativeAnchor.prototype.getStyleLeft = function (unit) {
             || this.childNode.style.left === undefined
             || this.childNode.style.left === null
             || (typeof this.childNode.style.left != 'string')
-            || (typeof this.childNode.style.left == 'string' && typeof this.childNode.style.left.match(/\%$/))) {
+            || (typeof this.childNode.style.left == 'string' && this.childNode.style.left.match(/\%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (nodeBound.left - parentBound.left) * 100 / parentBound.width;
@@ -269,7 +269,7 @@ RelativeAnchor.prototype.getStyleRight = function (unit) {
             || this.childNode.style.right === undefined
             || this.childNode.style.right === null
             || (typeof this.childNode.style.right != 'string')
-            || (typeof this.childNode.style.right == 'string' && typeof this.childNode.style.right.match(/\%$/))) {
+            || (typeof this.childNode.style.right == 'string' && !this.childNode.style.right.match(/\%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (parentBound.right - nodeBound.right) * 100 / parentBound.width;
@@ -322,7 +322,7 @@ RelativeAnchor.prototype.getStyleTop = function (unit) {
             || this.childNode.style.top === undefined
             || this.childNode.style.top === null
             || (typeof this.childNode.style.top != 'string')
-            || (typeof this.childNode.style.top == 'string' && typeof this.childNode.style.top.match(/\%$/))) {
+            || (typeof this.childNode.style.top == 'string' && this.childNode.style.top.match(/\%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (nodeBound.top - parentBound.top) * 100 / parentBound.height;
@@ -378,7 +378,7 @@ RelativeAnchor.prototype.getStyleBottom = function (unit) {
             || this.childNode.style.bottom === undefined
             || this.childNode.style.bottom === null
             || (typeof this.childNode.style.bottom != 'string')
-            || (typeof this.childNode.style.bottom == 'string' && typeof this.childNode.style.bottom.match(/\%$/))) {
+            || (typeof this.childNode.style.bottom == 'string' && this.childNode.style.bottom.match(/\%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (parentBound.bottom - nodeBound.bottom) * 100 / parentBound.height;
@@ -446,10 +446,10 @@ RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
-    if (value == 'match_parent') value = '100%';
-    else if (value == 'wrap_content') value = 'auto';
-
     var styleValue = value >= 0 ? value + 'px' : value;
+    if (styleValue == 'match_parent') styleValue = '100%';
+    else if (styleValue == 'wrap_content') styleValue = 'auto';
+
     if (this.childNode.style.vAlign == 'center') {
         if (this.childNode.style.hAlign == 'center') {
             this.view.removeStyle('width');
@@ -494,9 +494,10 @@ RelativeAnchor.prototype.setStyleHeight = function (value, unit) {
             value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
-    if (value == 'match_parent') value = '100%';
-    else if (value == 'wrap_content') value = 'auto';
     var styleValue = value >= 0 ? value + 'px' : value;
+    if (styleValue == 'match_parent') styleValue = '100%';
+    else if (styleValue == 'wrap_content') styleValue = 'auto';
+
     if (this.childNode.style.vAlign == 'center') {
         this.view.removeStyle('height');
         this.childNode.view.addStyle('height', styleValue);// set height to cell will be fail
