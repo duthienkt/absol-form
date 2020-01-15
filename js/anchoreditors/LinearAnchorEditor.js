@@ -152,8 +152,6 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
         items.push('================');
     }
     // is a layout
-    console.log(this.layoutEditor.anchorEditors.length , this.layoutEditor.anchorEditors[0].component.reMeasureChild);
-    
     if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
@@ -264,14 +262,13 @@ LinearAnchorEditor.prototype.updatePosition = function () {
             height: compBound.height + 'px'
         });
         this.$marginBox.addStyle({
-            left: compBound.left - bound.left - this.component.style.left + 'px',
-            top: compBound.top - bound.top - this.component.style.top + 'px',
-            width: compBound.width + this.component.style.left + this.component.style.right + 'px',
-            height: compBound.height + this.component.style.top + this.component.style.bottom + 'px'
+            left: compBound.left - bound.left - this.component.getStyle('left', 'px') + 'px',
+            top: compBound.top - bound.top - this.component.getStyle('top', 'px') + 'px',
+            width: compBound.width + this.component.getStyle('left', 'px') + this.component.getStyle('right', 'px') + 'px',
+            height: compBound.height + this.component.getStyle('top', 'px') + this.component.getStyle('bottom', 'px') + 'px'
         });
     }
 };
-
 
 
 LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
@@ -283,7 +280,18 @@ LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         dy: 0,
         option: event.option,
         styleDescriptors: this.component.getStyleDescriptors(),
-        style0: Object.assign({}, this.component.style),
+        style0: Object.assign(
+            {},
+            this.component.style,
+            {
+                left: this.component.getStyle('left', 'px'),
+                right: this.component.getStyle('right', 'px'),
+                top: this.component.getStyle('top', 'px'),
+                bottom: this.component.getStyle('bottom', 'px'),
+                width: this.component.getStyle('width', 'px'),
+                height: this.component.getStyle('height', 'px')
+            }
+        ),
         comp: this.component,
         isChange: false,
     };
@@ -307,12 +315,12 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     var positionIsChange = false;
 
     if (movingData.styleDescriptors.left && !movingData.styleDescriptors.left.disabled && (movingData.option.left || movingData.option.body)) {
-        movingData.comp.setStyle('left', Math.max(0, movingData.style0.left + movingData.dx));
+        movingData.comp.setStyle('left', Math.max(0, movingData.style0.left + movingData.dx), 'px');
         positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.right && !movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
-        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx));
+        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx), 'px');
         positionIsChange = true;
 
     }
@@ -320,52 +328,52 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
         if (movingData.option.left) {
             if (!!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width - movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width - movingData.dx * 2), 'px');
             }
             else {
-                movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx));
+                movingData.comp.setStyle('width', Math.max(movingData.style0.width - movingData.dx), 'px');
             }
             positionIsChange = true;
         }
         if (movingData.option.right) {
             if (movingData.styleDescriptors.left && !!movingData.styleDescriptors.left.disabled && !!movingData.styleDescriptors.right.disabled) {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx * 2));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx * 2), 'px');
                 //center align
             }
             else {
-                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx));
+                movingData.comp.setStyle('width', Math.max(movingData.comp.measureMinSize().width, movingData.style0.width + movingData.dx), 'px');
             }
             positionIsChange = true;
         }
     }
 
     if (movingData.styleDescriptors.top && !movingData.styleDescriptors.top.disabled && (movingData.option.top || movingData.option.body)) {
-        movingData.comp.setStyle('top', Math.max(0, movingData.style0.top + movingData.dy));
+        movingData.comp.setStyle('top', Math.max(0, movingData.style0.top + movingData.dy), 'px');
         positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.bottom && !movingData.styleDescriptors.bottom.disabled && (movingData.option.bottom || movingData.option.body)) {
-        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom - movingData.dy));
+        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom - movingData.dy), 'px');
         positionIsChange = true;
     }
 
     if (movingData.styleDescriptors.height && !movingData.styleDescriptors.height.disabled) {
         if (movingData.option.top) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy * 2), 'px');
             }
             else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height - movingData.dy), 'px');
             }
             positionIsChange = true;
 
         }
         if (movingData.option.bottom) {
             if (movingData.styleDescriptors.top && !!movingData.styleDescriptors.top.disabled && !!movingData.styleDescriptors.bottom.disabled) {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy * 2));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy * 2), 'px');
             }
             else {
-                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy));
+                movingData.comp.setStyle('height', Math.max(movingData.comp.measureMinSize().height, movingData.style0.height + movingData.dy), 'px');
             }
             positionIsChange = true;
         }
@@ -391,12 +399,13 @@ LinearAnchorEditor.prototype.ev_movingMargin = function (userAction, event) {
     movingData.dy = y - movingData.y0;
     var positionIsChange = false;
 
-
     if (movingData.styleDescriptors.bottom && event.option.bottom) {
-        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom + movingData.dy));
+        movingData.comp.setStyle('bottom', Math.max(0, movingData.style0.bottom + movingData.dy), 'px');
+        positionIsChange = true;
     }
     if (movingData.styleDescriptors.right && event.option.right) {
-        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right + movingData.dx));
+        movingData.comp.setStyle('right', Math.max(0, movingData.style0.right + movingData.dx), 'px');
+        positionIsChange = true;
     }
 
     this.updatePosition();
@@ -784,10 +793,10 @@ LinearAnchorEditor.prototype.cmd_distributeHorizontalLeft = function () {
     }
     editors = editors.slice();
     editors.sort(function (a, b) {
-        return a.component.style.left - b.component.style.left;
+        return a.component.getStyle('left', 'px') - b.component.getStyle('left', 'px');
     });
-    var minX = editors[0].component.style.left;
-    var maxX = editors[editors.length - 1].component.style.left;
+    var minX = editors[0].component.getStyle('left', 'px');
+    var maxX = editors[editors.length - 1].component.getStyle('left', 'px');
     if (minX == maxX) return;
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
@@ -807,10 +816,10 @@ LinearAnchorEditor.prototype.cmd_distributeHorizontalCenter = function () {
     }
     editors = editors.slice();
     editors.sort(function (a, b) {
-        return (a.component.style.left + a.component.style.width / 2) - (b.component.style.left + b.component.style.width / 2);
+        return (a.component.getStyle('left', 'px') + a.component.style.width / 2) - (b.component.getStyle('left', 'px') + b.component.style.width / 2);
     });
-    var minX = (editors[0].component.style.left + editors[0].component.style.width / 2);
-    var maxX = (editors[editors.length - 1].component.style.left + editors[editors.length - 1].component.style.width / 2);
+    var minX = (editors[0].component.getStyle('left', 'px') + editors[0].component.style.width / 2);
+    var maxX = (editors[editors.length - 1].component.getStyle('left', 'px') + editors[editors.length - 1].component.style.width / 2);
     if (minX == maxX) return;
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
@@ -832,10 +841,10 @@ LinearAnchorEditor.prototype.cmd_distributeHorizontalRight = function () {
     }
     editors = editors.slice();
     editors.sort(function (a, b) {
-        return a.component.style.right - b.component.style.right;
+        return a.component.getStyle('right', 'px') - b.component.getStyle('right', 'px');
     });
-    var minX = editors[0].component.style.right;
-    var maxX = editors[editors.length - 1].component.style.right;
+    var minX = editors[0].component.getStyle('right', 'px');
+    var maxX = editors[editors.length - 1].component.getStyle('right', 'px');
     if (minX == maxX) return;
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
@@ -855,20 +864,20 @@ LinearAnchorEditor.prototype.cmd_distributeHorizontalDistance = function () {
     }
     editors = editors.slice();
     editors.sort(function (a, b) {
-        return (a.component.style.left + a.component.style.width / 2) - (b.component.style.left + b.component.style.width / 2);
+        return (a.component.getStyle('left', 'px') + a.component.style.width / 2) - (b.component.getStyle('left', 'px') + b.component.style.width / 2);
     });
 
-    var sumDistance = editors[editors.length - 1].component.style.left - (editors[0].component.style.left + editors[0].component.style.width);
+    var sumDistance = editors[editors.length - 1].component.getStyle('left', 'px') - (editors[0].component.getStyle('left', 'px') + editors[0].component.style.width);
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
         sumDistance -= editor.component.style.width;
     }
     var distance = sumDistance / (editors.length - 1);
-    var curentLeft = editors[0].component.style.left + editors[0].component.style.width + distance;
+    var curentLeft = editors[0].component.getStyle('left', 'px') + editors[0].component.style.width + distance;
 
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
-        editor.alignHorizontalCenter(editor.component.style.right - 2 * curentLeft + editor.component.style.left);
+        editor.alignHorizontalCenter(editor.component.getStyle('right', 'px') - 2 * curentLeft + editor.component.getStyle('left', 'px'));
         editor.component.reMeasure();
         curentLeft += editor.component.style.width + distance;
     }
@@ -888,10 +897,10 @@ LinearAnchorEditor.prototype.cmd_distributeVerticalTop = function () {
     }
     editors = editors.slice();
     editors.sort(function (a, b) {
-        return a.component.style.top - b.component.style.top;
+        return a.component.getStyle('top', 'px') - b.component.getStyle('top', 'px');
     });
-    var minX = editors[0].component.style.top;
-    var maxX = editors[editors.length - 1].component.style.top;
+    var minX = editors[0].component.getStyle('top', 'px');
+    var maxX = editors[editors.length - 1].component.getStyle('top', 'px');
     if (minX == maxX) return;
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
@@ -911,10 +920,10 @@ LinearAnchorEditor.prototype.cmd_distributeVerticalCenter = function () {
     }
     editors = editors.slice();
     editors.sort(function (a, b) {
-        return (a.component.style.top + a.component.style.height / 2) - (b.component.style.top + b.component.style.height / 2);
+        return (a.component.getStyle('top', 'px') + a.component.style.height / 2) - (b.component.getStyle('top', 'px') + b.component.style.height / 2);
     });
-    var minX = (editors[0].component.style.top + editors[0].component.style.height / 2);
-    var maxX = (editors[editors.length - 1].component.style.top + editors[editors.length - 1].component.style.height / 2);
+    var minX = (editors[0].component.getStyle('top', 'px') + editors[0].component.style.height / 2);
+    var maxX = (editors[editors.length - 1].component.getStyle('top', 'px') + editors[editors.length - 1].component.style.height / 2);
     if (minX == maxX) return;
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
@@ -960,20 +969,20 @@ LinearAnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
     }
     editors = editors.slice();
     editors.sort(function (a, b) {
-        return (a.component.style.top + a.component.style.height / 2) - (b.component.style.top + b.component.style.height / 2);
+        return (a.component.getStyle('top', 'px') + a.component.style.height / 2) - (b.component.getStyle('top', 'px') + b.component.style.height / 2);
     });
 
-    var sumDistance = editors[editors.length - 1].component.style.top - (editors[0].component.style.top + editors[0].component.style.height);
+    var sumDistance = editors[editors.length - 1].component.getStyle('top', 'px') - (editors[0].component.getStyle('top', 'px') + editors[0].component.style.height);
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
         sumDistance -= editor.component.style.height;
     }
     var distance = sumDistance / (editors.length - 1);
-    var curentTop = editors[0].component.style.top + editors[0].component.style.height + distance;
+    var curentTop = editors[0].component.getStyle('top', 'px') + editors[0].component.style.height + distance;
 
     for (i = 1; i < editors.length - 1; ++i) {
         editor = editors[i];
-        editor.alignVerticalCenter(editor.component.style.bottom - 2 * curentTop + editor.component.style.top);
+        editor.alignVerticalCenter(editor.component.style.bottom - 2 * curentTop + editor.component.getStyle('top', 'px'));
         editor.component.reMeasure();
         curentTop += editor.component.style.height + distance;
     }
