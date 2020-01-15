@@ -261,10 +261,13 @@ BaseComponent.prototype.setStyleWidth = function (value, unit) {
             value = value * this.view.parentElement.getBoundingClientRect().width / 100 + '%';
         }
     }
-    if (typeof value == "number")
-        this.view.addStyle('width', value + 'px');
+    var styleValue = value >= 0 ? value + 'px' : value;
+    if (styleValue == 'match_parent') styleValue = '100%';
+    else if (styleValue == 'wrap_content') styleValue = 'auto';
+    if (typeof styleValue == "number")
+        this.view.addStyle('width', styleValue + 'px');
     else
-        this.view.addStyle('width', value);
+        this.view.addStyle('width', styleValue);
     return value;
 };
 
@@ -281,12 +284,13 @@ BaseComponent.prototype.setStyleHeight = function (value, unit) {
             value = value * this.view.parentElement.getBoundingClientRect().height / 100 + '%';
         }
     }
-    if (value == 'match_parent') value = '100%';
-    else if (value == 'wrap_content') value = 'auto';
-    if (typeof value == "number")
-        this.view.addStyle('height', value + 'px');
+    var styleValue = value >= 0 ? value + 'px' : value;
+    if (styleValue == 'match_parent') styleValue = '100%';
+    else if (styleValue == 'wrap_content') styleValue = 'auto';
+    if (typeof styleValue == "number")
+        this.view.addStyle('height', styleValue + 'px');
     else
-        this.view.addStyle('height', value);
+        this.view.addStyle('height', styleValue);
     return value;
 };
 
