@@ -684,6 +684,8 @@ PropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, c
                 self.setProperty(name, value);
             }
         }
+        self.notifyChange(name);
+        self.notifyStopChange(name);
     });
 
 
@@ -701,7 +703,7 @@ PropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, c
                 res.numberInputElt.value = parseFloat(value.replace('%', ''));
                 res.numberInputElt.disabled = false;
             }
-            else if (value == 'match_parent' || value != 'wrap_content') {
+            else if (value == 'match_parent' || value == 'wrap_content') {
                 res.numberInputElt.disabled = true;
                 res.typeSelectElt.value = value;
             }
@@ -770,6 +772,8 @@ PropertyEditor.prototype.loadMeasurePositionProperty = function (name, descripto
                 self.setProperty(name, value);
             }
         }
+        self.notifyChange(name);
+        self.notifyStopChange(name);
     });
 
 
