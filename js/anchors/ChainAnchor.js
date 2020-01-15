@@ -1,6 +1,7 @@
 import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import LinearAnchor from "./LinearAnchor";
+import '../../css/chainanchor.css';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -69,6 +70,32 @@ ChainAnchor.prototype.render = function () {
     return _(layout);
 };
 
+
+
+/**
+ * @param {BaseComponent} child
+ */
+ChainAnchor.prototype.attachChild = function (child) {
+    if (this.childNode) {
+        this.childNode.view.remove();
+        this.childNode = null;
+        this.childNode.anchor = null;
+    }
+
+    if (child.anchor) throw new Error("Detach anchorBox first");
+    this.childNode = child;
+    this.childNode.style.width = this.childNode.style.width || 0;
+    this.childNode.style.height = this.childNode.style.height || 0;
+    this.childNode.style.left = this.childNode.style.left || 0;
+    this.childNode.style.right = this.childNode.style.right || 0;
+    this.childNode.style.top = this.childNode.style.top || 0;
+    this.childNode.style.bottom = this.childNode.style.bottom || 0;
+    this.childNode.style.vAlign = this.childNode.style.vAlign || 'top';
+
+    child.anchor = this;
+    this.view.addChild(child.view);
+    child.onAnchorAttached();
+};
 
 
 export default ChainAnchor;
