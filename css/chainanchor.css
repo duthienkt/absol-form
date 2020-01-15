@@ -1,0 +1,22 @@
+
+.as-chain-anchor-box {
+    display: inline-block;
+}
+
+.as-chain-anchor-box.as-valign-top {
+    vertical-align: top;
+}
+
+.as-chain-anchor-box.as-valign-center {
+    vertical-align: middle;
+}
+
+.as-chain-anchor-box.as-valign-bottom {
+    vertical-align: bottom;
+}
+
+
+.as-chain-anchor-box>.as-base-component{
+    width: 100%;
+    height: 100%;
+}

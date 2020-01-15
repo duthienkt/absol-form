@@ -182,23 +182,5 @@
     margin-bottom: -1px;
 }
 
-.as-linear-anchor-box {
-    display: block;
-}
 
 
-.as-chain-anchor-box {
-    display: inline-block;
-}
-
-.as-chain-anchor-box.as-valign-top {
-    vertical-align: top;
-}
-
-.as-chain-anchor-box.as-valign-center {
-    vertical-align: middle;
-}
-
-.as-chain-anchor-box.as-valign-bottom {
-    vertical-align: bottom;
-}
