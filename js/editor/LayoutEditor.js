@@ -273,6 +273,8 @@ LayoutEditor.prototype.ev_mouseMove = function (event) {
     var hruleBound = this.$hruler.getBoundingClientRect();
     this.$vrulerMouse.addStyle('top', event.clientY - vruleBound.top - 1 - 1 + 'px');
     this.$hrulerMouse.addStyle('left', event.clientX - hruleBound.left - 1 - 1 + 'px');
+    this.mouseClientX = event.clientX;
+    this.mouseClientY = event.clientY;
 };
 
 
@@ -613,10 +615,11 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
                 }
             }
             self.notifyDataChange();
-            self.componentPropertiesEditor.styleEditor.updatePropertyRecursive('vAlign');
-            self.componentPropertiesEditor.styleEditor.updatePropertyRecursive('hAlign');
-            self.componentPropertiesEditor.allPropertyEditor.updatePropertyRecursive('vAlign');
-            self.componentPropertiesEditor.allPropertyEditor.updatePropertyRecursive('hAlign');
+            self.componentPropertiesEditor.styleEditor.updatePropertyRecursive('width');
+            self.componentPropertiesEditor.styleEditor.updatePropertyRecursive('height');
+            self.componentPropertiesEditor.allPropertyEditor.updatePropertyRecursive('width');
+            self.componentPropertiesEditor.allPropertyEditor.updatePropertyRecursive('height');
+            self.updateEditing();
         })
         .on('endmove', function (event) {
             var originEvent = event.originEvent;
@@ -969,6 +972,7 @@ LayoutEditor.prototype.moveUpComponent = function (comp) {
     this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' up');
     this.notifyUnsaved();
+    this.updateAnchorPosition();
 };
 
 
@@ -984,6 +988,7 @@ LayoutEditor.prototype.moveDownComponent = function (comp) {
     this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' down');
     this.notifyUnsaved();
+    this.updateAnchorPosition();
 };
 
 
@@ -999,6 +1004,7 @@ LayoutEditor.prototype.moveToBottomComponent = function (comp) {
     this.componentOtline.updateComponetTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to bottom');
     this.notifyUnsaved();
+    this.updateAnchorPosition();
 };
 
 
