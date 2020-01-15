@@ -263,7 +263,7 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
                 top: this.component.getStyle('top', 'px'),
                 bottom: this.component.getStyle('bottom', 'px'),
                 width: this.component.getStyle('width', 'px'),
-                height: this.component.getStyle('height', 'px'),
+                height: this.component.getStyle('height', 'px')
             }
         ),
         comp: this.component,

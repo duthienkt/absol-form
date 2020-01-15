@@ -22,7 +22,7 @@ function ComponentPropertiesEditor() {
         stopchange: function (event) {
             self.emit('stopchange', Object.assign({ componentPropertiesEditor: self }, event), self);
         }
-    }
+    };
     this.attributeEditor = new AttributeEditor().on(repeatEvents)
         .on('stopchange', function (event) {
             self.allPropertyEditor.updatePropertyRecursive(event.name);
