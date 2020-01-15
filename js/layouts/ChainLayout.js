@@ -28,6 +28,19 @@ ChainLayout.prototype.getAnchorEditorConstructor = function () {
 };
 
 
+ChainLayout.prototype.measureMinSize = function () {
+    var width = 0;
+    var height = 0;
+    var child;
+    for (var i = 0; i < this.children.length; ++i) {
+        child = this.children[i];
+        var minSize = child.measureMinSize();
+        width = Math.max(width, child.style.left + minSize.width + child.style.right);
+        height = Math.max (height,child.style.top + minSize.height + child.style.bottom);
+    }
+    return { width: width, height: height };
+}
+
 
 ChainLayout.prototype.render = function () {
     return _({ class: this.TOP_CLASS_NAME });
@@ -46,20 +59,16 @@ ChainLayout.prototype.onAddChild = function (child, index) {
 };
 
 ChainLayout.prototype.addChildByPosition = function (child, posX, posY) {
-    //todo use default
+    var bound = this.view.getBoundingClientRect();
     var at = undefined;
-    // var y = 0;
-    // for (var i = 0; i < this.children.length; ++i) {
-    //     at = this.children[i];
-    //     y += at.style.height + at.style.top + at.style.bottom;
-    //     if (y >= posY) {
-    //         break;
-    //     }
-    // }
-
-    // if (y < posY) {
-    //     at = undefined;
-    // }
+    var x;
+    for (var i = 0; i < this.children.length; ++i) {
+        x = this.children[i].view.getBoundingClientRect().right - bound.left;
+        if (x >= posX) {
+            at = this.children[i];
+            break;
+        }
+    }
 
     if (at) {
         this.addChildBefore(child, at);

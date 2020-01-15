@@ -69,10 +69,9 @@ LinearLayout.prototype.measureMinSize = function () {
     //todo
     var width = 0;
     var height = 0;
-
-    var child;
     var cW;
     var cH;
+    var child;
     for (var i = 0; i < this.children.length; ++i) {
         child = this.children[i];
         var minSize = child.measureMinSize();
@@ -86,20 +85,17 @@ LinearLayout.prototype.measureMinSize = function () {
 
 
 LinearLayout.prototype.addChildByPosition = function (child, posX, posY) {
+    var bound = this.view.getBoundingClientRect();
     var at = undefined;
-    var y = 0;
+    var y;
     for (var i = 0; i < this.children.length; ++i) {
-        at = this.children[i];
-        y += at.style.height + at.style.top + at.style.bottom;
+        y = this.children[i].view.getBoundingClientRect().bottom - bound.top;
         if (y >= posY) {
+            at = this.children[i];
             break;
         }
     }
-
-    if (y < posY) {
-        at = undefined;
-    }
-
+    
     if (at) {
         this.addChildBefore(child, at);
     }

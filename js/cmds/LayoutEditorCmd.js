@@ -248,15 +248,23 @@ LayoutEditorCmd.copy = function () {
         if (node.children)
             node.children.forEach(visit);
     }
-    
+
     componentsData.forEach(visit);
     ClipboardManager.set(R.CLIPBOARD.COMPONENTS, componentsData);
 };
 
-LayoutEditorCmd.paste = function () {
+LayoutEditorCmd.paste = function (event) {
+    var posX = 0;
+    var posY = 0;
+    if (event) {
+        var bound = this.rootLayout.view.getBoundingClientRect();
+        posX = this.mouseClientX - bound.left;
+        posY = this.mouseClientY - bound.top;
+    }
+
     var components = ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
     if (components) {
-        this.addNewComponent(components, 0, 0);
+        this.addNewComponent(components, posX, posY);
     }
 };
 
@@ -281,7 +289,7 @@ LayoutEditorCmd.selectAll = function () {
     this.setActiveComponent.apply(this, comp);
 };
 
-LayoutEditorCmd.editRootLayout = function(){
+LayoutEditorCmd.editRootLayout = function () {
     this.editLayout(this.rootLayout);
     this.setActiveComponent(this.rootLayout);
 }
@@ -290,10 +298,10 @@ LayoutEditorCmd.editRootLayout = function(){
 export default LayoutEditorCmd;
 
 export var LayoutEditorCmdDescriptors = {
-    editRootLayout:{
-        type:'trigger',
-        desc:"Edit Root Layout",
-        icon:'span.mdi.mdi-border-outside'
+    editRootLayout: {
+        type: 'trigger',
+        desc: "Edit Root Layout",
+        icon: 'span.mdi.mdi-border-outside'
     },
     distributeVerticalDistance: {
         type: 'trigger',
@@ -448,8 +456,8 @@ export var LayoutEditorCmdDescriptors = {
         icon: 'span.mdi.mdi-select-all',
         bindKey: { win: 'Ctrl-A', mac: 'TODO?' }
     },
-    sendBackward:{
-        type:'trigger',
+    sendBackward: {
+        type: 'trigger',
         desc: 'Send Backward',
         icon: 'span.mdi.mdi-arrange-send-backward'
     }
