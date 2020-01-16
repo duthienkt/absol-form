@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 import LinearAnchorEditor from "../anchoreditors/LinearAnchorEditor";
 import ChainAnchor from "../anchors/ChainAnchor";
 import LinearLayout from "./LinearLayout";
+import BaseLayout from "../core/BaseLayout";
 
 var _ = Fcore._;
 
@@ -59,7 +60,7 @@ ChainLayout.prototype.measureMinSize = function () {
         height = Math.max(height, child.style.top + minSize.height + child.style.bottom);
     }
     return { width: width, height: height };
-}
+};
 
 
 ChainLayout.prototype.render = function () {
