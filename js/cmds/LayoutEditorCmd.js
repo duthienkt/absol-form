@@ -2,6 +2,7 @@ import R from '../R';
 import FormPreview from '../editor/FormPreview';
 import ClipboardManager from '../ClipboardManager';
 import PluginManager from '../core/PluginManager';
+import Fcore from '../core/FCore';
 
 /**
  * @type {import('../editor/LayoutEditor').default}
@@ -170,6 +171,50 @@ LayoutEditorCmd.saveAs = function () {
 
 };
 
+
+LayoutEditorCmd.importFromJson = function () {
+    var self = this;
+    var state = "WAITING";
+    var fileInput = Fcore._({
+        tag: 'input',
+        style: {
+            position: 'fixed',
+            zIndex: '-100',
+            opacity: '0'
+        },
+        attr: {
+            type: 'file',
+            accept: 'application/JSON'
+        },
+        on: {
+            change: function (event) {
+                if (this.files.length > 0) {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        try {
+                            var data = JSON.parse(reader.result);
+                            if (data.app == R.APP) {
+                                self.applyData(data);
+                                self.commitHistory("import", 'Import form JSON file');
+                            }
+                            else {
+                                console.error('Invalid data!');
+                            }
+                        }
+                        catch (error) {
+                            console.error(error);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            }
+        }
+    }).addTo(document.body);
+    fileInput.focus();
+    fileInput.click();
+};
+
 LayoutEditorCmd.export2Json = function () {
     var fileName = 'exported.json';
     var formEditor = this.getContext(R.FORM_EDITOR);
@@ -180,9 +225,12 @@ LayoutEditorCmd.export2Json = function () {
 
     var a = document.createElement('a');
     this.$view.appendChild(a);
-    var text = JSON.stringify(this.getData(), null, '    ');
+    var text = JSON.stringify(Object.assign(this.getData(), {
+        app: R.APP,
+        version: R.VERSION
+    }), null, '    ');
     var fileType = 'json'
-    var blob = new Blob([text], { type: fileType });
+    var blob = new Blob([text], { type: fileType, encoding:"UTF-8" });
     a.download = fileName;
     a.href = URL.createObjectURL(blob);
     a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
@@ -431,6 +479,12 @@ export var LayoutEditorCmdDescriptors = {
         type: 'trigger',
         icon: 'span.mdi.mdi-content-save-edit',
         desc: 'Save As'
+    },
+    importFromJson: {
+        type: 'trigger',
+        icon: 'span.mdi.mdi-cloud-upload[style="color:#1da8f2"]',
+        desc: 'Import From JSON',
+        bindKey: { win: 'Ctrl-Shift-I', mac: 'TODO?' }
     },
     export2Json: {
         type: 'trigger',

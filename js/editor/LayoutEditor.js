@@ -817,6 +817,7 @@ LayoutEditor.prototype.getCmdGroupTree = function () {
                 [
                     'save',
                     'saveAs',
+                    'importFromJson',
                     'export2Json'
                 ],
                 [

@@ -21,5 +21,7 @@ export default {
     },
     CLIPBOARD: {
         COMPONENTS: 'COMPONENTS'
-    }
+    },
+    APP:'ABSO:_FORM_EDITOR',
+    VERSION: '0.5.1'
 }
