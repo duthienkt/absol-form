@@ -643,7 +643,7 @@ PropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, c
                 { text: 'px', value: 'px' },
                 { text: '%', value: '%' },
                 { text: 'match_parent', value: 'match_parent' },
-                { text: 'wrap_content', value: 'wrap_content' }
+                { text: 'auto', value: 'auto' }
             ]
         }
     });
@@ -669,7 +669,7 @@ PropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, c
         });
 
     res.typeSelectElt.on('change', function (event) {
-        if (this.value == 'match_parent' || this.value == 'wrap_content') {
+        if (this.value == 'match_parent' || this.value == 'auto') {
             self.setProperty(name, this.value);
             res.numberInputElt.disabled = true;
         }
@@ -703,7 +703,7 @@ PropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, c
                 res.numberInputElt.value = parseFloat(value.replace('%', ''));
                 res.numberInputElt.disabled = false;
             }
-            else if (value == 'match_parent' || value == 'wrap_content') {
+            else if (value == 'match_parent' || value == 'auto') {
                 res.numberInputElt.disabled = true;
                 res.typeSelectElt.value = value;
             }
@@ -757,7 +757,7 @@ PropertyEditor.prototype.loadMeasurePositionProperty = function (name, descripto
         });
 
     res.typeSelectElt.on('change', function (event) {
-        if (this.value == 'match_parent' || this.value == 'wrap_content') {
+        if (this.value == 'match_parent' || this.value == 'auto') {
             self.setProperty(name, this.value);
             res.numberInputElt.disabled = true;
         }

@@ -180,6 +180,7 @@
     display: block;
     height: 1px;
     margin-bottom: -1px;
+    overflow-x: visible;
 }
 
 

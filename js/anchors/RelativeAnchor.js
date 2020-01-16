@@ -394,7 +394,7 @@ RelativeAnchor.prototype.getStyleBottom = function (unit) {
 
 RelativeAnchor.prototype.getStyleWidth = function (unit) {
     if (unit == 'px') {
-        if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'wrap_content' || typeof this.childNode.style.width != 'number')
+        if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'auto' || typeof this.childNode.style.width != 'number')
             return this.view.getBoundingClientRect().width;
         else {
             return this.childNode.style.width;
@@ -402,7 +402,7 @@ RelativeAnchor.prototype.getStyleWidth = function (unit) {
     }
     else if (unit == '%') {
         if (this.childNode.style.hAlign == 'match_parent') return 100;
-        else if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'wrap_content' || ((typeof this.childNode.style.width == 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
+        else if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'auto' || ((typeof this.childNode.style.width == 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
             return this.childNode.view.getBoundingClientRect().width * 100 / this.childNode.parent.view.getBoundingClientRect().width;
         }
         else {
@@ -416,7 +416,7 @@ RelativeAnchor.prototype.getStyleWidth = function (unit) {
 
 RelativeAnchor.prototype.getStyleHeight = function (unit) {
     if (unit == 'px') {
-        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || typeof this.style.height != 'number')
+        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || typeof this.style.height != 'number')
             return this.view.getBoundingClientRect().height;
         else {
             return this.style.height;
@@ -424,7 +424,7 @@ RelativeAnchor.prototype.getStyleHeight = function (unit) {
     }
     else if (unit == '%') {
         if (this.style.vAlign == 'match_parent') return 100;
-        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
+        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
             return this.childNode.view.getBoundingClientRect().height * 100 / this.childNode.parent.view.getBoundingClientRect().height;
         }
         else {
@@ -448,7 +448,7 @@ RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
     }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
-    else if (styleValue == 'wrap_content') styleValue = 'auto';
+   
 
     if (this.childNode.style.vAlign == 'center') {
         if (this.childNode.style.hAlign == 'center') {
@@ -496,7 +496,7 @@ RelativeAnchor.prototype.setStyleHeight = function (value, unit) {
     }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
-    else if (styleValue == 'wrap_content') styleValue = 'auto';
+   
 
     if (this.childNode.style.vAlign == 'center') {
         this.view.removeStyle('height');

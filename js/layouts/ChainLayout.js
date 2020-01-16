@@ -28,6 +28,26 @@ ChainLayout.prototype.getAnchorEditorConstructor = function () {
 };
 
 
+ChainLayout.prototype.getAcceptsStyleNames = function () {
+    return BaseLayout.prototype.getAcceptsStyleNames.call(this).concat(['overflowX']);
+};
+
+
+ChainLayout.prototype.setStyleOverflowX = function (value) {
+    if (['visible', 'hidden', 'auto'].indexOf(value) < 0) value = 'visible';
+    this.view.addStyle('overflowX', value);
+    return value;
+};
+
+
+LinearLayout.prototype.getStyleOverflowXDescriptor = function () {
+    return {
+        type: 'enum',
+        values: ['visible', 'hidden', 'auto']
+    };
+};
+
+
 ChainLayout.prototype.measureMinSize = function () {
     var width = 0;
     var height = 0;
@@ -36,7 +56,7 @@ ChainLayout.prototype.measureMinSize = function () {
         child = this.children[i];
         var minSize = child.measureMinSize();
         width = Math.max(width, child.style.left + minSize.width + child.style.right);
-        height = Math.max (height,child.style.top + minSize.height + child.style.bottom);
+        height = Math.max(height, child.style.top + minSize.height + child.style.bottom);
     }
     return { width: width, height: height };
 }

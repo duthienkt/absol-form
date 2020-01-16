@@ -263,7 +263,7 @@ BaseComponent.prototype.setStyleWidth = function (value, unit) {
     }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
-    else if (styleValue == 'wrap_content') styleValue = 'auto';
+   
     if (typeof styleValue == "number")
         this.view.addStyle('width', styleValue + 'px');
     else
@@ -286,7 +286,7 @@ BaseComponent.prototype.setStyleHeight = function (value, unit) {
     }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
-    else if (styleValue == 'wrap_content') styleValue = 'auto';
+   
     if (typeof styleValue == "number")
         this.view.addStyle('height', styleValue + 'px');
     else
@@ -298,7 +298,7 @@ BaseComponent.prototype.setStyleHeight = function (value, unit) {
 
 BaseComponent.prototype.getStyleWidth = function (unit) {
     if (unit == 'px') {
-        if (this.style.hAlign == 'fixed' || this.style.hAlign == 'wrap_content' || typeof this.style.width != 'number')
+        if (this.style.hAlign == 'fixed' || this.style.hAlign == 'auto' || typeof this.style.width != 'number')
             return this.view.getBoundingClientRect().width;
         else {
             return this.style.width;
@@ -306,7 +306,7 @@ BaseComponent.prototype.getStyleWidth = function (unit) {
     }
     else if (unit == '%') {
         if (this.style.hAlign == 'match_parent') return 100;
-        else if (this.style.hAlign == 'fixed' || this.style.hAlign == 'wrap_content' || ((typeof this.style.width == 'string') && (!this.style.width.match(/\%$/))) || (typeof this.style.width != 'string')) {
+        else if (this.style.hAlign == 'fixed' || this.style.hAlign == 'auto' || ((typeof this.style.width == 'string') && (!this.style.width.match(/\%$/))) || (typeof this.style.width != 'string')) {
             return this.view.getBoundingClientRect().width * 100 / this.view.parentElement.getBoundingClientRect().width;
         }
         else {
@@ -319,7 +319,7 @@ BaseComponent.prototype.getStyleWidth = function (unit) {
 
 BaseComponent.prototype.getStyleHeight = function (unit) {
     if (unit == 'px') {
-        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || typeof this.style.height != 'number')
+        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || typeof this.style.height != 'number')
             return this.view.getBoundingClientRect().height;
         else {
             return this.style.height;
@@ -327,7 +327,7 @@ BaseComponent.prototype.getStyleHeight = function (unit) {
     }
     else if (unit == '%') {
         if (this.style.vAlign == 'match_parent') return 100;
-        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'wrap_content' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
+        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
             return this.view.getBoundingClientRect().height * 100 / this.view.parentElement.getBoundingClientRect().height;
         }
         else {

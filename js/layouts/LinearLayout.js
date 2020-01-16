@@ -22,6 +22,11 @@ LinearLayout.prototype.TOP_CLASS_NAME = 'as-linear-layout';
 LinearLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
 
+LinearLayout.prototype.onCreate = function(){
+    BaseLayout.prototype.onCreate.apply(this, arguments);
+    this.style.overflowY = false;
+};
+
 LinearLayout.prototype.getAnchorConstructor = function () {
     return LinearAnchor;
 };
@@ -31,6 +36,24 @@ LinearLayout.prototype.getAnchorEditorConstructor = function () {
 };
 
 
+LinearLayout.prototype.getAcceptsStyleNames = function(){
+    return BaseLayout.prototype.getAcceptsStyleNames.call(this).concat(['overflowY']);
+};
+
+
+LinearLayout.prototype.setStyleOverflowY = function(value){
+    if (['visible', 'hidden', 'auto'].indexOf(value)<0) value = 'visible';
+    this.view.addStyle('overflowY', value);
+    return value;
+};
+
+
+LinearLayout.prototype.getStyleOverflowYDescriptor = function(){
+    return {
+        type:'enum',
+        values:['visible', 'hidden', 'auto']
+    };
+}; 
 
 LinearLayout.prototype.render = function () {
     return _({ class: this.TOP_CLASS_NAME });
