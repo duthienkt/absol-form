@@ -41,7 +41,7 @@ ChainLayout.prototype.setStyleOverflowX = function (value) {
 };
 
 
-LinearLayout.prototype.getStyleOverflowXDescriptor = function () {
+ChainLayout.prototype.getStyleOverflowXDescriptor = function () {
     return {
         type: 'enum',
         values: ['visible', 'hidden', 'auto']
