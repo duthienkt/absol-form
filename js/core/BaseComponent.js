@@ -224,8 +224,24 @@ BaseComponent.prototype.getAttributeTypeDescriptor = function () {
 
 
 BaseComponent.prototype.getAttributeNameDescriptor = function () {
+    var root = this;
+    while (root.parent && !root.formType) {
+        root = root.parent;
+    }
+    var names = {};
+    var self = this;
+    function visit(node) {
+        if (node != self) {
+            names[node.attributes.name] = node;
+        }
+        node.children.forEach(visit);
+    }
+
+    visit(root);
+
     return {
-        type: 'text',
+        type: 'uniqueText',
+        others: names,//todo
         regex: /^[a-zA-Z\_0-9]$/
     };
 };
@@ -263,7 +279,7 @@ BaseComponent.prototype.setStyleWidth = function (value, unit) {
     }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
-   
+
     if (typeof styleValue == "number")
         this.view.addStyle('width', styleValue + 'px');
     else
@@ -286,7 +302,7 @@ BaseComponent.prototype.setStyleHeight = function (value, unit) {
     }
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
-   
+
     if (typeof styleValue == "number")
         this.view.addStyle('height', styleValue + 'px');
     else

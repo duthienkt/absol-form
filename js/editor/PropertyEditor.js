@@ -114,7 +114,7 @@ PropertyEditor.prototype.loadAttributes = function () {
     this.propertyNames = this.getPropertyNames();
     this.propertyHolders = {};
     this.propertyNames.forEach(function (name) {
-        var descriptor = self.getPropertyDescriptor(name)||{type:"NoDescriptor"};
+        var descriptor = self.getPropertyDescriptor(name) || { type: "NoDescriptor" };
         if (descriptor.dependency) {
             self.addDepents(name, descriptor.dependency);
         }
@@ -247,6 +247,51 @@ PropertyEditor.prototype.loadTextProperty = function (name, descriptor, cell) {
                 self.notifyChange(name, this);
             },
             change: function () {
+                self.notifyStopChange(name);
+            }
+        }
+    });
+    cell.addChild(res.elt);
+    res.requestUpdate = function () {
+        var value = self.getProperty(name);
+        if (value != this.value) {
+            res.elt.value = value;
+        }
+    };
+    res.requestUpdate();
+    return res;
+};
+
+PropertyEditor.prototype.loadUniqueTextProperty = function (name, descriptor, cell) {
+    var self = this;
+    var res = {};
+    res.elt = _({
+        tag: descriptor.long ? 'textarea' : 'input',
+        attr: { type: 'text' },
+        on: {
+            keyup: function () {
+                if (descriptor.others[this.value]) {
+                    this.addStyle('border-color', '#f99');
+                    this.attr('title', 'This name is used!')
+
+                }
+                else {
+                    this.attr('title', null)
+                    this.removeStyle('border-color');
+                }
+                self.setProperty(name, this.value);
+                self.notifyChange(name, this);
+            },
+            change: function () {
+                if (descriptor.others[this.value]) {
+                    this.addStyle('border-color', '#f99');
+                    this.attr('title', 'This name is used!')
+
+                }
+                else {
+                    this.attr('title', null)
+                    this.removeStyle('border-color');
+                }
                 self.notifyStopChange(name);
             }
         }
