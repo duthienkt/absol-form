@@ -46,9 +46,41 @@ FormPreview.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
     this.$view = _({
-        tag:'bscroller',
+        tag: 'bscroller',
         class: 'as-form-preview',
         child: [
+            {
+                class: 'as-form-preview-size-setting',
+                child: [
+                    {
+                        tag: 'span',
+                        child: { text: 'Size : ' }
+                    },
+                    {
+                        tag: 'input',
+                        class: 'as-input-width',
+                        props: {
+                            type: 'number',
+                            min: '0'
+                        },
+                        on: {
+                            change: this.ev_sizeInputChange.bind(this)
+                        }
+                    },
+                    { tag: 'span', child: { text: ' x ' } },
+                    {
+                        tag: 'input',
+                        class: 'as-input-height',
+                        props: {
+                            type: 'number',
+                            min: '0'
+                        },
+                        on: {
+                            change: this.ev_sizeInputChange.bind(this)
+                        }
+                    }
+                ]
+            },
             {
                 class: 'as-form-preview-content'
             }
@@ -58,6 +90,8 @@ FormPreview.prototype.getView = function () {
         }
     });
     this.$content = $('.as-form-preview-content', this.$view);
+    this.$widthIp = $('input.as-input-width', this.$view);
+    this.$heightIp = $('input.as-input-height', this.$view);
     this.refresh();
     return this.$view;
 };
@@ -82,6 +116,7 @@ FormPreview.prototype.ev_sizeChange = function (event) {
     });
 };
 
+
 FormPreview.prototype.flushDataToView = function () {
     if (this.dataFlushed) return;
     this.dataFlushed = true;
@@ -89,11 +124,14 @@ FormPreview.prototype.flushDataToView = function () {
     if (!this.data) return;
     this.$content.clearChild();
     if (this.data && this.$view) {
-        var rootComponent = this.build(this.data);
-        this.$content.addChild(rootComponent.view);
-        rootComponent.onAttach();
+        this.rootComponent = this.build(this.data);
+        this.$content.addChild(this.rootComponent.view);
+        this.rootComponent.onAttach();
+        this.$widthIp.value = this.rootComponent.getStyle('width', 'px');
+        this.$heightIp.value = this.rootComponent.getStyle('height', 'px');
     }
 };
+
 
 FormPreview.prototype.setData = function (data) {
     this.data = data;
@@ -103,7 +141,7 @@ FormPreview.prototype.setData = function (data) {
         this.flushDataToView();
 };
 
-FormPreview.prototype.getCmdNames = function(){
+FormPreview.prototype.getCmdNames = function () {
     return Object.keys(FormPreviewCmd);
 };
 
@@ -113,13 +151,21 @@ FormPreview.prototype.getCmdDescriptor = function (name) {
         desc: 'command: ' + name,
         icon: 'span.mdi.mdi-apple-keyboard-command'
     }, FormPreviewCmdDescriptors[name]);
-   
-
     return res;
 };
 
 FormPreview.prototype.getCmdGroupTree = function () {
     return ['reload'];
+};
+
+
+FormPreview.prototype.ev_sizeInputChange = function () {
+    var width = this.$widthIp.value;
+    var height = this.$heightIp.value;
+    if (this.rootComponent) {
+        this.rootComponent.setStyle('width', width);
+        this.rootComponent.setStyle('height', height);
+    }
 };
 
 export default FormPreview;
