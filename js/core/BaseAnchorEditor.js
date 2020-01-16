@@ -43,8 +43,9 @@ BaseAnchorEditor.prototype.cmd_delete = function () {
 
 BaseAnchorEditor.prototype.cmd_layoutEdit = function () {
     //todo
-    this.layoutEditor.editLayout(this.component);
-    console.log("EDIT");
+    if (this.component.isLayout){
+        this.layoutEditor.editLayout(this.component);
+    }
 };
 
 export default BaseAnchorEditor;

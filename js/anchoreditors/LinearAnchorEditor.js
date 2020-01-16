@@ -36,7 +36,8 @@ function LinearAnchorEditor(layoutEditor) {
         .on('beginmove', this.ev_beginMove.bind(this, true))
         .on('moving', this.ev_moving.bind(this, true))
         .on('endmove', this.ev_endMove.bind(this, true))
-        .on('click', this.focus.bind(this));
+        .on('click', this.focus.bind(this))
+        .on('dblclick', this.cmd_layoutEdit.bind(this));
 
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));

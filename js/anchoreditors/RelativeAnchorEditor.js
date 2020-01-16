@@ -32,7 +32,8 @@ function RelativeAnchorEditor(layoutEditor) {
         .on('endmove', this.ev_endMove.bind(this, true))
         .on('click', function (ev) {
             self.emit('click', ev, true);
-        });
+        })
+        .on('dblclick', this.cmd_layoutEdit.bind(this));
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
     this.$topAlignLine = _('vline');
