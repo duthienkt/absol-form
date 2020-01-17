@@ -294,7 +294,7 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
     this.$addBoxCtn = this.$addBoxCtn || _('.as-compopnent-picker-add-box-container').addTo(this.$higne);
     this.$addBox = this.$addBox || _({ class: 'as-compopnent-picker-add-box', child: { class: 'as-compopnent-picker-add-box-plus', child: 'span.mdi.mdi-plus' } }).addTo(this.$addBoxCtn);
     if (this.$addBoxIcon) this.$addBoxIcon.remove();
-    this.$addBoxIcon = _(treeNode.componentConstructor.prototype.menuIcon).addTo(this.$addBox);
+    this.$addBoxIcon = _(treeNode.icon).addTo(this.$addBox);
     this.$modal.addTo(document.body);
     if (this.layoutEditor.rootLayout) {
         this._dragRect = this.layoutEditor.rootLayout.view.getBoundingClientRect();

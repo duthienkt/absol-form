@@ -686,8 +686,6 @@ LayoutEditor.prototype.setActiveComponentByName = function () {
     }, {});
     function visit(node) {
         var name = node.getAttribute('name');
-        console.log(name);
-
         if (typeof dict[name] == 'number') {
             components[dict[name]] = node;
         }

@@ -1,6 +1,7 @@
 import XHR from 'absol/src/Network/XHR';
 import CodeEditor from '../editor/CodeEditor';
 import { base64EncodeUnicode } from 'absol/src/Converter/base64';
+import Fcore from '../core/FCore';
 
 var WOKSPACE_FOLDER = 'formeditor/workspace';
 
@@ -50,15 +51,15 @@ function lsWorkspace(path) {
     });
 }
 
-function writeFile(path, text){
+function writeFile(path, text) {
     var b64 = base64EncodeUnicode(text);
-    
+
     return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
-        cmd: 'echo \''+b64+'\' | base64 -d >'+path,
+        cmd: 'echo \'' + b64 + '\' | base64 -d >' + path,
         cwd: WOKSPACE_FOLDER
     })).then(function (out) {
         console.log(out);
-        
+
     });
 };
 
@@ -181,19 +182,213 @@ export function PluginLoadContentData(accumulator) {
 export function PluginSaveContentData(accumulator) {
     if (accumulator.contentArguments.ext == 'form') {
         writeFile(accumulator.contentArguments.fullPath, JSON.stringify(accumulator.editor.getData(), null, '    ')).then(function (out) {
-            
+
         });
     }
-    // else if (CodeEditor.prototype.TYPE_MODE[accumulator.contentArguments.ext]) {
-    //     catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
-    //         try {
-    //             accumulator.editor.setData({ value: out, type: accumulator.contentArguments.ext });
-    //         }
-    //         catch (error) {
-    //             console.error(error)
-    //         }
-    //     });
-    // }
+
     console.log(accumulator);
+}
+
+
+export function PluginBuildComponent(context) {
+
+    var data = context.data;
+    if (data.tag == "LoginForm") {
+
+        context.result = context.self.build({
+            "tag": "RelativeLayout",
+            "attributes": {
+                "name": "PesionalInfor",
+                "target": "",
+                "formType": "SO_YEU_LY_LICH"
+            },
+            "style": {
+                "hAlign": "left",
+                "vAlign": "top",
+                "left": 0,
+                "right": 0,
+                "top": -20.040624999999977,
+                "bottom": 0,
+                "height": 353.40625,
+                "width": 960.1563,
+                "backgroundImage": "",
+                "backgroundColor": "#ffffff00"
+            },
+            "children": [
+                {
+                    "tag": "Ellipse",
+                    "attributes": {
+                        "name": "Circle_0",
+                        "target": ""
+                    },
+                    "style": {
+                        "hAlign": "left",
+                        "vAlign": "top",
+                        "left": 36.0625,
+                        "right": 624.0938,
+                        "top": 18.40625,
+                        "bottom": 35,
+                        "height": 300,
+                        "width": 300,
+                        "boxAlign": "lefttop",
+                        "fillColor": "#ebe936ee",
+                        "strokeColor": "#e31919e0",
+                        "strokeWidth": 1
+                    }
+                },
+                {
+                    "tag": "Ellipse",
+                    "attributes": {
+                        "name": "Ellipse_1",
+                        "target": ""
+                    },
+                    "style": {
+                        "hAlign": "left",
+                        "vAlign": "top",
+                        "left": 83.703125,
+                        "right": 820.453175,
+                        "top": 80.40625,
+                        "bottom": 217,
+                        "height": 56,
+                        "width": 56,
+                        "boxAlign": "lefttop",
+                        "fillColor": "white",
+                        "strokeColor": "black",
+                        "strokeWidth": 1
+                    }
+                },
+                {
+                    "tag": "Ellipse",
+                    "attributes": {
+                        "name": "Ellipse_2",
+                        "target": ""
+                    },
+                    "style": {
+                        "hAlign": "left",
+                        "vAlign": "top",
+                        "left": 209,
+                        "right": 695.1563,
+                        "top": 79,
+                        "bottom": 218.40625,
+                        "height": 56,
+                        "width": 56,
+                        "boxAlign": "lefttop",
+                        "fillColor": "white",
+                        "strokeColor": "black",
+                        "strokeWidth": 1
+                    }
+                },
+                {
+                    "tag": "Ellipse",
+                    "attributes": {
+                        "name": "Ellipse_3",
+                        "target": ""
+                    },
+                    "style": {
+                        "hAlign": "left",
+                        "vAlign": "top",
+                        "left": 91.703125,
+                        "right": 827.453175,
+                        "top": 94.40625,
+                        "bottom": 218,
+                        "height": 41,
+                        "width": 41,
+                        "boxAlign": "lefttop",
+                        "fillColor": "#000000ff",
+                        "strokeColor": "black",
+                        "strokeWidth": 0
+                    }
+                },
+                {
+                    "tag": "Ellipse",
+                    "attributes": {
+                        "name": "Ellipse_9",
+                        "target": ""
+                    },
+                    "style": {
+                        "hAlign": "left",
+                        "vAlign": "top",
+                        "left": 216,
+                        "right": 703.1563,
+                        "top": 92,
+                        "bottom": 220.40625,
+                        "height": 41,
+                        "width": 41,
+                        "boxAlign": "lefttop",
+                        "fillColor": "#000000ff",
+                        "strokeColor": "black",
+                        "strokeWidth": 0
+                    }
+                },
+                {
+                    "tag": "Rectangle",
+                    "attributes": {
+                        "name": "Rectangle_0",
+                        "target": ""
+                    },
+                    "style": {
+                        "hAlign": "left",
+                        "vAlign": "top",
+                        "left": 378.703125,
+                        "right": 348.453175,
+                        "top": 41.40625,
+                        "bottom": 163,
+                        "height": 149,
+                        "width": 233,
+                        "boxAlign": "lefttop",
+                        "fillColor": "#4fe01dc2",
+                        "strokeColor": "#3819b2c0",
+                        "strokeWidth": 11,
+                        "roundCornerX": 25,
+                        "roundCornerY": 0
+                    }
+                }
+            ]
+        });
+        context.result.formType = 'LoginForm';
+        context.result.getData = function () {
+            return {
+                tag: 'LoginForm',
+                style: this.style,
+                attributes: this.attributes
+            }
+        };
+    }
+
+
+
+};
+
+
+
+export function PluginComponentPickerView(context) {
+    var allNode = Fcore.$('exptree', context.self.$view, function (node) {
+        return node.name == "all";
+    });
+
+    var formNode = Fcore._({
+        tag: 'exptree',
+        props: {
+            name: 'form',
+            status: 'close'
+        },
+        on: {
+            press: context.toggleGroup
+        },
+        child: [
+            {
+                tag: 'exptree',
+                props: {
+                    name: "TextInput",
+                    icon: 'span.mdi.mdi-terraform',
+                    componentConstructor: { tag: 'LoginForm' }
+                }
+            }
+
+        ]
+    });
+
+
+    allNode.addChild(formNode);
 
 }

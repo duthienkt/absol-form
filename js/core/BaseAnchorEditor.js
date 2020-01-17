@@ -43,7 +43,7 @@ BaseAnchorEditor.prototype.cmd_delete = function () {
 
 BaseAnchorEditor.prototype.cmd_layoutEdit = function () {
     //todo
-    if (this.component.isLayout){
+    if (this.component.isLayout && !this.component.formType){
         this.layoutEditor.editLayout(this.component);
     }
 };
