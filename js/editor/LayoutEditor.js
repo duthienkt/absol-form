@@ -25,6 +25,11 @@ function LayoutEditor() {
     this.editingLayout = null;
     this.snapshots = [];
     this.snapshotsIndex = 0;
+    this.lastCommitData = {
+        editing: null,
+        data: null,
+        selected: []
+    };
     this._changeCommited = true;
     this.setContext(R.LAYOUT_EDITOR, this);
     this.setContext(R.HAS_CMD_EDITOR, this);
@@ -50,6 +55,12 @@ function LayoutEditor() {
     this.undoHistory = new UndoHistory();
     this.undoHistory.on('checkout', function (event) {
         self.applyData(event.item.data.data);
+        if (event.item.data.editing) {
+            self.editLayoutByName(event.item.data.editing);
+        }
+        else {
+            self.editLayout(self.rootLayout);
+        }
         self.setActiveComponentByName.apply(self, event.item.data.selected)
         self.updateAnchor();
         self.notifyCmdDescriptorsChange();
@@ -661,6 +672,8 @@ LayoutEditor.prototype.setActiveComponent = function () {
     if (this.anchorEditors.length > 0)
         this.anchorEditors[this.anchorEditors.length - 1].focus();
     this.componentOtline.updateComponentStatus();
+    this.lastCommitData.selected = this.getSelected();
+    this.lastCommitData.editing = this.editingLayout.getAttribute('name');
     this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
     this.notifyCmdDescriptorsChange();
 };
@@ -671,8 +684,6 @@ LayoutEditor.prototype.setActiveComponentByName = function () {
         ac[cr] = i;
         return ac;
     }, {});
-    console.log(dict);
-
     function visit(node) {
         var name = node.getAttribute('name');
         console.log(name);
@@ -714,6 +725,8 @@ LayoutEditor.prototype.toggleActiveComponent = function () {
     }
     if (focusEditor) focusEditor.focus();
     this.componentOtline.updateComponentStatus();
+    this.lastCommitData.selected = this.getSelected();
+    this.lastCommitData.editing = this.editingLayout.getAttribute('name');
     this.emit('selectedcomponentchange', { target: this, type: 'selectedcomponentchange' }, this);
     this.notifyCmdDescriptorsChange();
 };
@@ -783,7 +796,9 @@ LayoutEditor.prototype.editLayout = function (layout) {
 };
 
 LayoutEditor.prototype.editLayoutByName = function (name) {
-
+    var comp = this.findComponentsByName(name)
+    if (comp)
+        this.editLayout(comp);
 };
 
 
@@ -1064,11 +1079,12 @@ LayoutEditor.prototype.getSelected = function () {
 
 LayoutEditor.prototype.commitHistory = function (type, description) {
     if (!this.undoHistory) return;
-    this.undoHistory.commit(type, {
+    this.lastCommitData = {
         editing: this.editingLayout && this.editingLayout.getAttribute('name'),
         selected: this.getSelected(),
         data: this.getData()
-    }, description, new Date());
+    };
+    this.undoHistory.commit(type, this.lastCommitData, description, new Date());
 };
 
 
