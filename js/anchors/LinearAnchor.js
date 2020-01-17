@@ -284,6 +284,7 @@ LinearAnchor.prototype.setStyleWidth = function (value, unit) {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
+    this.childNode.style.width = value;
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
     this.view.addStyle('width', styleValue);
@@ -303,6 +304,7 @@ LinearAnchor.prototype.setStyleHeight = function (value, unit) {
             value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
+    this.childNode.style.height = value;
     var styleValue = value >= 0 ? value + 'px' : value;
     if (styleValue == 'match_parent') styleValue = '100%';
 

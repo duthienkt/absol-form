@@ -48,19 +48,6 @@ CheckBox.prototype.setAttributeChecked = function (value) {
 };
 
 
-CheckBox.prototype.setStyleWidth = function (value) {
-    value = value >= 18 ? value : 18;
-    return ContentScalelessComponent.prototype.setStyleWidth.call(this, value);
-};
-
-
-CheckBox.prototype.setStyleHeight = function (value) {
-    value = value >= 18 ? value : 18;
-    return ContentScalelessComponent.prototype.setStyleHeight.call(this, value);
-};
-
-
-
 CheckBox.prototype.getAttributeCheckedDescriptor = function () {
     return {
         type: "bool",
