@@ -54,14 +54,17 @@ function LayoutEditor() {
 
     this.undoHistory = new UndoHistory();
     this.undoHistory.on('checkout', function (event) {
+        var editing = event.item.data.editing;
+        var selected = event.item.data.selected;
         self.applyData(event.item.data.data);
-        if (event.item.data.editing) {
-            self.editLayoutByName(event.item.data.editing);
+        self.lastCommitData = event.item.data;
+        if (editing) {
+            self.editLayoutByName(editing);
         }
         else {
             self.editLayout(self.rootLayout);
         }
-        self.setActiveComponentByName.apply(self, event.item.data.selected)
+        self.setActiveComponentByName.apply(self, selected);
         self.updateAnchor();
         self.notifyCmdDescriptorsChange();
         self.notifyUnsaved();
@@ -562,13 +565,13 @@ LayoutEditor.prototype.findComponentsByName = function (name, from) {
     from = from || this.rootLayout;
     if (!from) return;
     var res = undefined;
-    if (from.name == name) {
-        return from;
+    if (from.getAttribute('name') == name) {
+        return [from];
     }
     var self = this;
     if (from.children)
         res = from.children.reduce(function (ac, child) {
-            var found = self.findAnchorEditorByComponent();
+            var found = self.findComponentsByName(name, child);
             if (found) return ac.concat(found);
             return ac;
         }, []);
@@ -789,14 +792,15 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 LayoutEditor.prototype.editLayout = function (layout) {
     if (!layout) throw new Error("Layout must be not null");
     this.editingLayout = layout;
+    this.lastCommitData.editing = layout.getAttribute('name');
     this.setActiveComponent();
     this.updateEditing();
 };
 
 LayoutEditor.prototype.editLayoutByName = function (name) {
-    var comp = this.findComponentsByName(name)
-    if (comp)
-        this.editLayout(comp);
+    var comps = this.findComponentsByName(name);
+    if (comps && comps.length > 0)
+        this.editLayout(comps[0]);
 };
 
 
