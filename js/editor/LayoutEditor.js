@@ -49,7 +49,8 @@ function LayoutEditor() {
 
     this.undoHistory = new UndoHistory();
     this.undoHistory.on('checkout', function (event) {
-        self.applyData(event.item.data);
+        self.applyData(event.item.data.data);
+        self.setActiveComponentByName.apply(self, event.item.data.selected)
         self.updateAnchor();
         self.notifyCmdDescriptorsChange();
         self.notifyUnsaved();
@@ -664,6 +665,26 @@ LayoutEditor.prototype.setActiveComponent = function () {
     this.notifyCmdDescriptorsChange();
 };
 
+LayoutEditor.prototype.setActiveComponentByName = function () {
+    var components = Array(arguments.length).fill(null);
+    var dict = Array.prototype.reduce.call(arguments, function (ac, cr, i) {
+        ac[cr] = i;
+        return ac;
+    }, {});
+    console.log(dict);
+
+    function visit(node) {
+        var name = node.getAttribute('name');
+        console.log(name);
+
+        if (typeof dict[name] == 'number') {
+            components[dict[name]] = node;
+        }
+        node.children.forEach(visit);
+    }
+    visit(this.rootLayout);
+    this.setActiveComponent.apply(this, components);
+};
 
 /**
  * @argument {Array<import('../core/BaseComponent').default>}
@@ -759,6 +780,10 @@ LayoutEditor.prototype.editLayout = function (layout) {
     this.editingLayout = layout;
     this.setActiveComponent();
     this.updateEditing();
+};
+
+LayoutEditor.prototype.editLayoutByName = function (name) {
+
 };
 
 
@@ -1031,10 +1056,19 @@ LayoutEditor.prototype.notifySaved = function () {
     this.selfHolder.tabframe.modified = false;
 };
 
+LayoutEditor.prototype.getSelected = function () {
+    return this.anchorEditors.map(function (aed) {
+        return aed.component.getAttribute('name');
+    })
+};
 
 LayoutEditor.prototype.commitHistory = function (type, description) {
     if (!this.undoHistory) return;
-    this.undoHistory.commit(type, this.getData(), description, new Date());
+    this.undoHistory.commit(type, {
+        editing: this.editingLayout && this.editingLayout.getAttribute('name'),
+        selected: this.getSelected(),
+        data: this.getData()
+    }, description, new Date());
 };
 
 
