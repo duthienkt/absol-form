@@ -2,6 +2,7 @@ import XHR from 'absol/src/Network/XHR';
 import CodeEditor from '../editor/CodeEditor';
 import { base64EncodeUnicode } from 'absol/src/Converter/base64';
 import Fcore from '../core/FCore';
+import JSZip from 'jszip';
 
 var WOKSPACE_FOLDER = 'formeditor/workspace';
 
@@ -51,6 +52,17 @@ function lsWorkspace(path) {
     });
 }
 
+function writeFileBase64(path, b64) {
+    return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
+        cmd: 'echo \'' + b64 + '\'>' + path,
+        cwd: WOKSPACE_FOLDER
+    })).then(function (out) {
+        console.log(out);
+
+    });
+};
+
+
 function writeFile(path, text) {
     var b64 = base64EncodeUnicode(text);
 
@@ -78,7 +90,6 @@ export function PluginProjectExplore(context) {
      * @type {import('../fragment/ProjectExplorer').default}
      */
     var self = context.self;
-
     function contextMenuEventHandler(contentArguments, event) {
         // if (contentArguments.ext == 'form') {
         event.showContextMenu({
@@ -155,12 +166,30 @@ export function PluginLoadContentData(accumulator) {
     var sync;
     if (accumulator.contentArguments.ext == 'form') {
         sync = catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
-            try {
-                var data = JSON.parse(out);
-                accumulator.editor.setData(data);
+            if (out[0] == '{') {// is json
+
+                try {
+                    var data = JSON.parse(out);
+                    accumulator.editor.setData(data);
+                }
+                catch (error) {
+                    console.error(error)
+                }
             }
-            catch (error) {
-                console.error(error)
+            else {// base64 zip
+                JSZip.loadAsync(out, { base64: true }).then(function (zip) {
+                    zip.file('data.txt')
+                        .async('text')
+                        .then(function (text) {
+                            try {
+                                var data = JSON.parse(text);
+                                accumulator.editor.setData(data);
+                            }
+                            catch (error) {
+                                console.error(error)
+                            }
+                        });
+                });
             }
         });
     }
@@ -181,12 +210,15 @@ export function PluginLoadContentData(accumulator) {
 
 export function PluginSaveContentData(accumulator) {
     if (accumulator.contentArguments.ext == 'form') {
-        writeFile(accumulator.contentArguments.fullPath, JSON.stringify(accumulator.editor.getData(), null, '    ')).then(function (out) {
-
-        });
+        var textData = (JSON.stringify(accumulator.editor.getData()));
+        var zip = new JSZip();
+        zip.file('data.txt', textData);
+        zip.generateAsync({ type: 'base64' }).then(function (b64) {
+            writeFileBase64(accumulator.contentArguments.fullPath, b64).then(function (out) {
+                console.log("Save success: ", accumulator.contentArguments.fullPath);
+            });
+        })
     }
-
-    console.log(accumulator);
 }
 
 
