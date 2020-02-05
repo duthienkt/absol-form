@@ -202,6 +202,9 @@ export function PluginLoadContentData(accumulator) {
                 console.error(error)
             }
         });
+    } else if (accumulator.contentArguments.ext == 'jpg') {
+        accumulator.editor.setData({ images: ['//absol.cf/'+WOKSPACE_FOLDER + '/' + accumulator.contentArguments.fullPath] });
+        sync = Promise.resolve();
     }
     accumulator.waitFor(sync);
 }

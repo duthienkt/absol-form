@@ -1,4 +1,3 @@
-import Context from 'absol/src/AppPattern/Context';
 
 import Draggable from 'absol-acomp/js/Draggable';
 
@@ -18,6 +17,7 @@ import BaseEditor from '../core/BaseEditor';
 import CMDTool from '../fragment/CMDTool';
 import CodeEditor from './CodeEditor';
 import FormEditorCmd from '../cmds/FormEditorCmd';
+import PhotoViewer from './PhotoViewer';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -63,7 +63,9 @@ FormEditor.prototype.constructor = FormEditor;
 FormEditor.prototype.CONFIG_STORE_KEY = "AS_FormEditor_config";
 
 FormEditor.prototype.SUPPORT_EDITOR = {
-    form: LayoutEditor
+    form: LayoutEditor,
+    image: PhotoViewer,
+    jpg: PhotoViewer
 };
 
 Object.keys(CodeEditor.prototype.TYPE_MODE).forEach(function (typeName) {

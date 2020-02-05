@@ -102,7 +102,8 @@
     bottom: 0;
     right: 0;
 }
-.as-form-editor-empty-space{
+
+.as-form-editor-empty-space {
     z-index: 0;
 }
 
@@ -113,9 +114,8 @@
 
 .as-form-editor-editor-space-container .as-layout-editor,
 .as-form-editor-editor-space-container .as-code-editor,
-.as-form-editor-editor-space-container .as-form-preview
-
-{
+.as-form-editor-editor-space-container .as-form-preview,
+.as-form-editor-editor-space-container .ptswpf {
     width: 100%;
     height: 100%;
 }
@@ -182,9 +182,8 @@ table.as-form-params>tbody>tr>td>textarea {
 
 .as-form-tool-site {}
 
-.as-form-left-tool-site-tab .as-component-outline ,
-.as-form-left-tool-site-tab .as-form-explorer 
-{
+.as-form-left-tool-site-tab .as-component-outline,
+.as-form-left-tool-site-tab .as-form-explorer {
     height: calc(100% - 2em);
 }
 
@@ -209,9 +208,10 @@ table.as-form-params>tbody>tr>td>textarea {
 }
 
 .as-form-explorer .absol-drop-panel {
-    height:100%;
+    height: 100%;
 }
-.as-form-explorer .absol-drop-panel.show .absol-drop-panel-body{
+
+.as-form-explorer .absol-drop-panel.show .absol-drop-panel-body {
     height: calc(100% - 18px);
 }
 
