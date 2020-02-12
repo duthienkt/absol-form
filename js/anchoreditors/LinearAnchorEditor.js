@@ -14,7 +14,6 @@ var $ = Fcore.$;
  */
 function LinearAnchorEditor(layoutEditor) {
     BaseAnchorEditor.call(this, layoutEditor);
-    var self = this;
     this.$modal = _({
         style: {
             zIndex: '10000000',
@@ -187,11 +186,12 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
 LinearAnchorEditor.prototype.focusMarginBox = function () {
     if (!this.component) return;
     if (this.isFocus) {
-        this.$resizeBox.removeClass('as-focus');
-        this.$marginBox.addClass('as-focus');
+        // this.$resizeBox.removeClass('as-focus');// this is feature, not bug
+        // this.$marginBox.addClass('as-focus');
     }
     else {
-        this.$marginBox.addClass('as-focus');
+        // this.$marginBox.addClass('as-focus');
+        this.$resizeBox.addClass('as-focus')
         this.isFocus = true;
         var editor;
         for (var i = 0; i < this.layoutEditor.anchorEditors.length; ++i) {
@@ -297,7 +297,7 @@ LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         isChange: false,
     };
     if (userAction) {
-        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, target: this }, this);
+        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, repeatEvent: event, target: this }, this);
         this.$modal.addTo(document.body);
     }
 };
@@ -384,10 +384,10 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     movingData.comp.reMeasure();
     this.updatePosition();
     if (positionIsChange) {
-        this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event }, this);
+        this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event, repeatEvent: event }, this);
         movingData.isChange = true;
     }
-    if (userAction) this.emit('moving', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+    if (userAction) this.emit('moving', { taget: this, type: 'moving', originEvent: event, repeatEvent: event, target: this }, this);
 };
 
 LinearAnchorEditor.prototype.ev_movingMargin = function (userAction, event) {
