@@ -73,14 +73,18 @@ BaseLayout.prototype.setStyleBackgroundImage = function (value) {
 
 BaseLayout.prototype.getStyleBackgroundColorDescriptor = function () {
     return {
-        type: 'color'
+        type: 'color',
+        sign:'BackgroundColor',
+        independence: true
     };
 };
 
 BaseLayout.prototype.getStyleBackgroundImageDescriptor = function () {
     return {
         type: 'text',
-        long:true
+        long:true, 
+        sign:'BackgroundImageSrc',
+        independence: true
     };
 };
 
