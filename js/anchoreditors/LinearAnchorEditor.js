@@ -14,6 +14,7 @@ var $ = Fcore.$;
  */
 function LinearAnchorEditor(layoutEditor) {
     BaseAnchorEditor.call(this, layoutEditor);
+    var self = this;
     this.$modal = _({
         style: {
             zIndex: '10000000',
@@ -35,7 +36,9 @@ function LinearAnchorEditor(layoutEditor) {
         .on('beginmove', this.ev_beginMove.bind(this, true))
         .on('moving', this.ev_moving.bind(this, true))
         .on('endmove', this.ev_endMove.bind(this, true))
-        .on('click', this.focus.bind(this))
+        .on('click', function (ev) {
+            self.emit('click', ev, true);
+        })
         .on('dblclick', this.cmd_layoutEdit.bind(this));
 
     this.$resizeBox.defineEvent('contextmenu');
