@@ -58,7 +58,8 @@ ChainAnchor.prototype.getStyleVAlignDescriptor = function () {
         type: 'enum',
         values: this.VALIGN_ACCEPTS_VALUES,
         disabled: false,
-        sign: 'ChainAnchor_VAlign'
+        sign: 'ChainAnchor_VAlign',
+        independence: true
     };
 };
 
