@@ -270,7 +270,7 @@ LayoutEditorCmd.cut = function () {
     }
     componentsData.forEach(visit);
 
-    this.componentPropertiesEditor.edit(undefined);
+    this.componentPropertiesEditor.edit();
     this.setActiveComponent();
     this.notifyDataChange();
     this.notifyUnsaved();
