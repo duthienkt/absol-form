@@ -1,34 +1,31 @@
-import PropertyEditor from "./PropertyEditor";
+import MultiObjectPropertyEditor from "../propertyeditors/MultiObjectPropertyEditor";
 
 function StyleEditor() {
-    PropertyEditor.call(this);
+    MultiObjectPropertyEditor.call(this);
 
 }
-Object.defineProperties(StyleEditor.prototype, Object.getOwnPropertyDescriptors(PropertyEditor.prototype));
+Object.defineProperties(StyleEditor.prototype, Object.getOwnPropertyDescriptors(MultiObjectPropertyEditor.prototype));
 StyleEditor.prototype.constructor = StyleEditor;
 
 
-StyleEditor.prototype.setProperty = function (name, value) {
-    return this.object.setStyle(name, value);
+StyleEditor.prototype.setProperty = function (object, name, value) {
+    return object.setStyle(name, value);
 };
 
 
-StyleEditor.prototype.getProperty = function () {
-    return this.object.getStyle.apply(this.object, arguments);
+StyleEditor.prototype.getProperty = function (object) {
+    return object.getStyle.apply(object, Array.prototype.slice.call(arguments, 1));
 };
 
 
-StyleEditor.prototype.getPropertyDescriptor = function (name) {
-    return this.object.getStyleDescriptor.apply(this.object, arguments);
+StyleEditor.prototype.getPropertyDescriptor = function (object) {
+    return object.getStyleDescriptor.apply(object, Array.prototype.slice.call(arguments, 1));
 };
 
 
-
-
-StyleEditor.prototype.getPropertyNames = function () {
-    return this.object.getAcceptsStyleNames();
+StyleEditor.prototype.getPropertyNames = function (object) {
+    return object.getAcceptsStyleNames();
 };
-
 
 
 export default StyleEditor;

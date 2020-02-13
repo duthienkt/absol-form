@@ -1,32 +1,32 @@
-import PropertyEditor from "./PropertyEditor";
+import MultiObjectPropertyEditor from "../propertyeditors/MultiObjectPropertyEditor";
 
 function AttributeEditor() {
-    PropertyEditor.call(this);
+    MultiObjectPropertyEditor.call(this);
 
 }
-Object.defineProperties(AttributeEditor.prototype, Object.getOwnPropertyDescriptors(PropertyEditor.prototype));
-AttributeEditor.prototype.constructor = AttributeEditor;
+Object.defineProperties(AttributeEditor.prototype, Object.getOwnPropertyDescriptors(MultiObjectPropertyEditor.prototype));
+MultiObjectPropertyEditor.prototype.constructor = AttributeEditor;
 
 
-AttributeEditor.prototype.setProperty = function (name, value) {
-    return this.object.setAttribute(name, value);
+AttributeEditor.prototype.setProperty = function (object, name, value) {
+    return object.setAttribute(name, value);
 };
 
 
-AttributeEditor.prototype.getProperty = function (name) {
-    return this.object.getAttribute(name);
+AttributeEditor.prototype.getProperty = function (object, name) {
+    return object.getAttribute(name);
 };
 
 
-AttributeEditor.prototype.getPropertyDescriptor = function (name) {
-    return this.object.getAttributeDescriptor(name);
+AttributeEditor.prototype.getPropertyDescriptor = function (object, name) {
+    return object.getAttributeDescriptor(name);
 };
 
 
 
 
-AttributeEditor.prototype.getPropertyNames = function () {
-    return this.object.getAcceptsAttributeNames();
+AttributeEditor.prototype.getPropertyNames = function (object) {
+    return object.getAcceptsAttributeNames();
 };
 
 

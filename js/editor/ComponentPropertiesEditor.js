@@ -8,6 +8,7 @@ import AllPropertyEditor from "./AllPropertyEditor";
 import Dom from "absol/src/HTML5/Dom";
 import EventEditor from "./EventEditor";
 import WindowManager from "../dom/WindowManager";
+import MultiObjectPropertyEditor from "../propertyeditors/MultiObjectPropertyEditor";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -188,12 +189,13 @@ ComponentPropertiesEditor.prototype.undock = function () {
 
 };
 
-ComponentPropertiesEditor.prototype.edit = function (comp) {
-    this.component = comp;
-    this.styleEditor.edit(comp);
-    this.attributeEditor.edit(comp);
-    this.allPropertyEditor.edit(comp);
-    this.eventEditor.edit(comp);
+ComponentPropertiesEditor.prototype.edit = function () {
+    this.component = arguments[0];
+    this.components = Array.prototype.slice.call(arguments);
+    this.styleEditor.edit.apply(this.styleEditor, arguments);
+    this.attributeEditor.edit.apply(this.attributeEditor, arguments);
+    this.allPropertyEditor.edit.apply(this.allPropertyEditor, arguments);
+    this.eventEditor.edit.apply(this.eventEditor, arguments);
 };
 
 

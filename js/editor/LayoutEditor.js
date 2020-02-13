@@ -87,7 +87,10 @@ function LayoutEditor() {
                 this.component.reMeasure();
             },
             stopchange: function (event) {
-                self.commitHistory('edit', event.object.getAttribute('name') + '.' + event.name + '');
+                var compName = event.object ? event.object.getAttribute('name') : ('{' + event.objects.map(function (object) {
+                    return object.getAttribute('name')
+                }).join(', ') + '}');
+                self.commitHistory('edit', compName + '.' + event.name + '');
                 self.notifyUnsaved();
 
             }
@@ -649,7 +652,7 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
             self.notifyUnsaved();
         })
         .on('focus', function (event) {
-            self.componentPropertiesEditor.edit(this.component);
+            self.componentPropertiesEditor.edit.apply(self.componentPropertiesEditor, self.getActivatedComponents());
             self.emit('focuscomponent', { type: 'focuscomponent', component: this.component, originEvent: event, target: self }, self);
         })
         .on('change', function (event) {
