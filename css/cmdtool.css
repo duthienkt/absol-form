@@ -62,3 +62,16 @@
 .as-from-tool-group-buttons:empty{
     display: none;
 }
+
+
+.as-form-cmd-tool-menu-trigger{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    color: #ddd;
+}
+
+.as-form-cmd-tool-window .absol-onscreen-window-head-bar-button-dock{
+    display: none;
+}

@@ -3,6 +3,7 @@ import Fcore from "../core/FCore";
 import Dom from "absol/src/HTML5/Dom";
 import '../../css/cmdtool.css';
 import WindowManager from "../dom/WindowManager";
+import QuickMenu from "absol-acomp/js/QuickMenu";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -79,103 +80,18 @@ CMDTool.prototype.updateVisiable = function () {
 };
 
 CMDTool.prototype.onResume = function () {
-    if (this.$dockElt) {
-
-    }
-    else {
-        WindowManager.add(this.$window.addStyle(this.config.windowStyle));
-    }
+    this.loadPosition();
     this.updateVisiable();
 };
 
-CMDTool.prototype.button = function (object) {
-    var classArray = ["as-from-tool-button"]
-    if (Array.isArray(object.tag))
-        classArray.concat(object.tag);
-    else
-        classArray.push(object.tag);
-    return _(
-        {
-            tag: "button",
-            class: classArray,
-            child: object.child,
-            on: {
-                click: function () {
-                    object.click();
-
-                }
-            },
-            attr: {
-                title: object.hover
-            }
-        }
-    );
-};
-
-CMDTool.prototype.container = function (object, arrayVisiable) {
-    var container, button;
-    var classArray = ["as-from-align-controler-edit-tool"]
-    if (Array.isArray(object.tag))
-        classArray.concat(object.tag);
-    else
-        classArray.push(object.tag);
-    container = _(
-        {
-            tag: "div",
-            class: classArray
-        }
-    )
-    for (var j = 0; j < object.child.length; j++) {
-        button = this.button(object.child[j]);
-        container.addChild(button);
-        arrayVisiable.push(button);
-    }
-    return container;
-}
-
-// CMDTool.prototype.extract = function (object) {
-//     var classArray;
-//     var edges = object.Edges;
-//     this.$edges = [];
-//     var final = [];
-//     var button, container;
-
-//     for (var i = 0; i < edges.length; i++) {
-//         container = this.container(edges[i], this.$edges);
-//         final.push(container);
-//     }
-
-//     var distribute = object.Distribute;
-//     this.$distribute = [];
-//     for (var i = 0; i < distribute.length; i++) {
-//         container = this.container(distribute[i], this.$distribute);
-//         final.push(container);
-//     }
-
-//     var deleteTemp = object.Delete;
-//     this.$delete = [];
-//     for (var i = 0; i < deleteTemp.length; i++) {
-//         container = this.container(deleteTemp[i], this.$delete);
-//         final.push(container);
-//     }
-
-//     var previewTemp = object.Preview;
-//     this.$preview = [];
-//     for (var i = 0; i < previewTemp.length; i++) {
-//         container = this.container(previewTemp[i], this.$preview);
-//         final.push(container);
-//     }
-//     return final;
-// }
 
 CMDTool.prototype.getView = function () {
     if (this.$view) return this.$view;
-    var self = this;
-
+    var thisCmdTool = this;
     this.$window = _({
         tag: "onscreenwindow",
-        attr:{
-            tabIndex:'1'
+        attr: {
+            tabIndex: '1'
         },
         class: "as-form-cmd-tool-window",
         props: {
@@ -193,7 +109,6 @@ CMDTool.prototype.getView = function () {
     this.$view = _({
         tag: 'bscroller',
         class: "as-form-cmd-tool",
-        // child: CMDTool.prototype.extract(this.$dataButton)
     });
     $('.absol-onscreen-window-body-container', this.$window, function (e) {
         e.addClass('absol-bscroller');
@@ -201,8 +116,70 @@ CMDTool.prototype.getView = function () {
     if (!this.$dockElt) {
         this.$window.addChild(this.$view);
     }
+
+    this.$minimizeBtn = this.$window.$minimizeBtn;
+    this.$minimizeBtn.on('click', this.dockToEditor.bind(this));
+    this.$quickmenuBtn = _({
+        tag: 'button',
+        class: ['as-form-cmd-tool-menu-trigger', 'as-from-tool-button'],
+        child: 'span.mdi.mdi-dots-horizontal'
+    });
+    QuickMenu.toggleWhenClick(this.$quickmenuBtn, {
+        getMenuProps: function () {
+            return {
+                extendStyle: {
+                    'font-size': '12px'
+                },
+                items: [
+                    {
+                        text: 'Undock',
+                        icon: 'span.mdi.mdi-dock-window',
+                        cmd: 'undock'
+                    },
+                    {
+                        text: 'Help',
+                        icon: 'span.mdi.mdi-help'
+                    }
+                ]
+            }
+        },
+        onSelect: function (item) {
+            switch (item.cmd) {
+                case 'undock': thisCmdTool.undock(); break;
+            }
+        }
+    })
     this.refresh();
     return this.$view;
+};
+
+CMDTool.prototype.dockToEditor = function () {
+    this.$dockBtn = this.editor && this.editor.getCmdToolCtn && this.editor.getCmdToolCtn();
+    if (this.$dockBtn) {
+        this.$window.remove();
+        this.getView().addTo(this.$dockBtn);
+        Dom.updateResizeSystem();
+        this.config.docked = true;
+        this.saveConfig();
+        this.$quickmenuBtn.addTo(this.$view);
+    }
+};
+
+
+CMDTool.prototype.undock = function () {
+    this.config.docked = false;
+    this.$view.addTo(this.$window);
+    this.$window.addStyle(this.config.windowStyle).addTo(document.body);
+    Dom.updateResizeSystem();
+};
+
+CMDTool.prototype.loadPosition = function () {
+    if (this.config.docked) {
+        this.dockToEditor();
+    }
+    else {
+        this.undock();
+    }
 };
 
 
@@ -243,6 +220,7 @@ CMDTool.prototype.refresh = function () {
         }
     }
     this.$view.addChild(visit(groupTree));
+    if (this.config.docked) this.dockToEditor();
 };
 
 CMDTool.prototype.execCmd = function () {
@@ -250,7 +228,7 @@ CMDTool.prototype.execCmd = function () {
 };
 
 
-CMDTool.prototype.ev_cmdKeyDown = function(event){
+CMDTool.prototype.ev_cmdKeyDown = function (event) {
     this.editor.ev_cmdKeyDown(event);//repeat event
 }
 export default CMDTool;

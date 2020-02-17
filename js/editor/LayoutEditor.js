@@ -194,36 +194,52 @@ LayoutEditor.prototype.getView = function () {
         attr: { tabindex: '1' },
         child: [
             {
-                class: 'as-layout-editor-vrule-container',
-                child: 'vruler'
+                class: 'as-layout-editor-cmd-tool-container'
             },
             {
-                class: 'as-layout-editor-hrule-container',
-                child: 'hruler'
-            },
-            {
-                class: 'as-layout-editor-background-container'
-            },
-            {
-                class: ["as-layout-editor-space-container", 'absol-bscroller'],
+                class: 'as-layout-editor-property-container',
                 child: {
-                    class: 'as-layout-editor-space',
-                    child: [
-                        {
-                            class: 'as-layout-editor-layout-container'
-                        },
-                        {
-                            class: 'as-layout-editor-forceground-container',
-                            child: '.as-layout-editor-forceground',
-                            extendEvent: 'contextmenu',
-                            on: {
-                                contextmenu: this.ev_contextMenuLayout.bind(this)
-                            }
-                        }
-                    ]
+                    tag: 'button',
+                    child: { text: 'Đây là gì đó' }
                 }
+            },
+            {
+                class: 'as-layout-editor-measure-container',
+                child: [
+                    {
+                        class: 'as-layout-editor-vrule-container',
+                        child: 'vruler'
+                    },
+                    {
+                        class: 'as-layout-editor-hrule-container',
+                        child: 'hruler'
+                    },
+                    {
+                        class: 'as-layout-editor-background-container'
+                    },
+                    {
+                        class: ["as-layout-editor-space-container", 'absol-bscroller'],
+                        child: {
+                            class: 'as-layout-editor-space',
+                            child: [
+                                {
+                                    class: 'as-layout-editor-layout-container'
+                                },
+                                {
+                                    class: 'as-layout-editor-forceground-container',
+                                    child: '.as-layout-editor-forceground',
+                                    extendEvent: 'contextmenu',
+                                    on: {
+                                        contextmenu: this.ev_contextMenuLayout.bind(this)
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
             }
         ],
+
         on: {
             keydown: this.ev_cmdKeyDown.bind(this),
             mousemove: this.ev_mouseMove
@@ -279,8 +295,17 @@ LayoutEditor.prototype.getView = function () {
     this.$curtainBottom = _('.as-layout-editor-curtain')
         .on('dblclick', this.ev_dblclickCurtain)
         .addTo(this.$forceground);
+
+    this.$cmdToolCtn = $('.as-layout-editor-cmd-tool-container', this.$view);
+    this.$measureCtn = $('.as-layout-editor-measure-container', this.$view);
+    this.$propertyCtn = $('.as-layout-editor-property-container', this.$view);
+
     return this.$view;
 };
+
+LayoutEditor.prototype.getCmdToolCtn = function () {
+    return this.$cmdToolCtn;
+}
 
 
 /**
@@ -596,6 +621,17 @@ LayoutEditor.prototype.findComponentsByMousePostion = function (clientX, clientY
 
 LayoutEditor.prototype.updateSize = function () {
     //todo
+    // var bound = this.$view.getBoundingClientRect();
+    var cmdToolCtnBound = this.$cmdToolCtn.getBoundingClientRect();
+    var propertyCtnBound = this.$propertyCtn.getBoundingClientRect();
+    this.$measureCtn.addStyle({
+        top: cmdToolCtnBound.height + 5 + 'px',
+        right: propertyCtnBound.width + 'px'
+    });
+    this.$propertyCtn.addStyle({
+        top: cmdToolCtnBound.height + 'px',
+
+    });
 };
 
 
@@ -666,15 +702,35 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
  * @argument {Array<import('../core/BaseComponent').default>}
  */
 LayoutEditor.prototype.setActiveComponent = function () {
+    var components = Array.prototype.slice.call(arguments);
+    var oldEditors = this.anchorEditors.slice();
+    var oldComponents = this.anchorEditors.map(function (editor) {
+        return editor.component;
+    });
+
     //todo
     while (this.anchorEditors.length > 0) {
         var editor = this.anchorEditors.pop();
-        editor.edit(undefined);
     }
-    while (this.anchorEditors.length < arguments.length) {
-        var editor = this._newAnchorEditor(arguments[this.anchorEditors.length]);
+
+    var oldIndex;
+    var component;
+    var editor;
+    while (this.anchorEditors.length < components.length) {
+        component = components[this.anchorEditors.length];
+        oldIndex = oldComponents.indexOf(component);
+        if (oldIndex >= 0) {
+            editor = oldEditors[oldIndex];
+            oldEditors[oldIndex] = null;// for removing
+        }
+        else {
+            editor = this._newAnchorEditor(components[this.anchorEditors.length]);
+        }
         this.anchorEditors.push(editor);
     }
+    oldEditors.forEach(function (editor) {
+        editor && editor.edit();
+    });
     if (this.anchorEditors.length > 0)
         this.anchorEditors[this.anchorEditors.length - 1].focus();
     this.componentOtline.updateComponentStatus();
