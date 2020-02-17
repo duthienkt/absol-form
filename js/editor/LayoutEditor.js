@@ -76,7 +76,7 @@ function LayoutEditor() {
     this.setContext(R.COMPONENT_OUTLINE, this.componentOtline);
 
 
-    this.componentPropertiesEditor = new ComponentPropertiesEditor()
+    this.componentPropertiesEditor = new ComponentPropertiesEditor(this)
         .on({
             change: function (event) {
                 self.updateAnchorPosition();
@@ -197,11 +197,7 @@ LayoutEditor.prototype.getView = function () {
                 class: 'as-layout-editor-cmd-tool-container'
             },
             {
-                class: 'as-layout-editor-property-container',
-                child: {
-                    tag: 'button',
-                    child: { text: 'Đây là gì đó' }
-                }
+                class: 'as-layout-editor-property-container'
             },
             {
                 class: 'as-layout-editor-measure-container',
@@ -305,7 +301,13 @@ LayoutEditor.prototype.getView = function () {
 
 LayoutEditor.prototype.getCmdToolCtn = function () {
     return this.$cmdToolCtn;
-}
+};
+
+
+LayoutEditor.prototype.getPropertyCtn = function () {
+    return this.$propertyCtn;
+};
+
 
 
 /**

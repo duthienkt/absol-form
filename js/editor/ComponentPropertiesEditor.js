@@ -8,13 +8,14 @@ import AllPropertyEditor from "./AllPropertyEditor";
 import Dom from "absol/src/HTML5/Dom";
 import EventEditor from "./EventEditor";
 import WindowManager from "../dom/WindowManager";
-import MultiObjectPropertyEditor from "../propertyeditors/MultiObjectPropertyEditor";
+import QuickMenu from "absol-acomp/js/QuickMenu";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
-function ComponentPropertiesEditor() {
+function ComponentPropertiesEditor(editor) {
     BaseEditor.call(this);
+    this.editor = editor;
     var self = this;
     var repeatEvents = {
         change: function (event) {
@@ -67,6 +68,7 @@ ComponentPropertiesEditor.prototype.ev_windowPosChange = function () {
 
 ComponentPropertiesEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
+    var thisEditor = this;
     this.$window = _({
         tag: 'onscreenwindow',
         class: 'as-form-component-properties-editor-window',
@@ -81,7 +83,9 @@ ComponentPropertiesEditor.prototype.getView = function () {
         }
     });
 
-
+    this.$dockBtn = this.$window.$dockBtn;
+    this.$dockBtn.children[0].attr('class', 'mdi mdi-dock-right');
+    this.$dockBtn.on('click', this.dockToEditor.bind(this));
 
     this.$view = _({
         tag: 'tabview',
@@ -123,6 +127,39 @@ ComponentPropertiesEditor.prototype.getView = function () {
     if (!this.$dockElt) {
         this.$window.addChild(this.$view);
     }
+
+    this.$quickmenuBtn = _({
+        tag: 'button',
+        class: ['as-form-component-properties-editor-quickmenu-button', 'as-from-tool-button'],
+        child: 'span.mdi.mdi-dots-horizontal'
+    });
+
+    QuickMenu.toggleWhenClick(this.$quickmenuBtn, {
+        getMenuProps: function () {
+            return {
+                extendStyle: {
+                    'font-size': '12px'
+                },
+                items: [
+                    {
+                        text: 'Undock',
+                        icon: 'span.mdi.mdi-dock-window',
+                        cmd: 'undock'
+                    },
+                    {
+                        text: 'Help',
+                        icon: 'span.mdi.mdi-help'
+                    }
+                ]
+            }
+        },
+        onSelect: function (item) {
+            switch (item.cmd) {
+                case 'undock': thisEditor.undock(); break;
+            }
+        }
+    });
+    this.$view.appendChild(this.$quickmenuBtn);
     return this.$view;
 };
 
@@ -154,12 +191,7 @@ ComponentPropertiesEditor.prototype.onDestroy = function () {
 
 ComponentPropertiesEditor.prototype.onPause = function () {
     //todo
-    if (this.$dockElt) {
-
-    }
-    else {
-        WindowManager.remove(this.$window);
-    }
+    this.$window.remove();
     this.attributeEditor.pause();
     this.eventEditor.pause();
     this.styleEditor.pause();
@@ -167,13 +199,7 @@ ComponentPropertiesEditor.prototype.onPause = function () {
 };
 
 ComponentPropertiesEditor.prototype.onResume = function () {
-    if (this.$dockElt) {
-
-    }
-    else {
-        WindowManager.add(this.$window.addStyle(this.config.windowStyle))
-    }
-
+    this.loadPosition();
     this.attributeEditor.resume();
     this.eventEditor.resume();
     this.styleEditor.resume();
@@ -181,12 +207,32 @@ ComponentPropertiesEditor.prototype.onResume = function () {
 };
 
 
-ComponentPropertiesEditor.prototype.dockToElt = function (elt) {
+ComponentPropertiesEditor.prototype.loadPosition = function () {
+    if (this.config.docked) {
+        this.dockToEditor();
+    }
+    else {
+        this.undock();
+    }
+};
 
+ComponentPropertiesEditor.prototype.dockToEditor = function () {
+    this.$dockElt = this.editor && this.editor.getPropertyCtn && this.editor.getPropertyCtn();
+    if (this.$dockElt) {
+        this.$view.addTo(this.$dockElt);
+        this.$window.remove();
+        this.config.docked = true;
+        this.saveConfig();
+        Dom.updateResizeSystem();
+    }
+    // propertyCtn
 };
 
 ComponentPropertiesEditor.prototype.undock = function () {
-
+    this.config.docked = false;
+    this.$view.addTo(this.$window.addStyle(this.config.windowStyle).addTo(document.body));
+    Dom.updateResizeSystem();
+    this.saveConfig();
 };
 
 ComponentPropertiesEditor.prototype.edit = function () {

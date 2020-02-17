@@ -1,12 +1,32 @@
-.as-form-component-properties-editor-window .as-form-component-properties-editor{
+.as-form-component-properties-editor-window .as-form-component-properties-editor {
     width: 100%;
     height: 100%;
     font-size: 14px;
 }
 
-.as-form-component-properties-editor-window{
-    min-width: 23em;
+.as-layout-editor-property-container>.as-form-component-properties-editor {
+    height: 100%;
+    min-width: 25em;
+}
+
+.as-form-component-properties-editor-window {
+    min-width: 25em;
     font-size: 14px;
     min-height: 10em;
     z-index: 99;
+}
+
+.as-form-component-properties-editor-window .absol-onscreen-window-head-bar-button-minimize {
+    display: none;
+}
+
+.as-form-component-properties-editor-quickmenu-button {
+    top: 0;
+    right: 0;
+    position: absolute;
+    color: #dddddd;
+}
+
+.as-form-component-properties-editor-window .as-form-component-properties-editor-quickmenu-button {
+    display: none;
 }
