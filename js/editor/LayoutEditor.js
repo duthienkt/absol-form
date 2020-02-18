@@ -189,13 +189,30 @@ LayoutEditor.prototype.notifyDataChange = function () {
 LayoutEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
+
+
     this.$view = _({
         class: ['as-layout-editor'],
         attr: { tabindex: '1' },
         child: [
             {
-                class: 'as-layout-editor-cmd-tool-container'
+                class: 'as-layout-editor-header',
+                child: [
+                    {
+                        class: 'as-layout-editor-cmd-tool-container'
+                    },
+                    {
+                        class: 'as-layout-editor-quickpath-container',
+                        child: {
+                            tag: 'quickpath',
+                            on: {
+                                change: this.ev_quickpathChange.bind(this)
+                            }
+                        }
+                    }
+                ]
             },
+
             {
                 class: 'as-layout-editor-property-container'
             },
@@ -244,6 +261,10 @@ LayoutEditor.prototype.getView = function () {
 
 
     var self = this;
+
+    this.$header = $('.as-layout-editor-header', this.$view);
+    this.$quickpath = $('quickpath', this.$header);
+
     this.$attachHook = _('attachhook').on('error', function () {
         this.updateSize = self.updateSize.bind(self);
         Dom.addToResizeSystem(this);
@@ -308,7 +329,14 @@ LayoutEditor.prototype.getPropertyCtn = function () {
     return this.$propertyCtn;
 };
 
-
+LayoutEditor.prototype.ev_quickpathChange = function (event) {
+    console.log(event);
+    var layout = event.item.layout;
+    var thisEditor = this;
+    setTimeout(function () {
+        thisEditor.editLayout(layout);
+    }, 10);
+};
 
 /**
  * @param {MouseEvent} event
@@ -576,6 +604,19 @@ LayoutEditor.prototype.updateEditing = function () {
 LayoutEditor.prototype.updateRuler = function () {
     this.$vruler.update();
     this.$hruler.update();
+
+    var hruleBound = this.$hruler.getBoundingClientRect();
+    var vruleBound = this.$vruler.getBoundingClientRect();
+    var editingBound = this.editingLayout.view.getBoundingClientRect();
+    this.$hrulerEditing.addStyle({
+        left: editingBound.left - hruleBound.left - 1 + 'px',
+        width: editingBound.width + 'px'
+    });
+
+    this.$vrulerEditing.addStyle({
+        top: editingBound.top - vruleBound.top - 1 + 'px',
+        height: editingBound.height + 'px'
+    });
 };
 
 LayoutEditor.prototype.updateAnchor = function () {
@@ -624,14 +665,14 @@ LayoutEditor.prototype.findComponentsByMousePostion = function (clientX, clientY
 LayoutEditor.prototype.updateSize = function () {
     //todo
     // var bound = this.$view.getBoundingClientRect();
-    var cmdToolCtnBound = this.$cmdToolCtn.getBoundingClientRect();
+    var headerBound = this.$header.getBoundingClientRect();
     var propertyCtnBound = this.$propertyCtn.getBoundingClientRect();
     this.$measureCtn.addStyle({
-        top: cmdToolCtnBound.height + 5 + 'px',
+        top: headerBound.height + 'px',
         right: propertyCtnBound.width + 'px'
     });
     this.$propertyCtn.addStyle({
-        top: cmdToolCtnBound.height + 'px',
+        top: headerBound.height + 'px',
 
     });
 };
@@ -818,12 +859,12 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 LayoutEditor.prototype.applyData = function (data) {
     var self = this;
     this.rootLayout = this.build(data);
-    this.editingLayout = this.rootLayout;
     this.$layoutCtn.clearChild().addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
-    this.updateEditing();
+    this.editLayout(this.rootLayout)
+    // this.updateEditing();
     this.componentOtline.updateComponetTree();
 
     this.emit('change', { type: 'change', target: this, data: data }, this);
@@ -854,6 +895,7 @@ LayoutEditor.prototype.editLayout = function (layout) {
     if (!layout) throw new Error("Layout must be not null");
     this.editingLayout = layout;
     this.lastCommitData.editing = layout.getAttribute('name');
+    this.$quickpath.path = this.getQuickpathFrom(layout);
     this.setActiveComponent();
     this.updateEditing();
 };
@@ -864,6 +906,43 @@ LayoutEditor.prototype.editLayoutByName = function (name) {
         this.editLayout(comps[0]);
 };
 
+
+LayoutEditor.prototype.getQuickpathFrom = function (layout) {
+    var thisEditor = this;
+    while (layout && !layout.isLayout) {
+        layout = layout.parent;
+    }
+    var res = [];
+    if (layout) {
+        var childLayoutItems = layout.children.filter(function (comp) {
+            return comp.isLayout;
+        }).map(function (comp) {
+            return { name: comp.getAttribute('name'), icon: comp.menuIcon, layout: comp };
+        });
+        if (childLayoutItems.length > 0) {
+            res.push({
+                name: '...',
+                items: childLayoutItems
+            });
+        }
+    }
+
+    var node;
+    while (layout) {
+        node = { name: layout.getAttribute('name'), icon: layout.menuIcon, layout: layout };
+        if (layout.parent && layout.parent.children) {
+            node.items = layout.parent.children.filter(function (comp) {
+                return comp.isLayout;
+            }).map(function (comp) {
+                return { name: comp.getAttribute('name'), icon: comp.menuIcon, layout: comp, extendStyle: layout == comp ? { color: "#009" } : {} };
+            });
+        }
+        else node.items = [{ name: layout.getAttribute('name'), icon: layout.menuIcon, layout: layout }];
+        res.unshift(node);
+        layout = layout.parent;
+    }
+    return res;
+};
 
 LayoutEditor.prototype.getData = function () {
     if (this.rootLayout) return this.rootLayout.getData();
