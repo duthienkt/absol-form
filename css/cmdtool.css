@@ -75,3 +75,8 @@
 .as-form-cmd-tool-window .absol-onscreen-window-head-bar-button-dock{
     display: none;
 }
+
+
+.as-form-cmd-tool-window .as-form-cmd-tool-menu-trigger{
+    display: none;
+}
