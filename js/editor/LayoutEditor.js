@@ -81,8 +81,9 @@ function LayoutEditor() {
             change: function (event) {
                 self.updateAnchorPosition();
                 Dom.updateResizeSystem();
-                if (event.name == 'vAlign' || event.name == 'hAlign') {
+                if (event.name && event.name.match(/vAlign|hAlign|top|bottom|left|right/) ) {
                     self.updateAnchor();
+                    self.updateEditing();
                 }
                 this.component.reMeasure();
             },
