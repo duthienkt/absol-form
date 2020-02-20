@@ -8,117 +8,118 @@ import Fcore from '../core/FCore';
  * @type {import('../editor/LayoutEditor').default}
  */
 var LayoutEditorCmd = {};
-LayoutEditorCmd.distributeVerticalDistance = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeHorizontalDistance();
-    }
-};
 
-LayoutEditorCmd.distributeVerticalBottom = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeVerticalBottom();
-    }
-};
+// LayoutEditorCmd.distributeVerticalDistance = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeHorizontalDistance();
+//     }
+// };
 
-LayoutEditorCmd.distributeVerticalCenter = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeVerticalCenter();
-    }
-};
+// LayoutEditorCmd.distributeVerticalBottom = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeVerticalBottom();
+//     }
+// };
 
-LayoutEditorCmd.distributeVerticalTop = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeVerticalTop();
-    }
-};
+// LayoutEditorCmd.distributeVerticalCenter = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeVerticalCenter();
+//     }
+// };
 
-LayoutEditorCmd.distributeHorizontalDistance = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeHorizontalDistance();
-    }
-};
+// LayoutEditorCmd.distributeVerticalTop = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeVerticalTop();
+//     }
+// };
 
-LayoutEditorCmd.distributeHorizontalRight = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeHorizontalRight();
-    }
-};
+// LayoutEditorCmd.distributeHorizontalDistance = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeHorizontalDistance();
+//     }
+// };
 
-LayoutEditorCmd.distributeHorizontalCenter = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeHorizontalCenter();
-    }
-};
+// LayoutEditorCmd.distributeHorizontalRight = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeHorizontalRight();
+//     }
+// };
 
-LayoutEditorCmd.distributeHorizontalLeft = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_distributeHorizontalLeft();
-    }
-};
+// LayoutEditorCmd.distributeHorizontalCenter = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeHorizontalCenter();
+//     }
+// };
 
-LayoutEditorCmd.equaliseHeight = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_equaliseHeight();
-    }
-};
+// LayoutEditorCmd.distributeHorizontalLeft = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_distributeHorizontalLeft();
+//     }
+// };
 
-LayoutEditorCmd.alignVerticalCenter = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_alignVerticalCenter();
-    }
-};
+// LayoutEditorCmd.equaliseHeight = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_equaliseHeight();
+//     }
+// };
 
-LayoutEditorCmd.alignBottomDedge = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_alignBottomDedge();
-    }
-};
+// LayoutEditorCmd.alignVerticalCenter = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_alignVerticalCenter();
+//     }
+// };
 
-LayoutEditorCmd.alignTopDedge = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_alignTopDedge();
-    }
-};
+// LayoutEditorCmd.alignBottomDedge = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_alignBottomDedge();
+//     }
+// };
 
-LayoutEditorCmd.equaliseWidth = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_equaliseWidth();
-    }
-};
+// LayoutEditorCmd.alignTopDedge = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_alignTopDedge();
+//     }
+// };
 
-LayoutEditorCmd.alignHorizontalCenter = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_alignHorizontalCenter();
-    }
-};
+// LayoutEditorCmd.equaliseWidth = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_equaliseWidth();
+//     }
+// };
 
-LayoutEditorCmd.alignRightDedge = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_alignRightDedge();
-    }
-};
+// LayoutEditorCmd.alignHorizontalCenter = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_alignHorizontalCenter();
+//     }
+// };
 
-LayoutEditorCmd.alignLeftDedge = function () {
-    var editor = this.findFocusAnchorEditor();
-    if (editor) {
-        editor.cmd_alignLeftDedge();
-    }
-};
+// LayoutEditorCmd.alignRightDedge = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_alignRightDedge();
+//     }
+// };
+
+// LayoutEditorCmd.alignLeftDedge = function () {
+//     var editor = this.findFocusAnchorEditor();
+//     if (editor) {
+//         editor.cmd_alignLeftDedge();
+//     }
+// };
 
 LayoutEditorCmd.delete = function () {
     var editor = this.findFocusAnchorEditor();
@@ -230,7 +231,7 @@ LayoutEditorCmd.export2Json = function () {
         version: R.VERSION
     }), null, '    ');
     var fileType = 'json'
-    var blob = new Blob([text], { type: fileType, encoding:"UTF-8" });
+    var blob = new Blob([text], { type: fileType, encoding: "UTF-8" });
     a.download = fileName;
     a.href = URL.createObjectURL(blob);
     a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
@@ -345,98 +346,45 @@ LayoutEditorCmd.editRootLayout = function () {
 
 export default LayoutEditorCmd;
 
+
+export var LayoutEditorCmdNames = [];
+
+export var LayoutEditorCmdTree = [
+    [
+        [
+            'preview'
+        ],
+        [
+            'save',
+            'saveAs',
+            'importFromJson',
+            'export2Json'
+        ],
+        [
+            'undo',
+            'redo'
+        ],
+        [
+            'cut',
+            'copy',
+            'paste',
+            'delete'
+        ]
+
+    ],
+    [
+        'editRootLayout',
+        'selectAll'
+    ]
+];
+
 export var LayoutEditorCmdDescriptors = {
     editRootLayout: {
         type: 'trigger',
         desc: "Edit Root Layout",
         icon: 'span.mdi.mdi-border-outside'
     },
-    distributeVerticalDistance: {
-        type: 'trigger',
-        desc: "Distribute Verlical Distance",
-        icon: '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                    <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
-                    <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
-                </svg>'
-    },
-    distributeVerticalBottom: {
-        type: 'trigger',
-        desc: "Distribute Vertical Bottom",
-        icon: 'span.mdi.mdi-distribute-vertical-bottom'
-    },
-    distributeVerticalCenter: {
-        type: 'trigger',
-        desc: "Distribute Vertical Center",
-        icon: 'span.mdi.mdi-distribute-vertical-center'
-    },
-    distributeVerticalTop: {
-        type: 'trigger',
-        desc: "Distribute Vertical Top",
-        icon: 'span.mdi.mdi-distribute-vertical-top'
-    },
-    distributeHorizontalDistance: {
-        icon: '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                    <path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\
-                    <path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\
-                </svg>',
-        type: 'trigger',
-        desc: "Distribute Horizontal Distance"
-    },
-    distributeHorizontalRight: {
-        type: 'trigger',
-        desc: "Distribute Horizontal Right",
-        icon: 'span.mdi.mdi-distribute-horizontal-right'
-    },
-    distributeHorizontalCenter: {
-        icon: 'span.mdi.mdi-distribute-horizontal-center',
-        type: 'trigger',
-        desc: "Distribute Horizontal Center"
-    },
-    distributeHorizontalLeft: {
-        icon: 'span.mdi.mdi-distribute-horizontal-left',
-        type: 'trigger',
-        desc: "Distribute Horizontal Left"
-    },
-    equaliseHeight: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-arrow-expand-vertical',
-        desc: 'Equalise Height',
-    },
-    alignVerticalCenter: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-align-vertical-center',
-        desc: 'Align Vertical Center'
-    },
-    alignBottomDedge: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-align-vertical-bottom',
-        desc: 'Align Bottom Edges',
-    },
-    alignTopDedge: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-align-vertical-top',
-        desc: 'Align Top Edges'
-    },
-    equaliseWidth: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-arrow-expand-horizontal',
-        desc: 'Equalise Width'
-    },
-    alignHorizontalCenter: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-align-horizontal-center',
-        desc: 'Align Horizontal Center'
-    },
-    alignRightDedge: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-align-horizontal-right',
-        desc: 'Align Right Edges',
-    },
-    alignLeftDedge: {
-        type: 'trigger',
-        icon: 'span.mdi.mdi-align-horizontal-left',
-        desc: 'Align Left Edges',
-    },
+
     preview: {
         type: 'trigger',
         icon: 'span.mdi.mdi-play',
@@ -509,10 +457,5 @@ export var LayoutEditorCmdDescriptors = {
         desc: 'Select All',
         icon: 'span.mdi.mdi-select-all',
         bindKey: { win: 'Ctrl-A', mac: 'TODO?' }
-    },
-    sendBackward: {
-        type: 'trigger',
-        desc: 'Send Backward',
-        icon: 'span.mdi.mdi-arrange-send-backward'
     }
 };

@@ -1,4 +1,5 @@
 import EventEmitter from "absol/src/HTML5/EventEmitter";
+import CMDRunner from "absol/src/AppPattern/CMDRunner";
 
 /**
  * 
@@ -8,6 +9,7 @@ function BaseAnchorEditor(layoutEditor) {
     EventEmitter.call(this);
     this.layoutEditor = layoutEditor;
     this.component = null;
+    this.cmdRunner = new CMDRunner(this);
 
 }
 
@@ -47,5 +49,20 @@ BaseAnchorEditor.prototype.cmd_layoutEdit = function () {
         this.layoutEditor.editLayout(this.component);
     }
 };
+
+
+BaseAnchorEditor.prototype.getCmdNames = function(){
+    var res = [];
+    if (this.component.isLayout && !this.component.formType){
+        res.push('layoutEdit');
+    }
+    res.push('delete');
+    return res;
+};
+
+BaseAnchorEditor.prototype.getCmdDescriptor = function(name){
+    
+};
+
 
 export default BaseAnchorEditor;

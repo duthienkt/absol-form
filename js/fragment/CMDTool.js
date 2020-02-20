@@ -15,6 +15,7 @@ function CMDTool() {
     this.$buttons = {};// button dictionaryx
     this.$visiable = [];
     this.updateVisiable = this.updateVisiable.bind(this);
+    this.refresh = this.refresh.bind(this);
 
 }
 
@@ -35,10 +36,14 @@ CMDTool.prototype.config = {
  */
 CMDTool.prototype.bindWithEditor = function (editor) {
     // this.updateVisiable is binded
-    if (this.editor)
+    if (this.editor){
         this.editor.off('cmddescriptorschange', this.updateVisiable);
+        this.editor.off('cmdchange', this.refresh);
+    }
+
     this.editor = editor;
     if (this.editor) {
+        this.editor.on('cmdchange', this.refresh);
         this.editor.on("cmddescriptorschange", this.updateVisiable);
     }
     this.refresh();

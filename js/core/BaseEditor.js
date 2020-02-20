@@ -98,6 +98,11 @@ BaseEditor.prototype.notifyCmdDescriptorsChange = function () {
     this.emit('cmddescriptorschange', { type: 'cmddescriptorschange' }, this);
 };
 
+BaseEditor.prototype.notifyCmdChange = function(){
+    console.log('cmdchange');
+    this.emit('cmdchange', { type: 'cmdchange' }, this);
+};
+
 
 BaseEditor.prototype.getCmdGroupTree = function () {
     return [];

@@ -9,7 +9,7 @@ import BaseEditor from '../core/BaseEditor';
 import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
-import LayoutEditorCMD, { LayoutEditorCmdDescriptors } from '../cmds/LayoutEditorCmd';
+import LayoutEditorCMD, { LayoutEditorCmdDescriptors, LayoutEditorCmdTree } from '../cmds/LayoutEditorCmd';
 import ClipboardManager from '../ClipboardManager';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import Rectangle from 'absol/src/Math/Rectangle';
@@ -81,7 +81,7 @@ function LayoutEditor() {
             change: function (event) {
                 self.updateAnchorPosition();
                 Dom.updateResizeSystem();
-                if (event.name && event.name.match(/vAlign|hAlign|top|bottom|left|right/) ) {
+                if (event.name && event.name.match(/vAlign|hAlign|top|bottom|left|right/)) {
                     self.updateAnchor();
                     self.updateEditing();
                 }
@@ -845,8 +845,11 @@ LayoutEditor.prototype.findAnchorEditorByComponent = function (comp) {
 
 
 LayoutEditor.prototype.findFocusAnchorEditor = function () {
-    var focusEditor = this.anchorEditors.filter(function (e) { return e.isFocus });
-    return focusEditor[0];
+    // faster
+    for (var i = this.anchorEditors.length - 1; i >= 0; --i) {
+        if (this.anchorEditors[i].isFocus) return this.anchorEditors[i];
+    }
+    return null;
 };
 
 
@@ -858,14 +861,12 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 
 
 LayoutEditor.prototype.applyData = function (data) {
-    var self = this;
     this.rootLayout = this.build(data);
     this.$layoutCtn.clearChild().addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
     this.editLayout(this.rootLayout)
-    // this.updateEditing();
     this.componentOtline.updateComponetTree();
 
     this.emit('change', { type: 'change', target: this, data: data }, this);
@@ -894,11 +895,16 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 
 LayoutEditor.prototype.editLayout = function (layout) {
     if (!layout) throw new Error("Layout must be not null");
+    var lastTag = this.editingLayout && this.editingLayout.tag;
+    var currentTag = layout && layout.tag;
     this.editingLayout = layout;
     this.lastCommitData.editing = layout.getAttribute('name');
     this.$quickpath.path = this.getQuickpathFrom(layout);
     this.setActiveComponent();
     this.updateEditing();
+    if (lastTag != currentTag) {
+        this.notifyCmdChange();
+    }
 };
 
 LayoutEditor.prototype.editLayoutByName = function (name) {
@@ -963,11 +969,19 @@ LayoutEditor.prototype.getCmdNames = function () {
 };
 
 LayoutEditor.prototype.getCmdDescriptor = function (name) {
+    var descriptor = LayoutEditorCmdDescriptors[name];
+    if (this.editingLayout) {
+        var anchorEditorConstructor = this.editingLayout.getAnchorEditorConstructor();
+        if (anchorEditorConstructor.prototype.getCmdDescriptor) {
+            descriptor = descriptor || (anchorEditorConstructor.prototype.getCmdDescriptor.call(null, name));
+        }
+    }
+
     var res = Object.assign({
         type: 'trigger',
         desc: 'command: ' + name,
         icon: 'span.mdi.mdi-apple-keyboard-command'
-    }, LayoutEditorCmdDescriptors[name])
+    }, descriptor)
     if ((name.startsWith('align') || name.startsWith('equalise')) && this.anchorEditors.length < 2) {
         res.disabled = true;
     }
@@ -991,62 +1005,15 @@ LayoutEditor.prototype.getCmdDescriptor = function (name) {
 
 
 LayoutEditor.prototype.getCmdGroupTree = function () {
-    return [
-        [
-            [
-                [
-                    'preview'
-                ],
-                [
-                    'save',
-                    'saveAs',
-                    'importFromJson',
-                    'export2Json'
-                ],
-                [
-                    'undo',
-                    'redo'
-                ],
-                [
-                    'cut',
-                    'copy',
-                    'paste',
-                    'delete'
-                ]
+    var tree = [LayoutEditorCmdTree];
+    if (this.editingLayout) {
+        var anchorEditorConstructor = this.editingLayout.getAnchorEditorConstructor();
+        if (anchorEditorConstructor.prototype.getCmdGroupTree) {
+            tree.push(anchorEditorConstructor.prototype.getCmdGroupTree.call(null));
+        }
+    }
 
-            ],
-            [
-                'editRootLayout',
-                'selectAll'
-            ],
-            [
-                'alignLeftDedge',
-                'alignHorizontalCenter',
-                'alignRightDedge',
-                'equaliseWidth'
-            ],
-            [
-                'alignTopDedge',
-                'alignVerticalCenter',
-                'alignBottomDedge',
-                'equaliseHeight'
-            ]
-        ],
-        [
-            [
-                'distributeHorizontalLeft',
-                'distributeHorizontalCenter',
-                'distributeHorizontalRight',
-                'distributeHorizontalDistance'
-            ],
-            [
-                'distributeVerticalTop',
-                'distributeVerticalCenter',
-                'distributeVerticalBottom',
-                'distributeVerticalDistance'
-            ]
-        ]
-    ];
+    return tree;
 };
 
 
@@ -1228,6 +1195,27 @@ LayoutEditor.prototype.commitHistory = function (type, description) {
         data: this.getData()
     };
     this.undoHistory.commit(type, this.lastCommitData, description, new Date());
+};
+
+
+LayoutEditor.prototype.execCmd = function () {
+    try {
+        return BaseEditor.prototype.execCmd.apply(this, arguments);
+    }
+    catch (error) {
+    }
+
+    try {
+        var focusEditor = this.findFocusAnchorEditor();
+        if (focusEditor) {
+            return focusEditor.execCmd.apply(focusEditor, arguments);
+        }
+    }
+    catch (error1) {
+        //other 
+        console.log(error1);
+        
+    }
 };
 
 
