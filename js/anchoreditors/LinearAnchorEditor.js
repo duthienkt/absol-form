@@ -3,6 +3,7 @@ import Fcore from '../core/FCore';
 import '../../css/anchoreditor.css';
 import '../dom/Icons';
 import BaseAnchorEditor from '../core/BaseAnchorEditor';
+import LinearAnchorEditorCmd, { LinearAnchorEditorCmdTree, LinearAnchorEditorCmdDescriptors } from '../cmds/LinearAnchorEditorCmd';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -14,6 +15,7 @@ var $ = Fcore.$;
  */
 function LinearAnchorEditor(layoutEditor) {
     BaseAnchorEditor.call(this, layoutEditor);
+    this.cmdRunner.assign(LinearAnchorEditorCmd);
     var self = this;
     this.$modal = _({
         style: {
@@ -991,6 +993,21 @@ LinearAnchorEditor.prototype.cmd_distributeVerticalDistance = function () {
         curentTop += editor.component.style.height + distance;
     }
     this.layoutEditor.commitHistory('move', 'Distribute Vertical Distance');
+};
+
+
+
+LinearAnchorEditor.prototype.getCmdGroupTree = function () {
+    return LinearAnchorEditorCmdTree;
+};
+
+LinearAnchorEditor.prototype.getCmdDescriptor = function (name) {
+    return LinearAnchorEditorCmdDescriptors[name];
+};
+
+
+LinearAnchorEditor.prototype.execCmd = function () {
+    return this.cmdRunner.invoke.apply(this.cmdRunner, arguments);
 };
 
 

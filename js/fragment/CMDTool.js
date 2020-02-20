@@ -63,7 +63,6 @@ CMDTool.prototype.onStart = function () {
     this.getView();
 };
 
-// CMDTool.prototype.onResume
 
 CMDTool.prototype.onPause = function () {
     //todo
