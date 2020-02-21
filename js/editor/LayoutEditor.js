@@ -1082,23 +1082,14 @@ LayoutEditor.prototype.clearRootLayout = function () {
 
 
 LayoutEditor.prototype.removeComponent = function () {
-    var removedComponents = [];
-    var comp;
-    for (var i = 0; i < arguments.length; ++i) {
-        comp = arguments[i];
-        if (comp == this.rootLayout) {
-            console.warn('Don\'t remove root layout');
-            continue;
-        }
+    var removedComponents =Array.prototype.slice.call(arguments);
+    this.toggleActiveComponent.apply(this, removedComponents);
+    removedComponents.forEach(function(comp){
         comp.remove();
-        removedComponents.push(comp);
-        var anchorEditor = this.findAnchorEditorByComponent(comp);
-        if (anchorEditor) {
-            this.toggleActiveComponent(comp);
-        }
-        if (comp == this.componentPropertiesEditor.component) this.componentPropertiesEditor.edit(undefined);
-        this.emit('removecomponent', { type: 'removecomponent', target: this, component: comp }, this);
-    }
+    })
+    //edit nothing
+    this.emit('removecomponent', { type: 'removecomponent', target: this, components: removedComponents }, this);
+    this.componentPropertiesEditor.edit();
     this.notifyDataChange();
 
     if (removedComponents.length > 0) {
