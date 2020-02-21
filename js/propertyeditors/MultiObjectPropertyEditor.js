@@ -67,6 +67,7 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
     this.clearAllDependents();
     var self = this;
     var objects = this.objects;
+    if (objects.length <= 0) return;
     var availablePropertyNames = objects.reduce(function (ac, obj) {
         var ret = {};
         var propNames = self.getPropertyNames(obj);
