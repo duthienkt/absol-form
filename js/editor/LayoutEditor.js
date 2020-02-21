@@ -13,6 +13,7 @@ import LayoutEditorCMD, { LayoutEditorCmdDescriptors, LayoutEditorCmdTree } from
 import ClipboardManager from '../ClipboardManager';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import Rectangle from 'absol/src/Math/Rectangle';
+import RelativeAnchorEditor from '../anchoreditors/RelativeAnchorEditor';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -682,7 +683,7 @@ LayoutEditor.prototype.updateSize = function () {
 
 LayoutEditor.prototype._newAnchorEditor = function (component) {
     var self = this;
-    var AnchorEditor = this.findNearestLayoutParent(component.parent || this.rootLayout).getAnchorEditorConstructor();
+    var AnchorEditor = component.parent ? component.parent.getAnchorEditorConstructor() : RelativeAnchorEditor;
     //craete new, repeat event to other active anchor editor
     var editor = new AnchorEditor(this).on('click', function (event) {
         if (editor.preventClick) return;
@@ -1082,9 +1083,9 @@ LayoutEditor.prototype.clearRootLayout = function () {
 
 
 LayoutEditor.prototype.removeComponent = function () {
-    var removedComponents =Array.prototype.slice.call(arguments);
+    var removedComponents = Array.prototype.slice.call(arguments);
     this.toggleActiveComponent.apply(this, removedComponents);
-    removedComponents.forEach(function(comp){
+    removedComponents.forEach(function (comp) {
         comp.remove();
     })
     //edit nothing
@@ -1205,7 +1206,7 @@ LayoutEditor.prototype.execCmd = function () {
     catch (error1) {
         //other 
         console.log(error1);
-        
+
     }
 };
 
