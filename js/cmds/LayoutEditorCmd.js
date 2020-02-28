@@ -9,118 +9,6 @@ import Fcore from '../core/FCore';
  */
 var LayoutEditorCmd = {};
 
-// LayoutEditorCmd.distributeVerticalDistance = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeHorizontalDistance();
-//     }
-// };
-
-// LayoutEditorCmd.distributeVerticalBottom = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeVerticalBottom();
-//     }
-// };
-
-// LayoutEditorCmd.distributeVerticalCenter = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeVerticalCenter();
-//     }
-// };
-
-// LayoutEditorCmd.distributeVerticalTop = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeVerticalTop();
-//     }
-// };
-
-// LayoutEditorCmd.distributeHorizontalDistance = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeHorizontalDistance();
-//     }
-// };
-
-// LayoutEditorCmd.distributeHorizontalRight = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeHorizontalRight();
-//     }
-// };
-
-// LayoutEditorCmd.distributeHorizontalCenter = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeHorizontalCenter();
-//     }
-// };
-
-// LayoutEditorCmd.distributeHorizontalLeft = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_distributeHorizontalLeft();
-//     }
-// };
-
-// LayoutEditorCmd.equaliseHeight = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_equaliseHeight();
-//     }
-// };
-
-// LayoutEditorCmd.alignVerticalCenter = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_alignVerticalCenter();
-//     }
-// };
-
-// LayoutEditorCmd.alignBottomDedge = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_alignBottomDedge();
-//     }
-// };
-
-// LayoutEditorCmd.alignTopDedge = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_alignTopDedge();
-//     }
-// };
-
-// LayoutEditorCmd.equaliseWidth = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_equaliseWidth();
-//     }
-// };
-
-// LayoutEditorCmd.alignHorizontalCenter = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_alignHorizontalCenter();
-//     }
-// };
-
-// LayoutEditorCmd.alignRightDedge = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_alignRightDedge();
-//     }
-// };
-
-// LayoutEditorCmd.alignLeftDedge = function () {
-//     var editor = this.findFocusAnchorEditor();
-//     if (editor) {
-//         editor.cmd_alignLeftDedge();
-//     }
-// };
-
 LayoutEditorCmd.delete = function () {
     var editor = this.findFocusAnchorEditor();
     if (editor) {
@@ -175,7 +63,6 @@ LayoutEditorCmd.saveAs = function () {
 
 LayoutEditorCmd.importFromJson = function () {
     var self = this;
-    var state = "WAITING";
     var fileInput = Fcore._({
         tag: 'input',
         style: {
