@@ -369,11 +369,19 @@ MultiObjectPropertyEditor.prototype.loadUniqueTextProperty = function (name, des
 
 MultiObjectPropertyEditor.prototype.loadConstProperty = function (name, descriptor, cell) {
     var res = {};
+    var value = descriptor.value;
     res.elt = _({
-        tag: 'strong',
-        child: { text: '' + descriptor.value }
+        tag: 'strong'
     });
     cell.addChild(res.elt);
+    if (value && value.then) {
+        value.then(function (value) {
+            res.elt.addChild(_({ text: '' + value}))
+        });
+    }
+    else {
+        res.elt.addChild(_({ text: '' + value }))
+    }
     return res;
 };
 
