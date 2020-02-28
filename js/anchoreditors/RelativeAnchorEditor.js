@@ -35,7 +35,7 @@ function RelativeAnchorEditor(layoutEditor) {
         .on('click', function (ev) {
             self.emit('click', ev, true);
         })
-        .on('dblclick', this.cmd_layoutEdit.bind(this));
+        .on('dblclick', this.execCmd.bind(this, 'editLayout'));
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
     this.$topAlignLine = _('vline');
@@ -55,7 +55,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
     var items = [];
     function makeItem(name) {
         if (name === null) return '=====';
-        var cmdDescriptor = LayoutEditorCmdDescriptors[name];
+        var cmdDescriptor = RelativeAnchorEditorCmdDescriptors[name];
         var res = {
             icon: cmdDescriptor.icon,
             text: cmdDescriptor.desc,
@@ -101,14 +101,14 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
             text: 'Edit Layout',
-            cmd: this.cmd_layoutEdit.bind(this)
+            cmd:this.execCmd.bind(this, 'layoutEdit')
         });
     }
 
     items.push({
         icon: 'span.mdi.mdi-delete-variant[style="color:red"]',
         text: 'Delete',
-        cmd: this.cmd_delete.bind(this)
+        cmd: 'delete'
     });
 
     event.showContextMenu({

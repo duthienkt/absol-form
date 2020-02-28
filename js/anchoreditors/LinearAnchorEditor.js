@@ -41,7 +41,7 @@ function LinearAnchorEditor(layoutEditor) {
         .on('click', function (ev) {
             self.emit('click', ev, true);
         })
-        .on('dblclick', this.cmd_layoutEdit.bind(this));
+        .on('dblclick',this.execCmd.bind(this, 'layoutEdit'));
 
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
@@ -161,7 +161,7 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
             text: 'Edit Layout',
-            cmd: this.cmd_layoutEdit.bind(this)
+            cmd:this.execCmd.bind(this, 'layoutEdit')
         });
     }
 

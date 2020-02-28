@@ -1,8 +1,9 @@
+import BaseAnchorEditorCmd from "./BaseAnchorEditorCmd";
 
 /**
  * @type {import("../anchoreditors/RelativeAnchorEditor").default}
  */
-var RelativeAnchorEditorCmd = {};
+var RelativeAnchorEditorCmd = Object.assign({}, BaseAnchorEditorCmd);
 
 
 
