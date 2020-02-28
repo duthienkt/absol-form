@@ -247,7 +247,7 @@ FormEditor.prototype.getView = function () {
                             title: 'Explorer'
                         },
                         on: {
-                            click: this.showToolTab.bind(this, 'tab-explorer')
+                            click: this.toggleToolTab.bind(this, 'tab-explorer')
                         }
                     },
                     {
@@ -258,7 +258,7 @@ FormEditor.prototype.getView = function () {
                             title: 'Components'
                         },
                         on: {
-                            click: this.showToolTab.bind(this, 'tab-component')
+                            click: this.toggleToolTab.bind(this, 'tab-component')
                         }
                     },
                     {
@@ -269,7 +269,7 @@ FormEditor.prototype.getView = function () {
                             title: 'Outline'
                         },
                         on: {
-                            click: this.showToolTab.bind(this, 'tab-outline')
+                            click: this.toggleToolTab.bind(this, 'tab-outline')
                         }
                     },
                     {
@@ -449,7 +449,7 @@ FormEditor.prototype.getView = function () {
 
 
     this.$contextCaptor = _('contextcaptor').addTo(this.$view).attachTo(this.$view);
-    this.showToolTab('tab-explorer');
+    this.toggleToolTab('tab-explorer');
     return this.$view;
 };
 
@@ -541,16 +541,39 @@ FormEditor.prototype.ev_layoutEditorChange = function () {
 };
 
 
-FormEditor.prototype.showToolTab = function (ident) {
-    this.$leftFrameView.activeFrameById(this.prefix + ident);
-    $('button', this.$leftTabbar, function (button) {
-        if (button.id && button.id.indexOf(ident) >= 0) {
-            button.addClass('active');
+FormEditor.prototype.toggleToolTab = function (ident) {
+    if (this._lastToolTabIdent != ident) {
+        this.$leftFrameView.activeFrameById(this.prefix + ident);
+        $('button', this.$leftTabbar, function (button) {
+            if (button.id && button.id.indexOf(ident) >= 0) {
+                button.addClass('active');
+            }
+            else {
+                button.removeClass('active');
+            }
+        });
+        this.$leftSiteResizer.removeStyle('display');
+        if (!this._lastToolTabIdent) {
+            this.$leftSiteCtn.removeStyle('visibility');
+            this.$leftSiteCtn.addStyle('width', 'calc(' + this.config.leftSiteWidthPercent + "% - 3em)");
+            this.$editorSpaceCtn.addStyle('left', this.config.leftSiteWidthPercent + '%');
+            this.$emptySpace.addStyle('left', this.config.leftSiteWidthPercent + '%');
+            window.dispatchEvent(new Event('resize'));
         }
-        else {
+        this._lastToolTabIdent = ident;
+    }
+    else {
+        this._lastToolTabIdent = null;
+        this.$leftFrameView.activeFrame(null);
+        $('button', this.$leftTabbar, function (button) {
             button.removeClass('active');
-        }
-    });
+        });
+        this.$leftSiteResizer.addStyle('display', 'none');
+        this.$leftSiteCtn.addStyle('visibility', 'hidden');
+        this.$editorSpaceCtn.addStyle('left', '3em');
+        this.$emptySpace.addStyle('left', '3em');
+        window.dispatchEvent(new Event('resize'));
+    }
 };
 
 

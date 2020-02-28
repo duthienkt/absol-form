@@ -80,7 +80,6 @@
     top: 0;
     bottom: 0;
     width: calc(15% - 3em);
-    border-right: 1px solid #ddd;
     box-sizing: border-box;
 
 }
@@ -101,6 +100,8 @@
     top: 0;
     bottom: 0;
     right: 0;
+    border-left: 1px solid #ddd;
+
 }
  
 .as-form-editor-empty-space {
