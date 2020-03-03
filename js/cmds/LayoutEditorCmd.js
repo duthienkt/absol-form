@@ -231,6 +231,20 @@ LayoutEditorCmd.editRootLayout = function () {
 }
 
 
+LayoutEditorCmd.zoomIn = function () {
+    this.zoomBy(1 / 0.9);
+};
+
+LayoutEditorCmd.zoomOut = function () {
+    this.zoomBy(0.9);
+};
+
+
+LayoutEditorCmd.resetZoom = function () {
+    this.setSoftScale(1);
+};
+
+
 export default LayoutEditorCmd;
 
 
@@ -262,6 +276,11 @@ export var LayoutEditorCmdTree = [
     [
         'editRootLayout',
         'selectAll'
+    ],
+    [
+        'zoomOut',
+        'zoomIn' ,
+        'resetZoom'
     ]
 ];
 
@@ -344,5 +363,20 @@ export var LayoutEditorCmdDescriptors = {
         desc: 'Select All',
         icon: 'span.mdi.mdi-select-all',
         bindKey: { win: 'Ctrl-A', mac: 'TODO?' }
+    },
+    zoomIn:{
+        type:'trigger',
+        desc: 'Zoom In',
+        icon:'span.mdi.mdi-magnify-plus-outline'
+    },
+    zoomOut:{
+        type:'trigger',
+        desc: 'Zoom Out',
+        icon:'span.mdi.mdi-magnify-minus-outline'
+    },
+    resetZoom:{
+        type:'trigger',
+        desc: 'Reset Zoom ',
+        icon:'span.mdi.mdi-magnify-close'
     }
 };

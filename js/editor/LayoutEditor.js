@@ -21,6 +21,7 @@ var $ = Fcore.$;
 function LayoutEditor() {
     BaseEditor.call(this);
     Assembler.call(this);
+    this._softScale = 1;
     var self = this;
     this.rootLayout = null;
     this.editingLayout = null;
@@ -106,6 +107,22 @@ Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors
 
 LayoutEditor.prototype.constructor = LayoutEditor;
 
+LayoutEditor.prototype.setSoftScale = function (val) {
+    //todo
+    this._softScale = val;
+    this.$editorSpace.addStyle('transform', 'scale(' + val + ')');
+};
+
+
+LayoutEditor.prototype.getSoftScale = function (val) {
+    return this._softScale;
+};
+
+
+LayoutEditor.prototype.zoomBy = function (val) {
+    this.setSoftScale(val * this._softScale);
+};
+
 
 LayoutEditor.prototype.onAttached = function () {
     this.componentPropertiesEditor.attach(this);
@@ -147,6 +164,11 @@ LayoutEditor.prototype.onResume = function () {
     }
     ClipboardManager.on('set', this.ev_clipboardSet);
     this.getView().focus();
+    //
+    this.statusBarElt = this.getContext(R.STATUS_BAR_ELT);
+    this.$mouseOffsetStatus.addTo(this.statusBarElt.$rightCtn);
+
+
 };
 
 
@@ -162,6 +184,9 @@ LayoutEditor.prototype.onPause = function () {
     }
     ClipboardManager.off('set', this.ev_clipboardSet);
     this.getView().blur();
+    this.$mouseOffsetStatus.remove();
+
+    //
 };
 
 LayoutEditor.prototype.onStop = function () {
@@ -191,8 +216,6 @@ LayoutEditor.prototype.notifyDataChange = function () {
 LayoutEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     var self = this;
-
-
     this.$view = _({
         class: ['as-layout-editor'],
         attr: { tabindex: '1' },
@@ -299,6 +322,7 @@ LayoutEditor.prototype.getView = function () {
             self.destroy();
         }
     }, 6900);
+    this.$editorSpace = $('.as-layout-editor-space', this.$view)
 
     this.$mouseSelectingBox = _('.as-layout-editor-mouse-selecting-box');
 
@@ -318,7 +342,15 @@ LayoutEditor.prototype.getView = function () {
     this.$cmdToolCtn = $('.as-layout-editor-cmd-tool-container', this.$view);
     this.$measureCtn = $('.as-layout-editor-measure-container', this.$view);
     this.$propertyCtn = $('.as-layout-editor-property-container', this.$view);
-
+    this.$mouseOffsetStatus = _({
+        tag: 'button',
+        class: 'as-status-bar-item',
+        child: [
+            'span.mdi.mdi-cursor-move',
+            'span',
+            'span'
+        ]
+    });
     return this.$view;
 };
 
@@ -350,6 +382,13 @@ LayoutEditor.prototype.ev_mouseMove = function (event) {
     this.$hrulerMouse.addStyle('left', event.clientX - hruleBound.left - 1 - 1 + 'px');
     this.mouseClientX = event.clientX;
     this.mouseClientY = event.clientY;
+    if (this.rootLayout) {
+        var rootBound = this.rootLayout.view.getBoundingClientRect();
+        this.mouseOffsetX = Math.round(event.clientX - rootBound.left);
+        this.mouseOffsetY = Math.round(event.clientY - rootBound.top);
+        this.$mouseOffsetStatus.children[1].innerHTML = this.mouseOffsetX + ',' + this.mouseOffsetY;
+    }
+    //update  mouse position on 
 };
 
 
@@ -1069,6 +1108,20 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
     this.notifyUnsaved();
 };
 
+
+LayoutEditor.prototype.build = function () {
+    var comp = Assembler.prototype.build.apply(this, arguments);
+    var thisEditor = this;
+    var originFunction = comp.getStyle;
+    comp.getStyle = function(){
+        var res = originFunction.apply(this, arguments);
+        if (arguments[1] == 'px' && comp.style[arguments[0]]!= res){
+            res/= thisEditor._softScale;
+        }
+        return res;
+    };
+    return comp;
+};
 
 LayoutEditor.prototype.clearRootLayout = function () {
     this._activatedComponent = undefined;
