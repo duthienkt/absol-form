@@ -2,7 +2,6 @@ import Fcore from '../core/FCore';
 import '../../css/anchoreditor.css';
 import '../dom/Icons';
 import BaseAnchorEditor from '../core/BaseAnchorEditor';
-import { LayoutEditorCmdDescriptors } from '../cmds/LayoutEditorCmd';
 import RelativeAnchorEditorCmd, { RelativeAnchorEditorCmdTree, RelativeAnchorEditorCmdDescriptors } from '../cmds/RelativeAnchorEditorCmd';
 
 var _ = Fcore._;
@@ -101,7 +100,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
             text: 'Edit Layout',
-            cmd:this.execCmd.bind(this, 'layoutEdit')
+            cmd: this.execCmd.bind(this, 'layoutEdit')
         });
     }
 
@@ -208,38 +207,38 @@ RelativeAnchorEditor.prototype.updatePosition = function () {
         var styleRight = this.component.getStyle('right', 'px');
         var styleBottom = this.component.getStyle('bottom', 'px');
         this.$resizeBox.addStyle({
-            left: compBound.left - bound.left + 'px',
-            top: compBound.top - bound.top + 'px',
-            width: compBound.width + 'px',
-            height: compBound.height + 'px'
+            left: (compBound.left - bound.left) / this.layoutEditor._softScale + 'px',
+            top: (compBound.top - bound.top) / this.layoutEditor._softScale + 'px',
+            width: compBound.width / this.layoutEditor._softScale + 'px',
+            height: compBound.height / this.layoutEditor._softScale + 'px'
         });
 
         if (this.$leftAlignLine.parentNode)
             this.$leftAlignLine.addStyle({
-                left: compBound.left - bound.left - styleLeft + 'px',
+                left: (compBound.left - bound.left) / this.layoutEditor._softScale - styleLeft + 'px',
                 width: styleLeft + 'px',
-                top: compBound.top - bound.top + compBound.height / 2 + 'px',
+                top: (compBound.top - bound.top + compBound.height / 2) / this.layoutEditor._softScale + 'px',
             });
 
         if (this.$rightAlignLine.parentNode)
             this.$rightAlignLine.addStyle({
-                left: compBound.right - bound.left + 'px',
+                left: (compBound.right - bound.left) / this.layoutEditor._softScale + 'px',
                 width: styleRight + 'px',
-                top: compBound.top - bound.top + compBound.height / 2 + 'px',
+                top: (compBound.top - bound.top + compBound.height / 2) / this.layoutEditor._softScale + 'px',
             });
 
         if (this.$topAlignLine.parentNode)
             this.$topAlignLine.addStyle({
-                top: compBound.top - bound.top - styleTop + 'px',
+                top: (compBound.top - bound.top) / this.layoutEditor._softScale - styleTop + 'px',
                 height: styleTop + 'px',
-                left: compBound.left - bound.left + compBound.width / 2 + 'px',
+                left: (compBound.left - bound.left + compBound.width / 2) / this.layoutEditor._softScale + 'px',
             });
 
         if (this.$bottomAlignLine.parentNode)
             this.$bottomAlignLine.addStyle({
-                top: compBound.bottom - bound.top + 'px',
+                top: (compBound.bottom - bound.top) / this.layoutEditor._softScale + 'px',
                 height: styleBottom + 'px',
-                left: compBound.left - bound.left + compBound.width / 2 + 'px',
+                left: (compBound.left - bound.left + compBound.width / 2) / this.layoutEditor._softScale + 'px',
             });
     }
 };
@@ -251,8 +250,9 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
     this.component.reMeasure();
     var snapLines = this.getSnapLines();
     this.movingData = {
-        x0: event.clientX - bound.left,
-        y0: event.clientY - bound.top,
+        userAction: userAction,
+        x0: (event.clientX - bound.left) / this.layoutEditor._softScale,
+        y0: (event.clientY - bound.top) / this.layoutEditor._softScale,
         dx: 0,
         dy: 0,
         option: event.option,
@@ -283,6 +283,7 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event.originEvent || event, repeatEvent: event, target: this }, this);
         this.$modal.addTo(document.body);
         this._updateSnapLines();
+        this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
     }
 };
 
@@ -291,8 +292,8 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
 RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     var movingData = this.movingData;
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
-    var x = event.clientX - bound.left;
-    var y = event.clientY - bound.top;
+    var x = (event.clientX - bound.left) / this.layoutEditor._softScale;
+    var y = (event.clientY - bound.top) / this.layoutEditor._softScale;
 
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
@@ -341,6 +342,7 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
             }
         }
     }
+
 
     var positionIsChange = false;
 
@@ -418,6 +420,7 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     if (userAction) {
         this.emit('moving', { taget: this, type: 'moving', originEvent: event.originEvent || event, repeatEvent: event, target: this, repeatEvent: event }, this);
         this._updateSnapLines();
+        this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
     }
 };
 
@@ -430,6 +433,7 @@ RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
     if (userAction) {
         this.emit('endmove', { taget: this, type: 'moving', originEvent: event.originEvent || event, target: this, repeatEvent: event }, this);
         this.$modal.remove();
+        this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = '';
         this.movingData.$snapYLines.forEach(function (e) {
             e.remove();
         });
