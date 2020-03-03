@@ -18,6 +18,7 @@ import CMDTool from '../fragment/CMDTool';
 import CodeEditor from './CodeEditor';
 import FormEditorCmd from '../cmds/FormEditorCmd';
 import PhotoViewer from './PhotoViewer';
+import '../dom/StatusBar';
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -26,7 +27,6 @@ function FormEditor() {
     BaseEditor.call(this);
     this.prefix = randomIdent(16) + "_";
     this.setContext(R.FORM_EDITOR, this);
-    var self = this;
     this.cmdRunner.assign(FormEditorCmd);
     this.style = {
         leftSizeWidth: 16,//em
@@ -46,7 +46,9 @@ function FormEditor() {
     this.mComponentPicker = new ComponentPicker();
     this.mCMDTool = new CMDTool();
 
+    this.statusBarElt = _('statusbar');
 
+    this.setContext(R.STATUS_BAR_ELT, this.statusBarElt);
     this.setContext(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.setContext(R.COMPONENT_PICKER, this.mComponentPicker);
     this.setContext(R.UNDO_HISTORY, this.mUndoHistory);

@@ -1,0 +1,50 @@
+.as-status-bar {
+    background-color: rgb(240, 240, 240);
+    position: relative;
+    min-height: 1.2em;
+    color: black;
+}
+
+button.as-status-bar-item {
+    border: none;
+    background-color: transparent;
+    font-size: 0.8em;
+    height: 100%;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    color: black;
+    outline: none;
+}
+
+button.as-status-bar-item:hover {
+    background-color: rgba(102, 102, 102, 0.1);
+}
+
+button.as-status-bar-item .mdi {
+    font-size: 1.2em;
+}
+
+/*
+    rgb(r, g, 255) * alpha + (1 - alpha) * rgb(0, 122, 204) = rgb(31, 137, 210)
+=>  255 * alpha + 204 - 204 * alpha = 210
+=>  (255 - 204)alpha = 210-204
+=> alpha = (210-204)/(255-204)
+
+*/
+.as-status-bar-left {
+    /* background: rgba(red, green, 255, 0.11764705882352941); */
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+}
+
+.as-status-bar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding-right: 0.5em;
+    line-height: 1.2;
+}
