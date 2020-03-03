@@ -1,7 +1,9 @@
+import BaseAnchorEditorCmd from './BaseAnchorEditorCmd';
+
 /**
  * @type {import('../anchoreditors/LinearAnchorEditor').default}
  */
-var LinearAnchorEditorCmd = {};
+var LinearAnchorEditorCmd =  Object.assign({}, BaseAnchorEditorCmd);;
 
 export default LinearAnchorEditorCmd;
 

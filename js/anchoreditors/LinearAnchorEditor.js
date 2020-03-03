@@ -41,7 +41,7 @@ function LinearAnchorEditor(layoutEditor) {
         .on('click', function (ev) {
             self.emit('click', ev, true);
         })
-        .on('dblclick',this.execCmd.bind(this, 'layoutEdit'));
+        .on('dblclick', this.execCmd.bind(this, 'layoutEdit'));
 
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
@@ -161,14 +161,14 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
             text: 'Edit Layout',
-            cmd:this.execCmd.bind(this, 'layoutEdit')
+            cmd: this.execCmd.bind(this, 'layoutEdit')
         });
     }
 
     items.push({
         icon: 'span.mdi.mdi-delete-variant[style="color:red"]',
         text: 'Delete',
-        cmd: this.cmd_delete.bind(this)
+        cmd: this.execCmd.bind(this, 'delete')
     });
 
     event.showContextMenu({
@@ -304,6 +304,7 @@ LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
     if (userAction) {
         this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, repeatEvent: event, target: this }, this);
         this.$modal.addTo(document.body);
+        this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
     }
 };
 
@@ -392,7 +393,10 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
         this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event, repeatEvent: event }, this);
         movingData.isChange = true;
     }
-    if (userAction) this.emit('moving', { taget: this, type: 'moving', originEvent: event, repeatEvent: event, target: this }, this);
+    if (userAction) {
+        this.emit('moving', { taget: this, type: 'moving', originEvent: event, repeatEvent: event, target: this }, this);
+        this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
+    }
 };
 
 LinearAnchorEditor.prototype.ev_movingMargin = function (userAction, event) {
@@ -420,7 +424,10 @@ LinearAnchorEditor.prototype.ev_movingMargin = function (userAction, event) {
         this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event }, this);
         movingData.isChange = true;
     }
-    if (userAction) this.emit('moving', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+    if (userAction) {
+        this.emit('moving', { taget: this, type: 'moving', originEvent: event, target: this }, this);
+        this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
+    }
 };
 
 
@@ -432,6 +439,7 @@ LinearAnchorEditor.prototype.ev_endMove = function (userAction, event) {
     if (userAction) {
         this.emit('endmove', { taget: this, type: 'moving', originEvent: event, target: this }, this);
         setTimeout(this.$modal.selfRemove.bind(this.$modal), 100);
+        this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = '';
     }
 };
 
