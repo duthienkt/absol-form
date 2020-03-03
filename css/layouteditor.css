@@ -77,6 +77,8 @@
 .as-layout-editor-space {
     display: inline-block;
     position: relative;
+    transform-origin: 0 0;
+    transition: transform 0.1s;
 }
 
 
