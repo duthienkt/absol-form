@@ -130,6 +130,9 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
         });
 
         rowElt.addTo(self.$body);
+        if (descriptor.dependency) {
+            self.addDepents(name, descriptor.dependency);
+        }
         self.propertyHolders[name] = self[functionName](name, descriptor, cell, cell);
     });
 };
@@ -376,7 +379,7 @@ MultiObjectPropertyEditor.prototype.loadConstProperty = function (name, descript
     cell.addChild(res.elt);
     if (value && value.then) {
         value.then(function (value) {
-            res.elt.addChild(_({ text: '' + value}))
+            res.elt.addChild(_({ text: '' + value }))
         });
     }
     else {
