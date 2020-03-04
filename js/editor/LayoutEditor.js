@@ -1027,9 +1027,10 @@ LayoutEditor.prototype.getCmdDescriptor = function (name) {
     }
     else if (name.startsWith('distribute') && this.anchorEditors.length < 3) {
         res.disabled = true;
-    } else if (name.match(/^(delete|copy|cut)/) && this.anchorEditors.length < 1) {
+    } else if (name.match(/^(delete|copy|cut|horizontalAlign|verticalAlign)/) && this.anchorEditors.length < 1) {
         res.disabled = true;
-    } else if (name == 'paste') {
+    } 
+    else if (name == 'paste') {
         res.disabled = !ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
     }
     else if (name == 'undo') {

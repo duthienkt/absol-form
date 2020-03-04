@@ -52,7 +52,9 @@ LinearAnchor.prototype.getStyleLeftDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        dependency: ['width']
+        dependency: ['width'],
+        sign: 'LinearLeft',
+        independence: true
     };
 };
 
@@ -62,7 +64,9 @@ LinearAnchor.prototype.getStyleRightDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        dependency: ['width']
+        dependency: ['width'],
+        sign: 'LinearRight',
+        independence: true
     };
 };
 
@@ -72,7 +76,9 @@ LinearAnchor.prototype.getStyleTopDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        dependency: ['height']
+        dependency: ['height'],
+        sign: 'LinearTop',
+        independence: true
     };
 };
 
@@ -82,7 +88,9 @@ LinearAnchor.prototype.getStyleBottomDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        dependency: ['height']
+        dependency: ['height'],
+        sign: 'LinearBottom',
+        independence: true
     };
 };
 
@@ -361,13 +369,17 @@ LinearAnchor.prototype.getStyleHeight = function (unit) {
 
 LinearAnchor.prototype.getStyleWidthDescriptor = function () {
     return {
-        type: 'measureSize'
+        type: 'measureSize',
+        sign: 'LinearWidth',
+        independence: true
     };
 };
 
 LinearAnchor.prototype.getStyleHeightDescriptor = function () {
     return {
-        type: 'measureSize'
+        type: 'measureSize',
+        sign: 'LinearHeight',
+        independence: true
     };
 };
 

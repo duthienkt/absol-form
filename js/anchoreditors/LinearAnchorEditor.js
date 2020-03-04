@@ -56,107 +56,21 @@ LinearAnchorEditor.prototype.constructor = LinearAnchorEditor;
 LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
     var self = this;
     var items = [];
-    if (this.layoutEditor.anchorEditors.length > 1) {
-        items.push({
-            icon: _('mdi-align-horizontal-left'),
-            text: 'Align Left Edges',
-            cmd: this.cmd_alignLeftDedge.bind(this)
-        });
-        items.push({
-            icon: _('mdi-align-horizontal-center'),
-            text: 'Align Horizontal Center',
-            cmd: this.cmd_alignHorizontalCenter.bind(this)
-        });
-        items.push({
-            icon: _('mdi-align-horizontal-right'),
-            text: 'Align Right Edges',
-            cmd: this.cmd_alignRightDedge.bind(this)
-        });
-        items.push({
-            icon: _('span.mdi.mdi-arrow-expand-horizontal'),
-            text: 'Equalise Width',
-            cmd: this.cmd_equaliseWidth.bind(this)
-        });
 
-        items.push('================');
-        items.push({
-            icon: _('mdi-align-vertical-top'),
-            text: 'Align Top Edges',
-            cmd: this.cmd_alignTopDedge.bind(this)
-        });
-        items.push({
-            icon: _('mdi-align-vertical-bottom'),
-            text: 'Align Bottom Edges',
-            cmd: this.cmd_alignBottomDedge.bind(this)
-        });
-        items.push({
-            icon: _('mdi-align-vertical-center'),
-            text: 'Align Vertical Center',
-            cmd: this.cmd_alignVerticalCenter.bind(this)
-        });
-        items.push({
-            icon: _('span.mdi.mdi-arrow-expand-vertical'),
-            text: 'Equalise Height',
-            cmd: this.cmd_equaliseHeight.bind(this)
-        });
-        items.push('================');
+    function makeItem(name) {
+        if (name === null) return '=====';
+        var cmdDescriptor = RelativeAnchorEditorCmdDescriptors[name];
+        var res = {
+            icon: cmdDescriptor.icon,
+            text: cmdDescriptor.desc,
+            cmd: name
+        };
+        if (cmdDescriptor.bindKey && cmdDescriptor.bindKey.win) {
+            res.key = cmdDescriptor.bindKey.win;
+        }
+        return res;
     }
 
-
-    if (this.layoutEditor.anchorEditors.length > 2) {
-        items.push({
-            icon: _('span.mdi.mdi-distribute-horizontal-left'),
-            text: 'Distribute Horizontal Left',
-            cmd: this.cmd_distributeHorizontalLeft.bind(this)
-        });
-        items.push({
-            icon: _('span.mdi.mdi-distribute-horizontal-center'),
-            text: 'Distribute Horizontal Center',
-            cmd: this.cmd_distributeHorizontalCenter.bind(this)
-        });
-        items.push({
-            icon: _('span.mdi.mdi-distribute-horizontal-right'),
-            text: 'Distribute Horizontal Right',
-            cmd: this.cmd_distributeHorizontalRight.bind(this)
-        });
-        items.push({
-            icon: _(
-                '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                <path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\
-                <path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\
-            </svg>'),
-            text: 'Distribute Horizontal Distance',
-            cmd: this.cmd_distributeHorizontalDistance.bind(this)
-        });
-
-        items.push('================');
-        items.push({
-            icon: _('span.mdi.mdi-distribute-vertical-top'),
-            text: 'Distribute Vertical Top',
-            cmd: this.cmd_distributeVerticalTop.bind(this)
-        });
-        items.push({
-            icon: _('span.mdi.mdi-distribute-vertical-center'),
-            text: 'Distribute Vertical Center',
-            cmd: this.cmd_distributeVerticalCenter.bind(this)
-        });
-        items.push({
-            icon: _('span.mdi.mdi-distribute-vertical-bottom'),
-            text: 'Distribute Vertical Bottom',
-            cmd: this.cmd_distributeVerticalBottom.bind(this)
-        });
-        items.push({
-            icon: _(
-                '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
-                <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
-            </svg>'),
-            text: 'Distribute Verlical Distance',
-            cmd: this.cmd_distributeVerticalDistance.bind(this)
-        });
-        items.push('================');
-    }
-    // is a layout
     if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
@@ -168,7 +82,7 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
     items.push({
         icon: 'span.mdi.mdi-delete-variant[style="color:red"]',
         text: 'Delete',
-        cmd: this.execCmd.bind(this, 'delete')
+        cmd: 'delete'
     });
 
     event.showContextMenu({
@@ -182,9 +96,145 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
             cmd();
             self.layoutEditor.notifyDataChange();
         }
+        else if (typeof cmd == 'string') {
+            self.layoutEditor.execCmd(cmd);
+        }
         self.layoutEditor.getView().focus();
     });
-    event.stopPropagation();
+
+
+
+
+
+    // if (this.layoutEditor.anchorEditors.length > 1) {
+    //     items.push({
+    //         icon: _('mdi-align-horizontal-left'),
+    //         text: 'Align Left Edges',
+    //         cmd: this.cmd_alignLeftDedge.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('mdi-align-horizontal-center'),
+    //         text: 'Align Horizontal Center',
+    //         cmd: this.cmd_alignHorizontalCenter.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('mdi-align-horizontal-right'),
+    //         text: 'Align Right Edges',
+    //         cmd: this.cmd_alignRightDedge.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('span.mdi.mdi-arrow-expand-horizontal'),
+    //         text: 'Equalise Width',
+    //         cmd: this.cmd_equaliseWidth.bind(this)
+    //     });
+
+    //     items.push('================');
+    //     items.push({
+    //         icon: _('mdi-align-vertical-top'),
+    //         text: 'Align Top Edges',
+    //         cmd: this.cmd_alignTopDedge.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('mdi-align-vertical-bottom'),
+    //         text: 'Align Bottom Edges',
+    //         cmd: this.cmd_alignBottomDedge.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('mdi-align-vertical-center'),
+    //         text: 'Align Vertical Center',
+    //         cmd: this.cmd_alignVerticalCenter.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('span.mdi.mdi-arrow-expand-vertical'),
+    //         text: 'Equalise Height',
+    //         cmd: this.cmd_equaliseHeight.bind(this)
+    //     });
+    //     items.push('================');
+    // }
+
+
+    // if (this.layoutEditor.anchorEditors.length > 2) {
+    //     items.push({
+    //         icon: _('span.mdi.mdi-distribute-horizontal-left'),
+    //         text: 'Distribute Horizontal Left',
+    //         cmd: this.cmd_distributeHorizontalLeft.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('span.mdi.mdi-distribute-horizontal-center'),
+    //         text: 'Distribute Horizontal Center',
+    //         cmd: this.cmd_distributeHorizontalCenter.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('span.mdi.mdi-distribute-horizontal-right'),
+    //         text: 'Distribute Horizontal Right',
+    //         cmd: this.cmd_distributeHorizontalRight.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _(
+    //             '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
+    //             <path d="m21 7v10h-5v5h-2v-20h2v5h5"/>\
+    //             <path d="m8 2h2v20h-2v-3h-5v-14h5z"/>\
+    //         </svg>'),
+    //         text: 'Distribute Horizontal Distance',
+    //         cmd: this.cmd_distributeHorizontalDistance.bind(this)
+    //     });
+
+    //     items.push('================');
+    //     items.push({
+    //         icon: _('span.mdi.mdi-distribute-vertical-top'),
+    //         text: 'Distribute Vertical Top',
+    //         cmd: this.cmd_distributeVerticalTop.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('span.mdi.mdi-distribute-vertical-center'),
+    //         text: 'Distribute Vertical Center',
+    //         cmd: this.cmd_distributeVerticalCenter.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _('span.mdi.mdi-distribute-vertical-bottom'),
+    //         text: 'Distribute Vertical Bottom',
+    //         cmd: this.cmd_distributeVerticalBottom.bind(this)
+    //     });
+    //     items.push({
+    //         icon: _(
+    //             '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
+    //             <path d="m7 3h10v5h5v2h-20v-2h5v-5"/>\
+    //             <path d="m2 16v-2h20v2h-3v5h-14v-5z"/>\
+    //         </svg>'),
+    //         text: 'Distribute Verlical Distance',
+    //         cmd: this.cmd_distributeVerticalDistance.bind(this)
+    //     });
+    //     items.push('================');
+    // }
+    // // is a layout
+    // if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
+    //     items.push({
+    //         icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
+    //         text: 'Edit Layout',
+    //         cmd: this.execCmd.bind(this, 'layoutEdit')
+    //     });
+    // }
+
+    // items.push({
+    //     icon: 'span.mdi.mdi-delete-variant[style="color:red"]',
+    //     text: 'Delete',
+    //     cmd: this.execCmd.bind(this, 'delete')
+    // });
+
+    // event.showContextMenu({
+    //     items: items,
+    //     extendStyle: {
+    //         fontSize: '12px'
+    //     }
+    // }, function (event) {
+    //     var cmd = event.menuItem.cmd;
+    //     if (typeof cmd == 'function') {
+    //         cmd();
+    //         self.layoutEditor.notifyDataChange();
+    //     }
+    //     self.layoutEditor.getView().focus();
+    // });
+    // event.stopPropagation();
 };
 
 
@@ -262,16 +312,16 @@ LinearAnchorEditor.prototype.updatePosition = function () {
         var bound = this.layoutEditor.$forceground.getBoundingClientRect();
         var compBound = this.component.view.getBoundingClientRect();
         this.$resizeBox.addStyle({
-            left: compBound.left - bound.left + 'px',
-            top: compBound.top - bound.top + 'px',
-            width: compBound.width + 'px',
-            height: compBound.height + 'px'
+            left: (compBound.left - bound.left) / this.layoutEditor._softScale + 'px',
+            top: (compBound.top - bound.top) / this.layoutEditor._softScale + 'px',
+            width: compBound.width / this.layoutEditor._softScale + 'px',
+            height: compBound.height / this.layoutEditor._softScale + 'px'
         });
         this.$marginBox.addStyle({
-            left: compBound.left - bound.left - this.component.getStyle('left', 'px') + 'px',
-            top: compBound.top - bound.top - this.component.getStyle('top', 'px') + 'px',
-            width: compBound.width + this.component.getStyle('left', 'px') + this.component.getStyle('right', 'px') + 'px',
-            height: compBound.height + this.component.getStyle('top', 'px') + this.component.getStyle('bottom', 'px') + 'px'
+            left: (compBound.left - bound.left) / this.layoutEditor._softScale - this.component.getStyle('left', 'px') + 'px',
+            top: (compBound.top - bound.top) / this.layoutEditor._softScale - this.component.getStyle('top', 'px') + 'px',
+            width: compBound.width / this.layoutEditor._softScale + this.component.getStyle('left', 'px') + this.component.getStyle('right', 'px') + 'px',
+            height: compBound.height / this.layoutEditor._softScale + this.component.getStyle('top', 'px') + this.component.getStyle('bottom', 'px') + 'px'
         });
     }
 };
@@ -280,8 +330,8 @@ LinearAnchorEditor.prototype.updatePosition = function () {
 LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
     this.movingData = {
-        x0: event.clientX - bound.left,
-        y0: event.clientY - bound.top,
+        x0: (event.clientX - bound.left) / this.layoutEditor._softScale,
+        y0: (event.clientY - bound.top) / this.layoutEditor._softScale,
         dx: 0,
         dy: 0,
         option: event.option,
@@ -314,8 +364,8 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     var movingData = this.movingData;
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
 
-    var x = event.clientX - bound.left;
-    var y = event.clientY - bound.top;
+    var x = (event.clientX - bound.left) / this.layoutEditor._softScale;
+    var y = (event.clientY - bound.top) / this.layoutEditor._softScale;
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
 
@@ -329,7 +379,6 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     if (movingData.styleDescriptors.right && !movingData.styleDescriptors.right.disabled && (movingData.option.right || movingData.option.body)) {
         movingData.comp.setStyle('right', Math.max(0, movingData.style0.right - movingData.dx), 'px');
         positionIsChange = true;
-
     }
 
     if (movingData.styleDescriptors.width && !movingData.styleDescriptors.width.disabled) {
@@ -403,8 +452,8 @@ LinearAnchorEditor.prototype.ev_movingMargin = function (userAction, event) {
     var movingData = this.movingData;
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
 
-    var x = event.clientX - bound.left;
-    var y = event.clientY - bound.top;
+    var x = (event.clientX - bound.left) / this.layoutEditor._softScale;
+    var y = (event.clientY - bound.top) / this.layoutEditor._softScale;
     movingData.dx = x - movingData.x0;
     movingData.dy = y - movingData.y0;
     var positionIsChange = false;
@@ -446,110 +495,52 @@ LinearAnchorEditor.prototype.ev_endMove = function (userAction, event) {
 
 
 
-LinearAnchorEditor.prototype.cmd_alignLeftDedge = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var leftValue = this.component.getStyle('left');
-    for (var i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        if (editor == this) continue;
-        editor.alignLeftDedge(leftValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Align Left Dedge');
-};
-
-
-LinearAnchorEditor.prototype.cmd_alignRightDedge = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var rightValue = this.component.getStyle('right');
-
-    for (var i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        if (editor == this) continue;
-        editor.alignRightDedge(rightValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Align Right Dedge');
-
-};
-
-LinearAnchorEditor.prototype.cmd_alignHorizontalCenter = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var centerValue = this.component.getStyle('right') - this.component.getStyle('left');;
-    for (var i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        if (editor == this) continue;
-        editor.alignHorizontalCenter(centerValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Align Horizontal Center');
-
-};
-
-LinearAnchorEditor.prototype.cmd_equaliseWidth = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var widthValue = this.component.getStyle('width');
-    for (var i = 0; i < editors.length; ++i) {
-        var editor = editors[i];
-        if (editor == this) continue;
-        editor.equaliseWidth(widthValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Equalise Width');
-
-};
-
-
 LinearAnchorEditor.prototype.alignLeftDedge = function (leftValue) {
     if (!this.component) return;
-    this.component.reMeasure();
-    var currentHAlign = this.component.getStyle('hAlign');
-    switch (currentHAlign) {
-        case 'left':
-        case 'fixed':
-            this.component.setStyle('left', leftValue);
-            break;
-        case 'right':
-            this.component.setStyle('right', this.component.getStyle('right') + (leftValue - this.component.getStyle('left')));
-            break;
-        case 'center':
-            var center = this.component.getStyle('left') + this.component.getStyle('width') / 2;
-            if (center - this.component.measureMinSize().width / 2 >= leftValue) {
-                this.component.setStyle('width', (center - leftValue) * 2);
-            }
-            break;
-    }
-    this.updatePosition();
-    this.component.reMeasure();
+    // this.component.reMeasure();
+    // var currentHAlign = this.component.getStyle('hAlign');
+    // switch (currentHAlign) {
+    //     case 'left':
+    //     case 'fixed':
+    //         this.component.setStyle('left', leftValue);
+    //         break;
+    //     case 'right':
+    //         this.component.setStyle('right', this.component.getStyle('right') + (leftValue - this.component.getStyle('left')));
+    //         break;
+    //     case 'center':
+    //         var center = this.component.getStyle('left') + this.component.getStyle('width') / 2;
+    //         if (center - this.component.measureMinSize().width / 2 >= leftValue) {
+    //             this.component.setStyle('width', (center - leftValue) * 2);
+    //         }
+    //         break;
+    // }
+    // this.updatePosition();
+    // this.component.reMeasure();
 };
 
 
 LinearAnchorEditor.prototype.alignRightDedge = function (rightValue) {
     if (!this.component) return;
-    this.component.reMeasure();
-    var currentHAlign = this.component.getStyle('hAlign');
+    // this.component.reMeasure();
+    // var currentHAlign = this.component.getStyle('hAlign');
 
-    switch (currentHAlign) {
-        case 'right':
-        case 'fixed':
-            this.component.setStyle('right', rightValue);
-            break;
-        case 'left':
-            this.component.setStyle('left', this.component.getStyle('left') - (rightValue - this.component.getStyle('right')));
-            break;
-        case 'center':
-            var center = this.component.getStyle('right') - this.component.getStyle('width') / 2;
-            if (center + this.component.measureMinSize().width / 2 <= rightValue) {
-                this.component.setStyle('width', (rightValue - center) * 2);
-            }
-            break;
-    }
-    this.updatePosition();
-    this.component.reMeasure();
+    // switch (currentHAlign) {
+    //     case 'right':
+    //     case 'fixed':
+    //         this.component.setStyle('right', rightValue);
+    //         break;
+    //     case 'left':
+    //         this.component.setStyle('left', this.component.getStyle('left') - (rightValue - this.component.getStyle('right')));
+    //         break;
+    //     case 'center':
+    //         var center = this.component.getStyle('right') - this.component.getStyle('width') / 2;
+    //         if (center + this.component.measureMinSize().width / 2 <= rightValue) {
+    //             this.component.setStyle('width', (rightValue - center) * 2);
+    //         }
+    //         break;
+    // }
+    // this.updatePosition();
+    // this.component.reMeasure();
 };
 
 
@@ -584,241 +575,53 @@ LinearAnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { //
 
 LinearAnchorEditor.prototype.equaliseWidth = function (widthValue) {
     if (!this.component) return;
-    this.component.reMeasure();
-    var currentHAlign = this.component.getStyle('hAlign');
-    var cRight = this.component.getStyle('right');
-    var cLeft = this.component.getStyle('left');
-    var cWidth = this.component.getStyle('width');
-    var dw = widthValue - cWidth;
-
-    switch (currentHAlign) {
-        case 'right':
-            if (cLeft < dw)
-                this.component.setStyle('right', cRight - (dw - cLeft));
-            this.component.setStyle('width', widthValue);
-            break;
-        case 'left':
-            if (cRight < dw)
-                this.component.setStyle('left', cLeft - (dw - cWidth));
-            this.component.setStyle('width', widthValue);
-            break;
-        case 'fixed':
-            if (dw > cRight) {
-                this.component.setStyle('right', 0);
-                this.component.setStyle('left', cLeft - (dw - cWidth));
-            }
-            else {
-                this.component.setStyle('right', cRight - dw);
-            }
-            break;
-        case 'center':
-            this.component.setStyle('width', widthValue);
-            break;
-    }
-    this.updatePosition();
-    this.component.reMeasure();
-};
-
-
-
-LinearAnchorEditor.prototype.cmd_alignTopDedge = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var topValue = this.component.getStyle('top');
-    for (var i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        if (editor == this) continue;
-        editor.alignTopDedge(topValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Align Top Dedge');
-};
-
-
-LinearAnchorEditor.prototype.cmd_alignBottomDedge = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var bottomValue = this.component.getStyle('bottom');
-
-    for (var i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        if (editor == this) continue;
-        editor.alignBottomDedge(bottomValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Align Bottom Dedge');
-};
-
-LinearAnchorEditor.prototype.cmd_alignVerticalCenter = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var centerValue = this.component.getStyle('bottom') - this.component.getStyle('top');;
-    for (var i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        if (editor == this) continue;
-        editor.alignVerticalCenter(centerValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Align Verlical Center');
-
-};
-
-LinearAnchorEditor.prototype.cmd_equaliseHeight = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    this.component.reMeasure();
-    var heightValue = this.component.getStyle('height');
-    for (var i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        if (editor == this) continue;
-        editor.equaliseHeight(heightValue);
-    }
-    this.layoutEditor.commitHistory('move', 'Equalise Height');
-};
-
-
-
-LinearAnchorEditor.prototype.alignTopDedge = function (topValue) {
-    if (!this.component) return;
-    this.component.reMeasure();
-    var currentVAlign = this.component.getStyle('vAlign');
-    switch (currentVAlign) {
-        case 'top':
-        case 'fixed':
-            this.component.setStyle('top', topValue);
-            break;
-        case 'bottom':
-            this.component.setStyle('bottom', this.component.getStyle('bottom') + (topValue - this.component.getStyle('top')));
-            break;
-        case 'center':
-            var center = this.component.getStyle('top') + this.component.getStyle('height') / 2;
-            if (center - this.component.measureMinSize().height / 2 >= topValue) {
-                this.component.setStyle('height', (center - topValue) * 2);
-            }
-            break;
-    }
-    this.updatePosition();
-    this.component.reMeasure();
-
-};
-
-
-LinearAnchorEditor.prototype.alignBottomDedge = function (bottomValue) {
-    if (!this.component) return;
-    this.component.reMeasure();
-    var currentVAlign = this.component.getStyle('vAlign');
-
-    switch (currentVAlign) {
-        case 'bottom':
-        case 'fixed':
-            this.component.setStyle('bottom', bottomValue);
-            break;
-        case 'top':
-            this.component.setStyle('top', this.component.getStyle('top') - (bottomValue - this.component.getStyle('bottom')));
-            break;
-        case 'center':
-            var center = this.component.getStyle('bottom') - this.component.getStyle('height') / 2;
-            if (center + this.component.measureMinSize().height / 2 <= bottomValue) {
-                this.component.setStyle('height', (bottomValue - center) * 2);
-            }
-            break;
-    }
+    this.component.setStyle('width', widthValue, 'px');
     this.updatePosition();
 };
 
-
-LinearAnchorEditor.prototype.alignVerticalCenter = function (centerValue) { // bottom - top
-    if (!this.component) return;
-    this.component.reMeasure();
-    var currentVAlign = this.component.getStyle('vAlign');
-    var cBottom = this.component.getStyle('bottom');
-    var cTop = this.component.getStyle('top');
-    var newTop = ((cBottom + cTop) - centerValue) / 2;
-    var newBottom = ((cBottom + cTop) + centerValue) / 2;
-
-    switch (currentVAlign) {
-        case 'bottom':
-            this.component.setStyle('bottom', newBottom);
-            break;
-        case 'fixed':
-            this.component.setStyle('top', newTop);
-            this.component.setStyle('bottom', newBottom);
-            break;
-        case 'top':
-            this.component.setStyle('top', newTop);
-            break;
-        case 'center':
-            //noway to align center
-            break;
-    }
-    this.updatePosition();
-    this.component.reMeasure();
-};
 
 
 LinearAnchorEditor.prototype.equaliseHeight = function (heightValue) {
     if (!this.component) return;
-    this.component.reMeasure();
-    var currentVAlign = this.component.getStyle('vAlign');
-    var cBottom = this.component.getStyle('bottom');
-    var cTop = this.component.getStyle('top');
-    var cHeight = this.component.getStyle('height');
-    var dh = heightValue - cHeight;
-
-    switch (currentVAlign) {
-        case 'bottom':
-            if (cTop < dh)
-                this.component.setStyle('bottom', cBottom - (dh - cTop));
-            this.component.setStyle('height', heightValue);
-            break;
-        case 'top':
-            if (cBottom < dh)
-                this.component.setStyle('top', cTop - (dh - cHeight));
-            this.component.setStyle('height', heightValue);
-            break;
-        case 'fixed':
-            if (dh > cBottom) {
-                this.component.setStyle('bottom', 0);
-                this.component.setStyle('top', cTop - (dh - cHeight));
-            }
-            else {
-                this.component.setStyle('bottom', cBottom - dh);
-            }
-            break;
-        case 'center':
-            this.component.setStyle('height', heightValue);
-            break;
-    }
+    this.component.setStyle('height', heightValue, 'px');
     this.updatePosition();
-    this.component.reMeasure();
+};
+
+LinearAnchorEditor.prototype.verticalAlignCenter = function () {
+    if (!this.component) return;
+    var styleTopBot = (this.component.getStyle('top', 'px') + this.component.getStyle('bottom', 'px')) / 2;
+    this.component.setStyle('top', styleTopBot, 'px');
+    this.component.setStyle('bottom', styleTopBot, 'px');
+    this.updatePosition();
 };
 
 
-
-
-
-LinearAnchorEditor.prototype.cmd_distributeHorizontalLeft = function () {
-    var editors = this.layoutEditor.anchorEditors;
-    var editor;
-    var i;
-    for (i = 0; i < editors.length; ++i) {
-        editor = editors[i];
-        editor.component.reMeasure();
-    }
-    editors = editors.slice();
-    editors.sort(function (a, b) {
-        return a.component.getStyle('left', 'px') - b.component.getStyle('left', 'px');
-    });
-    var minX = editors[0].component.getStyle('left', 'px');
-    var maxX = editors[editors.length - 1].component.getStyle('left', 'px');
-    if (minX == maxX) return;
-    for (i = 1; i < editors.length - 1; ++i) {
-        editor = editors[i];
-        editor.alignLeftDedge(minX + (maxX - minX) / (editors.length - 1) * i);
-        editor.component.reMeasure();
-    }
-    this.layoutEditor.commitHistory('move', 'Distribute Horizontal Left');
+LinearAnchorEditor.prototype.horizontalAlignLeft = function () {
+    if (!this.component) return;
+    var styleLeft = (this.component.getStyle('left', 'px') + this.component.getStyle('right', 'px'));
+    this.component.setStyle('left', styleLeft, 'px');
+    this.component.setStyle('right', 0, 'px');
+    this.updatePosition();
 };
+
+
+LinearAnchorEditor.prototype.horizontalAlignRight = function () {
+    if (!this.component) return;
+    var styleRight = (this.component.getStyle('left', 'px') + this.component.getStyle('right', 'px'));
+    this.component.setStyle('right', styleRight, 'px');
+    this.component.setStyle('left', 0, 'px');
+    this.updatePosition();
+};
+
+
+LinearAnchorEditor.prototype.horizontalAlignCenter = function () {
+    if (!this.component) return;
+    var styleLeftRight = (this.component.getStyle('left', 'px') + this.component.getStyle('right', 'px')) / 2;
+    this.component.setStyle('left', styleLeftRight, 'px');
+    this.component.setStyle('right', styleLeftRight, 'px');
+    this.updatePosition();
+};
+
 
 LinearAnchorEditor.prototype.cmd_distributeHorizontalCenter = function () {
     var editors = this.layoutEditor.anchorEditors;
