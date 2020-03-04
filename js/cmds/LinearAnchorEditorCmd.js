@@ -35,6 +35,17 @@ LinearAnchorEditorCmd.equaliseHeight = function () {
 
 
 
+LinearAnchorEditorCmd.verticalAlignTop = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    for (var i = 0; i < editors.length; ++i) {
+        var editor = editors[i];
+        editor.verticalAlignTop();
+    }
+    this.layoutEditor.commitHistory('move', 'Vertical Align Top');
+};
+
+
 LinearAnchorEditorCmd.verticalAlignCenter = function () {
     var editors = this.layoutEditor.anchorEditors;
     var editor;
@@ -43,7 +54,17 @@ LinearAnchorEditorCmd.verticalAlignCenter = function () {
         editor.verticalAlignCenter();
     }
     this.layoutEditor.commitHistory('move', 'Vertical Align Center');
+};
 
+
+LinearAnchorEditorCmd.verticalAlignBottom = function () {
+    var editors = this.layoutEditor.anchorEditors;
+    var editor;
+    for (var i = 0; i < editors.length; ++i) {
+        var editor = editors[i];
+        editor.verticalAlignBottom();
+    }
+    this.layoutEditor.commitHistory('move', 'Vertical Align Bottom');
 };
 
 
