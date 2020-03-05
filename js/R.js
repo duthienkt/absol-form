@@ -23,6 +23,6 @@ export default {
         COMPONENTS: 'COMPONENTS'
     },
     APP:'ABSOL_FORM_EDITOR',
-    VERSION: '0.5.1',
+    VERSION: '0.6.0',
     STATUS_BAR_ELT: 'STATUS_BAR_ELT'
 }

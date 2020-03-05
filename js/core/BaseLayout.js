@@ -21,14 +21,6 @@ BaseLayout.prototype.create = function () {
 };
 
 
-/**
- * @param {BaseComponent} component
- * @returns {BaseComponent} auto set disable style 
- */
-BaseLayout.prototype.reMeasureChild = function (component) {
-    //not implement
-};
-
 BaseLayout.prototype.addChildByPosition = function (child, posX, posY) {
     throw new Error("Not implement!");
 };
