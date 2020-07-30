@@ -2,6 +2,12 @@ import EventEmitter from "absol/src/HTML5/EventEmitter";
 import Fragment from "absol/src/AppPattern/Fragment";
 import CMDRunner from "absol/src/AppPattern/CMDRunner";
 
+/***
+ *
+ * @constructor
+ * @augments Fragment
+ * @augments EventEmitter
+ */
 function BaseEditor() {
     EventEmitter.call(this);
     Fragment.call(this);
