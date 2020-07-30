@@ -1,0 +1,34 @@
+.as-mpot-merge-tool {
+    position: relative;
+    --preview-width: 50%;
+}
+
+.as-mpot-merge-tool-preview-ctn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--preview-width);
+    background: gray;
+    z-index: 1;
+}
+
+.as-mpot-merge-tool-properties-ctn {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: var(--preview-width);
+    background: cyan;
+    z-index: 1;
+}
+
+.as-mpot-merge-tool-center-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0.5em;
+    left: calc(var(--preview-width) - 0.25em);
+    z-index: 2;
+    cursor: ew-resize;
+}

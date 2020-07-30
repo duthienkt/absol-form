@@ -41,6 +41,7 @@ import * as framePlugins from './js/frame/plugins';
 import LayoutEditorCmd from './js/cmds/LayoutEditorCmd';
 import FormPreviewCmd, { FormPreviewCmdDescriptors } from './js/cmds/FormPreviewCmd';
 import FormEditorPreconfig from './js/FormEditorPreconfig';
+import MPOTMergeTool from "./js/MPOTMergeTool/MPOTMergeTool";
 export default {
     FormEditorPreconfig: FormEditorPreconfig,
     framePlugin: framePlugins,
@@ -83,5 +84,7 @@ export default {
     TextArea: TextArea,
 
     Assembler: Assembler,
+    MPOTMergeTool: MPOTMergeTool,
     core: Fcore
 };
+
