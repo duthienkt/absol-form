@@ -1,0 +1,43 @@
+.mpot-preview {
+    box-sizing: border-box;
+    --page-padding-left: 1em;
+    --page-padding-right: 1em;
+    --page-padding-top: 1.5em;
+    --page-padding-bottom: 1.5em;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-left: var(--page-padding-left);
+    padding-right: var(--page-padding-right);
+    padding-top: var(--page-padding-top);
+    padding-bottom: var(--page-padding-bottom);
+}
+
+
+.mpot-preview-header {
+    box-sizing: border-box;
+    padding-top: var(--page-padding-top);
+    padding-bottom: 1em;
+
+}
+
+.mpot-preview-title {
+    font-size: 1.7em;
+    font-weight: bold;
+}
+
+.mpot-preview-body {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    --property-name-width: 7em;
+}
+
+.mpot-preview-group {
+    box-sizing: border-box;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+}
+
+.mpot-preview-group-name {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+

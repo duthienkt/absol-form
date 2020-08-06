@@ -1,0 +1,41 @@
+.mpot-base-editor {
+
+}
+
+.mpot-choice-list {
+    display: table;
+    table-layout: fixed;
+}
+
+.mpot-choice {
+    display: table-row;
+    vertical-align: middle;
+}
+
+.mpot-choice-select-cell {
+    display: table-cell;
+    width: 2em;
+    text-align: center;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    vertical-align: middle;
+}
+
+.mpot-choice-value {
+    display: table-cell;
+    vertical-align: middle;
+
+}
+
+.mpot-choice span,
+.mpot-choice .absol-radio {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.mpot-choice-value img {
+    vertical-align: middle;
+    display: inline-block;
+    max-width: 300px;
+    max-height: 300px;
+}
