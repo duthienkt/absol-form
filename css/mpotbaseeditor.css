@@ -39,3 +39,29 @@
     max-width: 300px;
     max-height: 300px;
 }
+
+
+.mpot-text-input::placeholder {
+    color: #c4c4c4;
+}
+
+.mpot-choice-input {
+    outline: none;
+}
+
+input.mpot-choice-input,
+textarea.mpot-choice-input {
+    border-width: 1px;
+    border-color: #dddddd;
+}
+
+.absol-radio.mpot-choice-input{
+    border-radius: 50%;
+}
+
+.mpot-choice-input:focus {
+    outline: none;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(97, 136, 232, 0.66);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(97, 136, 232, 0.66);
+    box-shadow: 0px 0px 5px 0px rgba(97, 136, 232, 0.66);
+}
