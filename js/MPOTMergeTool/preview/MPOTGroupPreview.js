@@ -27,7 +27,6 @@ MPOTGroupPreview.prototype.createView = function () {
         ]
     });
     this.$name = $('.mpot-preview-group-name', this.$view);
-    console.log(this.$name)
 };
 
 
