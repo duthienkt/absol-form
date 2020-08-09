@@ -4,6 +4,7 @@ import {randomIdent} from "absol/src/String/stringGenerate";
 
 var $ = Fcore.$;
 var _ = Fcore._;
+var $$ = Fcore.$$;
 
 function MPOTTextEditor() {
     MPOTBaseEditor.call(this);
@@ -14,11 +15,12 @@ Object.defineProperties(MPOTTextEditor.prototype, Object.getOwnPropertyDescripto
 MPOTTextEditor.prototype.constructor = MPOTTextEditor;
 MPOTTextEditor.prototype.type = 'text';
 
-
 MPOTTextEditor.prototype._showInput = function () {
+    var thisE = this;
     var data = this._data;
     this.$view.clearChild();
     var aOb = {
+        class: 'mpot-text-input',
         style: {
             width: '100%',
             maxWidth: '100%',
@@ -27,7 +29,9 @@ MPOTTextEditor.prototype._showInput = function () {
         on: {
             keydown: function (event) {
                 if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey) {
+                    data.value = this.value;
                     this.blur();
+                    thisE.notifyChange();
                 }
             }
         }
@@ -44,14 +48,18 @@ MPOTTextEditor.prototype._showInput = function () {
             attr: {
                 type: 'text'
             }
-
         });
     }
     this.$input = _(aOb);
+    this._assignInputList([this.$input]);
+
+    this.$input.value = data.value || '';
+    this.$input.placeholder = data.placeholder || '';
     this.$view.addChild(this.$input);
 };
 
 MPOTTextEditor.prototype._showSingleChoice = function () {
+    var thisE = this;
     var data = this._data;
     var groupName = randomIdent(10);
     this.$choiceList = _({
@@ -66,6 +74,14 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
                             tag: 'radiobutton',
                             attr: {
                                 name: groupName
+                            },
+                            on: {
+                                change: function () {
+                                    if (this.checked) {
+                                        data.value = item;
+                                        thisE.notifyChange();
+                                    }
+                                }
                             }
                         }
                     },
@@ -73,14 +89,14 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
                         class: 'mpot-choice-value',
                         child: {
                             tag: 'span',
-                            child: { text: item.text }
+                            child: { text: item }
                         }
                     }
                 ]
-            }
+            };
         })
-
     });
+    this._assignInputList($$('radiobutton', this.$choiceList));
     this.$view.clearChild().addChild(this.$choiceList);
 };
 
@@ -123,6 +139,27 @@ MPOTTextEditor.prototype.setData = function (data) {
     else if (data.action === 'single-choice') {
         this._showSingleChoice();
     }
+};
+
+MPOTTextEditor.prototype.getPreviewData = function () {
+    var data = this._data;
+
+    var pData = {
+        type: this.type,
+        name: data.name,
+        value: data.value,
+        id: data.id
+    };
+    var data = this._data;
+    switch (data.action) {
+        case 'input':
+            break;
+        case 'single-choice':
+            break;
+        case 'multi-choice':
+            break;
+    }
+    return pData;
 };
 
 
