@@ -22,7 +22,7 @@ function MPOTPropertyEditor() {
         image: MPOTImageEditor,
         '*': MPOTNotSupportEditor
     };
-
+    this.ev_nodeChange = this.ev_nodeChange.bind(this);
 
 }
 
@@ -73,13 +73,12 @@ MPOTPropertyEditor.prototype._loadHeader = function () {
             property.properties.reduce(visit, ac);
         }
         else {
-            var name = property.name || property.key;
+            var name = property.name || property.id;
             var fName = property.fName || name;
-            var key = property.key || property.name || randomIdent(10);
             var holder = {
                 property: property,
                 name: name,
-                key: key,
+                id: property.id,
                 fName: fName
             };
             ac.push(holder);
@@ -88,15 +87,15 @@ MPOTPropertyEditor.prototype._loadHeader = function () {
         return ac;
     }, []);
 
-    this._headerHolderByKey = this._headerHolders.reduce(function (ac, cr) {
-        ac[cr.key] = cr;
+    this._headerHolderById = this._headerHolders.reduce(function (ac, cr) {
+        ac[cr.id] = cr;
         return ac;
     }, {});
 
     this._tabItems = this._headerHolders.map(function (holder) {
         return {
             text: holder.fName,
-            value: holder.key
+            value: holder.id
         }
     });
     this.$tabbar.items = this._tabItems;
@@ -104,7 +103,7 @@ MPOTPropertyEditor.prototype._loadHeader = function () {
 
 MPOTPropertyEditor.prototype._loadPropertyNodeKey = function () {
     this._nodeKey = this._data.properties.reduce(function visit(ac, property) {
-        var key = property.key || property.name || randomIdent(10);
+        var key = property.id || property.name || randomIdent(10);
         var holder = {
             property: property
         };
@@ -125,8 +124,9 @@ MPOTPropertyEditor.prototype._loadPropertyTab = function () {
         thisE.$frameview.addChild(frameElt);
         it.$frame = frameElt;
         var editorConstructor = thisE._nodeConstructor[prop.type];
-        if (editorConstructor){
+        if (editorConstructor) {
             it.editor = new editorConstructor();
+            it.editor.on('change', thisE.ev_nodeChange);
             it.editor.attach(this);
             frameElt.addChild(it.editor.getView());
             it.editor.setData(prop);
@@ -134,9 +134,18 @@ MPOTPropertyEditor.prototype._loadPropertyTab = function () {
     });
     if (this._headerHolders.length > 0) {
         this._headerHolders[0].$frame.requestActive();
-        this.$tabbar.value = this._headerHolders[0].key;
+        this.$tabbar.value = this._headerHolders[0].id;
     }
 };
+
+MPOTPropertyEditor.prototype.selectTabById = function (id) {
+    var headerHolder = this._headerHolderById[id];
+    if (headerHolder) {
+        this.$tabbar.value = headerHolder.id;
+        this.$tabbar.notifyChange();
+    }
+};
+
 
 MPOTPropertyEditor.prototype.setData = function (data) {
     this._data = data;
@@ -145,11 +154,49 @@ MPOTPropertyEditor.prototype.setData = function (data) {
     this._loadPropertyTab();
 };
 
+MPOTPropertyEditor.prototype.getPreviewData = function () {
+    var thisE = this;
+    var data = this._data;
+    var pData = {};
+    pData.title = data.title;
+    pData.properties = data.properties.map(function visit(prop) {
+        var id = prop.id;
+        if (prop.type === 'group') {
+            return {
+                type: 'group',
+                name: prop.name,
+                properties: prop.properties.map(visit)
+            }
+        }
+        else {
+            var holder = thisE._headerHolderById[id];
+            return holder.editor.getPreviewData();
+        }
+    });
+
+    return pData;
+};
+
+
 MPOTPropertyEditor.prototype.ev_tabbarChange = function (event) {
     var key = this.$tabbar.value;
-    var holder = this._headerHolderByKey[key];
+    var holder = this._headerHolderById[key];
     var frameElt = holder.$frame;
     frameElt.requestActive();
+    holder.editor.focus()
+};
+
+
+MPOTPropertyEditor.prototype.ev_nodeChange = function (event, sender) {
+    var pData = sender.getPreviewData()
+    var holder = this._headerHolderById[pData.id];
+    this.notifyNodeChange(pData);
+    setTimeout(this.$tabbar.nextValue.bind(this.$tabbar, true), 300);
+};
+
+
+MPOTPropertyEditor.prototype.notifyNodeChange = function (nodePreviewData) {
+    this.emit('nodechange', { type: 'nodechange', nodePreviewData: nodePreviewData }, this);
 };
 
 
