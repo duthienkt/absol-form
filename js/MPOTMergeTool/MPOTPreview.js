@@ -1,12 +1,12 @@
 import '../../css/mpotpreview.css';
 import Fcore from "../core/FCore";
 import Fragment from "absol/src/AppPattern/Fragment";
-import MPOTHanlerMng from "./MPOTHandlerMng";
 import DomSignal from "absol/src/HTML5/DomSignal";
 import MPOTImagePreview from "./preview/MPOTImagePreview";
 import MPOTTextPreview from "./preview/MPOTTextPreview";
 import MPOTGroupPreview from "./preview/MPOTGroupPreview";
 import MPOTNotSupportPreview from "./preview/MPOTNotSupportPreview";
+import MPOTBasePreview from "./preview/MPOTBasePreview";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -35,8 +35,7 @@ function MPOTPreview() {
     };
 
     this.nodes = [];
-
-
+    console.log(this);
 
 }
 
@@ -51,7 +50,7 @@ MPOTPreview.prototype.constructor = MPOTPreview;
 MPOTPreview.prototype.createProperty = function (prop) {
     var constructor = this._nodeConstructors[prop.type];
     var propertyPreview = null;
-    if (constructor){
+    if (constructor) {
         var propertyPreview = new constructor();
         propertyPreview.setData(prop);
     }
@@ -108,16 +107,19 @@ MPOTPreview.prototype._updateTitle = function () {
 
 MPOTPreview.prototype._updateBody = function () {
     var _this = this;
+    this.nodes = [];
     var data = this._data;
     this.$body.clearChild();
     data.properties.forEach(function (prop) {
         if (prop.type === 'group') {
             var groupNode = _this.createGroup(prop);
             _this.$body.addChild(groupNode.getView());
+            _this.nodes.push(groupNode);
         }
         else {
             var propNode = _this.createProperty(prop);
             _this.$body.addChild(propNode.getView());
+            _this.nodes.push(propNode);
         }
     });
 };
@@ -138,6 +140,40 @@ MPOTPreview.prototype.requestUpdateData = function () {
 MPOTPreview.prototype.setData = function (data) {
     this._data = data;
     this.requestUpdateData();
+};
+
+
+/***
+ *
+ * @param {string} key
+ * @returns {MPOTBasePreview}
+ */
+MPOTPreview.prototype.findNodeById = function (id) {
+    function find(arr) {
+        var ret = null;
+        var node;
+        for (var i = 0; i < arr.length && !ret; ++i) {
+            node = arr[i];
+            if (node._data.id === id) {
+                ret = node;
+            }
+            else if (node.properties) {
+                ret = find(node.properties);
+            }
+        }
+        return ret;
+    }
+
+    return find(this.nodes);
+};
+
+
+MPOTPreview.prototype.setDataToNode = function (data){
+  var node = this.findNodeById(data.id);
+  if (node){
+      node.setData(data);
+  }
+
 };
 
 
