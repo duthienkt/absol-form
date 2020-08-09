@@ -98,8 +98,8 @@ MPOTBaseEditor.prototype.getData = function () {
     return this._data;
 };
 
-MPOTBaseEditor.prototype.notifyChange = function () {
-    this.emit('change', {}, this);
+MPOTBaseEditor.prototype.notifyChange = function (extendData) {
+    this.emit('change', extendData, this);
 };
 
 MPOTBaseEditor.prototype.getPreviewData = function () {
