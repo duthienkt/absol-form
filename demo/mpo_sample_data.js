@@ -1,64 +1,61 @@
-//tất cả các key không được trùng nhau
+//tất cả các id không được trùng nhau
 var mpo_sample_data = {
     editor: {
+        title: 'Sơ yếu lý lịch',
         properties: [
             {
                 type: 'image',
                 name: 'Ảnh đại diện',
-                key: 'avatar',
-                action: 'single-choice',
-                items: Array(30).fill(null).map((u, i) => (
-                    {
-                        src: 'https://absol.cf/avatar/0' + (i + 100) + '.jpg',
-                        value: i
-                    }
-                ))
+                id: 'avatar',
+                // action: 'input',
+                action: 'multi-choice',
+                items: Array(30).fill(null).map((u, i) => 'https://absol.cf/avatar/0' + (i + 151) + '.jpg'),
+                src: 'https://absol.cf/avatar/0' + (0 + 151) + '.jpg',
+                style:{
+                    maxWidth: '200px',
+                    maxHeight: '200px'
+                }
             },
             {
                 type: 'text',
                 name: 'Tên',
-                key: 'name',
-                action: 'input'
+                id: 'name',
+                action: 'input',
+                placeholder: "Nguyễn Văn An"
             },
             {
                 type: 'text',
                 name: 'MSSV',
-                key: 'stid',
-                action: 'input'
+                id: 'stid',
+                action: 'input',
+                value: '5130abcd'
             },
             {
                 type: 'text',
                 name: 'Giới tính',
-                key: 'sx',
+                id: 'sx',
                 action: 'single-choice',
                 items: [
-                    {
-                        text: "Nam",
-                        value: 1
-                    },
-                    {
-                        text: "Nữ",
-                        value: 0
-                    }
+                    'Nam', "Nữ"
                 ]
 
             },
             {
                 type: 'group',
                 name: 'Thông tin liên lạc',
-                key: 'contact',
+                id: 'contact',
                 properties: [
                     {
                         type: 'text',
                         long: true,
-                        key: 'address',
+                        id: 'address',
                         name: 'Địa chỉ',
                         action: 'input'
                     },
                     {
                         type: 'text',
                         name: 'SĐT',
-                        key: 'phone',
+                        id: 'phone',
                         action: 'input'
                     }
                 ]
@@ -66,7 +63,7 @@ var mpo_sample_data = {
             {
                 type: 'group',
                 name: 'Nguời bảo hộ',
-                key: 'tutor',
+                id: 'tutor',
                 properties: [
                     {
                         type: 'text',
@@ -74,12 +71,12 @@ var mpo_sample_data = {
                         name: 'Địa chỉ',
                         long: true,
                         fName: 'Địa chỉ(người bảo hộ)',
-                        key: 'tutor_address'
+                        id: 'tutor_address'
                     },
                     {
                         type: 'text',
                         name: 'SĐT(người bảo hộ)',
-                        key: 'tutor_phone',
+                        id: 'tutor_phone',
                         action: 'input'
                     }
                 ]
