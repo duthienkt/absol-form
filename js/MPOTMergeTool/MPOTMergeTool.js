@@ -1,12 +1,11 @@
 import '../../css/mpotmergtool.css';
 import Fcore from "../core/FCore";
 import BaseEditor from "../core/BaseEditor";
-import FormEditor from "../editor/FormEditor";
 import Hanger from "absol-acomp/js/Hanger";
 import MPOTPreview from "./MPOTPreview";
 import Dom from "absol/src/HTML5/Dom";
-import PropertyEditor from "../editor/PropertyEditor";
 import MPOTPropertyEditor from "./MPOTPropertyEditor";
+import {normalizeEditData} from "./utils";
 
 var $ = Fcore.$;
 var _ = Fcore._;
@@ -21,6 +20,7 @@ function MPOTMergeTool() {
     this._data = null;
     this.preview = new MPOTPreview();
     this.editor = new MPOTPropertyEditor();
+    this.editor.on('nodechange', this.ev_editNodeChange.bind(this));
     this.preview.attach(this);
     this.editor.attach(this);
 }
@@ -33,7 +33,6 @@ MPOTMergeTool.prototype.CONFIG_STORE_KEY = "AS_MPOT_CONFIG";
 MPOTMergeTool.prototype.config = {
     previewWidth: 50
 };
-
 
 
 MPOTMergeTool.prototype.createView = function () {
@@ -70,7 +69,6 @@ MPOTMergeTool.prototype.createView = function () {
 };
 
 MPOTMergeTool.prototype.ev_dragResizerStart = function () {
-    console.log('start');
     this.$centerResizer.addClass('as-active');
 };
 
@@ -94,14 +92,29 @@ MPOTMergeTool.prototype.ev_dragResizerEnd = function (event) {
     this.$centerResizer.removeClass('as-active');
 };
 
-MPOTMergeTool.prototype.setData = function (data){
-    this._data = data;
-    this.editor.setData(data.editor);
+
+MPOTMergeTool.prototype._normalizeData = function (data) {
+    data = data || {};
+    data.editor = normalizeEditData(data.editor);
+    return data;
 };
 
-MPOTMergeTool.prototype.getData = function (){
+MPOTMergeTool.prototype.setData = function (data) {
+    data = this._normalizeData(data);
+    this._data = data;
+    this.editor.setData(data.editor);
+    this.preview.setData(this.editor.getPreviewData());
+};
+
+MPOTMergeTool.prototype.getData = function () {
     return this._data;
-}
+};
+
+MPOTMergeTool.prototype.ev_editNodeChange = function (event){
+    var pData = event.nodePreviewData;
+    this.preview.setDataToNode(pData);
+};
+
 
 
 export default MPOTMergeTool;
