@@ -4,9 +4,13 @@ import {randomIdent} from "absol/src/String/stringGenerate";
 import MPOTTextEditor from "./MPOTTextEditor";
 
 var $ = Fcore.$;
+var $$ = Fcore.$$;
 var _ = Fcore._;
 
-
+/***
+ * @extends MPOTBaseEditor
+ * @constructor
+ */
 function MPOTImageEditor() {
     MPOTBaseEditor.call(this);
 
@@ -18,6 +22,7 @@ MPOTImageEditor.prototype.type = 'image';
 
 
 MPOTImageEditor.prototype._showInput = function () {
+    var thisE = this;
     this.$view.clearChild();
     this.$previewImg = _({
         tag: 'img',
@@ -40,22 +45,29 @@ MPOTImageEditor.prototype._showInput = function () {
         on: {
             change: function (event) {
                 if (this.files.length == 1) {
-                    previewImg.src = URL.createObjectURL(this.files[0]);
+                    var src = URL.createObjectURL(this.files[0]);
+                    previewImg.src = src;
+                    thisE._data.src = src;
+                    thisE._data.file = this.files[0];
+                    thisE.notifyChange()
                 }
             }
         }
     });
+
+    this._assignInputList([this.$input]);
 
     this.$view.addChild(this.$input);
     this.$view.addChild(this.$previewImg);
 };
 
 MPOTImageEditor.prototype._showSingleChoice = function () {
+    var thisE = this;
     var data = this._data;
     var groupName = randomIdent(10);
     this.$choiceList = _({
         class: 'mpot-choice-list',
-        child: data.items.map(function (item, idx) {
+        child: data.items.map(function (item, idx, arr) {
             return {
                 class: 'mpot-choice',
                 child: [
@@ -63,8 +75,19 @@ MPOTImageEditor.prototype._showSingleChoice = function () {
                         class: 'mpot-choice-select-cell',
                         child: {
                             tag: 'radiobutton',
-                            attr:{
+                            attr: {
                                 name: groupName
+                            },
+                            props: {
+                                checked: item === data.src
+                            },
+                            on: {
+                                change: function () {
+                                    if (this.checked) {
+                                        data.src = item;
+                                        thisE.notifyChange()
+                                    }
+                                }
                             }
                         }
                     },
@@ -72,49 +95,64 @@ MPOTImageEditor.prototype._showSingleChoice = function () {
                         class: 'mpot-choice-value',
                         child: {
                             tag: 'img',
-                            props: { src: item.src }
+                            props: { src: item }
                         }
                     }
                 ]
             }
         })
-
     });
+    this._assignInputList($$('radiobutton', this.$choiceList));
     this.$view.clearChild().addChild(this.$choiceList);
 };
 
 MPOTImageEditor.prototype._showMultiChoice = function () {
+    var thisE = this;
     var data = this._data;
+    var groupName = randomIdent(10);
     this.$choiceList = _({
         class: 'mpot-choice-list',
-        child: data.items.map(function (item, idx) {
+        child: data.items.map(function (item, idx, arr) {
             return {
                 class: 'mpot-choice',
                 child: [
                     {
                         class: 'mpot-choice-select-cell',
                         child: {
-                            tag: 'checkboxbutton'
+                            tag: 'checkboxbutton',
+                            attr: {
+                                name: groupName
+                            },
+                            props: {
+                                checked: item === data.src
+                            },
+                            on: {
+                                change: function () {
+                                    if (this.checked) {
+                                        data.src = item;
+                                        // thisE.notifyChange()
+                                    }
+                                }
+                            }
                         }
                     },
                     {
                         class: 'mpot-choice-value',
                         child: {
                             tag: 'img',
-                            props: { src: item.src }
+                            props: { src: item }
                         }
                     }
                 ]
             }
         })
-
     });
+    this._assignInputList($$('checkboxbutton', this.$choiceList));
     this.$view.clearChild().addChild(this.$choiceList);
 };
 
 
-
-MPOTImageEditor.prototype.setData = function (data){
+MPOTImageEditor.prototype.setData = function (data) {
     this._data = data;
     if (data.action === 'input') {
         this._showInput();
@@ -122,6 +160,32 @@ MPOTImageEditor.prototype.setData = function (data){
     else if (data.action === 'single-choice') {
         this._showSingleChoice();
     }
+    else if (data.action === 'multi-choice') {
+        this._showMultiChoice();
+    }
+};
+
+MPOTImageEditor.prototype.getPreviewData = function () {
+    var data = this._data || {};
+    var pData = {
+        type: this.type,
+        name: data.name,
+        id: data.id,
+        style: data.style || {}
+    };
+    pData.type = this.type;
+    switch (data.action) {
+        case 'input':
+            pData.src = data.src;
+            break;
+        case 'single-choice':
+            pData.src = data.src;
+            break;
+        case 'multi-choice':
+            break;
+    }
+    pData.value = data.value;
+    return pData;
 };
 
 
