@@ -4,6 +4,7 @@ import {randomIdent} from "absol/src/String/stringGenerate";
 
 var $ = Fcore.$;
 var _ = Fcore._;
+var $$ = Fcore.$$;
 
 function MPOTTextEditor() {
     MPOTBaseEditor.call(this);
@@ -19,7 +20,7 @@ MPOTTextEditor.prototype._showInput = function () {
     var data = this._data;
     this.$view.clearChild();
     var aOb = {
-        class:'mpot-text-input',
+        class: 'mpot-text-input',
         style: {
             width: '100%',
             maxWidth: '100%',
@@ -47,10 +48,10 @@ MPOTTextEditor.prototype._showInput = function () {
             attr: {
                 type: 'text'
             }
-
         });
     }
     this.$input = _(aOb);
+    this._assignInputList([this.$input]);
     this.$input.value = data.value || '';
     this.$input.placeholder = data.placeholder || '';
     this.$view.addChild(this.$input);
@@ -73,13 +74,63 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
                             attr: {
                                 name: groupName
                             },
-                            on:{
-                               change:function (){
-                                   if (this.checked){
-                                       data.value = item;
-                                       thisE.notifyChange();
-                                   }
-                               }
+                            props: {
+                                checked: item === data.value
+                            },
+                            on: {
+                                change: function () {
+                                    if (this.checked) {
+                                        data.value = item;
+                                        thisE.notifyChange();
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        class: 'mpot-choice-value',
+                        child: {
+                            tag: 'span',
+                            child: { text: item }
+                        }
+                    }
+                ]
+            };
+        })
+    });
+    this._assignInputList($$('radiobutton', this.$choiceList));
+    this.$view.clearChild().addChild(this.$choiceList);
+};
+
+MPOTTextEditor.prototype._showMultiChoice = function () {
+    var thisE = this;
+    var data = this._data;
+    this._choiceListChecked = (data.values || []).reduce(function (ac, cr) {
+        ac[cr] = true;
+        return ac;
+    }, {});
+    this.$choiceList = _({
+        class: 'mpot-choice-list',
+        child: data.items.map(function (item, idx) {
+            return {
+                class: 'mpot-choice',
+                child: [
+                    {
+                        class: 'mpot-choice-select-cell',
+                        child: {
+                            tag: 'checkboxbutton',
+                            props: {
+                                checked: thisE._choiceListChecked[item]
+                            },
+                            on: {
+                                change: function () {
+                                    thisE._choiceListChecked[item] = this.checked;
+                                    var dict = thisE._choiceListChecked;
+                                    data.values = data.items.filter(function (u, i) {
+                                        return dict[u];
+                                    });
+                                    thisE.notifyChange({ notFinish: true });
+                                }
                             }
                         }
                     },
@@ -95,36 +146,7 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
         })
 
     });
-    this.$view.clearChild().addChild(this.$choiceList);
-};
-
-MPOTTextEditor.prototype._showMultiChoice = function () {
-    var data = this._data;
-    this.$choiceList = _({
-        class: 'mpot-choice-list',
-        child: data.items.map(function (item, idx) {
-            return {
-                class: 'mpot-choice',
-                child: [
-                    {
-                        class: 'mpot-choice-select-cell',
-                        child: {
-                            tag: 'checkboxbutton',
-                            attr: {}
-                        }
-                    },
-                    {
-                        class: 'mpot-choice-value',
-                        child: {
-                            tag: 'span',
-                            child: { text: item.text }
-                        }
-                    }
-                ]
-            }
-        })
-
-    });
+    this._assignInputList($$('checkboxbutton', this.$choiceList));
     this.$view.clearChild().addChild(this.$choiceList);
 };
 
@@ -137,11 +159,13 @@ MPOTTextEditor.prototype.setData = function (data) {
     else if (data.action === 'single-choice') {
         this._showSingleChoice();
     }
+    else if (data.action === 'multi-choice') {
+        this._showMultiChoice();
+    }
 };
 
 MPOTTextEditor.prototype.getPreviewData = function () {
     var data = this._data;
-
     var pData = {
         type: this.type,
         name: data.name,
@@ -155,6 +179,7 @@ MPOTTextEditor.prototype.getPreviewData = function () {
         case 'single-choice':
             break;
         case 'multi-choice':
+            pData.values = data.values;
             break;
     }
     return pData;
