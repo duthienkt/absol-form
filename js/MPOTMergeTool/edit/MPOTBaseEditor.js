@@ -1,7 +1,6 @@
 import '../../../css/mpotbaseeditor.css';
 import Fcore from "../../core/FCore";
 import Context from "absol/src/AppPattern/Context";
-import MPOTTextEditor from "./MPOTTextEditor";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
 
 var _ = Fcore._;
@@ -55,12 +54,14 @@ MPOTBaseEditor.prototype._assignInputList = function (eList) {
                         event.preventDefault();
                         this.click();
                         break;
+                    case 'Enter':
+                        thisE.notifyChange();
+                        break;
                 }
                 if (focusElt) thisE._focusInput(focusElt);
             });
         }
     });
-    console.log(this.$inputList)
 };
 
 MPOTBaseEditor.prototype._focusInput = function (inputElt) {
@@ -99,7 +100,7 @@ MPOTBaseEditor.prototype.getData = function () {
 };
 
 MPOTBaseEditor.prototype.notifyChange = function (extendData) {
-    this.emit('change', extendData, this);
+    this.emit('change', Object.assign({}, extendData), this);
 };
 
 MPOTBaseEditor.prototype.getPreviewData = function () {
