@@ -75,6 +75,9 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
                             attr: {
                                 name: groupName
                             },
+                            props:{
+                                checked:  item === data.value
+                            },
                             on: {
                                 change: function () {
                                     if (this.checked) {
@@ -101,7 +104,12 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
 };
 
 MPOTTextEditor.prototype._showMultiChoice = function () {
+    var thisE = this;
     var data = this._data;
+    this._choiceListChecked = (data.values || []).reduce(function (ac, cr) {
+        ac[cr] = true;
+        return ac;
+    }, {});
     this.$choiceList = _({
         class: 'mpot-choice-list',
         child: data.items.map(function (item, idx) {
@@ -112,14 +120,26 @@ MPOTTextEditor.prototype._showMultiChoice = function () {
                         class: 'mpot-choice-select-cell',
                         child: {
                             tag: 'checkboxbutton',
-                            attr: {}
+                            props:{
+                              checked:  thisE._choiceListChecked[item]
+                            },
+                            on:{
+                                change: function (){
+                                    thisE._choiceListChecked[item] = this.checked;
+                                    var dict = thisE._choiceListChecked;
+                                    data.values = data.items.filter(function (u, i) {
+                                        return dict[u];
+                                    });
+                                    thisE.notifyChange({ notFinish: true });
+                                }
+                            }
                         }
                     },
                     {
                         class: 'mpot-choice-value',
                         child: {
                             tag: 'span',
-                            child: { text: item.text }
+                            child: { text: item }
                         }
                     }
                 ]
@@ -127,6 +147,7 @@ MPOTTextEditor.prototype._showMultiChoice = function () {
         })
 
     });
+    this._assignInputList($$('checkboxbutton', this.$choiceList));
     this.$view.clearChild().addChild(this.$choiceList);
 };
 
@@ -138,6 +159,9 @@ MPOTTextEditor.prototype.setData = function (data) {
     }
     else if (data.action === 'single-choice') {
         this._showSingleChoice();
+    }
+    else if (data.action === 'multi-choice') {
+        this._showMultiChoice();
     }
 };
 
@@ -157,6 +181,10 @@ MPOTTextEditor.prototype.getPreviewData = function () {
         case 'single-choice':
             break;
         case 'multi-choice':
+            var dict = this._choiceListChecked;
+            pData.values = data.items.filter(function (u, i) {
+                return dict[u];
+            });
             break;
     }
     return pData;

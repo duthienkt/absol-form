@@ -18,7 +18,7 @@ function MPOTTextPreview() {
 
 Object.defineProperties(MPOTTextPreview.prototype, Object.getOwnPropertyDescriptors(MPOTBasePreview.prototype))
 MPOTTextPreview.prototype.constructor = MPOTTextPreview;
-
+MPOTTextPreview.prototype.type = 'text';
 
 MPOTTextPreview.prototype.createView = function () {
     MPOTBasePreview.prototype.createView.call(this);
@@ -32,9 +32,20 @@ MPOTTextPreview.prototype.createView = function () {
     this.$content.addChild(this.$text);
 };
 
+
+MPOTTextPreview.prototype._viewData = function () {
+    var data = this._data;
+    if (data.values && data.values.length >= 0) {
+        this.$text.firstChild.data = data.values.join(', ');
+    }
+    else {
+        this.$text.firstChild.data = data.value || '';
+    }
+};
+
 MPOTTextPreview.prototype.setData = function (data) {
     MPOTBasePreview.prototype.setData.call(this, data);
-    this.$text.firstChild.data = data.value || '';
+    this._viewData();
 };
 
 

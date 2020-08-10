@@ -15,6 +15,7 @@ function MPOTGroupPreview() {
 
 Object.defineProperties(MPOTGroupPreview.prototype, Object.getOwnPropertyDescriptors(MPOTBasePreview.prototype))
 MPOTGroupPreview.prototype.constructor = MPOTGroupPreview;
+MPOTGroupPreview.prototype.type = 'group';
 
 MPOTGroupPreview.prototype.createView = function () {
     this.$view = _({
