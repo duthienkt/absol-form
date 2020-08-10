@@ -7,6 +7,7 @@ import MPOTTextPreview from "./preview/MPOTTextPreview";
 import MPOTGroupPreview from "./preview/MPOTGroupPreview";
 import MPOTNotSupportPreview from "./preview/MPOTNotSupportPreview";
 import MPOTBasePreview from "./preview/MPOTBasePreview";
+import MPOTNumberPreview from "./preview/MPOTNumberPreview";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -28,20 +29,21 @@ function MPOTPreview() {
     this.domSignal = new DomSignal();
     this.domSignal.on('requestUpdateData', this._updateData.bind(this));
     this._data = {};
-    this._nodeConstructors = {
-        image: MPOTImagePreview,
-        text: MPOTTextPreview,
-        "*": MPOTNotSupportPreview
-    };
-
     this.nodes = [];
-    console.log(this);
 
 }
+
 
 Object.defineProperties(MPOTPreview.prototype, Object.getOwnPropertyDescriptors(Fragment.prototype));
 MPOTPreview.prototype.constructor = MPOTPreview;
 
+
+MPOTPreview.prototype._nodeConstructors = {
+    image: MPOTImagePreview,
+    text: MPOTTextPreview,
+    "*": MPOTNotSupportPreview,
+    number: MPOTNumberPreview
+};
 /***
  *
  * @param {MPOTProperty} prop
@@ -168,11 +170,11 @@ MPOTPreview.prototype.findNodeById = function (id) {
 };
 
 
-MPOTPreview.prototype.setDataToNode = function (data){
-  var node = this.findNodeById(data.id);
-  if (node){
-      node.setData(data);
-  }
+MPOTPreview.prototype.setDataToNode = function (data) {
+    var node = this.findNodeById(data.id);
+    if (node) {
+        node.setData(data);
+    }
 
 };
 

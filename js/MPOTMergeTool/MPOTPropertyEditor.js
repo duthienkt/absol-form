@@ -6,6 +6,7 @@ import FrameView from "absol-acomp/js/FrameView";
 import MPOTTextEditor from "./edit/MPOTTextEditor";
 import MPOTImageEditor from "./edit/MPOTImageEditor";
 import MPOTNotSupportEditor from "./edit/MPOTNotSupportEditor";
+import MPOTNumberEditor from "./edit/MPOTNumberEditor";
 
 var $ = Fcore.$;
 var _ = Fcore._;
@@ -17,18 +18,18 @@ var _ = Fcore._;
 function MPOTPropertyEditor() {
     BaseEditor.call(this);
     this._data = {};
-    this._nodeConstructor = {
-        text: MPOTTextEditor,
-        image: MPOTImageEditor,
-        '*': MPOTNotSupportEditor
-    };
     this.ev_nodeChange = this.ev_nodeChange.bind(this);
-
 }
 
 Object.defineProperties(MPOTPropertyEditor.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 MPOTPropertyEditor.prototype.constructor = MPOTPropertyEditor;
 
+MPOTPropertyEditor.prototype._nodeConstructor = {
+    text: MPOTTextEditor,
+    image: MPOTImageEditor,
+    number: MPOTNumberEditor,
+    '*': MPOTNotSupportEditor
+};
 
 MPOTPropertyEditor.prototype.createView = function () {
     this.$view = _({
@@ -191,7 +192,8 @@ MPOTPropertyEditor.prototype.ev_nodeChange = function (event, sender) {
     var pData = sender.getPreviewData()
     var holder = this._headerHolderById[pData.id];
     this.notifyNodeChange(pData);
-    setTimeout(this.$tabbar.nextValue.bind(this.$tabbar, true), 300);
+    if (!event.notFinish)
+        setTimeout(this.$tabbar.nextValue.bind(this.$tabbar, true), 300);
 };
 
 
