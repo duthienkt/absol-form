@@ -14,19 +14,41 @@ function MPOTImagePreview() {
 
 Object.defineProperties(MPOTImagePreview.prototype, Object.getOwnPropertyDescriptors(MPOTBasePreview.prototype))
 MPOTImagePreview.prototype.constructor = MPOTImagePreview;
-
+MPOTImagePreview.prototype.type = 'image';
 
 MPOTImagePreview.prototype.createView = function () {
     MPOTBasePreview.prototype.createView.call(this);
-    this.$img = _('img');
-    this.$content.addChild(this.$img);
 };
+
+MPOTImagePreview.prototype._viewData = function () {
+    var thisP = this;
+    var data = this._data;
+    if (data.values && data.values.length >= 0) {
+        this.$imgs = data.values.map(function (it) {
+            return _({
+                tag: 'img',
+                style: data.style||{},
+                props: {
+                    src: it
+                }
+            }).addTo(thisP.$content);
+        });
+    }
+    else {
+        this.$img = _({
+            tag: 'img',
+            style: data.style || {},
+            props: {
+                src: data.value
+            }
+        }).addTo(thisP.$content);
+    }
+}
 
 MPOTImagePreview.prototype.setData = function (data) {
     MPOTBasePreview.prototype.setData.call(this, data);
-    this.$img.src = data.src || '';
-    this.$img.attr('style', '');
-    this.$img.addStyle(data.style || {});
+    this.$content.clearChild();
+    this._viewData();
 };
 
 

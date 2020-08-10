@@ -1,7 +1,6 @@
 import MPOTBaseEditor from "./MPOTBaseEditor";
 import Fcore from "../../core/FCore";
 import {randomIdent} from "absol/src/String/stringGenerate";
-import MPOTTextEditor from "./MPOTTextEditor";
 
 var $ = Fcore.$;
 var $$ = Fcore.$$;
@@ -13,7 +12,6 @@ var _ = Fcore._;
  */
 function MPOTImageEditor() {
     MPOTBaseEditor.call(this);
-
 }
 
 Object.defineProperties(MPOTImageEditor.prototype, Object.getOwnPropertyDescriptors(MPOTBaseEditor.prototype));
@@ -47,7 +45,7 @@ MPOTImageEditor.prototype._showInput = function () {
                 if (this.files.length == 1) {
                     var src = URL.createObjectURL(this.files[0]);
                     previewImg.src = src;
-                    thisE._data.src = src;
+                    thisE._data.value = src;
                     thisE._data.file = this.files[0];
                     thisE.notifyChange()
                 }
@@ -84,8 +82,8 @@ MPOTImageEditor.prototype._showSingleChoice = function () {
                             on: {
                                 change: function () {
                                     if (this.checked) {
-                                        data.src = item;
-                                        thisE.notifyChange()
+                                        data.value = item;
+                                        thisE.notifyChange();
                                     }
                                 }
                             }
@@ -110,6 +108,11 @@ MPOTImageEditor.prototype._showMultiChoice = function () {
     var thisE = this;
     var data = this._data;
     var groupName = randomIdent(10);
+
+    this._choiceListChecked = (data.values || []).reduce(function (ac, cr) {
+        ac[cr] = true;
+        return ac;
+    }, {});
     this.$choiceList = _({
         class: 'mpot-choice-list',
         child: data.items.map(function (item, idx, arr) {
@@ -124,14 +127,16 @@ MPOTImageEditor.prototype._showMultiChoice = function () {
                                 name: groupName
                             },
                             props: {
-                                checked: item === data.src
+                                checked: thisE._choiceListChecked[item]
                             },
                             on: {
                                 change: function () {
-                                    if (this.checked) {
-                                        data.src = item;
-                                        // thisE.notifyChange()
-                                    }
+                                    thisE._choiceListChecked[item] = this.checked;
+                                    var dict = thisE._choiceListChecked;
+                                    data.values = data.items.filter(function (u, i) {
+                                        return dict[u];
+                                    });
+                                    thisE.notifyChange({ notFinish: true });
                                 }
                             }
                         }
@@ -176,15 +181,15 @@ MPOTImageEditor.prototype.getPreviewData = function () {
     pData.type = this.type;
     switch (data.action) {
         case 'input':
-            pData.src = data.src;
+            pData.value = data.value;
             break;
         case 'single-choice':
-            pData.src = data.src;
+            pData.value = data.value;
             break;
         case 'multi-choice':
+            pData.values = data.values;
             break;
     }
-    pData.value = data.value;
     return pData;
 };
 
