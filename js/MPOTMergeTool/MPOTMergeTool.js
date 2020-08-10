@@ -116,5 +116,4 @@ MPOTMergeTool.prototype.ev_editNodeChange = function (event){
 };
 
 
-
 export default MPOTMergeTool;

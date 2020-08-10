@@ -7,11 +7,11 @@ var mpo_sample_data = {
                 type: 'image',
                 name: 'Ảnh đại diện',
                 id: 'avatar',
-                // action: 'input',
-                action: 'multi-choice',
+                action: 'input',
+                // action: 'single-choice',
                 items: Array(30).fill(null).map((u, i) => 'https://absol.cf/avatar/0' + (i + 151) + '.jpg'),
-                src: 'https://absol.cf/avatar/0' + (0 + 151) + '.jpg',
-                style:{
+                value: ['https://absol.cf/avatar/0' + (5 + 151) + '.jpg'][0],
+                style: {
                     maxWidth: '200px',
                     maxHeight: '200px'
                 }
@@ -31,14 +31,37 @@ var mpo_sample_data = {
                 value: '5130abcd'
             },
             {
+                type: 'number',
+                name: 'Tuổi',
+                id: 'old',
+                action: "single-choice",
+                value: 20,
+                items: [15, 16, 17, 18, 19, 20, 21, 22, 25]
+            },
+            {
+                type: 'number',
+                name: 'Tháng trong năm',
+                id: 'old',
+                action: "multi-choice",
+                values: [],
+                items: Array(12).fill(0).map((u, i) => i + 1)
+            },
+            {
                 type: 'text',
                 name: 'Giới tính',
                 id: 'sx',
                 action: 'single-choice',
                 items: [
                     'Nam', "Nữ"
-                ]
-
+                ],
+                value: 'Nam'
+            },
+            {
+                type: 'text',
+                name: 'Ngôn ngữ',
+                id: 'lang',
+                action: 'multi-choice',
+                items: ['English', 'Tiếng Việt', "Javascript"]
             },
             {
                 type: 'group',
