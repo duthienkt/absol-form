@@ -14,7 +14,7 @@ function MPOTNotSupportPreview() {
 
 Object.defineProperties(MPOTNotSupportPreview.prototype, Object.getOwnPropertyDescriptors(MPOTBasePreview.prototype))
 MPOTNotSupportPreview.prototype.constructor = MPOTNotSupportPreview;
-
+MPOTNotSupportPreview.prototype.type = '*';
 
 MPOTNotSupportPreview.prototype.createView = function () {
     MPOTBasePreview.prototype.createView.call(this);
