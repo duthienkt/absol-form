@@ -41,7 +41,7 @@ var mpo_sample_data = {
             {
                 type: 'number',
                 name: 'Tháng trong năm',
-                id: 'old',
+                id: 'months',
                 action: "multi-choice",
                 values: [],
                 items: Array(12).fill(0).map((u, i) => i + 1)
