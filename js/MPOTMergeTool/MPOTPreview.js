@@ -8,6 +8,8 @@ import MPOTGroupPreview from "./preview/MPOTGroupPreview";
 import MPOTNotSupportPreview from "./preview/MPOTNotSupportPreview";
 import MPOTBasePreview from "./preview/MPOTBasePreview";
 import MPOTNumberPreview from "./preview/MPOTNumberPreview";
+import EventEmitter from "absol/src/HTML5/EventEmitter";
+
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -23,18 +25,20 @@ var $ = Fcore.$;
 /***
  * @extends {Fragment}
  * @constructor
+ * @augments EventEmitter
  */
 function MPOTPreview() {
     Fragment.call(this);
+    EventEmitter.call(this);
     this.domSignal = new DomSignal();
     this.domSignal.on('requestUpdateData', this._updateData.bind(this));
     this._data = {};
     this.nodes = [];
-
 }
 
 
 Object.defineProperties(MPOTPreview.prototype, Object.getOwnPropertyDescriptors(Fragment.prototype));
+Object.defineProperties(MPOTPreview.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 MPOTPreview.prototype.constructor = MPOTPreview;
 
 
@@ -68,6 +72,9 @@ MPOTPreview.prototype.createGroup = function (group) {
         properties = group.properties.map(function (prop) {
             var it = _this.createProperty(prop);
             groupPreview.getView().addChild(it.getView());
+            it.getView().on('click', function () {
+                _this.notifyChoose(prop.id);
+            });
             return it;
         });
     }
@@ -121,6 +128,9 @@ MPOTPreview.prototype._updateBody = function () {
         else {
             var propNode = _this.createProperty(prop);
             _this.$body.addChild(propNode.getView());
+            propNode.getView().on('click', function () {
+                _this.notifyChoose(prop.id);
+            });
             _this.nodes.push(propNode);
         }
     });
@@ -175,7 +185,11 @@ MPOTPreview.prototype.setDataToNode = function (data) {
     if (node) {
         node.setData(data);
     }
+};
 
+
+MPOTPreview.prototype.notifyChoose = function (nodeId) {
+    this.emit('pressnode', { nodeId: nodeId }, this);
 };
 
 

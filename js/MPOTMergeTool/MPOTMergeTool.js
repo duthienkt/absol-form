@@ -21,6 +21,7 @@ function MPOTMergeTool() {
     this.preview = new MPOTPreview();
     this.editor = new MPOTPropertyEditor();
     this.editor.on('nodechange', this.ev_editNodeChange.bind(this));
+    this.preview.on('pressnode', this.ev_pressNode.bind(this));
     this.preview.attach(this);
     this.editor.attach(this);
 }
@@ -114,6 +115,11 @@ MPOTMergeTool.prototype.ev_editNodeChange = function (event){
     var pData = event.nodePreviewData;
     this.preview.setDataToNode(pData);
 };
+
+MPOTMergeTool.prototype.ev_pressNode = function (event, sender){
+    var nodeId = event.nodeId;
+    this.editor.selectTabById(nodeId);
+}
 
 
 export default MPOTMergeTool;

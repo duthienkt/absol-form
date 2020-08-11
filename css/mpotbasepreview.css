@@ -1,5 +1,10 @@
 .mpot-base-preview {
     display: block;
+    cursor: pointer;
+}
+
+.mpot-base-preview:hover {
+    background-color: rgba(169, 169, 170, 0.1);
 }
 
 .mpot-base-preview-name {
