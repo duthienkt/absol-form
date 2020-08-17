@@ -55,7 +55,7 @@ textarea.mpot-choice-input {
     border-color: #dddddd;
 }
 
-.absol-radio.mpot-choice-input{
+.absol-radio.mpot-choice-input {
     border-radius: 50%;
 }
 
@@ -64,4 +64,16 @@ textarea.mpot-choice-input {
     -webkit-box-shadow: 0px 0px 5px 0px rgba(97, 136, 232, 0.66);
     -moz-box-shadow: 0px 0px 5px 0px rgba(97, 136, 232, 0.66);
     box-shadow: 0px 0px 5px 0px rgba(97, 136, 232, 0.66);
+}
+
+.mpot-group-editor-item {
+    display: block;
+}
+
+.mpot-group-editor-item-name {
+    font-weight: bold;
+}
+
+.mpot-group-editor-item-editor {
+
 }

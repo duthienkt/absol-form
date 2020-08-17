@@ -9,6 +9,7 @@ import MPOTNotSupportPreview from "./preview/MPOTNotSupportPreview";
 import MPOTBasePreview from "./preview/MPOTBasePreview";
 import MPOTNumberPreview from "./preview/MPOTNumberPreview";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
+import {PreviewConstructors} from "./TypeHandler";
 
 
 var _ = Fcore._;
@@ -42,12 +43,7 @@ Object.defineProperties(MPOTPreview.prototype, Object.getOwnPropertyDescriptors(
 MPOTPreview.prototype.constructor = MPOTPreview;
 
 
-MPOTPreview.prototype._nodeConstructors = {
-    image: MPOTImagePreview,
-    text: MPOTTextPreview,
-    "*": MPOTNotSupportPreview,
-    number: MPOTNumberPreview
-};
+MPOTPreview.prototype._nodeConstructors = PreviewConstructors;
 /***
  *
  * @param {MPOTProperty} prop

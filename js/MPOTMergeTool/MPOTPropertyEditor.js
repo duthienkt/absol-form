@@ -7,6 +7,8 @@ import MPOTTextEditor from "./edit/MPOTTextEditor";
 import MPOTImageEditor from "./edit/MPOTImageEditor";
 import MPOTNotSupportEditor from "./edit/MPOTNotSupportEditor";
 import MPOTNumberEditor from "./edit/MPOTNumberEditor";
+import {createEditor, EditorConstructors} from "./TypeHandler";
+import MPOTGroupEditor from "./edit/MPOTGroupEditor";
 
 var $ = Fcore.$;
 var _ = Fcore._;
@@ -17,6 +19,7 @@ var _ = Fcore._;
  */
 function MPOTPropertyEditor() {
     BaseEditor.call(this);
+    this.setContext('PROPERTY_EDITOR', this);
     this._data = {};
     this.ev_nodeChange = this.ev_nodeChange.bind(this);
 }
@@ -24,12 +27,7 @@ function MPOTPropertyEditor() {
 Object.defineProperties(MPOTPropertyEditor.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 MPOTPropertyEditor.prototype.constructor = MPOTPropertyEditor;
 
-MPOTPropertyEditor.prototype._nodeConstructor = {
-    text: MPOTTextEditor,
-    image: MPOTImageEditor,
-    number: MPOTNumberEditor,
-    '*': MPOTNotSupportEditor
-};
+MPOTPropertyEditor.prototype._nodeConstructor = EditorConstructors;
 
 MPOTPropertyEditor.prototype.createView = function () {
     this.$view = _({
@@ -70,20 +68,15 @@ MPOTPropertyEditor.prototype.createView = function () {
 
 MPOTPropertyEditor.prototype._loadHeader = function () {
     this._headerHolders = this._data.properties.reduce(function visit(ac, property) {
-        if (property.type === 'group') {
-            property.properties.reduce(visit, ac);
-        }
-        else {
-            var name = property.name || property.id;
-            var fName = property.fName || name;
-            var holder = {
-                property: property,
-                name: name,
-                id: property.id,
-                fName: fName
-            };
-            ac.push(holder);
-        }
+        var name = property.name || property.id;
+        var fName = property.fName || name;
+        var holder = {
+            property: property,
+            name: name,
+            id: property.id,
+            fName: fName
+        };
+        ac.push(holder);
 
         return ac;
     }, []);
@@ -124,14 +117,11 @@ MPOTPropertyEditor.prototype._loadPropertyTab = function () {
         var frameElt = _('tabframe.mpot-property-editor-frame');
         thisE.$frameview.addChild(frameElt);
         it.$frame = frameElt;
-        var editorConstructor = thisE._nodeConstructor[prop.type];
-        if (editorConstructor) {
-            it.editor = new editorConstructor();
-            it.editor.on('change', thisE.ev_nodeChange);
-            it.editor.attach(this);
-            frameElt.addChild(it.editor.getView());
-            it.editor.setData(prop);
-        }
+        it.editor = createEditor(prop.type);
+        it.editor.on('change', thisE.ev_nodeChange);
+        it.editor.attach(thisE);
+        frameElt.addChild(it.editor.getView());
+        it.editor.setData(prop);
     });
     if (this._headerHolders.length > 0) {
         this._headerHolders[0].$frame.requestActive();
@@ -162,19 +152,9 @@ MPOTPropertyEditor.prototype.getPreviewData = function () {
     pData.title = data.title;
     pData.properties = data.properties.map(function visit(prop) {
         var id = prop.id;
-        if (prop.type === 'group') {
-            return {
-                type: 'group',
-                name: prop.name,
-                properties: prop.properties.map(visit)
-            }
-        }
-        else {
-            var holder = thisE._headerHolderById[id];
-            return holder.editor.getPreviewData();
-        }
+        var holder = thisE._headerHolderById[id];
+        return holder.editor.getPreviewData();
     });
-
     return pData;
 };
 
