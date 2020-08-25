@@ -143,6 +143,7 @@ MPOTPropertyEditor.prototype.setData = function (data) {
     this._loadPropertyNodeKey();
     this._loadHeader();
     this._loadPropertyTab();
+    console.log(this.getCompletedMask())
 };
 
 MPOTPropertyEditor.prototype.getPreviewData = function () {
@@ -181,5 +182,10 @@ MPOTPropertyEditor.prototype.notifyNodeChange = function (nodePreviewData) {
     this.emit('nodechange', { type: 'nodechange', nodePreviewData: nodePreviewData }, this);
 };
 
+MPOTPropertyEditor.prototype.getCompletedMask = function (){
+    return this._headerHolders.map(function (holder){
+       return holder.editor.isCompleted();
+    });
+}
 
 export default MPOTPropertyEditor;

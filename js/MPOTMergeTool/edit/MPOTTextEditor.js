@@ -33,6 +33,10 @@ MPOTTextEditor.prototype._showInput = function () {
                     this.blur();
                     thisE.notifyChange();
                 }
+            },
+            input: function () {
+                data.value = this.value;
+                thisE.notifyChange({ notFinish: true });
             }
         }
     };
@@ -75,8 +79,8 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
                             attr: {
                                 name: groupName
                             },
-                            props:{
-                                checked:  item === data.value
+                            props: {
+                                checked: item === data.value
                             },
                             on: {
                                 change: function () {
@@ -120,11 +124,11 @@ MPOTTextEditor.prototype._showMultiChoice = function () {
                         class: 'mpot-choice-select-cell',
                         child: {
                             tag: 'checkboxbutton',
-                            props:{
-                              checked:  thisE._choiceListChecked[item]
+                            props: {
+                                checked: thisE._choiceListChecked[item]
                             },
-                            on:{
-                                change: function (){
+                            on: {
+                                change: function () {
                                     thisE._choiceListChecked[item] = this.checked;
                                     var dict = thisE._choiceListChecked;
                                     data.values = data.items.filter(function (u, i) {
@@ -163,6 +167,11 @@ MPOTTextEditor.prototype.setData = function (data) {
     else if (data.action === 'multi-choice') {
         this._showMultiChoice();
     }
+};
+
+MPOTTextEditor.prototype.isCompleted = function () {
+    var data = this._data;
+    return !!(data.value || (data.values && data.values.length > 0));
 };
 
 MPOTTextEditor.prototype.getPreviewData = function () {

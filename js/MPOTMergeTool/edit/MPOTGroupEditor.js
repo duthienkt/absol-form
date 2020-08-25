@@ -74,12 +74,24 @@ MPOTGroupEditor.prototype.ev_nodeChange = function (event, sender) {
         this.emit('change', event, sender);
     }
     else {
-        event.notFinish = true;
-        this.emit('change', event, sender);
-        var idx = this.children.indexOf(sender);
-        this.children[idx + 1].focus();
+        if (!event.notFinish) {
+            event.notFinish = true;
+            this.emit('change', event, sender);
+            var idx = this.children.indexOf(sender);
+            this.children[idx + 1].focus();
+        }
+        else {
+            this.emit('change', event, sender);
+        }
     }
-}
+};
+
+MPOTGroupEditor.prototype.isCompleted = function () {
+    for (var i = 0; i < this.children.length; ++i) {
+        if (!this.children[i].isCompleted()) return false;
+    }
+    return true;
+};
 
 EditorConstructors.group = MPOTGroupEditor;
 

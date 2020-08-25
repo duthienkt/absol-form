@@ -34,9 +34,7 @@ var mpo_sample_data = {
                 type: 'number',
                 name: 'Tuổi',
                 id: 'old',
-                action: "single-choice",
-                value: 20,
-                items: [15, 16, 17, 18, 19, 20, 21, 22, 25]
+                action: "input"
             },
             {
                 type: 'number',

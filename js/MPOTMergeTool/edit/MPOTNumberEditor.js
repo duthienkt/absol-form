@@ -6,16 +6,16 @@ var $ = Fcore.$;
 var _ = Fcore._;
 var $$ = Fcore.$$;
 
-function MPOTTextEditor() {
+function MPOTNumberEditor() {
     MPOTBaseEditor.call(this);
 
 }
 
-Object.defineProperties(MPOTTextEditor.prototype, Object.getOwnPropertyDescriptors(MPOTBaseEditor.prototype));
-MPOTTextEditor.prototype.constructor = MPOTTextEditor;
-MPOTTextEditor.prototype.type = 'text';
+Object.defineProperties(MPOTNumberEditor.prototype, Object.getOwnPropertyDescriptors(MPOTBaseEditor.prototype));
+MPOTNumberEditor.prototype.constructor = MPOTNumberEditor;
+MPOTNumberEditor.prototype.type = 'text';
 
-MPOTTextEditor.prototype._showInput = function () {
+MPOTNumberEditor.prototype._showInput = function () {
     var thisE = this;
     var data = this._data;
     this.$view.clearChild();
@@ -29,27 +29,25 @@ MPOTTextEditor.prototype._showInput = function () {
         on: {
             keydown: function (event) {
                 if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey) {
-                    data.value = this.value;
+                    data.value = parseFloat(this.value);
+                    if (isNaN(data.value)) data.value = null;
                     this.blur();
                     thisE.notifyChange();
                 }
+            },
+            input: function (){
+                data.value = parseFloat(this.value);
+                if (isNaN(data.value)) data.value = null;
+                thisE.notifyChange({ notFinish: true });
             }
         }
-    };
-    if (data.long) {
-        Object.assign(aOb, {
-            tag: 'textarea'
-
-        });
     }
-    else {
-        Object.assign(aOb, {
-            tag: 'input',
-            attr: {
-                type: 'text'
-            }
-        });
-    }
+    Object.assign(aOb, {
+        tag: 'input',
+        attr: {
+            type: 'number'
+        }
+    });
     this.$input = _(aOb);
     this._assignInputList([this.$input]);
     this.$input.value = data.value || '';
@@ -57,7 +55,7 @@ MPOTTextEditor.prototype._showInput = function () {
     this.$view.addChild(this.$input);
 };
 
-MPOTTextEditor.prototype._showSingleChoice = function () {
+MPOTNumberEditor.prototype._showSingleChoice = function () {
     var thisE = this;
     var data = this._data;
     var groupName = randomIdent(10);
@@ -102,7 +100,7 @@ MPOTTextEditor.prototype._showSingleChoice = function () {
     this.$view.clearChild().addChild(this.$choiceList);
 };
 
-MPOTTextEditor.prototype._showMultiChoice = function () {
+MPOTNumberEditor.prototype._showMultiChoice = function () {
     var thisE = this;
     var data = this._data;
     this._choiceListChecked = (data.values || []).reduce(function (ac, cr) {
@@ -150,8 +148,12 @@ MPOTTextEditor.prototype._showMultiChoice = function () {
     this.$view.clearChild().addChild(this.$choiceList);
 };
 
+MPOTNumberEditor.prototype.isCompleted = function () {
+    var data = this._data;
+    return !!((typeof data.value === 'number') || (data.values && data.values.length > 0))
+};
 
-MPOTTextEditor.prototype.setData = function (data) {
+MPOTNumberEditor.prototype.setData = function (data) {
     this._data = data;
     if (data.action === 'input') {
         this._showInput();
@@ -164,7 +166,7 @@ MPOTTextEditor.prototype.setData = function (data) {
     }
 };
 
-MPOTTextEditor.prototype.getPreviewData = function () {
+MPOTNumberEditor.prototype.getPreviewData = function () {
     var data = this._data;
     var pData = {
         type: this.type,
@@ -186,4 +188,4 @@ MPOTTextEditor.prototype.getPreviewData = function () {
 };
 
 
-export default MPOTTextEditor;
+export default MPOTNumberEditor;

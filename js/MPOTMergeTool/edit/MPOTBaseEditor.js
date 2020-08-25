@@ -107,4 +107,8 @@ MPOTBaseEditor.prototype.getPreviewData = function () {
     return { type: this.type };
 };
 
+MPOTBaseEditor.prototype.isCompleted = function () {
+    return true;
+};
+
 export default MPOTBaseEditor;

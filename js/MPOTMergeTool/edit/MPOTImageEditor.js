@@ -170,6 +170,14 @@ MPOTImageEditor.prototype.setData = function (data) {
     }
 };
 
+
+MPOTImageEditor.prototype.isCompleted = function () {
+    var data = this._data;
+    return !!(data.value || (data.values && data.values.length > 0));
+};
+
+
+
 MPOTImageEditor.prototype.getPreviewData = function () {
     var data = this._data || {};
     var pData = {
