@@ -109,6 +109,10 @@ var mpo_sample_data = {
                         action: 'input'
                     }
                 ]
+            },
+            {
+                type:'submit',
+                name:"Submit"
             }
         ]
     }
