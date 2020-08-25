@@ -70,14 +70,15 @@ MPOTPropertyEditor.prototype._loadHeader = function () {
     this._headerHolders = this._data.properties.reduce(function visit(ac, property) {
         var name = property.name || property.id;
         var fName = property.fName || name;
+        var display = property.action !== 'const';
         var holder = {
             property: property,
             name: name,
             id: property.id,
-            fName: fName
+            fName: fName,
+            display: display
         };
         ac.push(holder);
-
         return ac;
     }, []);
 
@@ -86,7 +87,9 @@ MPOTPropertyEditor.prototype._loadHeader = function () {
         return ac;
     }, {});
 
-    this._tabItems = this._headerHolders.map(function (holder) {
+    this._tabItems = this._headerHolders.filter(function (holder) {
+        return holder.display;
+    }).map(function (holder) {
         return {
             text: holder.fName,
             value: holder.id
@@ -130,10 +133,25 @@ MPOTPropertyEditor.prototype._loadPropertyTab = function () {
 };
 
 MPOTPropertyEditor.prototype.selectTabById = function (id) {
+    var thisE = this;
     var headerHolder = this._headerHolderById[id];
     if (headerHolder) {
         this.$tabbar.value = headerHolder.id;
         this.$tabbar.notifyChange();
+    }
+    else {
+        this._headerHolders.forEach(function (holder) {
+            if (holder.property.type === 'group') {
+                var index = holder.property.properties.map(function (p) {
+                    return p.id
+                }).indexOf(id);
+                if (index >= 0) {
+                    thisE.$tabbar.value = holder.id;
+                    thisE.$tabbar.notifyChange();
+                    holder.editor.children[index].focus();
+                }
+            }
+        });
     }
 };
 

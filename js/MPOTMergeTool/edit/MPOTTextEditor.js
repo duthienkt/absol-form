@@ -180,20 +180,18 @@ MPOTTextEditor.prototype.getPreviewData = function () {
     var pData = {
         type: this.type,
         name: data.name,
-        value: data.value,
         id: data.id
     };
     var data = this._data;
     switch (data.action) {
-        case 'input':
-            break;
-        case 'single-choice':
-            break;
         case 'multi-choice':
             var dict = this._choiceListChecked;
             pData.values = data.items.filter(function (u, i) {
                 return dict[u];
             });
+            break;
+        default :
+            pData.value = data.value;
             break;
     }
     return pData;
