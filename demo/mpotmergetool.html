@@ -22,6 +22,10 @@
     myTool.setData(mpo_sample_data);
     toolView.addStyle({ width: '100%', height: '100%' });
     document.body.appendChild(toolView);
+    myTool.on('change', function (event) {
+        console.log(event,  this.editor.getPreviewData(),
+            this.editor.getCompletedMask());
+    });
 </script>
 </body>
 
