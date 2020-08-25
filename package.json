@@ -11,8 +11,8 @@
   "author": "Pham Quoc Du Thien",
   "license": "ISC",
   "dependencies": {
-    "absol": "github:duthienkt/absol",
-    "absol-acomp": "^0.9.33",
+    "absol": "^1.14.9",
+    "absol-acomp": "^0.9.38",
     "absol-brace": "^0.9.1",
     "absol-colorpicker": "^0.1.1",
     "absol-photoswipeviewer": "^0.2.0",
