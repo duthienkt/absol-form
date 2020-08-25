@@ -21,14 +21,22 @@ var mpo_sample_data = {
                 name: 'Tên',
                 id: 'name',
                 action: 'input',
-                placeholder: "Nguyễn Văn An"
+                placeholder: "Nguyễn Văn An",
+                value: "Phạm Hùng Quốc"
+            },
+            {
+                type: 'text',
+                name: 'Trường',
+                id: 'name',
+                action: 'const',
+                value:"Đại học Bách Khoa Hồ Chí Minh"
             },
             {
                 type: 'text',
                 name: 'MSSV',
                 id: 'stid',
                 action: 'input',
-                value: '5130abcd'
+                value: '51303858'
             },
             {
                 type: 'number',
