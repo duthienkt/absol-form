@@ -177,7 +177,6 @@ MPOTImageEditor.prototype.isCompleted = function () {
 };
 
 
-
 MPOTImageEditor.prototype.getPreviewData = function () {
     var data = this._data || {};
     var pData = {
@@ -188,14 +187,11 @@ MPOTImageEditor.prototype.getPreviewData = function () {
     };
     pData.type = this.type;
     switch (data.action) {
-        case 'input':
-            pData.value = data.value;
-            break;
-        case 'single-choice':
-            pData.value = data.value;
-            break;
         case 'multi-choice':
             pData.values = data.values;
+            break;
+        default :
+            pData.value = data.value;
             break;
     }
     return pData;

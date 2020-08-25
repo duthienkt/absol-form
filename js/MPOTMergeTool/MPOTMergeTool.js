@@ -111,12 +111,13 @@ MPOTMergeTool.prototype.getData = function () {
     return this._data;
 };
 
-MPOTMergeTool.prototype.ev_editNodeChange = function (event){
+MPOTMergeTool.prototype.ev_editNodeChange = function (event) {
     var pData = event.nodePreviewData;
     this.preview.setDataToNode(pData);
+    this.emit('change', Object.assign({}, event, { type: 'change' }), this);
 };
 
-MPOTMergeTool.prototype.ev_pressNode = function (event, sender){
+MPOTMergeTool.prototype.ev_pressNode = function (event, sender) {
     var nodeId = event.nodeId;
     this.editor.selectTabById(nodeId);
 }

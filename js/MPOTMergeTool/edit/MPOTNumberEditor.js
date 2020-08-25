@@ -35,7 +35,7 @@ MPOTNumberEditor.prototype._showInput = function () {
                     thisE.notifyChange();
                 }
             },
-            input: function (){
+            input: function () {
                 data.value = parseFloat(this.value);
                 if (isNaN(data.value)) data.value = null;
                 thisE.notifyChange({ notFinish: true });
@@ -171,17 +171,15 @@ MPOTNumberEditor.prototype.getPreviewData = function () {
     var pData = {
         type: this.type,
         name: data.name,
-        value: data.value,
         id: data.id
     };
     var data = this._data;
     switch (data.action) {
-        case 'input':
-            break;
-        case 'single-choice':
-            break;
         case 'multi-choice':
             pData.values = data.values;
+            break;
+        default :
+            pData.value = data.value;
             break;
     }
     return pData;
