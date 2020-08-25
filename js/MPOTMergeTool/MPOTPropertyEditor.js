@@ -182,10 +182,16 @@ MPOTPropertyEditor.prototype.notifyNodeChange = function (nodePreviewData) {
     this.emit('nodechange', { type: 'nodechange', nodePreviewData: nodePreviewData }, this);
 };
 
-MPOTPropertyEditor.prototype.getCompletedMask = function (){
-    return this._headerHolders.map(function (holder){
-       return holder.editor.isCompleted();
+MPOTPropertyEditor.prototype.getCompletedMask = function () {
+    return this._headerHolders.map(function (holder) {
+        return holder.editor.isCompleted();
     });
-}
+};
+
+MPOTPropertyEditor.prototype.isCompleted = function () {
+    return this.getCompletedMask().reduce(function (ac, cr) {
+        return ac && cr;
+    }, true);
+};
 
 export default MPOTPropertyEditor;
