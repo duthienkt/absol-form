@@ -161,7 +161,6 @@ MPOTPropertyEditor.prototype.setData = function (data) {
     this._loadPropertyNodeKey();
     this._loadHeader();
     this._loadPropertyTab();
-    console.log(this.getCompletedMask())
 };
 
 MPOTPropertyEditor.prototype.getPreviewData = function () {
