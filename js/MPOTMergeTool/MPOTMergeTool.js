@@ -114,13 +114,14 @@ MPOTMergeTool.prototype.getData = function () {
 MPOTMergeTool.prototype.ev_editNodeChange = function (event) {
     var pData = event.nodePreviewData;
     this.preview.setDataToNode(pData);
-    this.emit('change', Object.assign({}, event, { type: 'change' }), this);
+    if (!event.notFinish)
+        this.emit('change', Object.assign({}, event, { type: 'change' }), this);
 };
 
 MPOTMergeTool.prototype.ev_pressNode = function (event, sender) {
     var nodeId = event.nodeId;
     this.editor.selectTabById(nodeId);
-}
+};
 
 
 export default MPOTMergeTool;

@@ -189,14 +189,14 @@ MPOTPropertyEditor.prototype.ev_tabbarChange = function (event) {
 MPOTPropertyEditor.prototype.ev_nodeChange = function (event, sender) {
     var pData = sender.getPreviewData()
     var holder = this._headerHolderById[pData.id];
-    this.notifyNodeChange(pData);
+    this.notifyNodeChange(Object.assign({}, event, { nodePreviewData: pData }));
     if (!event.notFinish)
         setTimeout(this.$tabbar.nextValue.bind(this.$tabbar, true), 300);
 };
 
 
-MPOTPropertyEditor.prototype.notifyNodeChange = function (nodePreviewData) {
-    this.emit('nodechange', { type: 'nodechange', nodePreviewData: nodePreviewData }, this);
+MPOTPropertyEditor.prototype.notifyNodeChange = function (extendData) {
+    this.emit('nodechange', Object.assign({}, extendData, { type: 'nodechange' }), this);
 };
 
 MPOTPropertyEditor.prototype.getCompletedMask = function () {

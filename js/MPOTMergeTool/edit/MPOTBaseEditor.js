@@ -78,7 +78,6 @@ MPOTBaseEditor.prototype._findFocusInput = function () {
         if (input.checked) res = input;
     }
     return res || this.$inputList[0];
-
 };
 
 MPOTBaseEditor.prototype.focus = function () {

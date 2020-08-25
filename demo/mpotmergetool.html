@@ -17,6 +17,51 @@
 </head>
 <body>
 <script>
+
+    const MPOTBaseEditor = absol.mpot.MPOTBaseEditor;
+    const MPOTBasePreview = absol.mpot.MPOTBasePreview;
+    //Tạo 1 kiểu data để có thể gọi submit
+    var _ = absol._;
+    var $ = absol.$;
+    function MPOTSubmitEditor(){
+        MPOTBaseEditor.call(this);
+    }
+
+    absol.OOP.mixClass(MPOTSubmitEditor, MPOTBaseEditor);
+    MPOTSubmitEditor.prototype.type = 'submit';
+
+    MPOTSubmitEditor.prototype.createView = function(){
+        MPOTBaseEditor.prototype.createView.call(this);
+        var thisE = this;
+        this.$button = _({
+            tag:'flexiconbutton',
+            props:{
+                icon:'span.mdi.mdi-arrow-right-bold-outline',
+                text:'Submit'
+            },
+            on:{
+                click: function(){
+                    thisE.notifyChange();
+                }
+            }
+        });
+        this.$view.addChild(this.$button);
+    }
+
+    function MPOTSubmitPreview(){
+        MPOTBasePreview.call(this);
+    }
+    absol.OOP.mixClass(MPOTSubmitPreview, MPOTBasePreview);
+    MPOTSubmitEditor.prototype.type = 'submit';
+    MPOTSubmitPreview.prototype.createView = function(){
+        MPOTBasePreview.prototype.createView.call(this);
+        this.$view.addStyle('display', 'none');
+    }
+
+    absol.mpot.typeHandler.EditorConstructors['submit'] = MPOTSubmitEditor;
+    absol.mpot.typeHandler.PreviewConstructors['submit'] = MPOTSubmitPreview;
+
+    // absol.mpot.typeHandler.EditorConstructors
     var myTool = new absol.form.MPOTMergeTool();
     var toolView = myTool.getView();
     myTool.setData(mpo_sample_data);
@@ -24,7 +69,9 @@
     document.body.appendChild(toolView);
     myTool.on('change', function (event) {
         console.log(event,  this.editor.getPreviewData(),
-            this.editor.getCompletedMask());
+            this.editor.getCompletedMask(),
+            this.editor.isCompleted(),
+        );
     });
 </script>
 </body>
