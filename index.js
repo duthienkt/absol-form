@@ -84,7 +84,6 @@ export default {
     TextArea: TextArea,
 
     Assembler: Assembler,
-    MPOTMergeTool: MPOTMergeTool,
     core: Fcore
 };
 
