@@ -41,19 +41,6 @@ import * as framePlugins from './js/frame/plugins';
 import LayoutEditorCmd from './js/cmds/LayoutEditorCmd';
 import FormPreviewCmd, {FormPreviewCmdDescriptors} from './js/cmds/FormPreviewCmd';
 import FormEditorPreconfig from './js/FormEditorPreconfig';
-import MPOTMergeTool from "./js/MPOTMergeTool/MPOTMergeTool";
-import MPOTBaseEditor from "./js/MPOTMergeTool/edit/MPOTBaseEditor";
-import MPOTGroupEditor from "./js/MPOTMergeTool/edit/MPOTGroupEditor";
-import MPOTNotSupportEditor from "./js/MPOTMergeTool/edit/MPOTNotSupportEditor";
-import MPOTNumberEditor from "./js/MPOTMergeTool/edit/MPOTNumberEditor";
-import MPOTTextEditor from "./js/MPOTMergeTool/edit/MPOTTextEditor";
-import MPOTBasePreview from "./js/MPOTMergeTool/preview/MPOTBasePreview";
-import MPOTGroupPreview from "./js/MPOTMergeTool/preview/MPOTGroupPreview";
-import MPOTImagePreview from "./js/MPOTMergeTool/preview/MPOTImagePreview";
-import MPOTNotSupportPreview from "./js/MPOTMergeTool/preview/MPOTNotSupportPreview";
-import MPOTNumberPreview from "./js/MPOTMergeTool/preview/MPOTNumberPreview";
-import MPOTTextPreview from "./js/MPOTMergeTool/preview/MPOTTextPreview";
-import * as MPOTTypeHandler from "./js/MPOTMergeTool/TypeHandler";
 
 export default {
     FormEditorPreconfig: FormEditorPreconfig,
@@ -98,21 +85,6 @@ export default {
 
     Assembler: Assembler,
     MPOTMergeTool: MPOTMergeTool,
-    core: Fcore,
-    mpot: {
-        MPOTMergeTool: MPOTMergeTool,
-        MPOTBaseEditor: MPOTBaseEditor,
-        MPOTGroupEditor: MPOTGroupEditor,
-        MPOTNotSupportEditor: MPOTNotSupportEditor,
-        MPOTNumberEditor: MPOTNumberEditor,
-        MPOTTextEditor: MPOTTextEditor,
-        MPOTBasePreview: MPOTBasePreview,
-        MPOTGroupPreview: MPOTGroupPreview,
-        MPOTImagePreview: MPOTImagePreview,
-        MPOTNotSupportPreview: MPOTNotSupportPreview,
-        MPOTNumberPreview: MPOTNumberPreview,
-        MPOTTextPreview: MPOTTextPreview,
-        typeHandler: MPOTTypeHandler
-    }
+    core: Fcore
 };
 
