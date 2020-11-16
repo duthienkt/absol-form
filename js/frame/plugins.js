@@ -125,8 +125,7 @@ export function PluginProjectExplore(context) {
                                 status: 'close'
                             },
                             on: {
-                                press: function () {
-                                    this.status = { open: 'close', close: 'open' }[this.status];
+                                statuschange: function () {
                                     if (this.status == 'open')
                                         visit(res, path.concat([it.name]))
                                 }
