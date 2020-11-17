@@ -1,10 +1,10 @@
 import Context from "absol/src/AppPattern/Context";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
 import Fcore from "../core/FCore";
-import { camelCaseToPascalCase } from "absol/src/String/stringFormat";
-import { FONT_ITEMS } from "../font/GoogleFont";
+import {camelCaseToPascalCase} from "absol/src/String/stringFormat";
+import {FONT_ITEMS} from "../font/GoogleFont";
 import QuickMenu from "absol-acomp/js/QuickMenu";
-import { base64EncodeUnicode } from "absol/src/Converter/base64";
+import {base64EncodeUnicode} from "absol/src/Converter/base64";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -21,7 +21,6 @@ function MultiObjectPropertyEditor() {
     this.propertyNames = [];
     this.queuePools = {};
 }
-
 
 
 Object.defineProperties(MultiObjectPropertyEditor.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
@@ -116,7 +115,8 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
         if (!self[functionName]) {
             // throw new Error('Not support type' + descriptor.type + '!')
             functionName = 'loadNotSupportedProperty';
-        };
+        }
+        ;
 
         var rowElt = _({
             tag: 'tr',
@@ -170,7 +170,6 @@ MultiObjectPropertyEditor.prototype.putOnceFromPool = function (key) {
 };
 
 
-
 MultiObjectPropertyEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
     this.$view = _({
@@ -209,7 +208,6 @@ MultiObjectPropertyEditor.prototype.getView = function () {
 };
 
 
-
 MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, descriptor, cell, cellElt) {
     cellElt.addChild(_({ text: 'Not supported ' }))
         .addChild(_({
@@ -218,7 +216,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
         }));
     return {};
 };
-
 
 
 MultiObjectPropertyEditor.prototype.loadEnumProperty = function (name, descriptor, cell) {
@@ -231,7 +228,9 @@ MultiObjectPropertyEditor.prototype.loadEnumProperty = function (name, descripto
         selectMenu = _({
             tag: 'selectmenu',
             props: {
-                items: descriptor.values.map(function (value) { return { text: value + "", value: value } }),
+                items: descriptor.values.map(function (value) {
+                    return { text: value + "", value: value }
+                }),
                 value: this.getProperty(object, name)
             },
             on: {
@@ -256,7 +255,6 @@ MultiObjectPropertyEditor.prototype.loadEnumProperty = function (name, descripto
     cell.addChild(selectMenu);
     return res;
 };
-
 
 
 MultiObjectPropertyEditor.prototype.loadTextProperty = function (name, descriptor, cell) {
@@ -286,8 +284,6 @@ MultiObjectPropertyEditor.prototype.loadTextProperty = function (name, descripto
     res.requestUpdate();
     return res;
 };
-
-
 
 
 MultiObjectPropertyEditor.prototype.loadColorProperty = function (name, descriptor, cell) {
@@ -320,7 +316,6 @@ MultiObjectPropertyEditor.prototype.loadColorProperty = function (name, descript
     res.requestUpdate();
     return res;
 };
-
 
 
 MultiObjectPropertyEditor.prototype.loadUniqueTextProperty = function (name, descriptor, cell) {
@@ -389,8 +384,6 @@ MultiObjectPropertyEditor.prototype.loadConstProperty = function (name, descript
 };
 
 
-
-
 MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, cell) {
     var self = this;
     var res = {};
@@ -417,8 +410,12 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
     res.numberInputElt.on('change', function (event) {
         if (event.by == 'keyup') return;
         switch (res.typeSelectElt.value) {
-            case '%': self.setPropertyAll(name, this.value + '%'); break;
-            case 'px': self.setPropertyAll(name, this.value); break;
+            case '%':
+                self.setPropertyAll(name, this.value + '%');
+                break;
+            case 'px':
+                self.setPropertyAll(name, this.value);
+                break;
         }
         self.notifyChange(name);
         if (event.by != 'long_press_button')
@@ -426,8 +423,12 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
     })
         .on('stopchange', function () {
             switch (res.typeSelectElt.value) {
-                case '%': self.setPropertyAll(name, this.value + '%'); break;
-                case 'px': self.setPropertyAll(name, this.value); break;
+                case '%':
+                    self.setPropertyAll(name, this.value + '%');
+                    break;
+                case 'px':
+                    self.setPropertyAll(name, this.value);
+                    break;
             }
             self.notifyStopChange(name);
         });
@@ -439,7 +440,7 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
         }
         else {
             res.numberInputElt.disabled = false;
-            var value = self.getProperty(name, this.value);
+            var value = self.getProperty(object, name, this.value);
             res.numberInputElt.value = value;
             if (this.value == '%') {
                 self.setPropertyAll(name, value + '%');
@@ -482,8 +483,6 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
 };
 
 
-
-
 MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name, descriptor, cell) {
     var self = this;
     var res = {};
@@ -508,8 +507,12 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
     res.numberInputElt.on('change', function (event) {
         if (event.by == 'keyup') return;
         switch (res.typeSelectElt.value) {
-            case '%': self.setPropertyAll(name, this.value + '%'); break;
-            case 'px': self.setPropertyAll(name, this.value); break;
+            case '%':
+                self.setPropertyAll(name, this.value + '%');
+                break;
+            case 'px':
+                self.setPropertyAll(name, this.value);
+                break;
         }
         self.notifyChange(name);
         if (event.by != 'long_press_button')
@@ -517,8 +520,12 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
     })
         .on('stopchange', function () {
             switch (res.typeSelectElt.value) {
-                case '%': self.setPropertyAll(name, this.value + '%'); break;
-                case 'px': self.setPropertyAll(name, this.value); break;
+                case '%':
+                    self.setPropertyAll(name, this.value + '%');
+                    break;
+                case 'px':
+                    self.setPropertyAll(name, this.value);
+                    break;
             }
             self.notifyStopChange(name);
         });
@@ -530,7 +537,7 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
         }
         else {
             res.numberInputElt.disabled = false;
-            var value = self.getProperty(name, this.value);
+            var value = self.getProperty(object, name, this.value);
             res.numberInputElt.value = value;
             if (this.value == '%') {
                 self.setPropertyAll(name, value + '%');
@@ -582,7 +589,6 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
 };
 
 
-
 MultiObjectPropertyEditor.prototype.loadFontProperty = function (name, descriptor, cell) {
     var self = this;
     var res = {};
@@ -620,7 +626,6 @@ MultiObjectPropertyEditor.prototype.loadFontProperty = function (name, descripto
 
     return res;
 };
-
 
 
 MultiObjectPropertyEditor.prototype.loadTextAlignProperty = function (name, descriptor, cell) {
@@ -683,8 +688,6 @@ MultiObjectPropertyEditor.prototype.loadTextAlignProperty = function (name, desc
 };
 
 
-
-
 MultiObjectPropertyEditor.prototype.loadBoxAlignProperty = function (name, descriptor, cell) {
     var self = this;
     var object = this.objects[this.objects.length - 1];
@@ -699,9 +702,10 @@ MultiObjectPropertyEditor.prototype.loadBoxAlignProperty = function (name, descr
         centerbottom: 'm24 0v24h-24v-24zm-1 1h-22v22h22zm-6.05 18h-9.9v2h9.9v-2m2.05-4h-14v2h14v-2m-1.85-4h-10.3v2h10.3v-2',
         rightbottom: 'm24 24v-24h-24v24zm-1-1h-22v-22h22zm-2-2h-10.3v-2h10.3v2m0-4h-14v-2h14v2m0-4h-9.9v-2h9.9v2'
     };
+
     function makeIcon(path) {
         var data = '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                    <path d="'+ path + '" style="stroke-width:0"/>\
+                    <path d="' + path + '" style="stroke-width:0"/>\
                 </svg>';
         return {
             tag: 'img',
@@ -791,22 +795,20 @@ MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descrip
     var numberInput = this.putOnceFromPool("NUMBER_INPUT");//same with all sign
     if (numberInput === null) {
         numberInput = _({
-            tag: 'numberinput',
-            class: 'as-need-update',
-            props: {
-
-            },
-            on: {
-                change: function (event) {
-                    if (event.by == 'keyup') return;
-                    if (!descriptor.livePreview && event.by == 'long_press_button') return;
-                    this.peditor.setPropertyAll(this._propertyName, this.value);
-                    this.peditor.notifyChange(this._propertyName, this);
-                    if (event.by != 'long_press_button')
-                        this.peditor.notifyStopChange(this._propertyName);
+                tag: 'numberinput',
+                class: 'as-need-update',
+                props: {},
+                on: {
+                    change: function (event) {
+                        if (event.by == 'keyup') return;
+                        if (!descriptor.livePreview && event.by == 'long_press_button') return;
+                        this.peditor.setPropertyAll(this._propertyName, this.value);
+                        this.peditor.notifyChange(this._propertyName, this);
+                        if (event.by != 'long_press_button')
+                            this.peditor.notifyStopChange(this._propertyName);
+                    }
                 }
             }
-        }
         );
     }
     if (descriptor.sign)
@@ -830,8 +832,6 @@ MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descrip
     //todo NULL
     return res;
 };
-
-
 
 
 MultiObjectPropertyEditor.prototype.loadBoolProperty = function (name, descriptor, cell) {
@@ -918,7 +918,6 @@ MultiObjectPropertyEditor.prototype.notifyChange = function (name, from) {
 MultiObjectPropertyEditor.prototype.notifyStopChange = function (name) {
     this.emit('stopchange', { type: 'stopchange', name: name, objects: this.objects }, this);
 };
-
 
 
 export default MultiObjectPropertyEditor;
