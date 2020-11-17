@@ -2,9 +2,9 @@ import RelativeAnchor from "../anchors/RelativeAnchor";
 import Fcore from "../core/FCore";
 import BaseLayout from "../core/BaseLayout";
 import RelativeAnchorEditor from "../anchoreditors/RelativeAnchorEditor";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
-
 
 
 function RelativeLayout() {
@@ -12,8 +12,8 @@ function RelativeLayout() {
 
 }
 
-Object.defineProperties(RelativeLayout.prototype, Object.getOwnPropertyDescriptors(BaseLayout.prototype));
-RelativeLayout.prototype.constructor = RelativeLayout;
+OOP.mixClass(RelativeLayout, BaseLayout);
+
 
 RelativeLayout.prototype.tag = 'RelativeLayout';
 RelativeLayout.prototype.menuIcon = 'span.mdi.mdi-relative-scale';
@@ -25,7 +25,6 @@ RelativeLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', '
 RelativeLayout.prototype.getAnchorConstructor = function () {
     return RelativeAnchor;
 };
-
 
 
 RelativeLayout.prototype.getAnchorEditorConstructor = function () {
@@ -57,15 +56,15 @@ RelativeLayout.prototype.onRemoveChild = function (child, index) {
 
 /**
  * @param {BaseComponent} component
- * @returns {BaseComponent} auto set disable style 
+ * @returns {BaseComponent} auto set disable style
  */
 RelativeLayout.prototype.reMeasureChild = function (component) {
-    if (!window.remesureChecked){
+    if (!window.remesureChecked) {
         window.remesureChecked = true;
-        console.trace("Remeasure was removed" );
+        console.trace("Remeasure was removed");
     }
     return;
-    
+
     switch (component.style.hAlign) {
         case "left":
             component.setStyle('right', this.style.width - component.style.left - component.style.width);
@@ -101,7 +100,6 @@ RelativeLayout.prototype.reMeasureChild = function (component) {
 };
 
 
-
 /**
  * @param {BaseComponent} child,
  * @param {Number} posX
@@ -114,8 +112,6 @@ RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
     child.setStyle('left', posX);
     child.setStyle('top', posY);
 };
-
-
 
 
 export default RelativeLayout;

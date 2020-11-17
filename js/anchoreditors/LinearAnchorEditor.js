@@ -238,7 +238,7 @@ LinearAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         isChange: false,
     };
     if (userAction) {
-        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, repeatEvent: event, target: this }, this);
+        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event, repeatEvent: event }, this);
         this.$modal.addTo(document.body);
         this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
     }

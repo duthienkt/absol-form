@@ -34,7 +34,7 @@ function RelativeAnchorEditor(layoutEditor) {
         .on('click', function (ev) {
             self.emit('click', ev, true);
         })
-        .on('dblclick', this.execCmd.bind(this, 'editLayout'));
+        .on('dblclick', this.execCmd.bind(this, 'layoutEdit'));
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
     this.$topAlignLine = _('vline');
@@ -280,7 +280,7 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         nearestX: [],
     };
     if (userAction) {
-        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event.originEvent || event, repeatEvent: event, target: this }, this);
+        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event.originEvent || event, repeatEvent: event }, this);
         this.$modal.addTo(document.body);
         this._updateSnapLines();
         this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
@@ -418,7 +418,7 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
         movingData.isChange = true;
     }
     if (userAction) {
-        this.emit('moving', { taget: this, type: 'moving', originEvent: event.originEvent || event, repeatEvent: event, target: this, repeatEvent: event }, this);
+        this.emit('moving', { taget: this, type: 'moving', originEvent: event.originEvent || event, target: this, repeatEvent: event }, this);
         this._updateSnapLines();
         this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
     }

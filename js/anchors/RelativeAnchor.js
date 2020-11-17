@@ -2,12 +2,15 @@ import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import '../../css/relativeanchor.css';
 import '../../css/alignbox.css';
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 /**
  * AnchorBox only has on child node
+ * @extends FViewable
+ * @constructor
  */
 function RelativeAnchor() {
     FViewable.call(this);
@@ -21,8 +24,7 @@ function RelativeAnchor() {
     this.onCreated();
 }
 
-Object.defineProperties(RelativeAnchor.prototype, Object.getOwnPropertyDescriptors(FViewable.prototype));
-RelativeAnchor.prototype.construtor = RelativeAnchor;
+OOP.mixClass(RelativeAnchor, FViewable);
 
 RelativeAnchor.prototype.onCreate = function () {/* NOOP */ }
 
