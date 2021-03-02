@@ -20,12 +20,16 @@ function ProjectExplorer() {
     this.data = {
         projectName: null
     };
-    PluginManager.exec(this, R.PLUGINS.PROJECT_EXPLORER, this.pluginContext);
 }
 
 Object.defineProperties(ProjectExplorer.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 Object.defineProperties(ProjectExplorer.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 EventEmitter.prototype.constructor = ProjectExplorer;
+
+
+ProjectExplorer.prototype.onStart = function (){
+    PluginManager.exec(this, R.PLUGINS.PROJECT_EXPLORER, this.pluginContext);
+};
 
 ProjectExplorer.prototype.getView = function () {
     var self = this;
