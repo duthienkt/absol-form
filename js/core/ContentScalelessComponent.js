@@ -6,6 +6,10 @@ import ScalableComponent from "../core/ScalableComponent";
 var _ = Fcore._;
 var $ = Fcore.$;
 
+/***
+ * @extends ScalableComponent
+ * @constructor
+ */
 function ContentScalelessComponent() {
     ScalableComponent.call(this);
 }
