@@ -4,16 +4,24 @@ import FNode from './FNode';
 import FModel from './FModel';
 import PluginManager from './PluginManager';
 import FormEditorPreconfig from '../FormEditorPreconfig';
+import OOP from "absol/src/HTML5/OOP";
 
 var extendAttributeNames = Object.keys(FormEditorPreconfig.extendAttributes);
 
-
+/***
+ * @constructor
+ * @augments EventEmitter
+ * @augments FViewable
+ * @augments FNode
+ * @augments FModel
+ */
 function BaseComponent() {
     EventEmitter.call(this);
     this.events = {};
     FViewable.call(this);
     FNode.call(this);
     FModel.call(this);
+    this.fragment = null;
     this.anchorAcceptsStyleName = {};
     this.onCreate();
     this.view = this.render();
@@ -21,24 +29,22 @@ function BaseComponent() {
     this.onCreated();
 }
 
-Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
-Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(FViewable.prototype));
-Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(FNode.prototype));
-Object.defineProperties(BaseComponent.prototype, Object.getOwnPropertyDescriptors(FModel.prototype));
-BaseComponent.prototype.constructor = BaseComponent;
+OOP.mixClass(BaseComponent, EventEmitter, FViewable, FViewable, FModel, FNode);
+
 
 extendAttributeNames.forEach(function (name) {
-    var prototyConfig = FormEditorPreconfig.extendAttributes[name];
-    if (prototyConfig.setValue)
-        BaseComponent.prototype['setAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1)] = prototyConfig.setValue;
-    if (prototyConfig.getValue)
-        BaseComponent.prototype['getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1)] = prototyConfig.getValue;
-    if (prototyConfig.getDescriptor)
-        BaseComponent.prototype['getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor'] = prototyConfig.getDescriptor;
+    var prototypeConfig = FormEditorPreconfig.extendAttributes[name];
+    if (prototypeConfig.setValue)
+        BaseComponent.prototype['setAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1)] = prototypeConfig.setValue;
+    if (prototypeConfig.getValue)
+        BaseComponent.prototype['getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1)] = prototypeConfig.getValue;
+    if (prototypeConfig.getDescriptor)
+        BaseComponent.prototype['getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor'] = prototypeConfig.getDescriptor;
     else console.console.error('FormEditorPreconfig.extendAttributes["' + name + '"] must contains getDescriptor function');
 });
 
 
+BaseComponent.prototype.type = "COMPONENT";
 BaseComponent.prototype.tag = "BaseComponent";
 BaseComponent.prototype.menuIcon = "span.mdi.mdi-package-variant-closed";
 
@@ -63,13 +69,15 @@ BaseComponent.prototype.onCreated = function () {
 };
 
 BaseComponent.prototype.onAnchorAttached = function () {
-    this.anchorAcceptsStyleName = this.anchor.getAcceptsStyleNames().reduce(function (ac, key) { ac[key] = true; return ac; }, {});
+    this.anchorAcceptsStyleName = this.anchor.getAcceptsStyleNames().reduce(function (ac, key) {
+        ac[key] = true;
+        return ac;
+    }, {});
 };
 
 BaseComponent.prototype.onAnchorDetached = function () {
     this.anchorAcceptsStyleName = {};
 };
-
 
 
 BaseComponent.prototype.onAttached = function (parent) {
@@ -93,6 +101,10 @@ BaseComponent.prototype.getData = function () {
     var self = this;
     var data = {
         tag: this.tag
+    }
+
+    if (this.fragment) {
+        //todo: get data from fragment
     }
 
     var attributeKeys = Object.keys(this.attributes).filter(function (key) {
@@ -136,7 +148,6 @@ BaseComponent.prototype.getData = function () {
 
     return data;
 }
-
 
 
 BaseComponent.prototype.fire = function (name) {
@@ -311,7 +322,6 @@ BaseComponent.prototype.setStyleHeight = function (value, unit) {
 };
 
 
-
 BaseComponent.prototype.getStyleWidth = function (unit) {
     if (unit == 'px') {
         if (this.style.hAlign == 'fixed' || this.style.hAlign == 'auto' || typeof this.style.width != 'number')
@@ -328,7 +338,8 @@ BaseComponent.prototype.getStyleWidth = function (unit) {
         else {
             return parseFloat(this.style.width.replace('%', ''));
         }
-    } else
+    }
+    else
         return this.style.width;
 };
 
@@ -349,7 +360,8 @@ BaseComponent.prototype.getStyleHeight = function (unit) {
         else {
             return parseFloat(this.style.height.replace('%', ''));
         }
-    } else
+    }
+    else
         return this.style.height;
 };
 
@@ -362,5 +374,22 @@ BaseComponent.prototype.getStyleHeightDescriptor = function () {
     return { type: 'measureSize' };
 
 };
+
+/***
+ * @returns {PropertyDescriptor||{}|null}
+ */
+BaseComponent.prototype.getDataBindingDescriptor = function () {
+    return null;
+};
+
+BaseComponent.prototype.bindDataToObject = function (obj) {
+    var name = this.getAttribute('name');
+    var descriptor = this.getDataBindingDescriptor();
+    console.log(obj, name, descriptor)
+    if (descriptor)
+        Object.defineProperty(obj, name, descriptor);
+    return !!descriptor;
+};
+
 
 export default BaseComponent;
