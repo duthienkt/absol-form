@@ -3,22 +3,26 @@ import Fcore from "../core/FCore";
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
 import Text from "./Text";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
+/***
+ * @extends ContentScalelessComponent
+ * @constructor
+ */
 function Label() {
     ContentScalelessComponent.call(this);
 }
 
+OOP.mixClass(Label, ContentScalelessComponent);
 
-Object.defineProperties(Label.prototype, Object.getOwnPropertyDescriptors(ContentScalelessComponent.prototype));
-Label.prototype.constructor = Label;
 
 Label.prototype.tag = "Label";
 Label.prototype.menuIcon = 'span.mdi.mdi-label-outline';
 
-Label.prototype.onCreate = function(){
+Label.prototype.onCreate = function () {
     ContentScalelessComponent.prototype.onCreate.call(this);
     this.attributes.text = this.attributes.name;
     this.style.height = 15;
@@ -27,7 +31,6 @@ Label.prototype.onCreate = function(){
     this.style.textSize = 0;
     this.style.textColor = 'black'
 };
-
 
 
 Label.prototype.getAcceptsStyleNames = function () {
@@ -59,15 +62,28 @@ Label.prototype.setAttributeText = function (value) {
     return value;
 };
 
-Label.prototype.getAcceptsAttributeNames = function(){
+Label.prototype.getAcceptsAttributeNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["text"]);
 };
 
-Label.prototype.getAttributeTextDescriptor = function(){
+Label.prototype.getAttributeTextDescriptor = function () {
     return {
-        type:"text",
-        sign:"SimpleText"
+        type: "text",
+        sign: "SimpleText"
     }
+};
+
+Label.prototype.getDataBindingDescriptor = function () {
+    var thisC = this;
+    return {
+        configurable: true,
+        get: function () {
+            return thisC.getAttribute('text');
+        },
+        set: function (value) {
+            thisC.setAttribute('text', value);
+        }
+    };
 };
 
 export default Label;
