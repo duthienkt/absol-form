@@ -58,7 +58,7 @@ FNode.prototype.addChild = function (child) {
 
 /**
  * @param {FNode} child
- * @return {FNode}
+ * @return {Boolean}
  */
 FNode.prototype.removeChild = function (child) {
     var childIndex = this.children.indexOf(child);
