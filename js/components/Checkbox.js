@@ -2,17 +2,21 @@ import Fcore from "../core/FCore";
 
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
-
+/***
+ * @extends ContentScalelessComponent
+ * @constructor
+ */
 function CheckBox() {
     ContentScalelessComponent.call(this);
 }
 
-Object.defineProperties(CheckBox.prototype, Object.getOwnPropertyDescriptors(ContentScalelessComponent.prototype));
-CheckBox.prototype.constructor = CheckBox;
+OOP.mixClass(CheckBox, ContentScalelessComponent);
+
 CheckBox.prototype.tag = "CheckBox";
 CheckBox.prototype.menuIcon = "span.mdi.mdi-check-box-outline";
 
@@ -69,6 +73,19 @@ CheckBox.prototype.getAcceptsEventNames = function () {
 
 CheckBox.prototype.measureMinSize = function () {
     return { width: 18, height: 18 };
+};
+
+CheckBox.prototype.getDataBindingDescriptor = function () {
+    var thisC = this;
+    return {
+        set: function (value) {
+            return thisC.setAttribute('checked', !!value);
+        },
+        get: function () {
+            return thisC.getAttribute('checked');
+        },
+        configurable: true
+    }
 };
 
 export default CheckBox;
