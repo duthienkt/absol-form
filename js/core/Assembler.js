@@ -19,7 +19,8 @@ import Rectangle from "../shapes/Rectangle";
 import ChainLayout from "../layouts/ChainLayout";
 
 function Assembler() {
-    this.constructors = {};
+    this.componentConstructors = {};
+    this.fragmentConstructors = {};
     this.addConstructor(Button);
     this.addConstructor(CheckBox);
     this.addConstructor(ComboBox);
@@ -37,77 +38,166 @@ function Assembler() {
     this.addConstructor(ChainLayout);
     this.addConstructor(Ellipse);
     this.addConstructor(Rectangle);
+}
+
+/***
+ *
+ * @param data
+ * @param {FmFragment=} frag
+ * @return {BaseComponent|FmFragment}
+ */
+Assembler.prototype.build = function (data, frag) {
+    if (data.class) {
+        return this.buildFragment(data);
+    }
+    else if (data.tag) {
+        return this.buildComponent(data, frag);
+    }
+    else throw new Error("Can not detect data type!");
 };
 
-
-Assembler.prototype.build = function (data) {
-    var construction = this.constructors[data.tag];
-    
-    var result = null;
-    if (typeof construction == 'function') {
-        result = new construction();
-        var style = data.style;
-        if (typeof style == 'object')
-            for (var styleName in style) {
-                result.setStyle(styleName, style[styleName]);
+Assembler.prototype.buildFragment = function (data) {
+    var constructor;
+    if (typeof data.class === 'string') {
+        constructor = data.class.split('.').reduce(function (ac, cr) {
+            if (ac) {
+                ac = ac[cr];
             }
+            return ac;
+        }, window);
+    }
+    if (typeof data.class === "function" && data.class.type === "FRAGMENT") {
+        constructor = data.class;
+    }
+    else {
+        throw  new Error("Invalid FmFragment class!");
+    }
+    var frag = new constructor();
+    frag.setContentView(this.buildComponent(frag.contentViewData));
+    var fragView = frag.view;
+    var style = data.style;
+    if (typeof style == 'object')
+        for (var styleName in style) {
+            fragView.setStyle(styleName, style[styleName]);
+        }
 
-        var attributes = data.attributes;
-        if (typeof attributes == 'object')
-            for (var attributeName in attributes) {
-                result.setAttribute(attributeName, attributes[attributeName]);
+    var attributes = data.attributes;
+    if (typeof attributes == 'object')
+        for (var attributeName in attributes) {
+            frag.setAttribute(attributeName, attributes[attributeName]);
+        }
+
+    // var events = data.events;
+    // if (typeof events == 'object')
+    //     for (var eventName in events) {
+    //         result.setEvent(eventName, events[eventName]);
+    //     }
+
+    return frag;
+};
+
+/***
+ *
+ * @param data
+ * @param {FmFragment=} frag
+ * @return {BaseComponent}
+ */
+Assembler.prototype.buildComponent = function (data, frag) {
+    var construction;
+    if (typeof data.tag === "function")
+        construction = data.tag;
+    else construction = this.componentConstructors[data.tag];
+    if (!construction) throw new Error("Invalid tag " + data.tag);
+
+    var result = new construction();
+    var style = data.style;
+    if (typeof style == 'object')
+        for (var styleName in style) {
+            result.setStyle(styleName, style[styleName]);
+        }
+
+    var attributes = data.attributes;
+    if (typeof attributes == 'object')
+        for (var attributeName in attributes) {
+            result.setAttribute(attributeName, attributes[attributeName]);
+        }
+
+    var events = data.events;
+    if (typeof events == 'object')
+        for (var eventName in events) {
+            result.setEvent(eventName, events[eventName]);
+        }
+
+    var children = data.children;
+    if (children && children.length > 0) {
+        for (var i = 0; i < children.length; ++i) {
+            var child = this.build(children[i]);
+            if (child.type === "FRAGMENT") {
+                result.addChild(child.view);
+                if (frag)
+                    frag.addChild(child);
             }
-
-        var events = data.events;
-        if (typeof events == 'object')
-            for (var eventName in events) {
-                result.setEvent(eventName, events[eventName]);
-            }
-
-        var children = data.children;
-        if (children && children.length > 0) {
-            for (var i = 0; i < children.length; ++i) {
-                var child = this.build(children[i]);
+            else
                 result.addChild(child);
-            }
         }
     }
 
+    /*
     var context = { self: this, assembler: this, data: data, result: result };
     PluginManager.exec(this, R.PLUGINS.BUILD_COMPONENT, context);
     result = context.result;
     if (result == null) {
         console.error("Cannot handle ", data);
     }
+     */
 
     return result;
-
 };
 
 Assembler.prototype.addConstructor = function (arg0, arg1) {
+    var name;
+    var constructor;
     if (typeof arg0 == 'function') {
         var name = arg0.prototype.tag || arg0.name;
-        this.constructors[name] = arg0;
+        constructor = arg0;
+        this.componentConstructors[name] = arg0;
     }
     else if (typeof arg0 == 'string') {
-        this.constructors[arg0] = arg1;
+        name = arg0;
+        constructor = arg1;
+        this.componentConstructors[arg0] = arg1;
     }
     else {
         throw new Error('Invalid params');
+    }
+
+    switch (constructor.prototype.type) {
+        case 'FRAGMENT':
+            this.componentConstructors[name] = constructor;
+            break;
+        case 'COMPONENT':
+            this.fragmentConstructors[name] = constructor;
+            break;
     }
 };
 
 Assembler.prototype.removeConstructor = function (arg0, arg1) {
     if (typeof arg0 == 'function') {
         var name = arg0.prototype.tag || arg0.name;
-        this.constructors[name] = undefined;
-        delete this.constructors[name];
+        switch (arg0.prototype.type) {
+            case "FRAGMENT":
+                delete this.fragmentConstructors[name];
+                break;
+            case "COMPONENT":
+                delete this.componentConstructors[name];
+                break;
+        }
     }
-    else if (typeof arg0 == 'string' && (this.constructors[arg0] == arg1 || arg1 == undefined)) {
-        delete this.constructors[arg0];
+    else if (typeof arg0 == 'string' && (this.componentConstructors[arg0] == arg1 || arg1 == undefined)) {
+        delete this.componentConstructors[arg0];
+        delete this.fragmentConstructors[arg0];
     }
 };
-
 
 
 Assembler.prototype.addComponent = function (name, construction) {
@@ -119,3 +209,5 @@ Assembler.prototype.removeComponent = function (name, construction) {
 };
 
 export default Assembler;
+
+export var AssemblerInstance = new Assembler();
