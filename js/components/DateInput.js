@@ -1,16 +1,22 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {beginOfDay} from "absol/src/Time/datetime";
+import OOP from "absol/src/HTML5/OOP";
 
 
 var _ = Fcore._;
 
+/***
+ * @extends ScalableComponent
+ * @constructor
+ */
 function DateInput() {
     ScalableComponent.call(this);
 }
 
-Object.defineProperties(DateInput.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-DateInput.prototype.constructor = DateInput;
+OOP.mixClass(DateInput, ScalableComponent);
+
+
 DateInput.prototype.tag = "DateInput";
 DateInput.prototype.menuIcon = "span.mdi.mdi-calendar-edit";
 DateInput.prototype.SUPPORT_STYLE_NAMES = ['top', 'left', 'right', 'top', 'bottom', 'width', 'height'];
