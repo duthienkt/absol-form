@@ -1,6 +1,6 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import { beginOfDay } from "absol/src/Time/datetime";
+import {beginOfDay} from "absol/src/Time/datetime";
 
 
 var _ = Fcore._;
@@ -35,7 +35,7 @@ DateInput.prototype.onCreated = function () {
     var self = this;
     this.view.on('change', function (event) {
         self.attributes.value = this.value;
-        self.emit('change', { type:'change', value: this.value}, self);
+        self.emit('change', { type: 'change', value: this.value }, self);
     });
 };
 
@@ -46,7 +46,8 @@ DateInput.prototype.setAttributeValue = function (value) {
     else if (typeof value == 'string' || typeof value == "number") {
         this.attributes.value = new Date(value);
         this.view.value = this.attributes.value;
-    } else {
+    }
+    else {
         this.attributes.value = null;
         this.view.value = this.attributes.value;
     }
@@ -64,18 +65,31 @@ DateInput.prototype.getAttributeValueDescriptor = function () {
         type: 'date',
         nullable: true,
         defaultValue: beginOfDay(new Date()),
-        sign:'SimpleDate'
+        sign: 'SimpleDate'
     }
 };
 
 
-
-DateInput.prototype.getAcceptsEventNames = function(){
+DateInput.prototype.getAcceptsEventNames = function () {
     return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
 
 DateInput.prototype.measureMinSize = function () {
     return { width: 75, height: 16 };
 };
+
+DateInput.prototype.getDataBindingDescriptor = function () {
+    var thisC = this;
+    return {
+        configurable: true,
+        set: function (value) {
+            thisC.setAttribute('value', value);
+        },
+        get: function () {
+            return thisC.getAttribute('value');
+        }
+    };
+};
+
 
 export default DateInput;
