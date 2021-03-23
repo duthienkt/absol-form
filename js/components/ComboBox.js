@@ -3,7 +3,10 @@ import ScalableComponent from "../core/ScalableComponent";
 
 var _ = Fcore._;
 
-
+/***
+ * @extends ScalableComponent
+ * @constructor
+ */
 function ComboBox() {
     ScalableComponent.call(this);
 }
@@ -24,21 +27,17 @@ ComboBox.prototype.onCreate = function () {
     ];
     this.attributes.value = '0';
     Object.defineProperty(this.attributes, 'text', {
-        get: function () {
-            if (this.list) {
-                for (var i = 0; i < this.list.length; ++i)
-                    if (this.list[i].value == this.value) return this.list[i].text;
-                return '';
+            get: function () {
+                if (this.list) {
+                    for (var i = 0; i < this.list.length; ++i)
+                        if (this.list[i].value == this.value) return this.list[i].text;
+                    return '';
+                }
+                else {
+                    return "";
+                }
             }
-            else {
-                return "";
-            }
-        },
-        set: function (value) {
-            //do nothing
-
         }
-    }
     )
 };
 
@@ -56,7 +55,6 @@ ComboBox.prototype.onCreated = function () {
     });
     this.attributes.value = this.view.value;
 };
-
 
 
 ComboBox.prototype.render = function () {
@@ -103,7 +101,7 @@ ComboBox.prototype.getAttributeTextDescriptor = function () {
 };
 
 
-ComboBox.prototype.getAcceptsEventNames = function(){
+ComboBox.prototype.getAcceptsEventNames = function () {
     return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
 
@@ -111,6 +109,38 @@ ComboBox.prototype.getAcceptsEventNames = function(){
 ComboBox.prototype.measureMinSize = function () {
     var minWidthStyle = parseFloat(this.view.getComputedStyleValue('min-width').replace('px'));
     return { width: Math.max(minWidthStyle, 24), height: 25 };
+};
+
+ComboBox.prototype.getDataBindingDescriptor = function (obj) {
+    var thisC = this;
+    var subObj = {};
+    Object.defineProperties(subObj, {
+        value: {
+            set: function (value) {
+                thisC.setAttribute('value', value);
+            },
+            get: function () {
+                return thisC.getAttribute('value');
+            }
+        },
+        list: {
+            get: function () {
+                return thisC.getAttribute('list');
+            },
+            set: function (value) {
+                thisC.setAttribute('list', value);
+            }
+        }
+    });
+
+    return {
+        set: function (value) {
+            Object.assign(subObj, value);
+        },
+        get: function () {
+            return subObj;
+        }
+    };
 };
 
 export default ComboBox;
