@@ -385,7 +385,6 @@ BaseComponent.prototype.getDataBindingDescriptor = function () {
 BaseComponent.prototype.bindDataToObject = function (obj) {
     var name = this.getAttribute('name');
     var descriptor = this.getDataBindingDescriptor();
-    console.log(obj, name, descriptor)
     if (descriptor)
         Object.defineProperty(obj, name, descriptor);
     return !!descriptor;
