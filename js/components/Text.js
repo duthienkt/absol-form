@@ -1,17 +1,22 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import showdown from 'showdown';
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 
 var showDownConverter = new showdown.Converter();
 
+
+/***
+ * @extends ScalableComponent
+ * @constructor
+ */
 function Text() {
     ScalableComponent.call(this);
 }
 
-Object.defineProperties(Text.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-Text.prototype.constructor = Text;
+OOP.mixClass(Text, ScalableComponent);
 
 Text.prototype.tag = "Text";
 Text.prototype.menuIcon = "span.mdi.mdi-format-color-text";
@@ -123,7 +128,7 @@ Text.prototype.getAttributeTextDescriptor = function () {
     return {
         type: "text",
         long: true,
-        sign:"HyperText"
+        sign: "HyperText"
     };
 };
 
@@ -132,7 +137,7 @@ Text.prototype.getAttributeTextDecodeDescriptor = function () {
     return {
         type: "enum",
         values: ['none', 'markdown', 'html'],
-        sign:'TextDecode'
+        sign: 'TextDecode'
     };
 };
 
@@ -159,7 +164,7 @@ Text.prototype.getStyleTextSizeDescriptor = function () {
         type: "number",
         min: 0,
         max: 1000,
-        sign:"TextSign"
+        sign: "TextSign"
     };
 };
 
@@ -167,17 +172,28 @@ Text.prototype.getStyleTextSizeDescriptor = function () {
 Text.prototype.getStyleTextAlignDescriptor = function () {
     return {
         type: "textAlign",
-        sign:"TextAlign"
+        sign: "TextAlign"
     };
 };
 
 Text.prototype.getStyleTextColorDescriptor = function () {
     return {
         type: "color",
-        sign:"TextColor"
+        sign: "TextColor"
     };
 };
 
+Text.prototype.getDataBindingDescriptor = function () {
+    var thisC = this;
+    return {
+        set: function (value) {
+            thisC.setAttribute('text', value);
+        },
+        get: function () {
+            return thisC.getAttribute('text');
+        }
+    }
+};
 
 
 export default Text;
