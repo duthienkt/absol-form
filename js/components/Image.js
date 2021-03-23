@@ -1,9 +1,14 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import Dom from "absol/src/HTML5/Dom";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 
+/**
+ * @extends ScalableComponent
+ * @constructor
+ */
 function Image() {
     ScalableComponent.call(this);
     this.naturalWidth = 0;
@@ -11,8 +16,7 @@ function Image() {
     this.loadedSync = Promise.resolve([0, 0]);
 }
 
-Object.defineProperties(Image.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-Image.prototype.constructor = Image;
+OOP.mixClass(Image, ScalableComponent);
 
 Image.prototype.tag = "Image";
 Image.prototype.menuIcon = "span.mdi.mdi-image-outline";
@@ -49,14 +53,29 @@ Image.prototype.getAttributeSrcDescriptor = function () {
     return {
         type: "text",
         long: true,
-        sign:'SimpleUrl'
+        sign: 'SimpleUrl'
     };
 };
 
 Image.prototype.getAttributeNaturalSizeDescriptor = function () {
     return {
         type: 'const',
-        value: this.loadedSync.then(function(wh){ return wh.join(' x ')})
+        value: this.loadedSync.then(function (wh) {
+            return wh.join(' x ')
+        })
+    };
+};
+
+Image.prototype.getDataBindingDescriptor = function () {
+    var thisC = this;
+    return {
+        configurable: true,
+        set: function (value) {
+            thisC.setAttribute('src', value);
+        },
+        get: function () {
+            return thisC.getAttribute('src');
+        }
     }
 };
 
