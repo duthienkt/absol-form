@@ -1,5 +1,6 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 
@@ -11,8 +12,7 @@ function ComboBox() {
     ScalableComponent.call(this);
 }
 
-Object.defineProperties(ComboBox.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-ComboBox.prototype.constructor = ComboBox;
+OOP.mixClass(ComboBox, ScalableComponent);
 
 ComboBox.prototype.tag = "ComboBox";
 ComboBox.prototype.menuIcon = 'span.mdi.mdi-arrow-down-drop-circle-outline';
@@ -111,7 +111,7 @@ ComboBox.prototype.measureMinSize = function () {
     return { width: Math.max(minWidthStyle, 24), height: 25 };
 };
 
-ComboBox.prototype.getDataBindingDescriptor = function (obj) {
+ComboBox.prototype.getDataBindingDescriptor = function () {
     var thisC = this;
     var subObj = {};
     Object.defineProperties(subObj, {
