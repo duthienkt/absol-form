@@ -1,15 +1,19 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import Text from "./Text";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 
+/***
+ * @extends ScalableComponent
+ * @constructor
+ */
 function Button() {
     ScalableComponent.call(this);
 }
 
-Object.defineProperties(Button.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-Button.prototype.constructor = Button;
+OOP.mixClass(Button, ScalableComponent);
 
 Button.prototype.tag = "Button";
 Button.prototype.menuIcon = "span.mdi.mdi-alpha-b-box";
@@ -60,7 +64,6 @@ Button.prototype.setStyleColorTheme = function (value) {
 };
 
 
-
 Button.prototype.getStyleColorThemeDescriptor = function (value) {
     return {
         type: 'enum',
@@ -86,7 +89,7 @@ Button.prototype.getAcceptsAttributeNames = function () {
 };
 
 Button.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font','textSize', 'colorTheme']);
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'textSize', 'colorTheme']);
 };
 
 
@@ -114,5 +117,15 @@ Button.prototype.measureMinSize = function () {
     return { width: fontSize * 2 + 2, height: fontSize * 2 + 2 }
 };
 
+
+Object.defineProperty(Button.prototype, 'text', {
+    configurable: true,
+    set: function (value) {
+        this.view.value = value;
+    },
+    get: function () {
+        return this.view.value;
+    }
+});
 
 export default Button;
