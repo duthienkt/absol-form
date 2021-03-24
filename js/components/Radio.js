@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -33,12 +34,15 @@ Radio.prototype.onCreate = function () {
 
 Radio.prototype.onCreated = function () {
     ContentScalelessComponent.prototype.onCreated.call(this);
+    OOP.drillProperty(this.attributes, this.$content, 'checked');
+    OOP.drillProperty(this.attributes, this.$content, 'value');
     var self = this;
     this.$content.on('change', function () {
-        self.attributes.checked = this.checked;
+        // self.attributes.checked = this.checked;
         if (self.events.change)
             console.log("TODO: exec", self.events.change);
     });
+
 };
 
 
@@ -46,11 +50,6 @@ Radio.prototype.renderContent = function () {
     return _('radiobutton');
 };
 
-
-Radio.prototype.setAttributeChecked = function (value) {
-    this.$content.checked = !!value;
-    return this.$content.checked;
-};
 
 Radio.prototype.setStyleWidth = function (value) {
     value = value >= 18 ? value : 18;
@@ -124,17 +123,16 @@ Radio.prototype.bindDataToObject = function (obj) {
             configurable: true,
             value: []
         });
-
         Object.defineProperty(obj, groupName, {
             set: function (value) {
                 for (var i = 0; i < obj[groupPropertyName].length; ++i) {
+                    console.log(obj[groupPropertyName][i].getAttribute('value'), value)
                     if (obj[groupPropertyName][i].getAttribute('value') == value) {
                         obj[groupPropertyName][i].setAttribute('checked', true);
                     }
                     else {
                         obj[groupPropertyName][i].setAttribute('checked', false);
                     }
-                    return null;
                 }
             },
             get: function () {
@@ -142,14 +140,15 @@ Radio.prototype.bindDataToObject = function (obj) {
                     if (obj[groupPropertyName][i].getAttribute('checked')) {
                         return obj[groupPropertyName][i].getAttribute('value');
                     }
-                    return null;
                 }
+                return undefined;
             }
         });
     }
-    if (!obj[groupPropertyName].indexOf(this)) {
+    if (obj[groupPropertyName].indexOf(this) < 0) {
         obj[groupPropertyName].push(this);
     }
+
 
 };
 
