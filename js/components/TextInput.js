@@ -2,16 +2,20 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import '../../css/component.css';
 import Text from "./Text";
+import OOP from "absol/src/HTML5/OOP";
 
 
 var _ = Fcore._;
 
+/***
+ * @extends ScalableComponent
+ * @constructor
+ */
 function TextInput() {
     ScalableComponent.call(this);
 }
 
-Object.defineProperties(TextInput.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-TextInput.prototype.constructor = TextInput;
+OOP.mixClass(TextInput, ScalableComponent);
 
 TextInput.prototype.tag = "TextInput";
 TextInput.prototype.menuIcon = "span.mdi.mdi-textbox";
@@ -22,14 +26,19 @@ TextInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
 TextInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
+    OOP.drillProperty(this.attributes, this.view, 'value');
     var self = this;
-    this.view.on('keyup', function () {
-        var lastValue = self.attributes.value;
-        if (this.value != lastValue) {
-            self.attributes.value = this.value;
-            self.emit('change', this.value, self);
-        }
-    });
+    var lastValue;
+    this.view
+        .on('keydown', function () {
+            lastValue = self.attributes.value;
+        })
+        .on('keyup', function () {
+            if (this.value != lastValue) {
+                self.attributes.value = this.value;
+                self.emit('change', this.value, self);
+            }
+        });
 };
 
 TextInput.prototype.onCreate = function () {
@@ -43,7 +52,6 @@ TextInput.prototype.onCreate = function () {
     this.style.textAlign = 'left';
     this.style.font = 'None';
 };
-
 
 
 TextInput.prototype.render = function () {
@@ -70,7 +78,6 @@ TextInput.prototype.getStyleTextAlignDescriptor = Text.prototype.getStyleTextAli
 
 TextInput.prototype.setStyleTextColor = Text.prototype.setStyleTextColor;
 TextInput.prototype.getStyleTextColorDescriptor = Text.prototype.getStyleTextColorDescriptor;
-
 
 
 TextInput.prototype.getAcceptsStyleNames = function () {
@@ -106,7 +113,7 @@ TextInput.prototype.getAcceptsAttributeNames = function () {
 TextInput.prototype.getAttributeValueDescriptor = function () {
     return {
         type: "text",
-        sign:"SimpleText"
+        sign: "SimpleText"
     }
 };
 
@@ -122,7 +129,7 @@ TextInput.prototype.getAttributeTextTypeDescriptor = function () {
     return {
         type: "enum",
         values: ['normal', 'password'],
-        sign:'InputTextType'
+        sign: 'InputTextType'
     }
 };
 
@@ -130,5 +137,18 @@ TextInput.prototype.getAttributeTextTypeDescriptor = function () {
 TextInput.prototype.getAcceptsEventNames = function () {
     return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
+
+TextInput.prototype.getDataBindingDescriptor = function () {
+    var thisC = this;
+    return {
+        configurable: true,
+        set: function (value) {
+            thisC.setAttribute('value', value);
+        },
+        get: function () {
+            return thisC.getAttribute('value');
+        }
+    };
+}
 
 export default TextInput;
