@@ -1,14 +1,19 @@
 import BaseComponent from "../core/BaseComponent";
 import Fcore from "../core/FCore";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 
+/***
+ * @extends BaseComponent
+ * @constructor
+ */
 function ScalableComponent() {
     BaseComponent.call(this);
 }
 
-Object.defineProperties(ScalableComponent.prototype, Object.getOwnPropertyDescriptors(BaseComponent.prototype));
-ScalableComponent.prototype.constructor = ScalableComponent;
+OOP.mixClass(ScalableComponent, BaseComponent);
+
 
 ScalableComponent.prototype.tag = "ScalableComponent";
 ScalableComponent.prototype.SUPPORT_STYLE_NAMES = ['width', 'height', 'top', 'left', 'right', 'top', 'bottom'];
