@@ -109,7 +109,7 @@ NumberInput.prototype.getAttributeMinDescriptor = function () {
     return {
         type: "number",
         nullable: true,
-        defaultValue: -9999,
+        defaultValue: -Infinity,
 
     };
 };
@@ -118,13 +118,27 @@ NumberInput.prototype.getAttributeMaxDescriptor = function () {
     return {
         type: "number",
         nullable: true,
-        defaultValue: 9999
+        defaultValue: Infinity
     };
 };
 
 
-NumberInput.prototype.getAcceptsEventNames = function(){
+NumberInput.prototype.getAcceptsEventNames = function () {
     return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
+};
+
+
+NumberInput.prototype.getDataBindingDescriptor = function () {
+    var thisC = this;
+    return {
+        configurable: true,
+        set: function (value) {
+            thisC.setAttribute('value', value);
+        },
+        get: function () {
+            return this.getAttribute('value');
+        }
+    };
 };
 
 export default NumberInput;
