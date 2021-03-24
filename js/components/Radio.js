@@ -18,7 +18,6 @@ Radio.prototype.tag = "Radio";
 Radio.prototype.menuIcon = "span.mdi.mdi-radiobox-marked";
 
 
-
 Radio.prototype.onCreate = function () {
     ContentScalelessComponent.prototype.onCreate.call(this);
     this.style.width = 18;
@@ -29,6 +28,7 @@ Radio.prototype.onCreate = function () {
     this.style.textVAlign = 'center';
     this.attributes.checked = false;
     this.attributes.value = '';
+    this.attributes.groupName = 'Radio_group_' + this.constructor.count;
 };
 
 Radio.prototype.onCreated = function () {
@@ -37,7 +37,7 @@ Radio.prototype.onCreated = function () {
     this.$content.on('change', function () {
         self.attributes.checked = this.checked;
         if (self.events.change)
-        console.log("TODO: exec",  self.events.change);     
+            console.log("TODO: exec", self.events.change);
     });
 };
 
@@ -73,13 +73,13 @@ Radio.prototype.getAttributeGroupNameDescriptor = function () {
     return {
         type: "text",
         regex: /[a-zA-Z0-9\_\-]+/,
-        sign:"RadioGroupIndent", 
+        sign: "RadioGroupIndent",
         independence: true
     };
 };
 
 Radio.prototype.setAttributValue = function (value) {
-    this.$content.attr('value', value+'');
+    this.$content.attr('value', value + '');
     return value;
 };
 
@@ -87,7 +87,7 @@ Radio.prototype.setAttributValue = function (value) {
 Radio.prototype.getAttributeValueDescriptor = function () {
     return {
         type: "text",
-        sign:"RadioValue",
+        sign: "RadioValue",
         independence: true
     };
 };
@@ -105,13 +105,52 @@ Radio.prototype.getAcceptsAttributeNames = function () {
 };
 
 
-Radio.prototype.getAcceptsEventNames = function(){
+Radio.prototype.getAcceptsEventNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
 
 
 Radio.prototype.measureMinSize = function () {
     return { width: 18, height: 18 };
+};
+
+
+Radio.prototype.bindDataToObject = function (obj) {
+    var groupName = this.getAttribute('groupName');
+    var groupPropertyName = '__radioGroup_' + groupName + '__';
+    if (obj[groupPropertyName] === undefined) {
+        Object.defineProperty(obj, groupPropertyName, {
+            enumerable: false,
+            configurable: true,
+            value: []
+        });
+
+        Object.defineProperty(obj, groupName, {
+            set: function (value) {
+                for (var i = 0; i < obj[groupPropertyName].length; ++i) {
+                    if (obj[groupPropertyName][i].getAttribute('value') == value) {
+                        obj[groupPropertyName][i].setAttribute('checked', true);
+                    }
+                    else {
+                        obj[groupPropertyName][i].setAttribute('checked', false);
+                    }
+                    return null;
+                }
+            },
+            get: function () {
+                for (var i = 0; i < obj[groupPropertyName].length; ++i) {
+                    if (obj[groupPropertyName][i].getAttribute('checked')) {
+                        return obj[groupPropertyName][i].getAttribute('value');
+                    }
+                    return null;
+                }
+            }
+        });
+    }
+    if (!obj[groupPropertyName].indexOf(this)) {
+        obj[groupPropertyName].push(this);
+    }
+
 };
 
 
