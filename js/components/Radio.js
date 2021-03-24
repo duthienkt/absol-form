@@ -126,7 +126,6 @@ Radio.prototype.bindDataToObject = function (obj) {
         Object.defineProperty(obj, groupName, {
             set: function (value) {
                 for (var i = 0; i < obj[groupPropertyName].length; ++i) {
-                    console.log(obj[groupPropertyName][i].getAttribute('value'), value)
                     if (obj[groupPropertyName][i].getAttribute('value') == value) {
                         obj[groupPropertyName][i].setAttribute('checked', true);
                     }
