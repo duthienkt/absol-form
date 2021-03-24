@@ -44,8 +44,8 @@ FViewable.prototype.getStyleDescriptors = function () {
 
 /**
  * @param {String} name
- * @param {} value
- * @returns {} value which is set 
+ * @param {*} value
+ * @returns {*} value which is set
  */
 FViewable.prototype.setStyle = function (name, value) {
     var functionName = 'setStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
@@ -65,7 +65,7 @@ FViewable.prototype.setStyle = function (name, value) {
 
 /**
 * @param {String} name
- * @returns {} value which is set 
+ * @returns {Object} value which is set
  */
 FViewable.prototype.getStyle = function (name) {
     var functionName = 'getStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
