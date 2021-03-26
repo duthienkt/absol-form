@@ -21,6 +21,10 @@ function BaseComponent() {
     FViewable.call(this);
     FNode.call(this);
     FModel.call(this);
+    /***
+     *
+     * @type {FmFragment}
+     */
     this.fragment = null;
     this.anchorAcceptsStyleName = {};
     this.onCreate();
@@ -142,7 +146,12 @@ BaseComponent.prototype.getData = function () {
 
     if (this.children.length > 0) {
         data.children = this.children.map(function (child) {
-            return child.getData();
+            if (child.fragment) {
+                return { class: child.fragment.tag };
+            }
+            else {
+                return child.getData();
+            }
         });
     }
 
@@ -241,6 +250,7 @@ BaseComponent.prototype.getAttributeNameDescriptor = function () {
     }
     var names = {};
     var self = this;
+
     function visit(node) {
         if (node != self) {
             names[node.attributes.name] = node;
