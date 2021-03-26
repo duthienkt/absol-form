@@ -49,10 +49,9 @@ function FormEditor() {
     this.statusBarElt = _('statusbar');
 
     this.setContext(R.STATUS_BAR_ELT, this.statusBarElt);
-    this.setContext(R.LAYOUT_EDITOR, this.mLayoutEditor);
     this.setContext(R.COMPONENT_PICKER, this.mComponentPicker);
-    this.setContext(R.UNDO_HISTORY, this.mUndoHistory);
     this.setContext(R.CMD_TOOL, this.mCMDTool);
+    this.setContext(R.PROJECT_EXPLORER, this.projectExplorer);
     this.mComponentPicker.attach(this);// share, but not run
     this.mCMDTool.attach(this);
     this.mFormPreview.attach(this);
@@ -119,7 +118,8 @@ FormEditor.prototype.config = {
 
 
 FormEditor.prototype.openProject = function (name) {
-    this.projectExplorer.openProject(name)
+    this.projectExplorer.openProject(name);
+    this.mComponentPicker.getView();//load component constructor
 };
 
 
@@ -141,7 +141,7 @@ FormEditor.prototype.openItem = function (type, ident, name, contentArguments, d
             PluginManager.exec(this, R.PLUGINS.LOAD_CONTENT_DATA, accumulator)
         }
         else {
-            throw new Error("The editor not supprt " + type + ' type!');
+            throw new Error("The editor not support " + type + ' type!');
         }
     }
     return this.editorHolders[ident];
