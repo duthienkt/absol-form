@@ -3,14 +3,15 @@ import '../../css/anchoreditor.css';
 import '../dom/Icons';
 import BaseAnchorEditor from '../core/BaseAnchorEditor';
 import RelativeAnchorEditorCmd, { RelativeAnchorEditorCmdTree, RelativeAnchorEditorCmdDescriptors } from '../cmds/RelativeAnchorEditorCmd';
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 
 /**
- * 
- * @param {import('../editor/LayoutEditor').default} layoutEditor 
+ * @extends BaseAnchorEditor
+ * @param {LayoutEditor} layoutEditor
  */
 function RelativeAnchorEditor(layoutEditor) {
     BaseAnchorEditor.call(this, layoutEditor);
@@ -34,7 +35,7 @@ function RelativeAnchorEditor(layoutEditor) {
         .on('click', function (ev) {
             self.emit('click', ev, true);
         })
-        .on('dblclick', this.execCmd.bind(this, 'layoutEdit'));
+        .on('dblclick', this.ev_dblClick);
     this.$resizeBox.defineEvent('contextmenu');
     this.$resizeBox.on('contextmenu', this.ev_contextMenu.bind(this));
     this.$topAlignLine = _('vline');
@@ -46,8 +47,7 @@ function RelativeAnchorEditor(layoutEditor) {
     this.snapDistance = 2;
 }
 
-Object.defineProperties(RelativeAnchorEditor.prototype, Object.getOwnPropertyDescriptors(BaseAnchorEditor.prototype));
-RelativeAnchorEditor.prototype.constructor = RelativeAnchorEditor;
+OOP.mixClass(RelativeAnchorEditor, BaseAnchorEditor);
 
 RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
     var self = this;
