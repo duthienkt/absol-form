@@ -19,8 +19,6 @@ import Rectangle from "../shapes/Rectangle";
 import ChainLayout from "../layouts/ChainLayout";
 
 function Assembler() {
-    this.componentConstructors = {};
-    this.fragmentConstructors = {};
     this.addConstructor(Button);
     this.addConstructor(CheckBox);
     this.addConstructor(ComboBox);
@@ -40,6 +38,9 @@ function Assembler() {
     this.addConstructor(Rectangle);
 }
 
+
+Assembler.prototype.componentConstructors = {};
+Assembler.prototype.fragmentConstructors = {};//share data
 /***
  *
  * @param data
@@ -59,40 +60,21 @@ Assembler.prototype.build = function (data, frag) {
 Assembler.prototype.buildFragment = function (data) {
     var constructor;
     if (typeof data.class === 'string') {
-        constructor = data.class.split('.').reduce(function (ac, cr) {
+        constructor = this.fragmentConstructors[data.class] || data.class.split('.').reduce(function (ac, cr) {
             if (ac) {
                 ac = ac[cr];
             }
             return ac;
         }, window);
     }
-    if (typeof data.class === "function" && data.class.type === "FRAGMENT") {
+    else if (typeof data.class === "function" && data.class.type === "FRAGMENT") {
         constructor = data.class;
     }
-    else {
+    if (!constructor) {
         throw  new Error("Invalid FmFragment class!");
     }
     var frag = new constructor();
-    frag.setContentView(this.buildComponent(frag.contentViewData));
-    var fragView = frag.view;
-    var style = data.style;
-    if (typeof style == 'object')
-        for (var styleName in style) {
-            fragView.setStyle(styleName, style[styleName]);
-        }
-
-    var attributes = data.attributes;
-    if (typeof attributes == 'object')
-        for (var attributeName in attributes) {
-            frag.setAttribute(attributeName, attributes[attributeName]);
-        }
-
-    // var events = data.events;
-    // if (typeof events == 'object')
-    //     for (var eventName in events) {
-    //         result.setEvent(eventName, events[eventName]);
-    //     }
-
+    frag.setContentView(this.buildComponent(frag.contentViewData, frag));
     return frag;
 };
 
@@ -170,12 +152,11 @@ Assembler.prototype.addConstructor = function (arg0, arg1) {
     else {
         throw new Error('Invalid params');
     }
-
     switch (constructor.prototype.type) {
-        case 'FRAGMENT':
+        case 'COMPONENT':
             this.componentConstructors[name] = constructor;
             break;
-        case 'COMPONENT':
+        case 'FRAGMENT':
             this.fragmentConstructors[name] = constructor;
             break;
     }
