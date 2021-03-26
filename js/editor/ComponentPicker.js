@@ -4,7 +4,6 @@ import TextInput from "../components/TextInput";
 import TextArea from "../components/TextArea";
 import NumberInput from "../components/NumberInput";
 import ComboBox from "../components/ComboBox";
-import SelectBox from "../components/SelectBox";
 import Radio from "../components/Radio";
 import CheckBox from "../components/Checkbox";
 import Label from "../components/Label";
@@ -38,6 +37,7 @@ function ComponentPicker() {
      */
     this.layoutEditor = null;
 }
+
 Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescriptors(Context.prototype));
 Object.defineProperties(ComponentPicker.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 ComponentPicker.prototype.constructor = ComponentPicker;
@@ -51,6 +51,7 @@ ComponentPicker.prototype.getView = function () {
     if (this.$view) return this.$view;
     if (this.$view) return this.$compExpTree;
     var self = this;
+
     function toggleGroup() {
         this.status = { open: 'close', close: 'open' }[this.status]
     }
@@ -72,7 +73,7 @@ ComponentPicker.prototype.getView = function () {
                     tag: 'exptree',
                     props: {
                         name: 'layouts',
-                        status: 'open'
+                        status: 'close'
                     },
                     on: {
                         press: toggleGroup
@@ -109,7 +110,7 @@ ComponentPicker.prototype.getView = function () {
                     tag: 'exptree',
                     props: {
                         name: 'inputs',
-                        status: 'open'
+                        status: 'close'
                     },
                     on: {
                         press: toggleGroup
@@ -178,7 +179,7 @@ ComponentPicker.prototype.getView = function () {
                     tag: 'exptree',
                     props: {
                         name: "static",
-                        status: 'open'
+                        status: 'close'
                     },
                     on: {
                         press: toggleGroup
@@ -222,7 +223,7 @@ ComponentPicker.prototype.getView = function () {
                     tag: 'exptree',
                     props: {
                         name: "trigger",
-                        status: 'open'
+                        status: 'close'
                     },
                     on: {
                         press: toggleGroup
@@ -242,7 +243,7 @@ ComponentPicker.prototype.getView = function () {
                     tag: 'exptree',
                     props: {
                         name: 'shapes',
-                        status: 'open'
+                        status: 'close'
                     },
                     on: {
                         press: toggleGroup
@@ -271,30 +272,42 @@ ComponentPicker.prototype.getView = function () {
         ]
     });
 
+    this.$all = $('exptree', this.$view);
+
+
     var context = { self: this, toggleGroup: toggleGroup, $view: this.$view };
     PluginManager.exec(this, R.PLUGINS.COMPONENT_PICKER_VIEW, context);
-    $('exptree', this.$view, function (elt) {
-        if (elt.componentConstructor) {
-            Draggable(elt.$node).on('begindrag', self.ev_constructorBeginDrag.bind(self, elt))
-                .on('enddrag', self.ev_constructorEndDrag.bind(self, elt))
-                .on('drag', self.ev_constructorDrag.bind(self, elt))
 
-        }
-    });
+    //todo: find and call
+
+    Draggable(this.$all).on('begindrag', self.ev_constructorBeginDrag.bind(self))
+        .on('enddrag', self.ev_constructorEndDrag.bind(self))
+        .on('drag', self.ev_constructorDrag.bind(self));
 
     return this.$view;
 };
 
+ComponentPicker.prototype._findComponentConstructor = function (elt) {
+    while (elt) {
+        if (elt.componentConstructor) return elt.componentConstructor;
+        elt = elt.parentElement;
+    }
+    return null;
+};
 
 
-ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
-
+ComponentPicker.prototype.ev_constructorBeginDrag = function (event) {
+    var constructor = this._findComponentConstructor(event.target);
+    this._currentComponentConstructor = constructor;
     this.$modal = this.$modal || _('.as-compopnent-picker-forceground');
     this.$higne = this.$higne || _('.as-compopnent-picker-higne').addTo(this.$modal);
     this.$addBoxCtn = this.$addBoxCtn || _('.as-compopnent-picker-add-box-container').addTo(this.$higne);
-    this.$addBox = this.$addBox || _({ class: 'as-compopnent-picker-add-box', child: { class: 'as-compopnent-picker-add-box-plus', child: 'span.mdi.mdi-plus' } }).addTo(this.$addBoxCtn);
+    this.$addBox = this.$addBox || _({
+        class: 'as-compopnent-picker-add-box',
+        child: { class: 'as-compopnent-picker-add-box-plus', child: 'span.mdi.mdi-plus' }
+    }).addTo(this.$addBoxCtn);
     if (this.$addBoxIcon) this.$addBoxIcon.remove();
-    this.$addBoxIcon = _(treeNode.icon).addTo(this.$addBox);
+    this.$addBoxIcon = _(constructor.prototype.menuIcon).addTo(this.$addBox);
     this.$modal.addTo(document.body);
     if (this.layoutEditor.rootLayout) {
         this._dragRect = this.layoutEditor.rootLayout.view.getBoundingClientRect();
@@ -305,18 +318,19 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (treeNode, event) {
 };
 
 
-ComponentPicker.prototype.ev_constructorEndDrag = function (treeNode, event) {
+ComponentPicker.prototype.ev_constructorEndDrag = function (event) {
     if (!this.$modal) return;//quick fix, must fix in Draggable
     this.$modal.remove();
+    var constructor = this._currentComponentConstructor;
     var x = event.clientX;
     var y = event.clientY;
     var rect = this._dragRect;
     if (rect && rect.top <= y && rect.bottom >= y && rect.left <= x && rect.right >= x) {
-        this.layoutEditor.addNewComponent(treeNode.componentConstructor, x - rect.left, y - rect.top);
+        this.layoutEditor.addNewComponent(constructor, x - rect.left, y - rect.top);
     }
 };
 
-ComponentPicker.prototype.ev_constructorDrag = function (treeNode, event) {
+ComponentPicker.prototype.ev_constructorDrag = function (event) {
     this.$addBoxCtn.addStyle({
         left: event.clientX + 'px',
         top: event.clientY + 'px'
