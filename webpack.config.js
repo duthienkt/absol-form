@@ -34,7 +34,7 @@ module.exports = {
                 options: { presets: [['@babel/preset-env', { modules: false }]] }
             },
             {
-                test: /\.(tpl|txt|xml|rels|svg|json)$/i,
+                test: /\.(tpl|txt|xml|rels|svg)$/i,
                 use: 'raw-loader',
             },
             {
@@ -46,6 +46,9 @@ module.exports = {
     optimization: {
         // We do not want to minimize our code.
         minimize: false
+    },
+    node: {
+        fs: 'empty'
     },
     devServer: {
         compress: false,
