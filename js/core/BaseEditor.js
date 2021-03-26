@@ -105,7 +105,6 @@ BaseEditor.prototype.notifyCmdDescriptorsChange = function () {
 };
 
 BaseEditor.prototype.notifyCmdChange = function(){
-    console.log('cmdchange');
     this.emit('cmdchange', { type: 'cmdchange' }, this);
 };
 
