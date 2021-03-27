@@ -117,7 +117,7 @@ BaseComponent.prototype.getData = function () {
 
     if (attributeKeys.length > 0) {
         data.attributes = attributeKeys.reduce(function (ac, key) {
-            ac[key] = self.attributes[key];
+            ac[key] = self.getAttribute(key);
             return ac;
         }, {});
     }
