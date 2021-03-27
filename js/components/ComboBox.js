@@ -67,6 +67,12 @@ ComboBox.prototype.setAttributeList = function (value) {
     return this.view.items;
 };
 
+ComboBox.prototype.getAttributeList = function () {
+    return this.view.items.map(function (item){
+        return  {text: item.text, value: item.value};
+    });
+};
+
 ComboBox.prototype.setAttributeValue = function (value) {
     this.view.value = value;
     return this.view.value;
@@ -84,7 +90,7 @@ ComboBox.prototype.getAcceptsAttributeNames = function () {
 
 ComboBox.prototype.getAttributeListDescriptor = function () {
     return {
-        type: 'list'
+        type: 'SelectList'
     };
 };
 ComboBox.prototype.getAttributeValueDescriptor = function () {
