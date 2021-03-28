@@ -1,8 +1,12 @@
 import XHR from 'absol/src/Network/XHR';
 import CodeEditor from '../editor/CodeEditor';
-import { base64EncodeUnicode } from 'absol/src/Converter/base64';
-import Fcore from '../core/FCore';
+import {base64EncodeUnicode} from 'absol/src/Converter/base64';
+import Fcore, {$, _} from '../core/FCore';
 import JSZip from 'jszip';
+import R from '../R';
+import ExpTree from "absol-acomp/js/ExpTree";
+import {makeFmFragmentConstructor} from "../core/FmFragment";
+import {AssemblerInstance} from "../core/Assembler";
 
 var WOKSPACE_FOLDER = 'formeditor/workspace';
 
@@ -86,31 +90,50 @@ function catWorkspace(path) {
 export function PluginProjectExplore(context) {
     var _ = context._;
     var $ = context.$;
+    var folder2icon = {
+        form: { tag: 'img', props: { src: 'https://absol.cf/exticons/extra/folder-neon.svg' } },
+        template: { tag: 'img', props: { src: 'https://absol.cf/exticons/extra/folder-svn.svg' } }
+    }
     /**
      * @type {import('../fragment/ProjectExplorer').default}
      */
     var self = context.self;
+
     function contextMenuEventHandler(contentArguments, event) {
-        // if (contentArguments.ext == 'form') {
-        event.showContextMenu({
-            items: [
+        var items = [];
+        if (contentArguments.type === 'FILE') {
+            items.push(
                 {
                     text: 'Open',
                     icon: 'span.mdi.mdi-menu-open',
                     cmd: 'open'
                 }
-            ],
+            );
+        }
+        else if (contentArguments.name === 'form') {
+            items.push(
+                {
+                    text: 'New Form',
+                    icon: 'span.mdi.mdi-plus',
+                    cmd: 'new_form'
+                }
+            );
+        }
+
+        event.showContextMenu({
+            items: items,
             extendStyle: {
                 fontSize: '12px'
             }
         }, function (event) {
             switch (event.menuItem.cmd) {
                 case 'open':
-                    self.openItem('form', contentArguments.fullPath.replace(/[^a-zA-Z0-9\_]/g, '_'), contentArguments.name, contentArguments, contentArguments.fullPath)
+                    self.openItem(contentArguments.ext, contentArguments.fullPath.replace(/[^a-zA-Z0-9\_]/g, '_'), contentArguments.name, contentArguments, contentArguments.fullPath)
                     break;
             }
         });
     }
+
     context.loadExpTree = function () {
         function visit(rootElt, path) {
             lsWorkspace(path.join('/')).then(function (result) {
@@ -121,7 +144,7 @@ export function PluginProjectExplore(context) {
                             tag: 'exptree',
                             props: {
                                 name: it.name,
-                                icon: 'span.mdi.mdi-folder',
+                                icon: folder2icon[it.name] || 'span.mdi.mdi-folder',
                                 status: 'close'
                             },
                             on: {
@@ -140,18 +163,17 @@ export function PluginProjectExplore(context) {
                                 icon: extIcons[it.ext] || extIcons['*']
                             }
                         });
-                        res.getNode().defineEvent('contextmenu')
-                            .on('contextmenu', contextMenuEventHandler.bind(res, it))
-                            .on('dblclick', function (event) {
-                                self.openItem(it.ext, it.fullPath.replace(/[^a-zA-Z0-9\_]/g, '_'), it.name, it, it.fullPath);
-                            });
-                    }
+                        res.getNode().on('dblclick', function (event) {
+                            self.openItem(it.ext, it.fullPath.replace(/[^a-zA-Z0-9\_]/g, '_'), it.name, it, it.fullPath);
+                        });
 
+                    }
+                    res.getNode().defineEvent('contextmenu')
+                        .on('contextmenu', contextMenuEventHandler.bind(res, it))
                     res.addTo(rootElt);
                 });
             });
             rootElt.clearChild();
-
         }
 
         var droppanel = self.$droppanel;
@@ -160,54 +182,56 @@ export function PluginProjectExplore(context) {
 
 }
 
+export function downloadFragmentData(path) {
+    return catWorkspace(path).then(function (out) {
+        if (out[0] == '{') {// is json
+            try {
+                var data = JSON.parse(out);
+                return data;
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        else {
+            return JSZip.loadAsync(out, { base64: true }).then(function (zip) {
+                return zip.file('data.txt')
+                    .async('text')
+                    .then(function (text) {
+                        try {
+                            var data = JSON.parse(text);
+                            return data;
+                        } catch (error) {
+                            console.error(error)
+                        }
+                    });
+            });
+        }
+    });
+}
 
 export function PluginLoadContentData(accumulator) {
     var sync;
     if (accumulator.contentArguments.ext == 'form') {
-        sync = catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
-            if (out[0] == '{') {// is json
-
-                try {
-                    var data = JSON.parse(out);
-                    accumulator.editor.setData(data);
-                }
-                catch (error) {
-                    console.error(error)
-                }
-            }
-            else {// base64 zip
-                JSZip.loadAsync(out, { base64: true }).then(function (zip) {
-                    zip.file('data.txt')
-                        .async('text')
-                        .then(function (text) {
-                            try {
-                                var data = JSON.parse(text);
-                                accumulator.editor.setData(data);
-                            }
-                            catch (error) {
-                                console.error(error)
-                            }
-                        });
-                });
-            }
-        });
+        sync = downloadFragmentData(accumulator.contentArguments.fullPath)
+            .then(function (data) {
+                accumulator.editor.setData(data);
+            });
     }
     else if (CodeEditor.prototype.TYPE_MODE[accumulator.contentArguments.ext]) {
         sync = catWorkspace(accumulator.contentArguments.fullPath).then(function (out) {
             try {
                 accumulator.editor.setData({ value: out, type: accumulator.contentArguments.ext });
-            }
-            catch (error) {
+            } catch (error) {
                 console.error(error)
             }
         });
-    } else if (accumulator.contentArguments.ext == 'jpg') {
-        accumulator.editor.setData({ images: ['//absol.cf/'+WOKSPACE_FOLDER + '/' + accumulator.contentArguments.fullPath] });
+    }
+    else if (accumulator.contentArguments.ext == 'jpg') {
+        accumulator.editor.setData({ images: ['//absol.cf/' + WOKSPACE_FOLDER + '/' + accumulator.contentArguments.fullPath] });
         sync = Promise.resolve();
     }
     accumulator.waitFor(sync);
 }
-
 
 
 export function PluginSaveContentData(accumulator) {
@@ -390,39 +414,51 @@ export function PluginBuildComponent(context) {
     }
 
 
-
 };
 
 
-
 export function PluginComponentPickerView(context) {
-    var allNode = Fcore.$('exptree', context.self.$view, function (node) {
+    var allNode = $('exptree', context.self.$view, function (node) {
         return node.name == "all";
     });
 
-    var formNode = Fcore._({
-        tag: 'exptree',
+    var projectExplorer = context.self.getContext(R.PROJECT_EXPLORER);
+    var projectName = projectExplorer.data.projectName;
+
+    var formNode = _({
+        tag: ExpTree.tag,
         props: {
-            name: 'form',
+            name: 'fragment',
             status: 'close'
         },
         on: {
             press: context.toggleGroup
         },
-        child: [
-            {
-                tag: 'exptree',
-                props: {
-                    name: "TextInput",
-                    icon: 'span.mdi.mdi-terraform',
-                    componentConstructor: { tag: 'LoginForm' }
-                }
-            }
-
-        ]
+        child: []
     });
-
-
     allNode.addChild(formNode);
+    lsWorkspace(projectName + '/' + 'form').then(function (res) {
+        Promise.all(res.map(function (file) {
+            var fragmentTag = file.name.replace(/\.form$/, '');
+            return downloadFragmentData(projectName + '/' + 'form/' + file.name)
+                .then(function (fData) {
+                    var fragmentConstructor = makeFmFragmentConstructor({
+                        tag: fragmentTag,
+                        contentViewData: fData
+                    });
+                    AssemblerInstance.addConstructor(fragmentConstructor);
+                    return _({
+                        tag: 'exptree',
+                        props: {
+                            name: fragmentTag,
+                            icon: 'span.mdi.mdi-terraform',
+                            componentConstructor: fragmentConstructor
+                        }
+                    });
+                })
+        })).then(function (eltList) {
+            formNode.addChild(eltList)
+        })
+    });
 
 }
