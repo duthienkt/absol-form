@@ -112,7 +112,6 @@ export function makeFmFragmentConstructor(opt) {
 
     OOP.mixClass(CustomFmFragment, FmFragment);
     CustomFmFragment.prototype.tag = opt.tag || 'CustomFmFragment_' + randomIdent(10);
-    console.log(opt.contentViewData)
     if (opt.contentViewData)
         CustomFmFragment.prototype.contentViewData = opt.contentViewData;
 
