@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF8"/>
+    <title>Data Binding</title>
+    <link rel="stylesheet" href="//cdn.materialdesignicons.com/4.5.95/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://absol.cf/hightlight/styles/default.css">
+    <script src="https://absol.cf/hightlight/highlight.pack.js"></script>
+    <link
+            href="https://fonts.googleapis.com/css?family=Alegreya|Alegreya+SC|Alegreya+Sans|Alegreya+Sans+SC|Alfa+Slab+One|Amatic+SC|Andika|Anton|Archivo|Archivo+Narrow|Arima+Madurai|Arimo|Arsenal|Asap|Asap+Condensed|Athiti|Bahianita|Bai+Jamjuree|Baloo|Baloo+Bhai|Baloo+Bhaijaan|Baloo+Bhaina|Baloo+Chettan|Baloo+Da|Baloo+Paaji|Baloo+Tamma|Baloo+Tammudu|Baloo+Thambi|Bangers|Barlow|Barlow+Condensed|Barlow+Semi+Condensed|Barriecito|Be+Vietnam|Bevan|Big+Shoulders+Display|Big+Shoulders+Text|Bungee|Bungee+Hairline|Bungee+Inline|Bungee+Outline|Bungee+Shade|Cabin|Cabin+Condensed|Chakra+Petch|Charm|Charmonman|Chonburi|Coiny|Comfortaa|Cormorant|Cormorant+Garamond|Cormorant+Infant|Cormorant+SC|Cormorant+Unicase|Cormorant+Upright|Cousine|Crimson+Pro|Cuprum|Dancing+Script|Darker+Grotesque|David+Libre|Dosis|EB+Garamond|Encode+Sans|Encode+Sans+Condensed|Encode+Sans+Expanded|Encode+Sans+Semi+Condensed|Encode+Sans+Semi+Expanded|Exo|Exo+2|Fahkwang|Farsan|Faustina|Fira+Sans|Fira+Sans+Condensed|Fira+Sans+Extra+Condensed|Francois+One|Grenze|Hepta+Slab|IBM+Plex+Mono|IBM+Plex+Sans|IBM+Plex+Sans+Condensed|IBM+Plex+Serif|Inconsolata|Itim|Josefin+Sans|Judson|Jura|K2D|Kanit|KoHo|Kodchasan|Krub|Lalezar|Lemonada|Lexend+Deca|Lexend+Exa|Lexend+Giga|Lexend+Mega|Lexend+Peta|Lexend+Tera|Lexend+Zetta|Literata|Livvic|Lobster|Lora|M+PLUS+1p|M+PLUS+Rounded+1c|Maitree|Major+Mono+Display|Mali|Manuale|Markazi+Text|Maven+Pro|Merriweather|Metrophobic|Mitr|Montserrat|Montserrat+Alternates|Muli|Niramit|Noticia+Text|Noto+Sans|Noto+Sans+SC|Noto+Serif|Noto+Serif+SC|Noto+Serif+TC|Nunito|Nunito+Sans|Old+Standard+TT|Open+Sans|Open+Sans+Condensed:300|Oswald|Pacifico|Pangolin|Patrick+Hand|Patrick+Hand+SC|Pattaya|Paytone+One|Philosopher|Play|Playfair+Display|Playfair+Display+SC|Podkova|Prata|Pridi|Prompt|Quicksand|Roboto|Roboto+Condensed|Roboto+Mono|Roboto+Slab|Rokkitt|Rosario|Saira|Saira+Condensed|Saira+Extra+Condensed|Saira+Semi+Condensed|Saira+Stencil+One|Sarabun|Sawarabi+Gothic|Sedgwick+Ave|Sedgwick+Ave+Display|Sigmar+One|Source+Code+Pro|Source+Sans+Pro|Space+Mono|Spectral|Spectral+SC|Sriracha|Srisakdi|Taviraj|Thasadith|Tinos|Trirong|VT323|Varela+Round|Vollkorn|Vollkorn+SC|Yanone+Kaffeesatz|Yeseva+One&display=swap"
+            rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://absol.cf/absol-full/absol/absol.dependents.js"></script>
+    <script src="../absol/absol_form.js"></script>
+
+    <style>
+        html,
+        body,
+        :root {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+
+    </style>
+</head>
+
+<body>
+<script>
+    var AssemblerInstance = absol.form.AssemblerInstance;
+    var testObj = {};
+    var mCheckbox = AssemblerInstance.buildComponent({
+        tag: 'CheckBox',
+        attributes: {
+            name: 'tick',
+            checked: true
+        }
+    });
+    mCheckbox.bindDataToObject(testObj);
+    document.body.appendChild(mCheckbox.view);
+    var mComboBox = AssemblerInstance.buildComponent({
+        tag: 'ComboBox',
+        attributes: {
+            name: 'tick1',
+            list: Array(100).fill(0).map(function (u, i) {
+                return { text: "item " + i, value: i }
+            }),
+            value: 0
+        }
+    });
+
+    mComboBox.bindDataToObject(testObj);
+    document.body.appendChild(mComboBox.view);
+
+    var mDateInput = AssemblerInstance.buildComponent({
+        tag: 'DateInput',
+        attributes: {
+            value: new Date(),
+            name: 'cDate'
+        }
+    });
+
+    document.body.appendChild(mDateInput.view);
+    mDateInput.bindDataToObject(testObj);
+
+
+    var mImage = AssemblerInstance.buildComponent({
+        tag: "Image",
+        attributes: {
+            name: 'extIcon'
+        },
+        style: {
+            width: '50px', height: "50px"
+        }
+    });
+
+    mImage.bindDataToObject(testObj);
+    document.body.appendChild(mImage.view);
+    var iconList = null;
+    fetch('https://absol.cf/exticons/classic/catalog.json').then(function (res) {
+        return res.json();
+    }).then(function (res) {
+        iconList = res.map(function (name) {
+            return "https://absol.cf/exticons/classic/" + name + '.svg';
+        });
+    });
+
+    var mText = AssemblerInstance.buildComponent({
+        tag: "Text",
+        attributes: {
+            name: 'mText',
+            text: 'If you encounter a bug, please report it in the bug tracker'
+        }
+    });
+
+    mText.bindDataToObject(testObj);
+    document.body.appendChild(mText.view);
+
+    var mLabel = AssemblerInstance.buildComponent({
+        tag: "Label",
+        attributes: {
+            name: 'mLabel',
+            text: 'you encounter a bug'
+        }
+    });
+
+    mLabel.bindDataToObject(testObj);
+    document.body.appendChild(mLabel.view);
+
+    var mRadios = Array(9).fill(0).map(function (u, i) {
+        var comp = AssemblerInstance.buildComponent({
+            tag: "Radio",
+            attributes: {
+                groupName: 'mRadio',
+                value: i
+            }
+        });
+
+        document.body.appendChild(comp.view);
+        comp.bindDataToObject(testObj);
+        return mRadios;
+    });
+
+    testObj.mRadio = 0;
+
+    var mTextInput = AssemblerInstance.buildComponent({
+        tag: "TextInput",
+        attributes: {
+            value: 'you encounter a bug',
+            name: 'mTextInput'
+        }
+    });
+
+    document.body.appendChild(mTextInput.view);
+    mTextInput.bindDataToObject(testObj);
+
+    var mTextArea = AssemblerInstance.buildComponent({
+        tag: "TextArea",
+        attributes: {
+            value: 'you encounter a bug',
+            name: 'mTextArea'
+        }
+    });
+
+    document.body.appendChild(mTextArea.view);
+    mTextArea.bindDataToObject(testObj);
+
+
+    setInterval(function () {
+        testObj.tick = !testObj.tick;
+        testObj.tick1.value = (testObj.tick1.value + 1) % 100;
+        testObj.cDate = new Date(testObj.cDate.getTime() + 3600 * 1000 * 24);
+        if (iconList) {
+            testObj.extIcon = iconList[(iconList.indexOf(testObj.extIcon) + 1) % iconList.length];
+        }
+
+        var s = testObj.mText.split(' ');
+        s.push(s.shift());
+        testObj.mText = s.join(' ');
+        testObj.mLabel = '' + Math.random();
+        // console.log(testObj.mRadio)
+        testObj.mRadio = (testObj.mRadio + 1) % 9;
+        testObj.mTextInput = testObj.mText;
+        testObj.mTextArea = testObj.mText;
+    }, 1000);
+
+</script>
+</body>
+
+</html>
