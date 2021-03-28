@@ -5,7 +5,7 @@ import './css/layouteditor.css'
 import RelativeAnchor from './js/anchors/RelativeAnchor'
 import TextInput from './js/components/TextInput'
 import RelativeLayout from './js/layouts/RelativeLayout'
-import Assembler from './js/core/Assembler'
+import Assembler, {AssemblerInstance} from './js/core/Assembler'
 import DateInput from './js/components/DateInput'
 import BaseComponent from './js/core/BaseComponent'
 import LayoutEditor from './js/editor/LayoutEditor'
@@ -41,6 +41,7 @@ import * as framePlugins from './js/frame/plugins';
 import LayoutEditorCmd from './js/cmds/LayoutEditorCmd';
 import FormPreviewCmd, {FormPreviewCmdDescriptors} from './js/cmds/FormPreviewCmd';
 import FormEditorPreconfig from './js/FormEditorPreconfig';
+import {makeFmFragmentConstructor} from "./js/core/FmFragment";
 
 export default {
     FormEditorPreconfig: FormEditorPreconfig,
@@ -84,6 +85,8 @@ export default {
     TextArea: TextArea,
 
     Assembler: Assembler,
-    core: Fcore
+    core: Fcore,
+    makeFmFragmentConstructor: makeFmFragmentConstructor,
+    AssemblerInstance: AssemblerInstance
 };
 
