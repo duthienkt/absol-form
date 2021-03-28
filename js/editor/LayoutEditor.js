@@ -9,11 +9,13 @@ import BaseEditor from '../core/BaseEditor';
 import UndoHistory from './UndoHistory';
 import ComponentPropertiesEditor from './ComponentPropertiesEditor';
 import ComponentOutline from './ComponentOutline';
-import LayoutEditorCMD, { LayoutEditorCmdDescriptors, LayoutEditorCmdTree } from '../cmds/LayoutEditorCmd';
+import LayoutEditorCMD, {LayoutEditorCmdDescriptors, LayoutEditorCmdTree} from '../cmds/LayoutEditorCmd';
 import ClipboardManager from '../ClipboardManager';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import Rectangle from 'absol/src/Math/Rectangle';
 import RelativeAnchorEditor from '../anchoreditors/RelativeAnchorEditor';
+import FmFragment from "../core/FmFragment";
+import BaseComponent from "../core/BaseComponent";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -21,6 +23,7 @@ var $ = Fcore.$;
 function LayoutEditor() {
     BaseEditor.call(this);
     Assembler.call(this);
+    this._bindEvent();
     this._softScale = 1;
     var self = this;
     this.rootLayout = null;
@@ -36,12 +39,7 @@ function LayoutEditor() {
     this.setContext(R.LAYOUT_EDITOR, this);
     this.setContext(R.HAS_CMD_EDITOR, this);
 
-    this.ev_clipboardSet = this.ev_clipboardSet.bind(this);
-    this.ev_mouseFinishForceGround = this.ev_mouseFinishForceGround.bind(this);
-    this.ev_mouseMoveForceGround = this.ev_mouseMoveForceGround.bind(this);
-    this.ev_clickEditorSpaceCtn = this.ev_clickEditorSpaceCtn.bind(this);
-    this.ev_mouseMove = this.ev_mouseMove.bind(this);
-    this.ev_dblclickCurtain = this.ev_dblclickCurtain.bind(this);
+
     //setup cmd
     this.cmdRunner.assign(LayoutEditorCMD);
     Object.keys(LayoutEditorCmdDescriptors).forEach(function (cmd) {
@@ -104,6 +102,13 @@ function LayoutEditor() {
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(Assembler.prototype));
 
+LayoutEditor.prototype._bindEvent = function () {
+    for (var key in this) {
+        if (key.startsWith('ev_')) {
+            this[key] = this[key].bind(this);
+        }
+    }
+};
 
 LayoutEditor.prototype.constructor = LayoutEditor;
 
@@ -364,7 +369,6 @@ LayoutEditor.prototype.getPropertyCtn = function () {
 };
 
 LayoutEditor.prototype.ev_quickpathChange = function (event) {
-    console.log(event);
     var layout = event.item.layout;
     var thisEditor = this;
     setTimeout(function () {
@@ -527,18 +531,6 @@ LayoutEditor.prototype.ev_mouseFinishForceGround = function (event) {
 };
 
 
-LayoutEditor.prototype.ev_clickPreviewBtn = function (button, event) {
-    var next = {
-        'interact': 'design',
-        'design': 'interact'
-    };
-    var buttonTitle = {
-        'interact': 'Interact Mode',
-        'design': 'Design Mode'
-    };
-    this.setMode(next[this.mode]);
-    this.$previewBtn.attr('title', buttonTitle[this.mode]);
-};
 
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
     this.updateRuler();
@@ -719,7 +711,6 @@ LayoutEditor.prototype.updateSize = function () {
 };
 
 
-
 LayoutEditor.prototype._newAnchorEditor = function (component) {
     var self = this;
     var AnchorEditor = component.parent ? component.parent.getAnchorEditorConstructor() : RelativeAnchorEditor;
@@ -830,6 +821,7 @@ LayoutEditor.prototype.setActiveComponentByName = function () {
         ac[cr] = i;
         return ac;
     }, {});
+
     function visit(node) {
         var name = node.getAttribute('name');
         if (typeof dict[name] == 'number') {
@@ -837,6 +829,7 @@ LayoutEditor.prototype.setActiveComponentByName = function () {
         }
         node.children.forEach(visit);
     }
+
     visit(this.rootLayout);
     this.setActiveComponent.apply(this, components);
 };
@@ -896,12 +889,16 @@ LayoutEditor.prototype.findFocusAnchorEditor = function () {
 LayoutEditor.prototype.getActivatedComponents = function () {
     return this.anchorEditors.map(function (e) {
         return e.component;
-    }).filter(function (e) { return !!e });
+    }).filter(function (e) {
+        return !!e
+    });
 };
 
 
 LayoutEditor.prototype.applyData = function (data) {
-    this.rootLayout = this.build(data);
+    this.rootFragment = new FmFragment();
+    this.rootLayout = this.buildComponent(data, this.rootFragment);
+    this.rootFragment.setContentView(this.rootLayout);
     this.$layoutCtn.clearChild().addChild(this.rootLayout.view);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.view);
@@ -935,6 +932,7 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 
 LayoutEditor.prototype.editLayout = function (layout) {
     if (!layout) throw new Error("Layout must be not null");
+    // console.log(layout)
     var lastTag = this.editingLayout && this.editingLayout.tag;
     var currentTag = layout && layout.tag;
     this.editingLayout = layout;
@@ -997,7 +995,7 @@ LayoutEditor.prototype.getData = function () {
 };
 
 LayoutEditor.prototype.getComponentTool = function () {
-    return this.getContext(R.COMPONENT_PICKER);;
+    return this.getContext(R.COMPONENT_PICKER);
 };
 
 LayoutEditor.prototype.getOutlineTool = function () {
@@ -1029,7 +1027,7 @@ LayoutEditor.prototype.getCmdDescriptor = function (name) {
         res.disabled = true;
     } else if (name.match(/^(delete|copy|cut|horizontalAlign|verticalAlign)/) && this.anchorEditors.length < 1) {
         res.disabled = true;
-    } 
+    }
     else if (name == 'paste') {
         res.disabled = !ClipboardManager.get(R.CLIPBOARD.COMPONENTS);
     }
@@ -1075,25 +1073,33 @@ LayoutEditor.prototype.findNearestLayoutParent = function (comp) {
 /**
  * @returns {import('../core/BaseComponent') }
  */
-LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
+LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
     var self = this;
     var layout = this.editingLayout;
     var rootBound = this.rootLayout.view.getBoundingClientRect();
     var layoutBound = layout.view.getBoundingClientRect();
     var layoutPosX = posX - (layoutBound.left - rootBound.left);
     var layoutPosY = posY - (layoutBound.top - rootBound.top);
-    var addedComponets = [];
-    if (!(contructor instanceof Array)) {
-        contructor = [contructor];
+    var addedComponents = [];
+    if (!(constructor instanceof Array)) {
+        constructor = [constructor];
     }
 
-    addedComponets = contructor.map(function (cst) {
+    addedComponents = constructor.map(function (cst) {
         var comp;
-        if (typeof cst == 'function' && cst.prototype.tag) {
-            comp = self.build({ tag: cst.prototype.tag });
+        if (typeof cst == 'function') {
+            if (cst.prototype.type === FmFragment.prototype.type) {
+                var frg = new cst();
+                comp = self.buildComponent(cst.prototype.contentViewData, frg);
+                frg.setContentView(comp);
+                self.rootFragment.addChild(frg);
+            }
+            else if (cst.prototype.type === BaseComponent.prototype.type) {
+                comp = new cst();
+            }
         }
         else {
-            comp = self.build(cst);
+            comp = self.buildComponent(cst);
         }
         layout.addChildByPosition(comp, layoutPosX, layoutPosY);
         comp.reMeasure();
@@ -1110,8 +1116,8 @@ LayoutEditor.prototype.addNewComponent = function (contructor, posX, posY) {
 };
 
 
-LayoutEditor.prototype.build = function () {
-    var comp = Assembler.prototype.build.apply(this, arguments);
+LayoutEditor.prototype.buildComponent = function () {
+    var comp = Assembler.prototype.buildComponent.apply(this, arguments);
     var thisEditor = this;
     var originFunction = comp.getStyle;
     comp.getStyle = function(){
