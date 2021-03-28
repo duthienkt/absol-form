@@ -5,6 +5,9 @@ import {camelCaseToPascalCase} from "absol/src/String/stringFormat";
 import {FONT_ITEMS} from "../font/GoogleFont";
 import QuickMenu from "absol-acomp/js/QuickMenu";
 import {base64EncodeUnicode} from "absol/src/Converter/base64";
+import R from "../R";
+import {randomIdent} from "absol/src/String/stringGenerate";
+import SelectListEditor from "../editor/SelectListEditor";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -864,6 +867,53 @@ MultiObjectPropertyEditor.prototype.loadBoolProperty = function (name, descripto
     };
 
     cell.addChild(res.elt);
+    return res;
+};
+
+MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, descriptor, cell) {
+    console.log(name, descriptor, cell);
+    console.log(this.parent)
+    var self = this;
+    var res = {};
+    var object = this.objects[this.objects.length - 1];
+    res.elt = _({
+        tag: 'button',
+        class: 'as-from-tool-button',
+        child: 'span.mdi.mdi-table-edit',
+        on: {
+            click: function () {
+                var listData = self.getProperty(object, name);
+                /**
+                 * @type {FormEditor}
+                 */
+                var formEditor = self.getContext(R.FORM_EDITOR);
+                if (!formEditor) return;
+                object.__objectIdent__ = object.__objectIdent__ || randomIdent(24);//different between state
+                var selectListTabIdent = object.__objectIdent__ + '_selectList_' + name;
+                var selectListEditor;
+                var editorTabHolder = formEditor.getEditorHolderByIdent(selectListTabIdent);
+                if (editorTabHolder)
+                    selectListEditor = editorTabHolder.editor;
+                if (!selectListEditor) {
+                    selectListEditor = new SelectListEditor();
+                    selectListEditor.attach(self);
+                    var tabName = self.getProperty(object, 'name') + '(' + name + ')';
+                    var desc = 'SelectList';
+                    formEditor.openEditorTab(selectListTabIdent, tabName, desc, selectListEditor, { layoutEditor: this })
+                }
+                else {
+                    editorTabHolder.tabframe.requestActive();
+                }
+                selectListEditor.setData(listData);
+                selectListEditor.on('save', function () {
+                    listData = this.getData();
+                    self.setPropertyAll(name, listData);
+                });
+            }
+        }
+    });
+    cell.addChild(res.elt);
+
     return res;
 };
 
