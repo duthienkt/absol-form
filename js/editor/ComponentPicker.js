@@ -23,6 +23,7 @@ import PluginManager from "../core/PluginManager";
 import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
 import ChainLayout from "../layouts/ChainLayout";
+import MultiselectCombobox from "../components/MultiselectCombobox";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -154,6 +155,14 @@ ComponentPicker.prototype.getView = function () {
                                 name: "ComboBox",
                                 icon: ComboBox.prototype.menuIcon,
                                 componentConstructor: ComboBox
+
+                            }
+                        }, {
+                            tag: 'exptree',
+                            props: {
+                                name: MultiselectCombobox.prototype.tag,
+                                icon: MultiselectCombobox.prototype.menuIcon,
+                                componentConstructor: MultiselectCombobox
 
                             }
                         },
