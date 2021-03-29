@@ -45,6 +45,7 @@ ComboBox.prototype.onCreate = function () {
 ComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
+    OOP.drillProperty(this.attributes, this.view, 'searchable','enableSearch');
     this.view.on('minwidthchange', function (event) {
         if (!(self.style.width > event.value)) {
             self.setStyle('width', event.value);
@@ -85,7 +86,7 @@ ComboBox.prototype.setAttributeText = function (value) {
 
 
 ComboBox.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value', 'text']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value', 'text', 'searchable']);
 };
 
 ComboBox.prototype.getAttributeListDescriptor = function () {
@@ -93,6 +94,7 @@ ComboBox.prototype.getAttributeListDescriptor = function () {
         type: 'SelectList'
     };
 };
+
 ComboBox.prototype.getAttributeValueDescriptor = function () {
     return {
         type: 'text'
@@ -103,6 +105,12 @@ ComboBox.prototype.getAttributeTextDescriptor = function () {
     return {
         type: 'const',
         value: this.getAttribute('text')
+    };
+};
+
+ComboBox.prototype.getAttributeSearchableDescriptor = function () {
+    return {
+        type: 'bool'
     };
 };
 
