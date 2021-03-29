@@ -1106,12 +1106,12 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
         return comp;
     });
 
-    this.emit('addcomponent', { type: 'addcomponent', components: addedComponets, target: this }, this);
-    this.setActiveComponent.apply(this, addedComponets);
+    this.emit('addcomponent', { type: 'addcomponent', components: addedComponents, target: this }, this);
+    this.setActiveComponent.apply(this, addedComponents);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
     this.componentOtline.updateComponetTree();
-    this.commitHistory('add', "Add " + addedComponets.map(function (comp) { return comp.getAttribute('name') }).join(', '));
+    this.commitHistory('add', "Add " + addedComponents.map(function (comp) { return comp.getAttribute('name') }).join(', '));
     this.notifyUnsaved();
 };
 
