@@ -415,7 +415,10 @@ LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
         var anchorEditor = this.anchorEditors[this.anchorEditors.length - 1];
 
         //cheating
-        var repeatedEvent = EventEmitter.copyEvent(event, { target: $('.as-resize-box-body', anchorEditor.$resizeBox), preventDefault: event.preventDefault.bind(event) });
+        var repeatedEvent = EventEmitter.copyEvent(event, {
+            target: $('.as-resize-box-body', anchorEditor.$resizeBox),
+            preventDefault: event.preventDefault.bind(event)
+        });
         anchorEditor.$resizeBox.eventHandler.mouseDownBody(repeatedEvent);
         this.$view.focus();// layouteditor may be not focus before, prevent default effect make it not focus
 
@@ -461,7 +464,7 @@ LayoutEditor.prototype.ev_mouseMoveForceGround = function (event) {
     if (this._forgroundMovingData.width < 0) {
         this.$mouseSelectingBox.addStyle({
             left: this._forgroundMovingData.left + this._forgroundMovingData.width + 'px',
-            width: - this._forgroundMovingData.width + 'px',
+            width: -this._forgroundMovingData.width + 'px',
         });
     }
     else {
@@ -475,7 +478,7 @@ LayoutEditor.prototype.ev_mouseMoveForceGround = function (event) {
     if (this._forgroundMovingData.height < 0) {
         this.$mouseSelectingBox.addStyle({
             top: this._forgroundMovingData.top + this._forgroundMovingData.height + 'px',
-            height: - this._forgroundMovingData.height + 'px',
+            height: -this._forgroundMovingData.height + 'px',
         });
     }
     else {
@@ -529,7 +532,6 @@ LayoutEditor.prototype.ev_mouseFinishForceGround = function (event) {
         this.setActiveComponent.apply(this, selectedComp);
     }
 };
-
 
 
 LayoutEditor.prototype.ev_layoutCtnScroll = function () {
@@ -764,7 +766,12 @@ LayoutEditor.prototype._newAnchorEditor = function (component) {
         })
         .on('focus', function (event) {
             self.componentPropertiesEditor.edit.apply(self.componentPropertiesEditor, self.getActivatedComponents());
-            self.emit('focuscomponent', { type: 'focuscomponent', component: this.component, originEvent: event, target: self }, self);
+            self.emit('focuscomponent', {
+                type: 'focuscomponent',
+                component: this.component,
+                originEvent: event,
+                target: self
+            }, self);
         })
         .on('change', function (event) {
             self.notifyDataChange();
@@ -920,8 +927,14 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
     if (this.rootLayout) {
         var minSize = this.rootLayout.measureMinSize();
         var isChange = false;
-        if (minSize.width > this.rootLayout.style.width) { this.rootLayout.setStyle('width', minSize.width); isChange = true; }
-        if (minSize.height > this.rootLayout.style.height) { this.rootLayout.setStyle('height', minSize.height); isChange = true; }
+        if (minSize.width > this.rootLayout.style.width) {
+            this.rootLayout.setStyle('width', minSize.width);
+            isChange = true;
+        }
+        if (minSize.height > this.rootLayout.style.height) {
+            this.rootLayout.setStyle('height', minSize.height);
+            isChange = true;
+        }
         if (isChange) {
             this.emit('layoutexpand', { type: 'layoutexpand', target: this, layout: this.rootLayout }, this);
             this.notifyDataChange();
@@ -979,7 +992,12 @@ LayoutEditor.prototype.getQuickpathFrom = function (layout) {
             node.items = layout.parent.children.filter(function (comp) {
                 return comp.isLayout;
             }).map(function (comp) {
-                return { name: comp.getAttribute('name'), icon: comp.menuIcon, layout: comp, extendStyle: layout == comp ? { color: "#009" } : {} };
+                return {
+                    name: comp.getAttribute('name'),
+                    icon: comp.menuIcon,
+                    layout: comp,
+                    extendStyle: layout == comp ? { color: "#009" } : {}
+                };
             });
         }
         else node.items = [{ name: layout.getAttribute('name'), icon: layout.menuIcon, layout: layout }];
@@ -1025,7 +1043,8 @@ LayoutEditor.prototype.getCmdDescriptor = function (name) {
     }
     else if (name.startsWith('distribute') && this.anchorEditors.length < 3) {
         res.disabled = true;
-    } else if (name.match(/^(delete|copy|cut|horizontalAlign|verticalAlign)/) && this.anchorEditors.length < 1) {
+    }
+    else if (name.match(/^(delete|copy|cut|horizontalAlign|verticalAlign)/) && this.anchorEditors.length < 1) {
         res.disabled = true;
     }
     else if (name == 'paste') {
@@ -1040,7 +1059,6 @@ LayoutEditor.prototype.getCmdDescriptor = function (name) {
 
     return res;
 };
-
 
 
 LayoutEditor.prototype.getCmdGroupTree = function () {
@@ -1099,7 +1117,7 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
             }
         }
         else {
-            comp = self.buildComponent(cst);
+            comp = self.buildComponent(cst, this.rootFragment);
         }
         layout.addChildByPosition(comp, layoutPosX, layoutPosY);
         comp.reMeasure();
@@ -1111,7 +1129,9 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
     this.componentOtline.updateComponetTree();
-    this.commitHistory('add', "Add " + addedComponents.map(function (comp) { return comp.getAttribute('name') }).join(', '));
+    this.commitHistory('add', "Add " + addedComponents.map(function (comp) {
+        return comp.getAttribute('name')
+    }).join(', '));
     this.notifyUnsaved();
 };
 
@@ -1120,10 +1140,10 @@ LayoutEditor.prototype.buildComponent = function () {
     var comp = Assembler.prototype.buildComponent.apply(this, arguments);
     var thisEditor = this;
     var originFunction = comp.getStyle;
-    comp.getStyle = function(){
+    comp.getStyle = function () {
         var res = originFunction.apply(this, arguments);
-        if (arguments[1] == 'px' && comp.style[arguments[0]]!= res){
-            res/= thisEditor._softScale;
+        if (arguments[1] == 'px' && comp.style[arguments[0]] != res) {
+            res /= thisEditor._softScale;
         }
         return res;
     };
@@ -1253,8 +1273,7 @@ LayoutEditor.prototype.commitHistory = function (type, description) {
 LayoutEditor.prototype.execCmd = function () {
     try {
         return BaseEditor.prototype.execCmd.apply(this, arguments);
-    }
-    catch (error) {
+    } catch (error) {
     }
 
     try {
@@ -1262,8 +1281,7 @@ LayoutEditor.prototype.execCmd = function () {
         if (focusEditor) {
             return focusEditor.execCmd.apply(focusEditor, arguments);
         }
-    }
-    catch (error1) {
+    } catch (error1) {
         //other 
         console.log(error1);
 

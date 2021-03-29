@@ -316,7 +316,7 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (event) {
         child: { class: 'as-compopnent-picker-add-box-plus', child: 'span.mdi.mdi-plus' }
     }).addTo(this.$addBoxCtn);
     if (this.$addBoxIcon) this.$addBoxIcon.remove();
-    this.$addBoxIcon = _(constructor.prototype.menuIcon).addTo(this.$addBox);
+    this.$addBoxIcon = _((constructor.prototype && constructor.prototype.menuIcon)||'span.mdi.mdi-select-place').addTo(this.$addBox);
     this.$modal.addTo(document.body);
     if (this.layoutEditor.rootLayout) {
         this._dragRect = this.layoutEditor.rootLayout.view.getBoundingClientRect();
