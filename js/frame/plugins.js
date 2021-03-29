@@ -412,9 +412,7 @@ export function PluginBuildComponent(context) {
             }
         };
     }
-
-
-};
+}
 
 
 export function PluginComponentPickerView(context) {
@@ -460,5 +458,37 @@ export function PluginComponentPickerView(context) {
             formNode.addChild(eltList)
         })
     });
+
+    var templateNode = _({
+        tag: ExpTree.tag,
+        props: {
+            name: 'template',
+            status: 'close'
+        },
+        on: {
+            press: context.toggleGroup
+        },
+        child: []
+    });
+    allNode.addChild(templateNode);
+    lsWorkspace(projectName + '/' + 'template').then(function (res) {
+        Promise.all(res.map(function (file) {
+            var templateName = file.name.replace(/\.ftl$/, '');
+            return downloadFragmentData(projectName + '/' + 'template/' + file.name)
+                .then(function (fData) {
+                    return _({
+                        tag: 'exptree',
+                        props: {
+                            name: templateName,
+                            icon: 'span.mdi.mdi-terraform',
+                            componentConstructor: fData
+                        }
+                    });
+                })
+        })).then(function (eltList) {
+            templateNode.addChild(eltList)
+        })
+    });
+
 
 }
