@@ -8,6 +8,7 @@ import {base64EncodeUnicode} from "absol/src/Converter/base64";
 import R from "../R";
 import {randomIdent} from "absol/src/String/stringGenerate";
 import SelectListEditor from "../editor/SelectListEditor";
+import TokenField from "absol-acomp/js/TokenField";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -119,7 +120,6 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
             // throw new Error('Not support type' + descriptor.type + '!')
             functionName = 'loadNotSupportedProperty';
         }
-        ;
 
         var rowElt = _({
             tag: 'tr',
@@ -282,6 +282,41 @@ MultiObjectPropertyEditor.prototype.loadTextProperty = function (name, descripto
         var value = self.getProperty(object, name);
         if (value != this.value) {
             res.elt.value = value;
+        }
+    };
+    res.requestUpdate();
+    return res;
+};
+
+
+MultiObjectPropertyEditor.prototype.loadArrayOfTextProperty = function (name, descriptor, cell) {
+    var self = this;
+    var res = {};
+    var object = this.objects[this.objects.length - 1];
+
+
+    res.elt = _({
+        tag: TokenField.tag,
+        attr: { title: 'Each value is separated by ;' },
+        props: {
+            separator: ';',
+            placeHolder:'Enter item text, separated by ;'
+        },
+        on: {
+            change: function () {
+                self.setPropertyAll(name, this.items);
+                self.notifyChange(name, this);
+            }
+        }
+    });
+
+    cell.addChild(res.elt);
+
+    res.requestUpdate = function () {
+        var value = self.getProperty(object, name);
+        if (value != res.value) {
+            res.value = value;
+            res.elt.items = value;
         }
     };
     res.requestUpdate();
