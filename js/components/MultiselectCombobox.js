@@ -37,8 +37,8 @@ MultiselectCombobox.prototype.onCreate = function () {
 
 MultiselectCombobox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
-    OOP.drillProperty(this.attributes, this.view.values, 'values');
-    OOP.drillProperty(this.attributes, this.view, 'searchable','enableSearch');
+    this.bindAttribute('values');
+    this.bindAttribute('searchable', 'enableSearch');
 };
 
 
@@ -50,6 +50,12 @@ MultiselectCombobox.prototype.measureMinSize = function () {
 };
 MultiselectCombobox.prototype.getAttributeListDescriptor = ComboBox.prototype.getAttributeListDescriptor;
 MultiselectCombobox.prototype.getAttributeSearchableDescriptor = ComboBox.prototype.getAttributeSearchableDescriptor;
+
+MultiselectCombobox.prototype.getAttributeValuesDescriptor = function () {
+    return {
+        type: 'arrayOfText'
+    };
+};
 
 MultiselectCombobox.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'values', 'searchable']);

@@ -26,7 +26,7 @@ TextInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
 TextInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
-    OOP.drillProperty(this.attributes, this.view, 'value');
+    this.bindAttribute( 'value');
     var self = this;
     var lastValue;
     this.view

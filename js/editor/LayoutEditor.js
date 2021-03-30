@@ -1117,7 +1117,7 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
             }
         }
         else {
-            comp = self.buildComponent(cst, this.rootFragment);
+            comp = self.buildComponent(cst, self.rootFragment);
         }
         layout.addChildByPosition(comp, layoutPosX, layoutPosY);
         comp.reMeasure();

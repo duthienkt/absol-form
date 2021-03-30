@@ -45,7 +45,7 @@ ComboBox.prototype.onCreate = function () {
 ComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
-    OOP.drillProperty(this.attributes, this.view, 'searchable','enableSearch');
+    this.bindAttribute( 'searchable','enableSearch');
     this.view.on('minwidthchange', function (event) {
         if (!(self.style.width > event.value)) {
             self.setStyle('width', event.value);
