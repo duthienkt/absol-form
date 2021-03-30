@@ -18,6 +18,7 @@ import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
 import ChainLayout from "../layouts/ChainLayout";
 import MultiselectCombobox from "../components/MultiselectCombobox";
+import TrackBar from "../components/TrackBar";
 
 function Assembler() {
     this.addConstructor(Button);
@@ -38,6 +39,7 @@ function Assembler() {
     this.addConstructor(Ellipse);
     this.addConstructor(Rectangle);
     this.addConstructor(MultiselectCombobox);
+    this.addConstructor(TrackBar);
 }
 
 

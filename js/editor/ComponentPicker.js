@@ -24,6 +24,7 @@ import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
 import ChainLayout from "../layouts/ChainLayout";
 import MultiselectCombobox from "../components/MultiselectCombobox";
+import TrackBar from "../components/TrackBar";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -180,6 +181,14 @@ ComponentPicker.prototype.getView = function () {
                                 name: "CheckBox",
                                 icon: CheckBox.prototype.menuIcon,
                                 componentConstructor: CheckBox
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: TrackBar.prototype.tag,
+                                icon: TrackBar.prototype.menuIcon,
+                                componentConstructor: TrackBar
                             }
                         }
                     ]
