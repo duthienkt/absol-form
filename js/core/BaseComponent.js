@@ -72,6 +72,25 @@ BaseComponent.prototype.onCreated = function () {
     this.updateAttributes();
 };
 
+/***
+ *
+ * @param {string} attrName
+ * @param {string=}viewPropertyName
+ */
+BaseComponent.prototype.bindAttribute = function (attrName, viewPropertyName) {
+    viewPropertyName = viewPropertyName || attrName;
+    var view = this.view;
+    Object.defineProperty(this.attributes, attrName, {
+        enumerable: true,
+        set: function (value) {
+            view[viewPropertyName] = value;
+        },
+        get: function () {
+            return view[viewPropertyName];
+        }
+    });
+}
+
 BaseComponent.prototype.onAnchorAttached = function () {
     this.anchorAcceptsStyleName = this.anchor.getAcceptsStyleNames().reduce(function (ac, key) {
         ac[key] = true;
