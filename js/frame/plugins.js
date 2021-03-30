@@ -455,7 +455,9 @@ export function PluginComponentPickerView(context) {
                     });
                 })
         })).then(function (eltList) {
-            formNode.addChild(eltList)
+            eltList.forEach(function (elt) {
+                formNode.addChild(elt)
+            });
         })
     });
 
@@ -486,7 +488,10 @@ export function PluginComponentPickerView(context) {
                     });
                 })
         })).then(function (eltList) {
-            templateNode.addChild(eltList)
+            console.log(eltList)
+            eltList.forEach(function (elt) {
+                templateNode.addChild(elt);
+            });
         })
     });
 
