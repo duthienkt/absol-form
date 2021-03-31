@@ -5,7 +5,7 @@ import Fcore, {$, _} from '../core/FCore';
 import JSZip from 'jszip';
 import R from '../R';
 import ExpTree from "absol-acomp/js/ExpTree";
-import {makeFmFragmentConstructor} from "../core/FmFragment";
+import {makeFmFragmentClass} from "../core/FmFragment";
 import {AssemblerInstance} from "../core/Assembler";
 
 var WOKSPACE_FOLDER = 'formeditor/workspace';
@@ -440,7 +440,7 @@ export function PluginComponentPickerView(context) {
             var fragmentTag = file.name.replace(/\.form$/, '');
             return downloadFragmentData(projectName + '/' + 'form/' + file.name)
                 .then(function (fData) {
-                    var fragmentConstructor = makeFmFragmentConstructor({
+                    var fragmentConstructor = makeFmFragmentClass({
                         tag: fragmentTag,
                         contentViewData: fData
                     });

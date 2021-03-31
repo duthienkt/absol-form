@@ -105,7 +105,7 @@ export default FmFragment;
  * @param {{tag: string ,contentViewData?:Object}} opt
  * @return {CustomFmFragment}
  */
-export function makeFmFragmentConstructor(opt) {
+export function makeFmFragmentClass(opt) {
     function CustomFmFragment() {
         FmFragment.apply(this, arguments);
     }
