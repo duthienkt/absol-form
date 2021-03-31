@@ -50,6 +50,12 @@ SelectListEditor.prototype.updateSize = function () {
 };
 
 SelectListEditor.prototype.setData = function (data) {
+    var valueType = 'string';
+    for (var i = 0; i < data.length; i++) {
+        if (typeof data[i].value === 'number') {
+            valueType = 'number';
+        }
+    }
     var tableData = {
         propertyDescriptors: [
             {
@@ -59,7 +65,7 @@ SelectListEditor.prototype.setData = function (data) {
                 },
                 value: {
                     text: 'Value',
-                    type: 'string'
+                    type: valueType
                 }
             }
         ],
@@ -150,11 +156,11 @@ SelectListEditor.prototype.verify = function () {
             this.tableEditor.editCell(this.tableEditor.tableData.findRowByIndex(i), this.tableEditor.tableData.findColByIndex(0));
             break;
         }
-        if (typeof record.value !== "string" || record.value.length == 0 ||dict[record.value]) {
-            if (typeof record.value !== "string" || record.value.length == 0 ){
+        if (typeof record.value !== "string" || record.value.length == 0 || dict[record.value]) {
+            if (typeof record.value !== "string" || record.value.length == 0) {
                 error = 'Invalid data!';
             }
-            else{
+            else {
                 error = 'Duplicate value!';
             }
             this.tableEditor.editCell(this.tableEditor.tableData.findRowByIndex(i), this.tableEditor.tableData.findColByIndex(1));
