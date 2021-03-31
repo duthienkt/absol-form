@@ -906,8 +906,6 @@ MultiObjectPropertyEditor.prototype.loadBoolProperty = function (name, descripto
 };
 
 MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, descriptor, cell) {
-    console.log(name, descriptor, cell);
-    console.log(this.parent)
     var self = this;
     var res = {};
     var object = this.objects[this.objects.length - 1];
