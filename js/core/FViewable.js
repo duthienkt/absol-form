@@ -32,14 +32,12 @@ FViewable.prototype.getStyleDescriptors = function () {
     var result = {};
     var names = this.getAcceptsStyleNames();
     var key;
-    for (var i = 0; i< names.length; ++i){
+    for (var i = 0; i < names.length; ++i) {
         key = names[i];
         result[key] = this.getStyleDescriptor(key);
     }
     return result;
 };
-
-
 
 
 /**
@@ -64,7 +62,7 @@ FViewable.prototype.setStyle = function (name, value) {
 
 
 /**
-* @param {String} name
+ * @param {String} name
  * @returns {Object} value which is set
  */
 FViewable.prototype.getStyle = function (name) {
@@ -73,6 +71,29 @@ FViewable.prototype.getStyle = function (name) {
         return this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
     }
     return this.style[name];
+};
+
+
+FViewable.prototype.getStyles = function () {
+    var self = this;
+    var styleKeys = Object.keys(this.style).filter(function (key) {
+        return self.style[key] !== undefined || self.style[key] !== null;
+    });
+
+    if (styleKeys.length > 0) {
+        return styleKeys.reduce(function (ac, key) {
+            ac[key] = self.style[key];
+            return ac;
+        }, {});
+    }
+    return null;
+};
+
+FViewable.prototype.setStyles = function (styles) {
+    var self = this;
+    Object.keys(styles).forEach(function (key){
+        self.setStyle(key, styles[key]);
+    });
 };
 
 export default FViewable;

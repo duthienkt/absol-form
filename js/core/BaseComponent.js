@@ -119,7 +119,6 @@ BaseComponent.prototype.updateAttributes = function () {
     }
 };
 
-
 BaseComponent.prototype.getData = function () {
     var self = this;
     var data = {
@@ -130,27 +129,14 @@ BaseComponent.prototype.getData = function () {
         //todo: get data from fragment
     }
 
-    var attributeKeys = Object.keys(this.attributes).filter(function (key) {
-        return self.attributes[key] !== undefined || self.attributes[key] !== null;
-    });
+    var attributes = this.getAttributes();
 
-    if (attributeKeys.length > 0) {
-        data.attributes = attributeKeys.reduce(function (ac, key) {
-            ac[key] = self.getAttribute(key);
-            return ac;
-        }, {});
+    if (attributes) {
+        data.attributes = attributes;
     }
 
-    var styleKeys = Object.keys(this.style).filter(function (key) {
-        return self.style[key] !== undefined || self.style[key] !== null;
-    });
-
-    if (styleKeys.length > 0) {
-        data.style = styleKeys.reduce(function (ac, key) {
-            ac[key] = self.style[key];
-            return ac;
-        }, {});
-    }
+    var style = this.getStyles();
+    if (style) data.style = style;
 
     var eventsKeys = Object.keys(this.events).filter(function (key) {
         return self.events[key] !== undefined || self.events[key] !== null;
@@ -166,7 +152,12 @@ BaseComponent.prototype.getData = function () {
     if (this.children.length > 0) {
         data.children = this.children.map(function (child) {
             if (child.fragment) {
-                return { class: child.fragment.tag };
+                var childStyle = child.getStyles();
+                var childAttributes = child.getAttributes();
+                var childData = { class: child.fragment.tag };
+                if (childStyle) childData.style = childStyle;
+                if (childAttributes) childData.attributes = childAttributes;
+                return childData;
             }
             else {
                 return child.getData();

@@ -38,7 +38,7 @@ FModel.prototype.getAttributeDescriptors = function () {
 /**
  * @param {String} name
  * @param {} value
- * @returns {} value which is set 
+ * @returns {} value which is set
  */
 FModel.prototype.setAttribute = function (name, value) {
     var functionName = 'setAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1);
@@ -56,10 +56,9 @@ FModel.prototype.setAttribute = function (name, value) {
 };
 
 
-
 /**
-* @param {String} name
- * @returns {} value which is set 
+ * @param {String} name
+ * @returns {} value which is set
  */
 FModel.prototype.getAttribute = function (name) {
     var functionName = 'getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1);
@@ -68,5 +67,29 @@ FModel.prototype.getAttribute = function (name) {
     }
     return this.attributes[name];
 };
+
+
+FModel.prototype.getAttributes = function () {
+    var self = this;
+    var attributeKeys = Object.keys(this.attributes).filter(function (key) {
+        return self.attributes[key] !== undefined || self.attributes[key] !== null;
+    });
+
+    if (attributeKeys.length > 0) {
+        return attributeKeys.reduce(function (ac, key) {
+            ac[key] = self.getAttribute(key);
+            return ac;
+        }, {});
+    }
+    return null;
+};
+
+FModel.prototype.setAttributes = function (attributes) {
+    var self = this;
+    Object.keys(attributes).forEach(function (key) {
+        self.setAttribute(key, attributes[key]);
+    });
+};
+
 
 export default FModel;

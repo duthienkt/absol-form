@@ -59,7 +59,7 @@ RelativeLayout.prototype.onRemoveChild = function (child, index) {
  * @returns {BaseComponent} auto set disable style
  */
 RelativeLayout.prototype.reMeasureChild = function (component) {
-    if (!window.remesureChecked) {
+    if (window.ABSOL_DEBUG &&!window.remesureChecked) {
         window.remesureChecked = true;
         console.trace("Remeasure was removed");
     }
