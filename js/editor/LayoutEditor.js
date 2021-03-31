@@ -98,6 +98,23 @@ function LayoutEditor() {
         });
 }
 
+LayoutEditor.prototype.refresh = function(){
+    if (!this.rootLayout) return;
+    var data = this.getData();
+    var selected = this.getSelected();
+   var editing = this.editingLayout.getAttribute('name');
+    this.applyData(data);
+    if (editing) {
+        this.editLayoutByName(editing);
+    }
+    else {
+        this.editLayout(this.rootLayout);
+    }
+    this.setActiveComponentByName.apply(this, selected);
+    this.updateAnchor();
+    this.notifyCmdDescriptorsChange();
+};
+
 
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
 Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(Assembler.prototype));
@@ -356,6 +373,7 @@ LayoutEditor.prototype.getView = function () {
             'span'
         ]
     });
+    this.$view.layoutEditor = this;
     return this.$view;
 };
 
