@@ -228,6 +228,14 @@ FormEditor.prototype.getEditorHolderByEditor = function (editor) {
     return null;
 };
 
+FormEditor.prototype.getAllEditorHolderByEditorClass = function (clazz){
+    var res = [];
+    for (var ident in this.editorHolders) {
+        if (this.editorHolders[ident].editor.constructor == clazz)  res.push(this.editorHolders[ident]);
+    }
+    return res;
+};
+
 
 FormEditor.prototype.getView = function () {
     if (this.$view) return this.$view;
