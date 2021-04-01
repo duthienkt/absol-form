@@ -230,7 +230,8 @@ BaseComponent.prototype.measureMinSize = function () {
 }
 
 BaseComponent.prototype.getAcceptsAttributeNames = function () {
-    return ["type", "name"].concat(extendAttributeNames);
+    return ["type", "name"].concat(extendAttributeNames)
+        .concat('irremovable');
 };
 
 BaseComponent.prototype.getAcceptsEventNames = function () {
@@ -249,6 +250,13 @@ BaseComponent.prototype.getAttributeTypeDescriptor = function () {
     return {
         type: 'const',
         value: this.tag
+    };
+};
+
+BaseComponent.prototype.getAttributeIrremovableDescriptor = function () {
+    return {
+        type: 'const',
+        value: !!this.attributes.irremovable
     };
 };
 
@@ -405,8 +413,10 @@ BaseComponent.prototype.getDataBindingDescriptor = function () {
 BaseComponent.prototype.bindDataToObject = function (obj) {
     var name = this.getAttribute('name');
     var descriptor = this.getDataBindingDescriptor();
-    if (descriptor)
+    if (descriptor){
+        Object.assign(descriptor, {enumerable: true, configurable: true});
         Object.defineProperty(obj, name, descriptor);
+    }
     return !!descriptor;
 };
 
