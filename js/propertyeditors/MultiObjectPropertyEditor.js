@@ -313,6 +313,7 @@ MultiObjectPropertyEditor.prototype.loadArrayOfTextProperty = function (name, de
     cell.addChild(res.elt);
 
     res.requestUpdate = function () {
+        res.elt.autocomplete = self.getPropertyDescriptor(object, name).autocomplete;
         var value = self.getProperty(object, name);
         if (value != res.value) {
             res.value = value;
@@ -838,7 +839,7 @@ MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descrip
                 props: {},
                 on: {
                     change: function (event) {
-                        if (event.by == 'keyup') return;
+                        if (event.by == 'kyup') return;
                         if (!descriptor.livePreview && event.by == 'long_press_button') return;
                         this.peditor.setPropertyAll(this._propertyName, this.value);
                         this.peditor.notifyChange(this._propertyName, this);
@@ -946,7 +947,6 @@ MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, des
         }
     });
     cell.addChild(res.elt);
-
     return res;
 };
 

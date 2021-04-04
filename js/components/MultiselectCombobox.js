@@ -53,7 +53,11 @@ MultiselectCombobox.prototype.getAttributeSearchableDescriptor = ComboBox.protot
 
 MultiselectCombobox.prototype.getAttributeValuesDescriptor = function () {
     return {
-        type: 'arrayOfText'
+        type: 'arrayOfText',
+        dependency:['list'],
+        autocomplete: this.getAttribute('list').map(function (it){
+            return it.value;
+        })
     };
 };
 
