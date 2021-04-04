@@ -17,6 +17,7 @@ function FmFragment() {
     FModel.call(this);
     this.view = null;
     this._componentIdList = [];
+    this._props = {};
     this.onCreate();
 }
 
@@ -35,6 +36,7 @@ FmFragment.prototype.setContentView = function (view) {
     this.view = view;
     this.view.fragment = this;
     this._bindView();
+    this._bindData();
 };
 
 //reassign this property in constructor or onCreate to change default layout,
@@ -84,17 +86,46 @@ FmFragment.prototype._bindView = function () {
 
 
 FmFragment.prototype._bindData = function () {
+    var props = {};
+    this._props = props;
+    function visit(node, isRoot){
+        if (node.fragment && !isRoot){
+            Object.defineProperty(props,node.getAttribute('name'), {
+                enumerable: true,
+                configurable: true,
+                set: function (value){
+                    Object.assign(node.props, value);
+                },
+                get: function (){
+                    return node.props
+                }
+            })
+        }
+        else{
+            node.bindDataToObject(props);
+            for (var i = 0; i < node.children.length; ++i){
+                visit(node.children[i]);
+            }
+        }
+    }
 
+    visit(this.view, true);
 };
 
-// data will bind to each element in layout
-FmFragment.prototype.getData = function () {
 
-};
-
-FmFragment.prototype.setData = function (data) {
-
-};
+Object.defineProperty(FmFragment.prototype, 'domElt', {
+    get: function () {
+        return this.view && this.view.view;
+    }
+});
+Object.defineProperty(FmFragment.prototype, 'props', {
+    get: function () {
+        return this._props;
+    },
+    set: function (props) {
+        Object.assign(this._props, props)
+    }
+});
 
 
 export default FmFragment;
