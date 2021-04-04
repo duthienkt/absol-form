@@ -1,5 +1,6 @@
 import 'absol/src/dependents';
 import 'absol-brace/dependents';
-import * as jsoneditor from'jsoneditor';
+import JSONEditor from'jsoneditor';
+import 'jsoneditor/dist/jsoneditor.css'
 
-window.jsoneditor = jsoneditor;
+window.JSONEditor = JSONEditor;
