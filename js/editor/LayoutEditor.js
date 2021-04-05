@@ -424,7 +424,7 @@ LayoutEditor.prototype.ev_clickEditorSpaceCtn = function (event) {
 LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
     if (!EventEmitter.isMouseLeft(event)) return;
     if (event.target != this.$forceground) return;
-    var hitComponent = this.findComponentsByMousePostion(event.clientX, event.clientY);
+    var hitComponent = this.findComponentsByMousePosition(event.clientX, event.clientY);
     if (hitComponent) {
         if (event.shiftKey)
             this.toggleActiveComponent(hitComponent);
@@ -703,7 +703,7 @@ LayoutEditor.prototype.findComponentsByName = function (name, from) {
     return undefined;
 };
 
-LayoutEditor.prototype.findComponentsByMousePostion = function (clientX, clientY) {
+LayoutEditor.prototype.findComponentsByMousePosition = function (clientX, clientY) {
     var children = this.editingLayout.children;
     var child, childBound;
     for (var i = children.length - 1; i >= 0; --i) {
