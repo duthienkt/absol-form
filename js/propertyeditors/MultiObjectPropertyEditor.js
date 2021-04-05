@@ -300,7 +300,7 @@ MultiObjectPropertyEditor.prototype.loadArrayOfTextProperty = function (name, de
         attr: { title: 'Each value is separated by ;' },
         props: {
             separator: ';',
-            placeHolder:'Enter item text, separated by ;'
+            placeHolder: 'Enter item text, separated by ;'
         },
         on: {
             change: function () {
@@ -497,6 +497,7 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
         var descriptor = self.getPropertyDescriptor(object, name);
         if (descriptor.disabled) res.numberInputElt.disabled = !!descriptor.disabled;
         var value = self.getProperty(object, name);
+
         if (typeof value == 'number') {
             res.numberInputElt.value = value;
             res.typeSelectElt.value = 'px';
@@ -849,9 +850,12 @@ MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descrip
                 }
             }
         );
+
     }
     if (descriptor.sign)
         this.assignToPool(descriptor.sign, numberInput);
+    if (typeof descriptor.floatFixed === "number")
+        numberInput.floatFixed = descriptor.floatFixed;
     numberInput.min = typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity;
     numberInput.max = typeof (descriptor.max) == 'number' ? descriptor.max : Infinity;
     numberInput.value = this.getProperty(object, name);
@@ -860,6 +864,11 @@ MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descrip
     numberInput.peditor = this;
     var res = { elt: numberInput };
     res.requestUpdate = function () {
+        var descriptor = self.getPropertyDescriptor(object, name);
+        if (typeof descriptor.floatFixed === "number")
+            res.elt.floatFixed = descriptor.floatFixed;
+        numberInput.min = typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity;
+        numberInput.max = typeof (descriptor.max) == 'number' ? descriptor.max : Infinity;
         var value = self.getProperty(object, name);
         if (value === null)
             res.elt.value = descriptor.defaultValue;
