@@ -46,12 +46,7 @@ FModel.prototype.setAttribute = function (name, value) {
     if (this[functionName]) {
         res = this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
     }
-    if (res === undefined) {
-        delete this.attributes[name];
-    }
-    else {
-        this.attributes[name] = res;
-    }
+    this.attributes[name] = res;
     return res;
 };
 
