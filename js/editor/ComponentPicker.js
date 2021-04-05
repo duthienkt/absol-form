@@ -25,6 +25,7 @@ import Rectangle from "../shapes/Rectangle";
 import ChainLayout from "../layouts/ChainLayout";
 import MultiselectCombobox from "../components/MultiselectCombobox";
 import TrackBar from "../components/TrackBar";
+import TrackBarInput from "../components/TrackBarInput";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -189,6 +190,14 @@ ComponentPicker.prototype.getView = function () {
                                 name: TrackBar.prototype.tag,
                                 icon: TrackBar.prototype.menuIcon,
                                 componentConstructor: TrackBar
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: TrackBarInput.prototype.tag,
+                                icon: TrackBarInput.prototype.menuIcon,
+                                componentConstructor: TrackBarInput
                             }
                         }
                     ]
