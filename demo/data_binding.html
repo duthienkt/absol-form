@@ -25,13 +25,96 @@
             border: none;
         }
 
+        #json-editor {
+            height: 500px;
+            display: block;
+        }
+
 
     </style>
 </head>
 
 <body>
+<div id="layout-ctn"></div>
+<div id="json-editor"></div>
 <script>
-    var AssemblerInstance = absol.form.AssemblerInstance;
+    !(function () {
+
+        var AssemblerInstance = absol.form.AssemblerInstance;
+        var $ = absol.$;
+        var _ = absol._;
+        var JSZip = absol.JSZip;
+        var makeFmFragmentClass = absol.form.makeFmFragmentClass;
+
+        function downloadFragmentData(path) {
+            return fetch(path)
+                .then(function (res){
+                    return res.text();
+                }).then(function (out) {
+                if (out[0] == '{') {// is json
+                    try {
+                        var data = JSON.parse(out);
+                        return data;
+                    } catch (error) {
+                        console.error(error)
+                    }
+                }
+                else {
+                    return JSZip.loadAsync(out, { base64: true }).then(function (zip) {
+                        return zip.file('data.txt')
+                            .async('text')
+                            .then(function (text) {
+                                try {
+                                    var data = JSON.parse(text);
+                                    return data;
+                                } catch (error) {
+                                    console.error(error)
+                                }
+                            });
+                    });
+                }
+            });
+        }
+
+        var editorElt = $('#json-editor');
+        var editor = new JSONEditor(editorElt, {});
+        editor.set({});
+        downloadFragmentData('https://absol.cf/formeditor/workspace/GetStarted/form/SignUp.form').then(function (data){
+            console.log('JSON data', data);
+            //tạo một class ứng với tag, và layout
+            var SignUpFragment = makeFmFragmentClass({
+                tag:'SignUpFragment',//định danh, không được trùng với các class khác,
+                contentViewData: data
+            });
+
+            //cài đặt class này vào form
+            AssemblerInstance.addConstructor(SignUpFragment);
+        })
+        .then(function (){
+            var mSignUpFrag = AssemblerInstance.build({class:'SignUpFragment'});
+            $('#layout-ctn').addChild(mSignUpFrag.domElt);
+            //vì đây là lớp ngoài cùng, nên có thể sửa style của domElt cho phù hợp
+            mSignUpFrag.domElt.addStyle({
+                width: '100%',
+                height:'400px',
+                display: 'block'
+            });
+            //cách gán giá trị
+            mSignUpFrag.props.TextInput_3 = "Phạm Quốc Cường";
+            //nó tự bỏ qua không gán vào các trường không có, vì đây là 1 setter
+            mSignUpFrag.props = {TextInput_4:'cuong95@gmail.com'};
+            mSignUpFrag.props.TextInput_5 = '090557883922';
+            //thử edit bằng editor
+            var editData = JSON.parse(JSON.stringify(mSignUpFrag.props));
+            editor.set(editData);
+            editor.options.onChange = function (){
+                mSignUpFrag.props = editor.get();
+            }
+        });
+
+    })();
+
+    /*
     var testObj = {};
     var mCheckbox = AssemblerInstance.buildComponent({
         tag: 'CheckBox',
@@ -167,7 +250,7 @@
         testObj.mTextInput = testObj.mText;
         testObj.mTextArea = testObj.mText;
     }, 1000);
-
+*/
 </script>
 </body>
 
