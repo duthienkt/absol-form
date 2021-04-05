@@ -25,16 +25,17 @@ TrackBar.prototype.onCreated = function () {
     this.bindAttribute('value');
 };
 
-TrackBar.prototype.getAttributeStyleDescriptor = function () {
+TrackBar.prototype.getAttributeValueDescriptor = function () {
     return {
         type: 'number',
         max: 1,
-        min: 0
+        min: 0,
+        floatFixed: 2
     };
 };
 
-TrackBar.prototype.getAttributeNames = function (){
-    return ScalableComponent.prototype.getAttributeNames.call(this).concat(['value']);
+TrackBar.prototype.getAcceptsAttributeNames = function (){
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value']);
 };
 
 
