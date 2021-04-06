@@ -55,11 +55,16 @@ TrackBarInput.prototype.getAttributeRightValueDescriptor = function () {
         dependency:['leftValue', 'value']
     };
 };
+TrackBarInput.prototype.getAttributeUnitDescriptor = function () {
+    return {
+        type: 'text'
+    };
+};
 
 
 
 TrackBarInput.prototype.getAcceptsAttributeNames = function (){
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'leftValue', 'rightValue']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'leftValue', 'rightValue', 'unit']);
 };
 
 
