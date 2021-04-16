@@ -10,7 +10,9 @@ FViewable.prototype.getAcceptsStyleNames = function () {
     return [];
 };
 
-
+/***
+ * @returns {AElement}
+ */
 FViewable.prototype.render = function () {
     throw new Error('Not Implement');
 };
