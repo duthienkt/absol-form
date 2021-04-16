@@ -5,7 +5,7 @@ import './css/layouteditor.css'
 import RelativeAnchor from './js/anchors/RelativeAnchor'
 import TextInput from './js/components/TextInput'
 import RelativeLayout from './js/layouts/RelativeLayout'
-import Assembler, {AssemblerInstance} from './js/core/Assembler'
+import Assembler, {AssemblerInstance, findComponent, findComponentByName} from './js/core/Assembler'
 import DateInput from './js/components/DateInput'
 import BaseComponent from './js/core/BaseComponent'
 import LayoutEditor from './js/editor/LayoutEditor'
@@ -21,7 +21,7 @@ import StyleEditor from './js/editor/StyleEditor';
 import ContentScalelessComponent from './js/core/ContentScalelessComponent';
 import ScalableComponent from './js/core/ScalableComponent';
 import FModel from './js/core/FModel';
-import FNode from './js/core/FNode';
+import FNode, {traversal} from './js/core/FNode';
 import FViewable from './js/core/FViewable';
 import Button from './js/components/Button';
 import CheckBox from './js/components/Checkbox';
@@ -88,6 +88,9 @@ export default {
     core: Fcore,
     makeFmFragmentConstructor: makeFmFragmentClass,
     makeFmFragmentClass: makeFmFragmentClass,
-    AssemblerInstance: AssemblerInstance
+    AssemblerInstance: AssemblerInstance,
+    findComponentsByName: findComponentByName,
+    findComponent: findComponent,
+    traversal: traversal
 };
 

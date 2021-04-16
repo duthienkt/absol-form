@@ -26,6 +26,8 @@ import ChainLayout from "../layouts/ChainLayout";
 import MultiselectCombobox from "../components/MultiselectCombobox";
 import TrackBar from "../components/TrackBar";
 import TrackBarInput from "../components/TrackBarInput";
+import TableInput from "../components/TableInput";
+import ArrayOfFragment from "../components/ArrayOfFragment";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -199,6 +201,14 @@ ComponentPicker.prototype.getView = function () {
                                 icon: TrackBarInput.prototype.menuIcon,
                                 componentConstructor: TrackBarInput
                             }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: TableInput.prototype.tag,
+                                icon: TableInput.prototype.menuIcon,
+                                componentConstructor: TableInput
+                            }
                         }
                     ]
                 },
@@ -262,6 +272,23 @@ ComponentPicker.prototype.getView = function () {
                                 name: "Button",
                                 icon: Button.prototype.menuIcon,
                                 componentConstructor: Button
+                            }
+                        }
+                    ]
+                },
+                {
+                    tag:'exptree',
+                    props:{
+                        name: 'mapping',
+                        icon:'span.mdi.mdi-'
+                    },
+                    child:[
+                        {
+                            tag:'exptree',
+                            props:{
+                                name:ArrayOfFragment.prototype.tag,
+                                icon:ArrayOfFragment.prototype.menuIcon,
+                                componentConstructor: ArrayOfFragment
                             }
                         }
                     ]
