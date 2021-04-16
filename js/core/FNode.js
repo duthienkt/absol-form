@@ -1,5 +1,3 @@
-
-
 function FNode() {
     /**
      * @type {FNode}
@@ -13,25 +11,31 @@ function FNode() {
 }
 
 
-FNode.prototype.onDetach = function () {/* NOOP */ };
-FNode.prototype.onDetached = function () {/* NOOP */ };
+FNode.prototype.onDetach = function () {/* NOOP */
+};
+FNode.prototype.onDetached = function () {/* NOOP */
+};
 
-FNode.prototype.onAttach = function () {/* NOOP */ };
-FNode.prototype.onAttached = function () {/* NOOP */ };
-
-
-/**
- * @param {FNode} child
- * @param {Number} index
- */
-FNode.prototype.onRemoveChild = function (child, index) { }
+FNode.prototype.onAttach = function () {/* NOOP */
+};
+FNode.prototype.onAttached = function () {/* NOOP */
+};
 
 
 /**
  * @param {FNode} child
  * @param {Number} index
  */
-FNode.prototype.onAddChild = function (child, index) { };
+FNode.prototype.onRemoveChild = function (child, index) {
+}
+
+
+/**
+ * @param {FNode} child
+ * @param {Number} index
+ */
+FNode.prototype.onAddChild = function (child, index) {
+};
 
 /**
  * @return {FNode}
@@ -51,7 +55,7 @@ FNode.prototype.addChild = function (child) {
     child.parent = this;
     //data ready
     this.onAttach();
-    this.onAddChild(child, - 1);//negative index for appending child
+    this.onAddChild(child, -1);//negative index for appending child
     child.onAttached();
 };
 
@@ -142,3 +146,41 @@ FNode.prototype.indexOfChild = function (child) {
 
 
 export default FNode;
+
+
+/***
+ *
+ *
+ * @param  {FNode} root
+ * @param cb
+ */
+export function traversal(root, cb) {
+    var ac = {
+        path: [], node: null,
+        isStopped: false,
+        stop: function () {
+            this.isStopped = true;
+        },
+        isSkipChildren: false,
+        skipChildren: function () {
+            this.isSkipChildren = true;
+        }
+    };
+
+    function visit(node) {
+        ac.path.push(node);
+        ac.node = node;
+        ac.isSkipChildren = false;
+        ac.isStopped = false;
+        cb(ac);
+        if (!ac.isSkipChildren) {
+            if (node.children)
+                for (var i = 0; i < node.children.length && !ac.isStopped; ++i) {
+                    visit(node.children[i]);
+                }
+        }
+        ac.node = ac.path.pop();
+    }
+
+    visit(root);
+}
