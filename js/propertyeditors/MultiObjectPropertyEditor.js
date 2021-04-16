@@ -9,6 +9,7 @@ import R from "../R";
 import {randomIdent} from "absol/src/String/stringGenerate";
 import SelectListEditor from "../editor/SelectListEditor";
 import TokenField from "absol-acomp/js/TokenField";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -959,6 +960,42 @@ MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, des
     return res;
 };
 
+
+MultiObjectPropertyEditor.prototype.loadFragmentClassProperty = function (name, descriptor, cell) {
+    var self = this;
+    var res = {};
+    var object = this.objects[this.objects.length - 1];
+    var constructors = AssemblerInstance.fragmentConstructors;
+    var items = Object.keys(constructors).map(function (key) {
+        var cst = constructors[key];
+        var cstName = cst.prototype.displayName
+            || (cst.prototype.contentViewData
+                && cst.prototype.contentViewData.attributes
+                && cst.prototype.contentViewData.attributes.name)
+            || cst.prototype.name
+            || cst.prototype.tag;
+        return { text: cstName, value: key };
+    });
+    items.unshift({ text: "none", value: 'null', extendStyle: { "color": "#aaa" } });
+
+    res.elt = _({
+        tag: 'selectmenu',
+        props: {
+            items: items,
+            value: this.getProperty(object, name) || 'null'
+        },
+        on: {
+            change: function () {
+                if (this.value === 'null')
+                    self.setPropertyAll(name, null);
+                else
+                    self.setPropertyAll(name, this.value);
+            }
+        }
+    });
+    cell.addChild(res.elt)
+    return res;
+};
 
 MultiObjectPropertyEditor.prototype.clearAllDependents = function () {
     for (var key in this.dependents)
