@@ -1,0 +1,8 @@
+.as-array-of-fragment {
+    overflow: auto;
+    position: relative;
+}
+
+.as-array-of-fragment-item {
+    display: block;
+}
