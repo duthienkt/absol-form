@@ -75,6 +75,7 @@ Object.keys(CodeEditor.prototype.TYPE_MODE).forEach(function (typeName) {
 
 FormEditor.prototype.onStart = function () {
     this.projectExplorer.start();
+    this.mCMDTool.getView();
 };
 
 
@@ -93,7 +94,7 @@ FormEditor.prototype.onPause = function () {
             return true;
         }
     });
-
+    this.mCMDTool.$window.addStyle('visibility', 'hidden');
 };
 
 
@@ -109,6 +110,12 @@ FormEditor.prototype.onResume = function () {
         });
         this.runningEditorsIsPaused = [];
     }
+    this.mCMDTool.$window.removeStyle('visibility');
+};
+
+
+FormEditor.prototype.onDestroy = function (){
+  this.mCMDTool.$window.remove();
 };
 
 
