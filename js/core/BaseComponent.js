@@ -28,7 +28,11 @@ function BaseComponent() {
     this.fragment = null;
     this.anchorAcceptsStyleName = {};
     this.onCreate();
-    this.view = this.render();
+    /***
+     * @type {AElement}
+     */
+    this.domElt = this.render();
+
     this.view.classList.add(this.BASE_COMPONENT_CLASS_NAME);
     this.onCreated();
 }
@@ -403,6 +407,12 @@ BaseComponent.prototype.getStyleHeightDescriptor = function () {
 
 };
 
+BaseComponent.prototype.setAttributeName = function (value) {
+    value = (value + '') || undefined;
+    this.domElt.attr('data-attr-name', value);
+    return value;
+}
+
 /***
  * @returns {PropertyDescriptor||{}|null}
  */
@@ -413,12 +423,20 @@ BaseComponent.prototype.getDataBindingDescriptor = function () {
 BaseComponent.prototype.bindDataToObject = function (obj) {
     var name = this.getAttribute('name');
     var descriptor = this.getDataBindingDescriptor();
-    if (descriptor){
-        Object.assign(descriptor, {enumerable: true, configurable: true});
+    if (descriptor) {
+        Object.assign(descriptor, { enumerable: true, configurable: true });
         Object.defineProperty(obj, name, descriptor);
     }
     return !!descriptor;
 };
 
+Object.defineProperty(BaseComponent.prototype, 'view', {
+    get: function () {
+        if (window.ABSOL_DEBUG) {
+            console.trace('view');
+        }
+        return this.domElt;
+    }
+});
 
 export default BaseComponent;
