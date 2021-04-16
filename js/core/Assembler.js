@@ -20,6 +20,9 @@ import ChainLayout from "../layouts/ChainLayout";
 import MultiselectCombobox from "../components/MultiselectCombobox";
 import TrackBar from "../components/TrackBar";
 import TrackBarInput from "../components/TrackBarInput";
+import TableInput from "../components/TableInput";
+import {traversal} from "./FNode";
+import ArrayOfFragment from "../components/ArrayOfFragment";
 
 function Assembler() {
     this.addConstructor(Button);
@@ -42,6 +45,8 @@ function Assembler() {
     this.addConstructor(MultiselectCombobox);
     this.addConstructor(TrackBar);
     this.addConstructor(TrackBarInput);
+    this.addConstructor(TableInput);
+    this.addComponent(ArrayOfFragment);
 }
 
 
@@ -118,6 +123,9 @@ Assembler.prototype.buildComponent = function (data, frag) {
             result.setEvent(eventName, events[eventName]);
         }
 
+    if (typeof data.onCreated === "function"){
+        data.onCreated.apply(result, []);
+    }
     var children = data.children;
     if (children && children.length > 0) {
         for (var i = 0; i < children.length; ++i) {
@@ -200,3 +208,41 @@ Assembler.prototype.removeComponent = function (name, construction) {
 export default Assembler;
 
 export var AssemblerInstance = new Assembler();
+
+
+export function findComponentByName(root, name) {
+    var res = null;
+    traversal(root, function (ac) {
+        if (ac.node.getAttribute('name') === name) {
+            ac.stop();
+            res = ac.node;
+        }
+    });
+
+    return res;
+}
+
+export function findComponent(root, opt){
+    var res = null;
+    opt = opt ||{};
+    if (typeof opt === 'string'){
+        opt = {name: opt};
+    }
+
+    function isMatch(comp){
+        if (opt.name && opt.name === comp.getAttribute('name')) return true;
+        return false;
+    }
+
+    traversal(root, function (ac) {
+        if (ac.node !== root && !opt.depth && ac.node.fragment) {
+            ac.skipChildren();
+            return;
+        }
+        if (isMatch(ac.node)) {
+            ac.stop();
+            res = ac.node;
+        }
+    });
+    return res;
+}

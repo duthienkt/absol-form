@@ -133,7 +133,7 @@ export default FmFragment;
 
 /***
  *
- * @param {{tag: string ,contentViewData?:Object}} opt
+ * @param {{tag: string ,contentViewData?:Object, prototype?: Object}} opt
  * @return {CustomFmFragment}
  */
 export function makeFmFragmentClass(opt) {
@@ -145,6 +145,9 @@ export function makeFmFragmentClass(opt) {
     CustomFmFragment.prototype.tag = opt.tag || 'CustomFmFragment_' + randomIdent(10);
     if (opt.contentViewData)
         CustomFmFragment.prototype.contentViewData = opt.contentViewData;
+    if (opt.prototype){
+        Object.defineProperties(CustomFmFragment.prototype, Object.getOwnPropertyDescriptors(opt.prototype));
+    }
 
     return CustomFmFragment;
 }
