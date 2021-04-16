@@ -5,6 +5,7 @@ import '../dom/Icons';
 import BaseAnchorEditor from '../core/BaseAnchorEditor';
 import LinearAnchorEditorCmd, { LinearAnchorEditorCmdTree, LinearAnchorEditorCmdDescriptors } from '../cmds/LinearAnchorEditorCmd';
 import OOP from "absol/src/HTML5/OOP";
+import ResizeSystem from "absol/src/HTML5/ResizeSystem";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -326,7 +327,9 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     if (positionIsChange) {
         this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event, repeatEvent: event }, this);
         movingData.isChange = true;
+        ResizeSystem.updateDown(movingData.comp.view);
     }
+
     if (userAction) {
         this.emit('moving', { taget: this, type: 'moving', originEvent: event, repeatEvent: event, target: this }, this);
         this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;

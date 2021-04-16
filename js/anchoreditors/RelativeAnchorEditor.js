@@ -4,6 +4,7 @@ import '../dom/Icons';
 import BaseAnchorEditor from '../core/BaseAnchorEditor';
 import RelativeAnchorEditorCmd, { RelativeAnchorEditorCmdTree, RelativeAnchorEditorCmdDescriptors } from '../cmds/RelativeAnchorEditorCmd';
 import OOP from "absol/src/HTML5/OOP";
+import ResizeSystem from "absol/src/HTML5/ResizeSystem";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -416,6 +417,7 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     if (positionIsChange) {
         this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event.originEvent || event, repeatEvent: event }, this);
         movingData.isChange = true;
+        ResizeSystem.updateDown(movingData.comp.view);
     }
     if (userAction) {
         this.emit('moving', { taget: this, type: 'moving', originEvent: event.originEvent || event, target: this, repeatEvent: event }, this);
