@@ -25,7 +25,7 @@ DateInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
 
 DateInput.prototype.render = function () {
-    return _('calendarinput');
+    return _('dateinput');
 };
 
 
