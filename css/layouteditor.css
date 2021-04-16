@@ -187,7 +187,9 @@
 
 .as-layout-editor-layout-container .as-base-component .as-chain-layout,
 .as-layout-editor-layout-container .as-base-component .as-relative-layout,
-.as-layout-editor-layout-container .as-base-component .as-linear-layout {
+.as-layout-editor-layout-container .as-base-component .as-linear-layout,
+.as-layout-editor-layout-container .as-array-of-fragment
+{
     -webkit-box-shadow: 0px 0px 0px 1px rgba(169, 169, 255, 0.8);
     -moz-box-shadow: 0px 0px 0px 1px rgba(169, 169, 255, 0.8);
     box-shadow: 0px 0px 0px 1px rgba(169, 169, 255, 0.8);
