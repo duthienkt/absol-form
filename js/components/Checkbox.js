@@ -3,7 +3,8 @@ import Fcore from "../core/FCore";
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
 import OOP from "absol/src/HTML5/OOP";
-
+import CheckboxButton from "absol-acomp/js/CheckboxButton";
+// CheckboxButton
 var _ = Fcore._;
 var $ = Fcore.$;
 
@@ -41,7 +42,7 @@ CheckBox.prototype.onCreated = function () {
     var self = this;
     this.view.on('change', function () {
         self.attributes.checked = this.checked;
-        this.emit('change', { type: "change", checked: self.attributes.checked, target: this }, this)
+        // this.emit('change', { type: "change", checked: self.attributes.checked, target: this }, this);
     });
 };
 
