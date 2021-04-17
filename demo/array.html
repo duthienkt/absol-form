@@ -154,6 +154,7 @@
                     var idx = this.props.myArray.indexOf(field);
                     if (idx >= 0) {
                         this.props.myArray.splice(idx, 1);
+                        editor.set(this.props);
                     }
                 };
 
