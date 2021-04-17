@@ -16,7 +16,7 @@ function FmFragment() {
     FNode.call(this);
     FModel.call(this);
     this.view = null;
-    this._componentIdList = [];
+    this._componentNameList = [];
     this._props = {};
     this.onCreate();
 }
@@ -35,6 +35,7 @@ FmFragment.prototype.menuIcon = 'span.mdi.mdi-terraform';
 FmFragment.prototype.setContentView = function (view) {
     this.view = view;
     this.view.fragment = this;
+    this.view.domElt.fragment = this;
     this._bindView();
     this._bindData();
 };
@@ -56,13 +57,13 @@ FmFragment.prototype.onCreated = noop;
  *
  * @param {String} id
  */
-FmFragment.prototype.findViewById = function (id) {
-    return this[$ + id];
+FmFragment.prototype.findViewByName = function (id) {
+    return this['$' + id];
 };
 
 FmFragment.prototype._bindView = function () {
-    while (this._componentIdList.length > 0) {
-        delete this[$ + this._componentIdList.pop()];
+    while (this._componentNameList.length > 0) {
+        delete this['$' + this._componentNameList.pop()];
     }
     if (!this.view) return;
     var thisFm = this;
@@ -73,10 +74,10 @@ FmFragment.prototype._bindView = function () {
      */
     function visit(root) {
         if (root.fragment && root.fragment !== thisFm) return;//hold by other fragment
-        var id = root.getAttribute('id');
+        var id = root.getAttribute('name');
         if (id) {
             thisFm['$' + id] = root;
-            thisFm._componentIdList.push(id);
+            thisFm._componentNameList.push(id);
             root.children.forEach(visit);
         }
     }
@@ -88,22 +89,23 @@ FmFragment.prototype._bindView = function () {
 FmFragment.prototype._bindData = function () {
     var props = {};
     this._props = props;
-    function visit(node, isRoot){
-        if (node.fragment && !isRoot){
-            Object.defineProperty(props,node.getAttribute('name'), {
+
+    function visit(node, isRoot) {
+        if (node.fragment && !isRoot) {
+            Object.defineProperty(props, node.getAttribute('name'), {
                 enumerable: true,
                 configurable: true,
-                set: function (value){
+                set: function (value) {
                     Object.assign(node.props, value);
                 },
-                get: function (){
+                get: function () {
                     return node.props
                 }
             })
         }
-        else{
+        else {
             node.bindDataToObject(props);
-            for (var i = 0; i < node.children.length; ++i){
+            for (var i = 0; i < node.children.length; ++i) {
                 visit(node.children[i]);
             }
         }
@@ -127,6 +129,17 @@ Object.defineProperty(FmFragment.prototype, 'props', {
     }
 });
 
+Object.defineProperty(FmFragment.prototype, 'parentFragment', {
+    get: function () {
+        var pE = this.domElt.parentElement;
+        while (pE) {
+            if (pE.fragment) return pE.fragment;
+            pE = pE.parentElement
+        }
+        return null;
+    }
+});
+
 
 export default FmFragment;
 
@@ -145,7 +158,7 @@ export function makeFmFragmentClass(opt) {
     CustomFmFragment.prototype.tag = opt.tag || 'CustomFmFragment_' + randomIdent(10);
     if (opt.contentViewData)
         CustomFmFragment.prototype.contentViewData = opt.contentViewData;
-    if (opt.prototype){
+    if (opt.prototype) {
         Object.defineProperties(CustomFmFragment.prototype, Object.getOwnPropertyDescriptors(opt.prototype));
     }
 
