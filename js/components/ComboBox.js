@@ -130,6 +130,8 @@ ComboBox.prototype.getDataBindingDescriptor = function () {
     var subObj = {};
     Object.defineProperties(subObj, {
         value: {
+            configurable: true,
+            enumerable: true,
             set: function (value) {
                 thisC.setAttribute('value', value);
             },
@@ -138,6 +140,8 @@ ComboBox.prototype.getDataBindingDescriptor = function () {
             }
         },
         list: {
+            enumerable: true,
+            configurable: true,
             get: function () {
                 return thisC.getAttribute('list');
             },
