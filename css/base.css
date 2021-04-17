@@ -183,5 +183,11 @@
     overflow-x: visible;
 }
 
-
-
+.as-linear-layout::after,
+.as-array-of-fragment::after{
+    content: "";
+    display: block;
+    height: 1px;
+    margin-top: -1px;
+    overflow-x: visible;
+}
