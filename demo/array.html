@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF8"/>
+    <title>Array</title>
+    <link rel="stylesheet" href="//cdn.materialdesignicons.com/4.5.95/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://absol.cf/hightlight/styles/default.css">
+    <script src="https://absol.cf/hightlight/highlight.pack.js"></script>
+    <link
+            href="https://fonts.googleapis.com/css?family=Alegreya|Alegreya+SC|Alegreya+Sans|Alegreya+Sans+SC|Alfa+Slab+One|Amatic+SC|Andika|Anton|Archivo|Archivo+Narrow|Arima+Madurai|Arimo|Arsenal|Asap|Asap+Condensed|Athiti|Bahianita|Bai+Jamjuree|Baloo|Baloo+Bhai|Baloo+Bhaijaan|Baloo+Bhaina|Baloo+Chettan|Baloo+Da|Baloo+Paaji|Baloo+Tamma|Baloo+Tammudu|Baloo+Thambi|Bangers|Barlow|Barlow+Condensed|Barlow+Semi+Condensed|Barriecito|Be+Vietnam|Bevan|Big+Shoulders+Display|Big+Shoulders+Text|Bungee|Bungee+Hairline|Bungee+Inline|Bungee+Outline|Bungee+Shade|Cabin|Cabin+Condensed|Chakra+Petch|Charm|Charmonman|Chonburi|Coiny|Comfortaa|Cormorant|Cormorant+Garamond|Cormorant+Infant|Cormorant+SC|Cormorant+Unicase|Cormorant+Upright|Cousine|Crimson+Pro|Cuprum|Dancing+Script|Darker+Grotesque|David+Libre|Dosis|EB+Garamond|Encode+Sans|Encode+Sans+Condensed|Encode+Sans+Expanded|Encode+Sans+Semi+Condensed|Encode+Sans+Semi+Expanded|Exo|Exo+2|Fahkwang|Farsan|Faustina|Fira+Sans|Fira+Sans+Condensed|Fira+Sans+Extra+Condensed|Francois+One|Grenze|Hepta+Slab|IBM+Plex+Mono|IBM+Plex+Sans|IBM+Plex+Sans+Condensed|IBM+Plex+Serif|Inconsolata|Itim|Josefin+Sans|Judson|Jura|K2D|Kanit|KoHo|Kodchasan|Krub|Lalezar|Lemonada|Lexend+Deca|Lexend+Exa|Lexend+Giga|Lexend+Mega|Lexend+Peta|Lexend+Tera|Lexend+Zetta|Literata|Livvic|Lobster|Lora|M+PLUS+1p|M+PLUS+Rounded+1c|Maitree|Major+Mono+Display|Mali|Manuale|Markazi+Text|Maven+Pro|Merriweather|Metrophobic|Mitr|Montserrat|Montserrat+Alternates|Muli|Niramit|Noticia+Text|Noto+Sans|Noto+Sans+SC|Noto+Serif|Noto+Serif+SC|Noto+Serif+TC|Nunito|Nunito+Sans|Old+Standard+TT|Open+Sans|Open+Sans+Condensed:300|Oswald|Pacifico|Pangolin|Patrick+Hand|Patrick+Hand+SC|Pattaya|Paytone+One|Philosopher|Play|Playfair+Display|Playfair+Display+SC|Podkova|Prata|Pridi|Prompt|Quicksand|Roboto|Roboto+Condensed|Roboto+Mono|Roboto+Slab|Rokkitt|Rosario|Saira|Saira+Condensed|Saira+Extra+Condensed|Saira+Semi+Condensed|Saira+Stencil+One|Sarabun|Sawarabi+Gothic|Sedgwick+Ave|Sedgwick+Ave+Display|Sigmar+One|Source+Code+Pro|Source+Sans+Pro|Space+Mono|Spectral|Spectral+SC|Sriracha|Srisakdi|Taviraj|Thasadith|Tinos|Trirong|VT323|Varela+Round|Vollkorn|Vollkorn+SC|Yanone+Kaffeesatz|Yeseva+One&display=swap"
+            rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://absol.cf/absol-full/absol/absol.dependents.js"></script>
+    <script src="../absol/absol_form.js"></script>
+
+    <style>
+        html,
+        body,
+        :root {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #json-editor {
+            height: 500px;
+            display: block;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="layout-ctn"></div>
+<div id="json-editor"></div>
+<script>
+    !(function () {
+        var AssemblerInstance = absol.form.AssemblerInstance;
+        var FmFragment = absol.form.FmFragment;
+        var $ = absol.$;
+        var _ = absol._;
+        var OOP = absol.OOP;
+        var JSZip = absol.JSZip;
+        var makeFmFragmentClass = absol.form.makeFmFragmentClass;
+
+        function downloadFragmentData(path) {
+            return fetch(path, { cache: "no-store" })
+                .then(function (res) {
+                    return res.text();
+                }).then(function (out) {
+                    if (out[0] == '{') {// is json
+                        try {
+                            var data = JSON.parse(out);
+                            return data;
+                        } catch (error) {
+                            console.error(error)
+                        }
+                    }
+                    else {
+                        return JSZip.loadAsync(out, { base64: true }).then(function (zip) {
+                            return zip.file('data.txt')
+                                .async('text')
+                                .then(function (text) {
+                                    try {
+                                        var data = JSON.parse(text);
+                                        return data;
+                                    } catch (error) {
+                                        console.error(error)
+                                    }
+                                });
+                        });
+                    }
+                });
+        }
+
+        var editorElt = $('#json-editor');
+        var editor = new JSONEditor(editorElt, {});
+        editor.set({});
+
+
+        var textFieldDLSync = downloadFragmentData('https://absol.cf/formeditor/workspace/GetStarted/form/TextField.form')
+            .then(function (data) {
+                /***
+                 Đây là cách thông thường, dữ liệu tĩnh
+                 AssemblerInstance.addConstructor(makeFmFragmentClass({
+                    tag: 'TextField',
+                    contentViewData: data
+                }));
+
+                 ***/
+                /***
+                 * @extends FmFragment
+                 */
+                function TextFieldFragment() {
+                    FmFragment.call(this);
+                }
+
+                OOP.mixClass(TextFieldFragment, FmFragment);
+
+                TextFieldFragment.prototype.tag = 'TextField';//tag này để định danh trong assembler,
+                // khi dùng thì truyền {class:"TextField"}
+                TextFieldFragment.prototype.contentViewData = data;//layout của fragment
+
+                TextFieldFragment.prototype.onCreated = function () {
+                    var delBtn = this.findViewByName('del_btn');
+                    delBtn.domElt.on('click', this.onClickDelBtn.bind(this));
+                };
+
+                TextFieldFragment.prototype.onClickDelBtn = function () {
+                    var parentFragment = this.parentFragment;
+                    if (parentFragment)
+                        parentFragment.removeField(this.props);
+                };
+
+                AssemblerInstance.addConstructor(TextFieldFragment);
+
+
+            });
+        var arrayDemoDLSync = downloadFragmentData('https://absol.cf/formeditor/workspace/GetStarted/form/ArrayDemo.form')
+            .then(function (data) {
+                /***
+                 * @extends FmFragment
+                 */
+                function ArrayDemoFragment() {
+                    //kế thừa class FmFragment
+                    FmFragment.call(this);
+
+                }
+
+                OOP.mixClass(ArrayDemoFragment, FmFragment);
+
+                ArrayDemoFragment.prototype.tag = 'ArrayDemo';//tag này để định danh trong assembler
+                ArrayDemoFragment.prototype.contentViewData = data;//layout của fragment
+
+                ArrayDemoFragment.prototype.onCreated = function () {
+                    //các xử lí về giao diện có thể thực hiện ở đây
+                    var addBtn = this.findViewByName('add_btn');
+                    addBtn.domElt.on('click', this.onClickAddBtn.bind(this));
+                };
+
+                ArrayDemoFragment.prototype.onClickAddBtn = function () {
+                    this.props.myArray.push({
+                        name: 'name_' + (Math.random() * 100 >> 0),
+                        value: 'text ' + (Math.random() * 1e7 >> 0) + ""
+                    });
+
+                    editor.set(this.props);
+                };
+
+                ArrayDemoFragment.prototype.removeField = function (field) {
+                    var idx = this.props.myArray.indexOf(field);
+                    if (idx >= 0) {
+                        this.props.myArray.splice(idx, 1);
+                    }
+                };
+
+                AssemblerInstance.addConstructor(ArrayDemoFragment);
+            });
+
+
+        //sau khi tải và cài đặt form hoàn tất
+        Promise.all([textFieldDLSync, arrayDemoDLSync]).then(function () {
+            var layoutCtn = $('#layout-ctn');
+            var arrayDemoFrag = AssemblerInstance.buildFragment({
+                class: 'ArrayDemo'
+            });
+            layoutCtn.addChild(arrayDemoFrag.domElt);
+            arrayDemoFrag.props.myArray = [
+                {
+                    name: "Họ và tên",
+                    value: "Nguyễn Văn A"
+                },
+                {
+                    name: "Trường",
+                    value: 'THPT Trần Hưng Đạo'
+                }
+            ]
+            editor.set(arrayDemoFrag.props);
+
+            editor.options.onChange = function () {
+                arrayDemoFrag.props = editor.get();
+            };
+        });
+
+
+        /*
+        downloadFragmentData('https://absol.cf/formeditor/workspace/GetStarted/form/SignUp.form').then(function (data){
+            console.log('JSON data', data);
+            //tạo một class ứng với tag, và layout
+            var SignUpFragment = makeFmFragmentClass({
+                tag:'SignUpFragment',//định danh, không được trùng với các class khác,
+                contentViewData: data
+            });
+
+            //cài đặt class này vào form
+            AssemblerInstance.addConstructor(SignUpFragment);
+        })
+            .then(function (){
+                var mSignUpFrag = AssemblerInstance.build({class:'SignUpFragment'});
+                $('#layout-ctn').addChild(mSignUpFrag.domElt);
+                //vì đây là lớp ngoài cùng, nên có thể sửa style của domElt cho phù hợp
+                mSignUpFrag.domElt.addStyle({
+                    width: '100%',
+                    height:'800px',
+                    display: 'block'
+                });
+
+                var signUpBtn = absol.form.findComponent(mSignUpFrag.view, {
+                    name: 'sign_up_btn',
+                    depth: false//không tìm trong fragment con
+                });
+                signUpBtn.domElt.on('click', function (){
+                    alert("SignUp");
+                });
+
+                var studentTable =  absol.form.findComponent(mSignUpFrag.view, {
+                    name: 'my_table',
+                    depth: false//không tìm trong fragment con
+                });
+                var studentTableEditor = studentTable.editor;
+                studentTableEditor.on('cmd_insert_row', function (event) {
+                    //cần gọi resolve 1 promise chứa dữ liệu trả về(trường hợp hiện ra cửa sổ, bất động bộ)
+                    // hoặc trực tiếp kết quả
+                    event.resolve(new Promise(function (resolve) {
+                        setTimeout(function () {
+                            resolve({
+                                sid: 123355 * Math.random() >> 0, name: "Dòng mới", class: "NEW_CLASS",
+                                position: Math.random() * 2 >> 0, desc: "Đây là dòng mơi", off: false
+                            });
+                            // hoặc nếu hủy thì gọi resolve null
+                        }, 1000);
+                    }));
+                });
+
+                studentTableEditor.on('cmd_remove_row', function (event) {
+                    event.accept(new Promise(function (resolve) {
+                        if (confirm("Bạn có thực sự muốn xóa không")) {
+                            // Save it!
+                            resolve(true);
+                        } else {
+                            // Do nothing!
+                            resolve(false);
+                        }
+                    }));
+                });
+
+
+
+                //cách gán giá trị
+                mSignUpFrag.props.TextInput_3 = "Phạm Quốc Cường";
+                //nó tự bỏ qua không gán vào các trường không có, vì đây là 1 setter
+                mSignUpFrag.props = {TextInput_4:'cuong95@gmail.com'};
+                mSignUpFrag.props.TextInput_5 = '090557883922';
+                demoTableDataSync.then(function (jsonData){
+                    // console.log(jsonData);
+                    mSignUpFrag.props.my_table = jsonData;
+                    var editData = JSON.parse(JSON.stringify(mSignUpFrag.props));
+                    editor.set(editData);
+                });
+                //thử edit bằng editor
+
+            });
+*/
+    })();
+</script>
+</body>
+</html>
