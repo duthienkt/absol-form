@@ -41,7 +41,7 @@ import * as framePlugins from './js/frame/plugins';
 import LayoutEditorCmd from './js/cmds/LayoutEditorCmd';
 import FormPreviewCmd, {FormPreviewCmdDescriptors} from './js/cmds/FormPreviewCmd';
 import FormEditorPreconfig from './js/FormEditorPreconfig';
-import {makeFmFragmentClass} from "./js/core/FmFragment";
+import FmFragment, {makeFmFragmentClass} from "./js/core/FmFragment";
 
 export default {
     FormEditorPreconfig: FormEditorPreconfig,
@@ -86,6 +86,7 @@ export default {
 
     Assembler: Assembler,
     core: Fcore,
+    FmFragment: FmFragment,
     makeFmFragmentConstructor: makeFmFragmentClass,
     makeFmFragmentClass: makeFmFragmentClass,
     AssemblerInstance: AssemblerInstance,
