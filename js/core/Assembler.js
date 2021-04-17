@@ -82,12 +82,14 @@ Assembler.prototype.buildFragment = function (data) {
         constructor = data.class;
     }
     if (!constructor) {
+        console.error(data);
         throw  new Error("Invalid FmFragment class!");
     }
     var frag = new constructor();
     frag.setContentView(this.buildComponent(frag.contentViewData, frag));
     if (data.style) frag.view.setStyles(data.style);
     if (data.attributes) frag.view.setAttributes(data.attributes);
+    frag.onCreated();
     return frag;
 };
 
