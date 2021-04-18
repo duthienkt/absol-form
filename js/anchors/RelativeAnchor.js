@@ -83,7 +83,7 @@ RelativeAnchor.prototype.getStyleLeftDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'right',
+        disabled: this.childNode.style.hAlign === 'center' || this.childNode.style.hAlign === 'right',
         livePreview: true,
         dependency: ['hAlign', 'right', 'width']
     };
@@ -95,7 +95,7 @@ RelativeAnchor.prototype.getStyleRightDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.hAlign == 'center' || this.childNode.style.hAlign == 'left',
+        disabled: this.childNode.style.hAlign === 'center' || this.childNode.style.hAlign === 'left',
         livePreview: true,
         dependency: ['hAlign', 'left', 'width']
     };
@@ -107,7 +107,7 @@ RelativeAnchor.prototype.getStyleTopDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'bottom',
+        disabled: this.childNode.style.vAlign === 'center' || this.childNode.style.vAlign === 'bottom',
         livePreview: true,
         dependency: ['vAlign', 'bottom', 'height']
     };
@@ -119,7 +119,7 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
         type: 'measurePosition',
         min: -Infinity,
         max: Infinity,
-        disabled: this.childNode.style.vAlign == 'center' || this.childNode.style.vAlign == 'top',
+        disabled: this.childNode.style.vAlign === 'center' || this.childNode.style.vAlign === 'top',
         livePreview: true,
         dependency: ['vAlign', 'top', 'height']
     };
@@ -128,7 +128,7 @@ RelativeAnchor.prototype.getStyleBottomDescriptor = function () {
 
 
 RelativeAnchor.prototype.setStyleHAlign = function (value) {
-    if (this.style.hAlign == value) return value;
+    if (this.style.hAlign === value) return value;
     if (!this.HALIGN_VALUE.includes(value)) value = this.HALIGN_VALUE[0];
     this.view.removeClass(this.HALIGN_CLASS_NAMES[this.style.hAlign]);
     this.childNode.style.hAlign = value;
@@ -141,11 +141,11 @@ RelativeAnchor.prototype.setStyleHAlign = function (value) {
 
 
 RelativeAnchor.prototype.setStyleVAlign = function (value) {
-    if (this.style.vAlign == value) return value;
+    if (this.style.vAlign === value) return value;
     if (!this.VALIGN_VALUE.includes(value)) value = this.VALIGN_VALUE[0];
 
     this.view.removeClass(this.VALIGN_CLASS_NAMES[this.childNode.style.vAlign]);
-    if (this.style.vAlign == 'center') {
+    if (this.style.vAlign === 'center') {
         this.view.clearChild();
         this.viewBinding.$containter = '.' + this.TOP_CLASS_NAME;
         this.$containter = this.view;
@@ -158,7 +158,7 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
     this.childNode.style.vAlign = value;
     this.style.vAlign = value;
     this.view.addClass(this.VALIGN_CLASS_NAMES[this.childNode.style.vAlign]);
-    if (this.childNode.style.vAlign == 'center') {
+    if (this.childNode.style.vAlign === 'center') {
         this.view.clearChild();
         this.view.addChild(_({
             class: 'as-align-box',
@@ -177,18 +177,18 @@ RelativeAnchor.prototype.setStyleVAlign = function (value) {
 
 
 RelativeAnchor.prototype.setStyleLeft = function (value, unit) {
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.childNode.style.left == 'string') && this.childNode.style.left.match(/\%$/)) {
+    if (unit === 'px') {//value must be a number
+        if ((typeof this.childNode.style.left === 'string') && this.childNode.style.left.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
         }
     }
-    else if (unit == '%') {
-        if (typeof this.childNode.style.left == 'number') {
+    else if (unit === '%') {
+        if (typeof this.childNode.style.left === 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'right') {
+    if (this.childNode.style.hAlign !== 'center' && this.childNode.style.hAlign !== 'right') {
         this.view.addStyle('left', styleValue);
     }
     else this.view.removeStyle('left');
@@ -197,9 +197,9 @@ RelativeAnchor.prototype.setStyleLeft = function (value, unit) {
 
 
 RelativeAnchor.prototype.getStyleLeft = function (unit) {
-    if (unit == 'px') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'right'
+    if (unit === 'px') {
+        if (this.childNode.style.hAlign === 'center'
+            || this.childNode.style.hAlign === 'right'
             || this.childNode.style.left === undefined
             || this.childNode.style.left === null
             || (typeof this.childNode.style.left != 'number')) {
@@ -209,13 +209,13 @@ RelativeAnchor.prototype.getStyleLeft = function (unit) {
             return this.childNode.style.left;
         }
     }
-    else if (unit == '%') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'right'
+    else if (unit === '%') {
+        if (this.childNode.style.hAlign === 'center'
+            || this.childNode.style.hAlign === 'right'
             || this.childNode.style.left === undefined
             || this.childNode.style.left === null
             || (typeof this.childNode.style.left != 'string')
-            || (typeof this.childNode.style.left == 'string' && this.childNode.style.left.match(/\%$/))) {
+            || (typeof this.childNode.style.left === 'string' && this.childNode.style.left.match(/\%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (nodeBound.left - parentBound.left) * 100 / parentBound.width;
@@ -232,18 +232,18 @@ RelativeAnchor.prototype.getStyleLeft = function (unit) {
 
 
 RelativeAnchor.prototype.setStyleRight = function (value, unit) {
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.childNode.style.right == 'string') && this.childNode.style.right.match(/\%$/)) {
+    if (unit === 'px') {//value must be a number
+        if ((typeof this.childNode.style.right === 'string') && this.childNode.style.right.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
         }
     }
-    else if (unit == '%') {
-        if (typeof this.childNode.style.right == 'number') {
+    else if (unit === '%') {
+        if (typeof this.childNode.style.right === 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (this.childNode.style.hAlign != 'center' && this.childNode.style.hAlign != 'left') {
+    if (this.childNode.style.hAlign !== 'center' && this.childNode.style.hAlign !== 'left') {
         this.view.addStyle('right', styleValue);
     }
     else this.view.removeStyle('right');
@@ -253,9 +253,9 @@ RelativeAnchor.prototype.setStyleRight = function (value, unit) {
 
 
 RelativeAnchor.prototype.getStyleRight = function (unit) {
-    if (unit == 'px') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'left'
+    if (unit === 'px') {
+        if (this.childNode.style.hAlign === 'center'
+            || this.childNode.style.hAlign === 'left'
             || this.childNode.style.right === undefined
             || this.childNode.style.right === null
             || (typeof this.childNode.style.right != 'number')) {
@@ -265,13 +265,13 @@ RelativeAnchor.prototype.getStyleRight = function (unit) {
             return this.childNode.style.right;
         }
     }
-    else if (unit == '%') {
-        if (this.childNode.style.hAlign == 'center'
-            || this.childNode.style.hAlign == 'left'
+    else if (unit === '%') {
+        if (this.childNode.style.hAlign === 'center'
+            || this.childNode.style.hAlign === 'left'
             || this.childNode.style.right === undefined
             || this.childNode.style.right === null
             || (typeof this.childNode.style.right != 'string')
-            || (typeof this.childNode.style.right == 'string' && !this.childNode.style.right.match(/\%$/))) {
+            || (typeof this.childNode.style.right === 'string' && !this.childNode.style.right.match(/\%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (parentBound.right - nodeBound.right) * 100 / parentBound.width;
@@ -285,18 +285,18 @@ RelativeAnchor.prototype.getStyleRight = function (unit) {
 };
 
 RelativeAnchor.prototype.setStyleTop = function (value, unit) {
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.childNode.style.top == 'string') && this.childNode.style.top.match(/\%$/)) {
+    if (unit === 'px') {//value must be a number
+        if ((typeof this.childNode.style.top === 'string') && this.childNode.style.top.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
         }
     }
-    else if (unit == '%') {
-        if (typeof this.childNode.style.top == 'number') {
+    else if (unit === '%') {
+        if (typeof this.childNode.style.top === 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'bottom') {
+    if (this.childNode.style.vAlign !== 'center' && this.childNode.style.vAlign !== 'bottom') {
         this.view.addStyle('top', styleValue);
     }
     else this.view.removeStyle('top');
@@ -306,9 +306,9 @@ RelativeAnchor.prototype.setStyleTop = function (value, unit) {
 
 
 RelativeAnchor.prototype.getStyleTop = function (unit) {
-    if (unit == 'px') {
-        if (this.childNode.style.vAlign == 'center'
-            || this.childNode.style.vAlign == 'bottom'
+    if (unit === 'px') {
+        if (this.childNode.style.vAlign === 'center'
+            || this.childNode.style.vAlign === 'bottom'
             || this.childNode.style.top === undefined
             || this.childNode.style.top === null
             || (typeof this.childNode.style.top != 'number')) {
@@ -318,13 +318,13 @@ RelativeAnchor.prototype.getStyleTop = function (unit) {
             return this.childNode.style.top;
         }
     }
-    else if (unit == '%') {
-        if (this.childNode.style.vAlign == 'center'
-            || this.childNode.style.vAlign == 'bottom'
+    else if (unit === '%') {
+        if (this.childNode.style.vAlign === 'center'
+            || this.childNode.style.vAlign === 'bottom'
             || this.childNode.style.top === undefined
             || this.childNode.style.top === null
             || (typeof this.childNode.style.top != 'string')
-            || (typeof this.childNode.style.top == 'string' && this.childNode.style.top.match(/\%$/))) {
+            || (typeof this.childNode.style.top === 'string' && this.childNode.style.top.match(/%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (nodeBound.top - parentBound.top) * 100 / parentBound.height;
@@ -340,18 +340,18 @@ RelativeAnchor.prototype.getStyleTop = function (unit) {
 
 
 RelativeAnchor.prototype.setStyleBottom = function (value, unit) {
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.childNode.style.bottom == 'string') && this.childNode.style.bottom.match(/\%$/)) {
+    if (unit === 'px') {//value must be a number
+        if ((typeof this.childNode.style.bottom === 'string') && this.childNode.style.bottom.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
         }
     }
-    else if (unit == '%') {
-        if (typeof this.childNode.style.bottom == 'number') {
+    else if (unit === '%') {
+        if (typeof this.childNode.style.bottom === 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (this.childNode.style.vAlign != 'center' && this.childNode.style.vAlign != 'top') {
+    if (this.childNode.style.vAlign !== 'center' && this.childNode.style.vAlign !== 'top') {
         this.view.addStyle('bottom', styleValue);
     }
     else this.view.removeStyle('bottom');
@@ -362,9 +362,9 @@ RelativeAnchor.prototype.setStyleBottom = function (value, unit) {
 
 RelativeAnchor.prototype.getStyleBottom = function (unit) {
 
-    if (unit == 'px') {
-        if (this.childNode.style.vAlign == 'center'
-            || this.childNode.style.vAlign == 'top'
+    if (unit === 'px') {
+        if (this.childNode.style.vAlign === 'center'
+            || this.childNode.style.vAlign === 'top'
             || this.childNode.style.bottom === undefined
             || this.childNode.style.bottom === null
             || (typeof this.childNode.style.bottom != 'number')) {
@@ -374,13 +374,13 @@ RelativeAnchor.prototype.getStyleBottom = function (unit) {
             return this.childNode.style.bottom;
         }
     }
-    else if (unit == '%') {
-        if (this.childNode.style.vAlign == 'center'
-            || this.childNode.style.vAlign == 'top'
+    else if (unit === '%') {
+        if (this.childNode.style.vAlign === 'center'
+            || this.childNode.style.vAlign === 'top'
             || this.childNode.style.bottom === undefined
             || this.childNode.style.bottom === null
             || (typeof this.childNode.style.bottom != 'string')
-            || (typeof this.childNode.style.bottom == 'string' && this.childNode.style.bottom.match(/\%$/))) {
+            || (typeof this.childNode.style.bottom === 'string' && this.childNode.style.bottom.match(/%$/))) {
             var parentBound = this.childNode.parent.view.getBoundingClientRect();
             var nodeBound = this.childNode.view.getBoundingClientRect();
             return (parentBound.bottom - nodeBound.bottom) * 100 / parentBound.height;
@@ -395,16 +395,16 @@ RelativeAnchor.prototype.getStyleBottom = function (unit) {
 
 
 RelativeAnchor.prototype.getStyleWidth = function (unit) {
-    if (unit == 'px') {
-        if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'auto' || typeof this.childNode.style.width != 'number')
+    if (unit === 'px') {
+        if (this.childNode.style.hAlign === 'fixed' || this.childNode.style.hAlign === 'auto' || typeof this.childNode.style.width != 'number')
             return this.view.getBoundingClientRect().width;
         else {
             return this.childNode.style.width;
         }
     }
-    else if (unit == '%') {
-        if (this.childNode.style.hAlign == 'match_parent') return 100;
-        else if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'auto' || ((typeof this.childNode.style.width == 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
+    else if (unit === '%') {
+        if (this.childNode.style.hAlign === 'match_parent') return 100;
+        else if (this.childNode.style.hAlign === 'fixed' || this.childNode.style.hAlign === 'auto' || ((typeof this.childNode.style.width === 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
             return this.childNode.view.getBoundingClientRect().width * 100 / this.childNode.parent.view.getBoundingClientRect().width;
         }
         else {
@@ -417,16 +417,16 @@ RelativeAnchor.prototype.getStyleWidth = function (unit) {
 
 
 RelativeAnchor.prototype.getStyleHeight = function (unit) {
-    if (unit == 'px') {
-        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || typeof this.style.height != 'number')
+    if (unit === 'px') {
+        if (this.style.vAlign === 'fixed' || this.style.vAlign === 'auto' || typeof this.style.height != 'number')
             return this.view.getBoundingClientRect().height;
         else {
             return this.style.height;
         }
     }
-    else if (unit == '%') {
-        if (this.style.vAlign == 'match_parent') return 100;
-        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
+    else if (unit === '%') {
+        if (this.style.vAlign === 'match_parent') return 100;
+        else if (this.style.vAlign === 'fixed' || this.style.vAlign === 'auto' || ((typeof this.style.height === 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
             return this.childNode.view.getBoundingClientRect().height * 100 / this.childNode.parent.view.getBoundingClientRect().height;
         }
         else {
@@ -438,26 +438,26 @@ RelativeAnchor.prototype.getStyleHeight = function (unit) {
 
 
 RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.childNode.style.width == 'string') && this.childNode.style.width.match(/\%$/)) {
+    if (unit === 'px') {//value must be a number
+        if ((typeof this.childNode.style.width === 'string') && this.childNode.style.width.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
         }
     }
-    else if (unit == '%') {
-        if (typeof this.childNode.style.width == 'number') {
+    else if (unit === '%') {
+        if (typeof this.childNode.style.width === 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue == 'match_parent') styleValue = '100%';
+    if (styleValue === 'match_parent') styleValue = '100%';
    
 
-    if (this.childNode.style.vAlign == 'center') {
-        if (this.childNode.style.hAlign == 'center') {
+    if (this.childNode.style.vAlign === 'center') {
+        if (this.childNode.style.hAlign === 'center') {
             this.view.removeStyle('width');
             this.childNode.view.addStyle('width', styleValue);
         }
-        else if (this.childNode.style.hAlign == 'fixed') {
+        else if (this.childNode.style.hAlign === 'fixed') {
             this.view.removeStyle('width');
             this.childNode.view.removeStyle('width');
         }
@@ -467,13 +467,13 @@ RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
         }
     }
     else {
-        if (this.childNode.style.hAlign == 'center') {
+        if (this.childNode.style.hAlign === 'center') {
             this.childNode.view.addStyle('width', styleValue);
             this.view.removeStyle('width');
         }
         else {
             this.childNode.view.removeStyle('width');
-            if (this.childNode.style.hAlign == 'fixed') {
+            if (this.childNode.style.hAlign === 'fixed') {
                 this.view.removeStyle('width', styleValue);
             }
             else {
@@ -486,27 +486,27 @@ RelativeAnchor.prototype.setStyleWidth = function (value, unit) {
 
 
 RelativeAnchor.prototype.setStyleHeight = function (value, unit) {
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.childNode.style.height == 'string') && this.childNode.style.height.match(/\%$/)) {
+    if (unit === 'px') {//value must be a number
+        if ((typeof this.childNode.style.height === 'string') && this.childNode.style.height.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
         }
     }
-    else if (unit == '%') {
-        if (typeof this.childNode.style.height == 'number') {
+    else if (unit === '%') {
+        if (typeof this.childNode.style.height === 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue == 'match_parent') styleValue = '100%';
+    if (styleValue === 'match_parent') styleValue = '100%';
    
 
-    if (this.childNode.style.vAlign == 'center') {
+    if (this.childNode.style.vAlign === 'center') {
         this.view.removeStyle('height');
         this.childNode.view.addStyle('height', styleValue);// set height to cell will be fail
     }
     else {
         this.childNode.view.removeStyle('height');
-        if (this.childNode.style.vAlign == 'fixed') {
+        if (this.childNode.style.vAlign === 'fixed') {
             this.view.removeStyle('height', styleValue);
         }
         else {
@@ -617,7 +617,7 @@ RelativeAnchor.prototype.updateHAlignStyle = function () {
 RelativeAnchor.prototype.getStyleWidthDescriptor = function () {
     return {
         type: 'measureSize',
-        disabled: this.style.hAlign == 'fixed',
+        disabled: this.style.hAlign === 'fixed',
         dependency: ['hAlign', 'left', 'right']
     };
 };
@@ -625,7 +625,7 @@ RelativeAnchor.prototype.getStyleWidthDescriptor = function () {
 RelativeAnchor.prototype.getStyleHeightDescriptor = function () {
     return {
         type: 'measureSize',
-        disabled: this.style.vAlign == 'fixed',
+        disabled: this.style.vAlign === 'fixed',
         dependency: ['vAlign', 'top', 'bottom']
     };
 };

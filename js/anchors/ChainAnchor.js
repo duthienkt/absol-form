@@ -6,8 +6,11 @@ import '../../css/chainanchor.css';
 var _ = Fcore._;
 var $ = Fcore.$;
 
+/***
+ * @extends FViewable
+ * @constructor
+ */
 function ChainAnchor() {
-    // LinearAnchor.call(this);// inherit 
     FViewable.call(this);
     this.style.left = 0;
     this.style.right = 0;

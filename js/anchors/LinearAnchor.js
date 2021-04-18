@@ -1,12 +1,14 @@
 import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import '../../css/linearanchor.css';
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 /**
- * AnchorBox only has on child node
+ * AnchorBox only has one child node
+ * @extends FViewable
  */
 function LinearAnchor() {
     FViewable.call(this);
@@ -26,8 +28,7 @@ function LinearAnchor() {
     this.onCreated();
 }
 
-Object.defineProperties(LinearAnchor.prototype, Object.getOwnPropertyDescriptors(FViewable.prototype));
-LinearAnchor.prototype.construtor = LinearAnchor;
+OOP.mixClass(LinearAnchor, FViewable);
 
 LinearAnchor.prototype.TOP_CLASS_NAME = 'as-linear-anchor-box';
 
@@ -143,12 +144,12 @@ LinearAnchor.prototype.getStyleLeft = function (unit) {
 
 
 LinearAnchor.prototype.setStyleRight = function (value, unit) {
-    if (unit == 'px') {//value must be a number
+    if (unit === 'px') {//value must be a number
         if ((typeof this.childNode.style.right == 'string') && this.childNode.style.right.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (typeof this.childNode.style.right == 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
@@ -160,7 +161,7 @@ LinearAnchor.prototype.setStyleRight = function (value, unit) {
 
 
 LinearAnchor.prototype.getStyleRight = function (unit) {
-    if (unit == 'px') {
+    if (unit === 'px') {
         if (this.childNode.style.right === undefined
             || this.childNode.style.right === null
             || (typeof this.childNode.style.right != 'number')) {
@@ -170,7 +171,7 @@ LinearAnchor.prototype.getStyleRight = function (unit) {
             return this.childNode.style.right;
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (this.childNode.style.right === undefined
             || this.childNode.style.right === null
             || (typeof this.childNode.style.right != 'string')
@@ -189,12 +190,12 @@ LinearAnchor.prototype.getStyleRight = function (unit) {
 
 
 LinearAnchor.prototype.setStyleTop = function (value, unit) {
-    if (unit == 'px') {//value must be a number
+    if (unit === 'px') {//value must be a number
         if ((typeof this.childNode.style.top == 'string') && this.childNode.style.top.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (typeof this.childNode.style.top == 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
@@ -206,7 +207,7 @@ LinearAnchor.prototype.setStyleTop = function (value, unit) {
 
 
 LinearAnchor.prototype.getStyleTop = function (unit) {
-    if (unit == 'px') {
+    if (unit === 'px') {
         if (this.childNode.style.top === undefined
             || this.childNode.style.top === null
             || (typeof this.childNode.style.top != 'number')) {
@@ -216,7 +217,7 @@ LinearAnchor.prototype.getStyleTop = function (unit) {
             return this.childNode.style.top;
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (this.childNode.style.top === undefined
             || this.childNode.style.top === null
             || (typeof this.childNode.style.top != 'string')
@@ -235,12 +236,12 @@ LinearAnchor.prototype.getStyleTop = function (unit) {
 
 
 LinearAnchor.prototype.setStyleBottom = function (value, unit) {
-    if (unit == 'px') {//value must be a number
+    if (unit === 'px') {//value must be a number
         if ((typeof this.childNode.style.bottom == 'string') && this.childNode.style.bottom.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (typeof this.childNode.style.bottom == 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
@@ -253,7 +254,7 @@ LinearAnchor.prototype.setStyleBottom = function (value, unit) {
 
 
 LinearAnchor.prototype.getStyleBottom = function (unit) {
-    if (unit == 'px') {
+    if (unit === 'px') {
         if (this.childNode.style.bottom === undefined
             || this.childNode.style.bottom === null
             || (typeof this.childNode.style.bottom != 'number')) {
@@ -263,7 +264,7 @@ LinearAnchor.prototype.getStyleBottom = function (unit) {
             return this.childNode.style.bottom;
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (this.childNode.style.bottom === undefined
             || this.childNode.style.bottom === null
             || (typeof this.childNode.style.bottom != 'string')
@@ -282,19 +283,19 @@ LinearAnchor.prototype.getStyleBottom = function (unit) {
 
 
 LinearAnchor.prototype.setStyleWidth = function (value, unit) {
-    if (unit == 'px') {//value must be a number
+    if (unit === 'px') {//value must be a number
         if ((typeof this.childNode.style.width == 'string') && this.childNode.style.width.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (typeof this.childNode.style.width == 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
         }
     }
     this.childNode.style.width = value;
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue == 'match_parent') styleValue = '100%';
+    if (styleValue === 'match_parent') styleValue = '100%';
     this.view.addStyle('width', styleValue);
     this.childNode.view.removeStyle('width');
     return value;
@@ -302,19 +303,19 @@ LinearAnchor.prototype.setStyleWidth = function (value, unit) {
 
 
 LinearAnchor.prototype.setStyleHeight = function (value, unit) {
-    if (unit == 'px') {//value must be a number
+    if (unit === 'px') {//value must be a number
         if ((typeof this.childNode.style.height == 'string') && this.childNode.style.height.match(/\%$/)) {
             value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
         }
     }
-    else if (unit == '%') {
+    else if (unit === '%') {
         if (typeof this.childNode.style.height == 'number') {
             value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
         }
     }
     this.childNode.style.height = value;
     var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue == 'match_parent') styleValue = '100%';
+    if (styleValue === 'match_parent') styleValue = '100%';
 
     this.view.addStyle('height', styleValue);
     this.childNode.view.removeStyle('height');
@@ -324,16 +325,16 @@ LinearAnchor.prototype.setStyleHeight = function (value, unit) {
 
 
 LinearAnchor.prototype.getStyleWidth = function (unit) {
-    if (unit == 'px') {
-        if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'auto' || typeof this.childNode.style.width != 'number')
+    if (unit === 'px') {
+        if (this.childNode.style.hAlign === 'fixed' || this.childNode.style.hAlign === 'auto' || typeof this.childNode.style.width != 'number')
             return this.view.getBoundingClientRect().width;
         else {
             return this.childNode.style.width;
         }
     }
-    else if (unit == '%') {
-        if (this.childNode.style.hAlign == 'match_parent') return 100;
-        else if (this.childNode.style.hAlign == 'fixed' || this.childNode.style.hAlign == 'auto' || ((typeof this.childNode.style.width == 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
+    else if (unit === '%') {
+        if (this.childNode.style.hAlign === 'match_parent') return 100;
+        else if (this.childNode.style.hAlign === 'fixed' || this.childNode.style.hAlign === 'auto' || ((typeof this.childNode.style.width == 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
             return this.childNode.view.getBoundingClientRect().width * 100 / this.childNode.parent.view.getBoundingClientRect().width;
         }
         else {
@@ -346,16 +347,16 @@ LinearAnchor.prototype.getStyleWidth = function (unit) {
 
 
 LinearAnchor.prototype.getStyleHeight = function (unit) {
-    if (unit == 'px') {
-        if (this.style.vAlign == 'auto' || typeof this.style.height != 'number')
+    if (unit === 'px') {
+        if (this.style.vAlign === 'auto' || typeof this.style.height != 'number')
             return this.view.getBoundingClientRect().height;
         else {
             return this.style.height;
         }
     }
-    else if (unit == '%') {
-        if (this.style.vAlign == 'match_parent') return 100;
-        else if (this.style.vAlign == 'auto' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
+    else if (unit === '%') {
+        if (this.style.vAlign === 'match_parent') return 100;
+        else if (this.style.vAlign === 'auto' || ((typeof this.style.height == 'string') && (!this.style.height.match(/%$/))) || (typeof this.style.height != 'string')) {
             return this.childNode.view.getBoundingClientRect().height * 100 / this.childNode.parent.view.getBoundingClientRect().height;
         }
         else {
