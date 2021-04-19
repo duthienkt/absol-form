@@ -2,6 +2,8 @@ import Fcore from "../core/FCore";
 import R from "../R";
 import '../../css/componentoutline.css';
 import BaseEditor from "../core/BaseEditor";
+import FmFragment from "../core/FmFragment";
+import Toast from "absol-acomp/js/Toast";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -77,8 +79,8 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
     if (comp.isLayout) {
         items = [{
             icon: 'span.mdi.mdi-square-edit-outline',
-            text: 'Edit Layout',
-            cmd: 'edit_layout',
+            text: comp.fragment ? "Edit Fragment" : 'Edit Layout',
+            cmd: comp.fragment ? 'edit_fragment' : 'edit_layout',
             extendStyle: {
                 color: 'blue'
             }
@@ -110,6 +112,15 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
                 break;
             case 'edit_layout':
                 self.layoutEditor.editLayout(comp);
+                break;
+            case 'edit_fragment':
+                var toast = Toast.make({
+                    props: {
+                        htitle: "TODO",
+                        message: "Edit form"
+                    }
+                });
+                setTimeout(toast.disappear.bind(toast), 2000);
                 break;
         }
         setTimeout(self.$view.focus.bind(self.$view), 20);
@@ -167,7 +178,7 @@ ComponentOutline.prototype.updateComponetTree = function () {
                 var childElt = _({
                     tag: 'exptree',
                     props: {
-                        icon: childComp.menuIcon,
+                        icon: childComp.fragment ? childComp.fragment.menuIcon : childComp.menuIcon,
                         name: childComp.getAttribute('name'),
                         __comp__: childComp
                     }
@@ -179,7 +190,8 @@ ComponentOutline.prototype.updateComponetTree = function () {
                 });
                 expTree.addChild(childElt);
                 self.$expNodes.push(childElt);
-                visit(childElt, childComp);
+                if (!childComp.fragment)
+                    visit(childElt, childComp);
                 expTree.status = 'open';
             });
         }
