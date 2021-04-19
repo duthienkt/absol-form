@@ -96,10 +96,10 @@ FmFragment.prototype._bindData = function () {
                 enumerable: true,
                 configurable: true,
                 set: function (value) {
-                    Object.assign(node.props, value);
+                    Object.assign(node.fragment.props, value);
                 },
                 get: function () {
-                    return node.props
+                    return node.fragment.props
                 }
             })
         }
