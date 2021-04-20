@@ -28,6 +28,7 @@ import TrackBar from "../components/TrackBar";
 import TrackBarInput from "../components/TrackBarInput";
 import TableInput from "../components/TableInput";
 import ArrayOfFragment from "../components/ArrayOfFragment";
+import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -280,7 +281,7 @@ ComponentPicker.prototype.getView = function () {
                     tag:'exptree',
                     props:{
                         name: 'mapping',
-                        icon:'span.mdi.mdi-'
+                        status: 'close'
                     },
                     child:[
                         {
@@ -289,6 +290,14 @@ ComponentPicker.prototype.getView = function () {
                                 name:ArrayOfFragment.prototype.tag,
                                 icon:ArrayOfFragment.prototype.menuIcon,
                                 componentConstructor: ArrayOfFragment
+                            }
+                        },
+                        {
+                            tag:'exptree',
+                            props:{
+                                name:EditableArrayOfFragment.prototype.tag,
+                                icon:EditableArrayOfFragment.prototype.menuIcon,
+                                componentConstructor: EditableArrayOfFragment
                             }
                         }
                     ]

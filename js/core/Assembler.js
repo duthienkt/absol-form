@@ -23,6 +23,7 @@ import TrackBarInput from "../components/TrackBarInput";
 import TableInput from "../components/TableInput";
 import {traversal} from "./FNode";
 import ArrayOfFragment from "../components/ArrayOfFragment";
+import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
 
 function Assembler() {
     this.addConstructor(Button);
@@ -47,6 +48,7 @@ function Assembler() {
     this.addConstructor(TrackBarInput);
     this.addConstructor(TableInput);
     this.addComponent(ArrayOfFragment);
+    this.addComponent(EditableArrayOfFragment);
 }
 
 

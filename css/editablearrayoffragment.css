@@ -1,0 +1,67 @@
+.as-editable-array-of-fragment {
+    padding-bottom: 40px;
+    position: relative;
+    min-width: 100px;
+}
+
+.as-editable-array-of-fragment-list {
+    overflow: auto;
+}
+
+.as-editable-array-of-fragment-item {
+
+}
+
+
+.as-editable-array-of-fragment-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+}
+
+.as-editable-array-of-fragment-bottom > .as-flexicon-button {
+    height: 30px;
+}
+
+.as-editable-array-of-fragment-item {
+    padding-right: 40px;
+    display: block;
+    position: relative;
+}
+
+
+.as-editable-array-of-fragment-remove-btn-ctn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    text-align: center;
+}
+
+.as-editable-array-of-fragment-remove-btn-ctn::before {
+    content: "";
+    height: 100%;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.as-editable-array-of-fragment-remove-btn-ctn > button {
+    display: inline-block;
+    vertical-align: middle;
+    height: 30px;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    font-size: 14px;
+}
+
+.as-editable-array-of-fragment-remove-btn-ctn button .mdi-delete {
+    color: rgb(255, 70, 71);
+}
+
