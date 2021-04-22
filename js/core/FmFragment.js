@@ -91,7 +91,7 @@ FmFragment.prototype._bindData = function () {
     this._props = props;
 
     function visit(node, isRoot) {
-        if (node.fragment && !isRoot) {
+        if (node.fragment && !isRoot && node.getAttribute('dataBinding')) {
             Object.defineProperty(props, node.getAttribute('name'), {
                 enumerable: true,
                 configurable: true,

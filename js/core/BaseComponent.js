@@ -62,9 +62,14 @@ BaseComponent.prototype.anchor = null;
 
 BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
+BaseComponent.prototype.isLayout = false;
+
 BaseComponent.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
+    if (!this.isLayout) {
+        this.attributes.dataBinding = true;
+    }
     var self = this;
     extendAttributeNames.forEach(function (name) {
         var func = FormEditorPreconfig.extendAttributes[name].getDefault;
@@ -235,7 +240,8 @@ BaseComponent.prototype.measureMinSize = function () {
 
 BaseComponent.prototype.getAcceptsAttributeNames = function () {
     return ["type", "name"].concat(extendAttributeNames)
-        .concat('irremovable');
+        .concat(this.isLayout?[]:['dataBinding'])
+        .concat(['irremovable']);
 };
 
 BaseComponent.prototype.getAcceptsEventNames = function () {
@@ -261,6 +267,14 @@ BaseComponent.prototype.getAttributeIrremovableDescriptor = function () {
     return {
         type: 'const',
         value: !!this.attributes.irremovable
+    };
+};
+
+BaseComponent.prototype.getAttributeDataBindingDescriptor = function () {
+    return {
+        type: 'bool',
+        value: !!this.attributes.dataBinding,
+        default: true
     };
 };
 
