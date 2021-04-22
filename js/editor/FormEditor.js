@@ -1,4 +1,3 @@
-
 import Draggable from 'absol-acomp/js/Draggable';
 
 import '../../css/formeditor.css';
@@ -9,7 +8,7 @@ import Dom from 'absol/src/HTML5/Dom';
 import ComponentPicker from './ComponentPicker';
 import R from '../R';
 import FormPreview from './FormPreview';
-import { randomIdent } from 'absol/src/String/stringGenerate';
+import {randomIdent} from 'absol/src/String/stringGenerate';
 import QuickMenu from 'absol-acomp/js/QuickMenu';
 import ProjectExplorer from '../fragment/ProjectExplorer';
 import PluginManager from '../core/PluginManager';
@@ -114,8 +113,8 @@ FormEditor.prototype.onResume = function () {
 };
 
 
-FormEditor.prototype.onDestroy = function (){
-  this.mCMDTool.$window.remove();
+FormEditor.prototype.onDestroy = function () {
+    this.mCMDTool.$window.remove();
 };
 
 
@@ -235,17 +234,16 @@ FormEditor.prototype.getEditorHolderByEditor = function (editor) {
     return null;
 };
 
-FormEditor.prototype.getAllEditorHolderByEditorClass = function (clazz){
+FormEditor.prototype.getAllEditorHolderByEditorClass = function (clazz) {
     var res = [];
     for (var ident in this.editorHolders) {
-        if (this.editorHolders[ident].editor.constructor == clazz)  res.push(this.editorHolders[ident]);
+        if (this.editorHolders[ident].editor.constructor == clazz) res.push(this.editorHolders[ident]);
     }
     return res;
 };
 
 
-FormEditor.prototype.getView = function () {
-    if (this.$view) return this.$view;
+FormEditor.prototype.createView = function () {
     var self = this;
     this.$view = _({
         class: 'as-form-editor',
@@ -257,51 +255,52 @@ FormEditor.prototype.getView = function () {
                 class: 'as-form-editor-left-tab-bar',
                 child: [
                     {
-                        tag: 'button',
-                        id: this.prefix + 'button-tab-explorer',
-                        child: 'span.mdi.mdi-file-multiple',
-                        attr: {
-                            title: 'Explorer'
-                        },
-                        on: {
-                            click: this.toggleToolTab.bind(this, 'tab-explorer')
-                        }
-                    },
-                    {
-                        tag: 'button',
-                        id: this.prefix + 'tab-component',
-                        child: 'span.mdi.mdi-view-grid-outline',
-                        attr: {
-                            title: 'Components'
-                        },
-                        on: {
-                            click: this.toggleToolTab.bind(this, 'tab-component')
-                        }
-                    },
-                    {
-                        tag: 'button',
-                        child: 'span.mdi.mdi-view-list',
-                        id: this.prefix + 'tab-outline',
-                        attr: {
-                            title: 'Outline'
-                        },
-                        on: {
-                            click: this.toggleToolTab.bind(this, 'tab-outline')
-                        }
-                    },
-                    {
-                        class: 'as-form-editor-left-tab-bar-bottom-container',
-                        child: {
-                            tag: 'button',
-                            child: 'span.mdi.mdi-settings-outline'
-                        }
+                        class: 'as-form-editor-left-tab-bar-top',
+                        child: [
+                            {
+                                tag: 'button',
+                                class: 'as-form-editor-left-tab-btn',
+                                id: this.prefix + 'button-tab-explorer',
+                                child: [
+                                    'span.mdi.mdi-file-multiple',
+                                    { tag: 'span', child: { text: 'Explorer' } }
+                                ],
+                                on: {
+                                    click: this.toggleToolTab.bind(this, 'tab-explorer')
+                                }
+                            },
+                            {
+                                tag: 'button',
+                                id: this.prefix + 'tab-component',
+                                class: 'as-form-editor-left-tab-btn',
+                                child: [
+                                    'span.mdi.mdi-view-grid-outline',
+                                    { tag: 'span', child: { text: 'Components' } }
+                                ],
+                                on: {
+                                    click: this.toggleToolTab.bind(this, 'tab-component')
+                                }
+                            },
+                            {
+                                tag: 'button',
+                                class: 'as-form-editor-left-tab-btn',
+                                id: this.prefix + 'tab-outline',
+                                child: ['span.mdi.mdi-view-list', {
+                                    tag: 'span',
+                                    child: { text: 'Outline' }
+                                }],
+                                on: {
+                                    click: this.toggleToolTab.bind(this, 'tab-outline')
+                                }
+                            }
+                        ]
                     }
                 ]
             },
             {
                 class: 'as-form-editor-left-site-container',
                 style: {
-                    width: 'calc(' + this.config.leftSiteWidthPercent + "% - 3em)"
+                    width: 'calc(' + this.config.leftSiteWidthPercent + "% - 20px)"
                 },
                 child: {
                     tag: 'frameview',
@@ -460,7 +459,6 @@ FormEditor.prototype.getView = function () {
         .on('drag', this.ev_dragLeftResizer.bind(this));
 
 
-
     this.$leftFrameView = $('frameview', this.$leftSiteCtn);
     this.$leftFrameView.activeFrameById(this.prefix + 'tab-component');
 
@@ -503,13 +501,13 @@ FormEditor.prototype.setLeftSiteWidthPercent = function (value) {
         this.config.leftSiteWidthPercent = value;
         this.saveConfig();
         if (this.$view) {
-            this.$leftSiteCtn.addStyle('width', 'calc(' + this.config.leftSiteWidthPercent + "% - 3em)");
+            this.$leftSiteCtn.addStyle('width', 'calc(' + this.config.leftSiteWidthPercent + "% - 20px)");
             this.$editorSpaceCtn.addStyle('left', this.config.leftSiteWidthPercent + '%');
             this.$emptySpace.addStyle('left', this.config.leftSiteWidthPercent + '%');
 
             if (this._dragLeftMovingData) {
                 this.$leftSiteResizer.addStyle({
-                    left: 'calc(' + this.config.leftSiteWidthPercent + '% - 8em)'
+                    left: 'calc(' + this.config.leftSiteWidthPercent + '% - 5em -20px)'
                 });
             }
             else
@@ -546,9 +544,6 @@ FormEditor.prototype.ev_dragLeftResizer = function (event) {
 };
 
 
-
-
-
 FormEditor.prototype.ev_keydown = function (event) {
 
 };
@@ -572,7 +567,7 @@ FormEditor.prototype.toggleToolTab = function (ident) {
         this.$leftSiteResizer.removeStyle('display');
         if (!this._lastToolTabIdent) {
             this.$leftSiteCtn.removeStyle('visibility');
-            this.$leftSiteCtn.addStyle('width', 'calc(' + this.config.leftSiteWidthPercent + "% - 3em)");
+            this.$leftSiteCtn.addStyle('width', 'calc(' + this.config.leftSiteWidthPercent + "% - 20px)");
             this.$editorSpaceCtn.addStyle('left', this.config.leftSiteWidthPercent + '%');
             this.$emptySpace.addStyle('left', this.config.leftSiteWidthPercent + '%');
             window.dispatchEvent(new Event('resize'));
@@ -587,12 +582,11 @@ FormEditor.prototype.toggleToolTab = function (ident) {
         });
         this.$leftSiteResizer.addStyle('display', 'none');
         this.$leftSiteCtn.addStyle('visibility', 'hidden');
-        this.$editorSpaceCtn.addStyle('left', '3em');
-        this.$emptySpace.addStyle('left', '3em');
+        this.$editorSpaceCtn.addStyle('left', '20px');
+        this.$emptySpace.addStyle('left', '20px');
         window.dispatchEvent(new Event('resize'));
     }
 };
 
 
-
-export default FormEditor; 
+export default FormEditor;

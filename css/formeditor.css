@@ -24,20 +24,57 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 3em;
+    width: 20px;
     background-color: rgba(169, 169, 170, 0.11659);
+    font-size: 13px;
 }
 
-.as-form-editor-left-tab-bar>button,
-.as-form-editor-left-tab-bar-bottom-container>button {
-    display: block;
+.as-form-editor-left-tab-bar-top {
+    position: absolute;
+    left: 0;
+    top: -20px;
+    width: 500px;
+    height: 20px;
+    z-index: 2;
+    transform-origin: 0 100%;
+    transform: rotate(90deg);
+}
+
+.as-form-editor-left-tab-btn {
+    height: 100%;
+    font-size: 1em;
+    padding: 0 10px;
+    border: none;
+    background-color: transparent;
+    transform: rotate(180deg);
+    color: rgb(141, 141, 141);
+    outline: none;
+}
+
+
+.as-form-editor-left-tab-btn:hover {
+    color: rgb(102, 102, 102);
+}
+
+.as-form-editor-left-tab-btn:active,
+.as-form-editor-left-tab-btn.active {
+    background-color: rgb(169, 169, 169);
+    color: white;
+}
+
+/*
+
+.as-form-editor-left-tab-bar > button,
+.as-form-editor-left-tab-bar-bottom-container > button {
+    display: none;
     width: 3em;
     height: 3em;
+
 }
 
 .as-form-editor-quick-toolbar button,
-.as-form-editor-left-tab-bar>button,
-.as-form-editor-left-tab-bar-bottom-container>button {
+.as-form-editor-left-tab-bar > button,
+.as-form-editor-left-tab-bar-bottom-container > button {
     font-size: 1em;
     color: rgb(196, 196, 196);
     border: none;
@@ -46,22 +83,22 @@
     outline: none;
 }
 
-.as-form-editor-left-tab-bar>button:hover,
-.as-form-editor-left-tab-bar-bottom-container>button:hover,
+.as-form-editor-left-tab-bar > button:hover,
+.as-form-editor-left-tab-bar-bottom-container > button:hover,
 .as-form-editor-quick-toolbar button:hover {
-    color: rgba(102, 102, 102);
+    color: rgb(102, 102, 102);
 }
 
-.as-form-editor-left-tab-bar>button:active,
-.as-form-editor-left-tab-bar>button.active,
+.as-form-editor-left-tab-bar > button:active,
+.as-form-editor-left-tab-bar > button.active,
 .as-form-editor-quick-toolbar button:active {
     background-color: rgb(169, 169, 169);
     color: white;
 
 }
 
-.as-form-editor-left-tab-bar>button>span,
-.as-form-editor-left-tab-bar-bottom-container>button>span {
+.as-form-editor-left-tab-bar > button > span,
+.as-form-editor-left-tab-bar-bottom-container > button > span {
     font-size: 2em;
 }
 
@@ -71,20 +108,19 @@
     right: 0;
     bottom: 0;
 }
-
-
+*/
 
 .as-form-editor-left-site-container {
     position: absolute;
-    left: 3em;
+    left: 20px;
     top: 0;
     bottom: 0;
-    width: calc(15% - 3em);
+    width: calc(15% - 20px);
     box-sizing: border-box;
 
 }
 
-.as-form-editor-left-site-container>.as-form-editor-left-site {
+.as-form-editor-left-site-container > .as-form-editor-left-site {
     width: 100%;
     height: 100%;
 }
@@ -103,7 +139,7 @@
     border-left: 1px solid #ddd;
 
 }
- 
+
 .as-form-editor-empty-space {
     z-index: 0;
 }
@@ -121,7 +157,7 @@
     height: 100%;
 }
 
-.as-form-editor-editor-space-container>div {
+.as-form-editor-editor-space-container > div {
     width: 100%;
     height: 100%;
 }
@@ -139,12 +175,12 @@
     border-left: 1px solid #ddd;
 }
 
-.as-form-editor-right-site-container>.as-form-editor-right-site {
+.as-form-editor-right-site-container > .as-form-editor-right-site {
     width: 100%;
     height: 100%;
 }
 
-.as-form-editor-editor-space-container>.as-layout-editor {
+.as-form-editor-editor-space-container > .as-layout-editor {
     width: 100%;
     height: 100%;
 }
@@ -155,20 +191,20 @@ table.as-form-params {
     box-sizing: border-box;
 }
 
-table.as-form-params>tbody>tr>td,
-table.as-form-params>thead>tr>td {
+table.as-form-params > tbody > tr > td,
+table.as-form-params > thead > tr > td {
     border: 1px solid #eeeeee;
     padding: 0.25em;
 
 }
 
-.as-form-property-tab>table.as-form-params {
+.as-form-property-tab > table.as-form-params {
     width: calc(100% - 10px);
     margin: 5px;
 }
 
-table.as-form-params>tbody>tr>td>input[type="text"],
-table.as-form-params>tbody>tr>td>textarea {
+table.as-form-params > tbody > tr > td > input[type="text"],
+table.as-form-params > tbody > tr > td > textarea {
     font-size: 1em;
     width: 100%;
     box-sizing: border-box;
@@ -176,12 +212,13 @@ table.as-form-params>tbody>tr>td>textarea {
     outline: none;
 }
 
-table.as-form-params>tbody>tr>td>textarea {
+table.as-form-params > tbody > tr > td > textarea {
     width: 100% !important;
 }
 
 
-.as-form-tool-site {}
+.as-form-tool-site {
+}
 
 .as-form-left-tool-site-tab .as-component-outline,
 .as-form-left-tool-site-tab .as-form-explorer {
@@ -217,7 +254,7 @@ table.as-form-params>tbody>tr>td>textarea {
 }
 
 
-.as-form-editor-editor-space-container>.absol-tabview>.absol-tabbar .absol-tabbar-button {
+.as-form-editor-editor-space-container > .absol-tabview > .absol-tabbar .absol-tabbar-button {
     border-radius: 0;
     margin-right: 0;
     margin-left: 0;
@@ -253,6 +290,6 @@ table.as-form-params>tbody>tr>td>textarea {
     background-color: transparent;
 }
 
-.as-form-editor-quick-toolbar button>span {
+.as-form-editor-quick-toolbar button > span {
     font-size: 1.3em;
 }
