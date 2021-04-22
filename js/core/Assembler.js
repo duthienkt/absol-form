@@ -24,11 +24,13 @@ import TableInput from "../components/TableInput";
 import {traversal} from "./FNode";
 import ArrayOfFragment from "../components/ArrayOfFragment";
 import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
+import TreeComboBox from "../components/TreeComboBox";
 
 function Assembler() {
     this.addConstructor(Button);
     this.addConstructor(CheckBox);
     this.addConstructor(ComboBox);
+    this.addConstructor(TreeComboBox);
     this.addConstructor(DateInput);
     this.addConstructor(Image);
     this.addConstructor(Label);
