@@ -587,7 +587,7 @@ LayoutEditor.prototype.ev_clipboardSet = function () {
 
 LayoutEditor.prototype.ev_dblclickCurtain = function (event) {
     var parentLayout = this.findNearestLayoutParent(this.editingLayout.parent);
-    if (parentLayout) this.editLayout(parentLayout);
+    if (parentLayout && parentLayout.isLayout) this.editLayout(parentLayout);
 };
 
 
@@ -962,8 +962,8 @@ LayoutEditor.prototype.autoExpandRootLayout = function () {
 
 
 LayoutEditor.prototype.editLayout = function (layout) {
-    if (!layout) throw new Error("Layout must be not null");
-    // console.log(layout)
+    if (!layout) return;
+    if (!layout.isLayout) return;
     var lastTag = this.editingLayout && this.editingLayout.tag;
     var currentTag = layout && layout.tag;
     this.editingLayout = layout;
