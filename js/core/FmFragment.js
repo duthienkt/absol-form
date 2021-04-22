@@ -91,7 +91,7 @@ FmFragment.prototype._bindData = function () {
     this._props = props;
 
     function visit(node, isRoot) {
-        if (node.fragment && !isRoot && node.getAttribute('dataBinding')) {
+        if (node.fragment && !isRoot) {
             Object.defineProperty(props, node.getAttribute('name'), {
                 enumerable: true,
                 configurable: true,
@@ -104,6 +104,7 @@ FmFragment.prototype._bindData = function () {
             })
         }
         else {
+         if (node.getAttribute('dataBinding'))
             node.bindDataToObject(props);
             for (var i = 0; i < node.children.length; ++i) {
                 visit(node.children[i]);

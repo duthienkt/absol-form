@@ -67,9 +67,7 @@ BaseComponent.prototype.isLayout = false;
 BaseComponent.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
-    if (!this.isLayout) {
-        this.attributes.dataBinding = true;
-    }
+    this.attributes.dataBinding = true;
     var self = this;
     extendAttributeNames.forEach(function (name) {
         var func = FormEditorPreconfig.extendAttributes[name].getDefault;
@@ -240,7 +238,7 @@ BaseComponent.prototype.measureMinSize = function () {
 
 BaseComponent.prototype.getAcceptsAttributeNames = function () {
     return ["type", "name"].concat(extendAttributeNames)
-        .concat(this.isLayout?[]:['dataBinding'])
+        .concat((!this.isLayout || this.fragment) ? ['dataBinding'] : [])
         .concat(['irremovable']);
 };
 
