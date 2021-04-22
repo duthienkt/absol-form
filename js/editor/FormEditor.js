@@ -203,11 +203,26 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
         active: function () {
             editor.start();
             self.activeEditorHolder = accumulator;
-            if (componentTool)
+            if (componentTool) {
                 componentTool.getView().addTo(self.$componentTabFrame);
-            if (outlineTool)
+                self.$componentTabBtb.removeClass('as-hidden');
+
+            }
+            else {
+                self.$componentTabBtb.addClass('as-hidden');
+            }
+            if (outlineTool) {
                 outlineTool.getView().addTo(self.$outlineTabFrame);
-            if (componentTool == self.mComponentPicker) self.mComponentPicker.bindWithEditor(editor);
+                self.$outlineTabBtb.removeClass('as-hidden');
+            }
+            else {
+                self.$outlineTabBtb.addClass('as-hidden');
+            }
+            if (componentTool === self.mComponentPicker) self.mComponentPicker.bindWithEditor(editor);
+            if ((self._lastToolTabIdent === 'tab-outline' && !outlineTool)
+                || (self._lastToolTabIdent === 'tab-component' && !componentTool)) {
+                self.toggleToolTab('tab-explorer');
+            }
         },
         remove: function () {
             self.editorHolders[ident].editor.destroy();
@@ -215,6 +230,11 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
             delete self.editorHolders[ident];
             if (Object.keys(self.editorHolders).length == 0)
                 self.$editorSpaceCtn.addStyle('visibility', 'hidden');
+            self.$componentTabBtb.addClass('as-hidden');
+            self.$outlineTabBtb.addClass('as-hidden');
+            if (self._lastToolTabIdent !== 'tab-explorer') {
+                self.toggleToolTab('tab-explorer');
+            }
         }
     });
     this.$mainTabview.addChild(tabframe);
@@ -271,7 +291,7 @@ FormEditor.prototype.createView = function () {
                             },
                             {
                                 tag: 'button',
-                                id: this.prefix + 'tab-component',
+                                id: this.prefix + 'button-tab-component',
                                 class: 'as-form-editor-left-tab-btn',
                                 child: [
                                     'span.mdi.mdi-view-grid-outline',
@@ -284,7 +304,7 @@ FormEditor.prototype.createView = function () {
                             {
                                 tag: 'button',
                                 class: 'as-form-editor-left-tab-btn',
-                                id: this.prefix + 'tab-outline',
+                                id: this.prefix + 'button-tab-outline',
                                 child: ['span.mdi.mdi-view-list', {
                                     tag: 'span',
                                     child: { text: 'Outline' }
@@ -403,6 +423,10 @@ FormEditor.prototype.createView = function () {
             keydown: this.ev_keydown.bind(this)
         }
     });
+
+    this.$exploreTabBtb = $('#' + this.prefix + 'button-tab-explorer', this.$view);
+    this.$componentTabBtb = $('#' + this.prefix + 'button-tab-component', this.$view);
+    this.$outlineTabBtb = $('#' + this.prefix + 'button-tab-outline', this.$view);
 
     this.$quickToolBar = _({
         class: 'as-form-editor-quick-toolbar',
@@ -554,7 +578,7 @@ FormEditor.prototype.ev_layoutEditorChange = function () {
 
 
 FormEditor.prototype.toggleToolTab = function (ident) {
-    if (this._lastToolTabIdent != ident) {
+    if (this._lastToolTabIdent !== ident) {
         this.$leftFrameView.activeFrameById(this.prefix + ident);
         $('button', this.$leftTabbar, function (button) {
             if (button.id && button.id.indexOf(ident) >= 0) {

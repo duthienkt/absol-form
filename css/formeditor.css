@@ -62,6 +62,10 @@
     color: white;
 }
 
+.as-form-editor-left-tab-btn.as-hidden {
+    display: none;
+}
+
 /*
 
 .as-form-editor-left-tab-bar > button,
