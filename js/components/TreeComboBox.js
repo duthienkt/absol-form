@@ -145,7 +145,7 @@ TreeComboBox.prototype.getDataBindingDescriptor = function () {
                 return thisC.getAttribute('value');
             }
         },
-        list: {
+        treeList: {
             enumerable: true,
             configurable: true,
             get: function () {
