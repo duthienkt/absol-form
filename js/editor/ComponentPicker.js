@@ -29,6 +29,7 @@ import TrackBarInput from "../components/TrackBarInput";
 import TableInput from "../components/TableInput";
 import ArrayOfFragment from "../components/ArrayOfFragment";
 import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
+import TreeComboBox from "../components/TreeComboBox";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -162,12 +163,22 @@ ComponentPicker.prototype.getView = function () {
                                 componentConstructor: ComboBox
 
                             }
-                        }, {
+                        },
+                        {
                             tag: 'exptree',
                             props: {
                                 name: MultiselectCombobox.prototype.tag,
                                 icon: MultiselectCombobox.prototype.menuIcon,
                                 componentConstructor: MultiselectCombobox
+
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: TreeComboBox.prototype.tag,
+                                icon: TreeComboBox.prototype.menuIcon,
+                                componentConstructor: TreeComboBox
 
                             }
                         },
@@ -278,25 +289,25 @@ ComponentPicker.prototype.getView = function () {
                     ]
                 },
                 {
-                    tag:'exptree',
-                    props:{
+                    tag: 'exptree',
+                    props: {
                         name: 'mapping',
                         status: 'close'
                     },
-                    child:[
+                    child: [
                         {
-                            tag:'exptree',
-                            props:{
-                                name:ArrayOfFragment.prototype.tag,
-                                icon:ArrayOfFragment.prototype.menuIcon,
+                            tag: 'exptree',
+                            props: {
+                                name: ArrayOfFragment.prototype.tag,
+                                icon: ArrayOfFragment.prototype.menuIcon,
                                 componentConstructor: ArrayOfFragment
                             }
                         },
                         {
-                            tag:'exptree',
-                            props:{
-                                name:EditableArrayOfFragment.prototype.tag,
-                                icon:EditableArrayOfFragment.prototype.menuIcon,
+                            tag: 'exptree',
+                            props: {
+                                name: EditableArrayOfFragment.prototype.tag,
+                                icon: EditableArrayOfFragment.prototype.menuIcon,
                                 componentConstructor: EditableArrayOfFragment
                             }
                         }
@@ -370,7 +381,7 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (event) {
         child: { class: 'as-compopnent-picker-add-box-plus', child: 'span.mdi.mdi-plus' }
     }).addTo(this.$addBoxCtn);
     if (this.$addBoxIcon) this.$addBoxIcon.remove();
-    this.$addBoxIcon = _((constructor.prototype && constructor.prototype.menuIcon)||'span.mdi.mdi-select-place').addTo(this.$addBox);
+    this.$addBoxIcon = _((constructor.prototype && constructor.prototype.menuIcon) || 'span.mdi.mdi-select-place').addTo(this.$addBox);
     this.$modal.addTo(document.body);
     if (this.layoutEditor.rootLayout) {
         this._dragRect = this.layoutEditor.rootLayout.view.getBoundingClientRect();
