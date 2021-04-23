@@ -10,6 +10,8 @@ import {randomIdent} from "absol/src/String/stringGenerate";
 import SelectListEditor from "../editor/SelectListEditor";
 import TokenField from "absol-acomp/js/TokenField";
 import {AssemblerInstance} from "../core/Assembler";
+import PEText from "./types/PEText";
+import PEUniqueText from "./types/PEUniqueText";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -32,6 +34,11 @@ Object.defineProperties(MultiObjectPropertyEditor.prototype, Object.getOwnProper
 Object.defineProperties(MultiObjectPropertyEditor.prototype, Object.getOwnPropertyDescriptors(EventEmitter.prototype));
 MultiObjectPropertyEditor.prototype.constructor = MultiObjectPropertyEditor;
 MultiObjectPropertyEditor.prototype.pools = {};
+
+MultiObjectPropertyEditor.prototype.type2EditorClass = {
+    text: PEText,
+    uniqueText:PEUniqueText
+};
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
     return Object.keys(object);
@@ -112,6 +119,7 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
     var object = objects[objects.length - 1];
     this.propertyNames.forEach(function (name) {
         var descriptor = self.getPropertyDescriptor(object, name) || { type: "NoDescriptor" };
+        var EditorClass = self.type2EditorClass[descriptor.type];
         var functionName = 'load' + camelCaseToPascalCase(descriptor.type) + 'Property';
         var cell = _('td');
         if (descriptor.dependency) {
@@ -137,7 +145,14 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
         if (descriptor.dependency) {
             self.addDepents(name, descriptor.dependency);
         }
-        self.propertyHolders[name] = self[functionName](name, descriptor, cell, cell);
+
+        if (EditorClass) {
+            self.propertyHolders[name] = new EditorClass(self, name, descriptor, cell)
+        }
+        else {
+            self.propertyHolders[name] = self[functionName](name, descriptor, cell, cell);
+
+        }
     });
 };
 
@@ -261,34 +276,6 @@ MultiObjectPropertyEditor.prototype.loadEnumProperty = function (name, descripto
 };
 
 
-MultiObjectPropertyEditor.prototype.loadTextProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-    res.elt = _({
-        tag: descriptor.long ? 'textarea' : 'input',
-        attr: { type: 'text' },
-        on: {
-            keyup: function () {
-                self.setPropertyAll(name, this.value);
-                self.notifyChange(name, this);
-            },
-            change: function () {
-                self.notifyStopChange(name);
-            }
-        }
-    });
-    cell.addChild(res.elt);
-    res.requestUpdate = function () {
-        var value = self.getProperty(object, name);
-        if (value != this.value) {
-            res.elt.value = value;
-        }
-    };
-    res.requestUpdate();
-    return res;
-};
-
 
 MultiObjectPropertyEditor.prototype.loadArrayOfTextProperty = function (name, descriptor, cell) {
     var self = this;
@@ -357,52 +344,6 @@ MultiObjectPropertyEditor.prototype.loadColorProperty = function (name, descript
     return res;
 };
 
-
-MultiObjectPropertyEditor.prototype.loadUniqueTextProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    res.elt = _({
-        tag: descriptor.long ? 'textarea' : 'input',
-        attr: { type: 'text' },
-        on: {
-            keyup: function () {
-                if (descriptor.others[this.value]) {
-                    this.addStyle('border-color', '#f99');
-                    this.attr('title', 'This name is used!')
-
-                }
-                else {
-                    this.attr('title', null)
-                    this.removeStyle('border-color');
-                }
-                self.setPropertyAll(name, this.value);
-                self.notifyChange(name, this);
-            },
-            change: function () {
-                if (descriptor.others[this.value]) {
-                    this.addStyle('border-color', '#f99');
-                    this.attr('title', 'This name is used!')
-
-                }
-                else {
-                    this.attr('title', null)
-                    this.removeStyle('border-color');
-                }
-                self.notifyStopChange(name);
-            }
-        }
-    });
-    cell.addChild(res.elt);
-    var object = this.objects[this.objects.length - 1];
-    res.requestUpdate = function () {
-        var value = self.getProperty(object, name);
-        if (value != this.value) {
-            res.elt.value = value;
-        }
-    };
-    res.requestUpdate();
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.loadConstProperty = function (name, descriptor, cell) {
@@ -1024,6 +965,9 @@ MultiObjectPropertyEditor.prototype.updateDependentsOf = function (name, exclude
             excludes[dependentPropertyName] = true;
             if (this.propertyHolders[dependentPropertyName].requestUpdate) {
                 this.propertyHolders[dependentPropertyName].requestUpdate();
+            }
+            else if (this.propertyHolders[dependentPropertyName].reload) {
+                this.propertyHolders[dependentPropertyName].reload();
             }
             this.updateDependentsOf(dependentPropertyName, excludes);
         }
