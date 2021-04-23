@@ -162,7 +162,7 @@ LayoutEditorCmd.cut = function () {
     this.setActiveComponent();
     this.notifyDataChange();
     this.notifyUnsaved();
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
     this.commitHistory('cut', 'Cut ' + components.map(function (c) {
         return c.getAttribute('name');
     }).join(', '));

@@ -68,7 +68,7 @@ function LayoutEditor() {
         self.updateAnchor();
         self.notifyCmdDescriptorsChange();
         self.notifyUnsaved();
-        // self.mComponentOutline.updateComponetTree();
+        // self.mComponentOutline.updateComponentTree();
     });
     this.setContext(R.UNDO_HISTORY, this.undoHistory);// because it had it's ContextManager
 
@@ -929,7 +929,7 @@ LayoutEditor.prototype.applyData = function (data) {
     this.$vruler.measureElement(this.rootLayout.view);
     this.$hruler.measureElement(this.rootLayout.view);
     this.editLayout(this.rootLayout)
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
 
     this.emit('change', { type: 'change', target: this, data: data }, this);
 };
@@ -1146,7 +1146,7 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
     this.setActiveComponent.apply(this, addedComponents);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
     this.commitHistory('add', "Add " + addedComponents.map(function (comp) {
         return comp.getAttribute('name')
     }).join(', '));
@@ -1174,7 +1174,7 @@ LayoutEditor.prototype.clearRootLayout = function () {
     this.updateAnchor();
     this.emit('clearallcomponent', { target: this }, this);
     this.notifyDataChange();
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
     this.commitHistory('remove', 'Remove all components');
     this.notifyUnsaved();
 };
@@ -1192,7 +1192,7 @@ LayoutEditor.prototype.removeComponent = function () {
     this.notifyDataChange();
 
     if (removedComponents.length > 0) {
-        this.componentOtline.updateComponetTree();
+        this.componentOtline.updateComponentTree();
         this.commitHistory('remove', 'Remove ' + removedComponents.map(function (c) {
             return c.getAttribute('name');
         }).join(', '));
@@ -1210,7 +1210,7 @@ LayoutEditor.prototype.moveUpComponent = function (comp) {
     parent.addChildBefore(comp, prevChild);
     this.emit('moveupcomponent', { type: 'moveupcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' up');
     this.notifyUnsaved();
     this.updateAnchorPosition();
@@ -1226,7 +1226,7 @@ LayoutEditor.prototype.moveDownComponent = function (comp) {
     parent.addChildBefore(nextChild, comp);
     this.emit('movedowncomponent', { type: 'movedowncomponent', target: this, component: comp }, this);
     this.notifyDataChange();
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' down');
     this.notifyUnsaved();
     this.updateAnchorPosition();
@@ -1242,7 +1242,7 @@ LayoutEditor.prototype.moveToBottomComponent = function (comp) {
     parent.addChild(comp);
     this.emit('movetobottomcomponent', { type: 'movetobottomcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to bottom');
     this.notifyUnsaved();
     this.updateAnchorPosition();
@@ -1258,7 +1258,7 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
     parent.addChildBefore(comp, firstChild);
     this.emit('movetotopcomponent', { type: 'movetotopcomponent', target: this, component: comp }, this);
     this.notifyDataChange();
-    this.componentOtline.updateComponetTree();
+    this.componentOtline.updateComponentTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to top');
     this.notifyUnsaved();
 };
