@@ -133,20 +133,20 @@ ComponentOutline.prototype.moveToTop = function (comp) {
 
 ComponentOutline.prototype.moveUp = function (comp) {
     this.layoutEditor.moveUpComponent(comp);
-    this.updateComponetTree();
+    this.updateComponentTree();
 };
 
 ComponentOutline.prototype.moveDown = function (comp) {
     this.layoutEditor.moveDownComponent(comp);
-    this.updateComponetTree();
+    this.updateComponentTree();
 }
 
 ComponentOutline.prototype.moveToBottom = function (comp) {
     this.layoutEditor.moveToBottomComponent(comp);
-    this.updateComponetTree();
+    this.updateComponentTree();
 };
 
-ComponentOutline.prototype.updateComponetTree = function () {
+ComponentOutline.prototype.updateComponentTree = function () {
     var self = this;
     this.$expNodes = [];
     if (this.$exptree) {
