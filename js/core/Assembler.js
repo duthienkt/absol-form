@@ -94,6 +94,12 @@ Assembler.prototype.buildFragment = function (data) {
     if (data.style) frag.view.setStyles(data.style);
     if (data.attributes) frag.view.setAttributes(data.attributes);
     frag.onCreated();
+    if (typeof data.onCreated === "function") {
+        data.onCreated.apply(frag, frag.view);
+    }
+    else if (typeof data.onCreated === "string") {
+        new Function('fragment', data.onCreated).call(frag, frag.view);
+    }
     return frag;
 };
 
@@ -129,8 +135,11 @@ Assembler.prototype.buildComponent = function (data, frag) {
             result.setEvent(eventName, events[eventName]);
         }
 
-    if (typeof data.onCreated === "function"){
+    if (typeof data.onCreated === "function") {
         data.onCreated.apply(result, []);
+    }
+    else if (typeof data.onCreated === "string") {
+        new Function( data.onCreated).call(result);
     }
     var children = data.children;
     if (children && children.length > 0) {
@@ -145,15 +154,6 @@ Assembler.prototype.buildComponent = function (data, frag) {
                 result.addChild(child);
         }
     }
-
-    /*
-    var context = { self: this, assembler: this, data: data, result: result };
-    PluginManager.exec(this, R.PLUGINS.BUILD_COMPONENT, context);
-    result = context.result;
-    if (result == null) {
-        console.error("Cannot handle ", data);
-    }
-     */
 
     return result;
 };
@@ -196,7 +196,7 @@ Assembler.prototype.removeConstructor = function (arg0, arg1) {
                 break;
         }
     }
-    else if (typeof arg0 == 'string' && (this.componentConstructors[arg0] == arg1 || arg1 == undefined)) {
+    else if (typeof arg0 == 'string' && (this.componentConstructors[arg0] === arg1 || arg1 == undefined)) {
         delete this.componentConstructors[arg0];
         delete this.fragmentConstructors[arg0];
     }
@@ -228,14 +228,14 @@ export function findComponentByName(root, name) {
     return res;
 }
 
-export function findComponent(root, opt){
+export function findComponent(root, opt) {
     var res = null;
-    opt = opt ||{};
-    if (typeof opt === 'string'){
-        opt = {name: opt};
+    opt = opt || {};
+    if (typeof opt === 'string') {
+        opt = { name: opt };
     }
 
-    function isMatch(comp){
+    function isMatch(comp) {
         if (opt.name && opt.name === comp.getAttribute('name')) return true;
         return false;
     }
