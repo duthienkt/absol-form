@@ -1,10 +1,10 @@
 <?php
-    if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off") {
-        $location = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        header('HTTP/1.1 301 Moved Permanently');
-        header('Location: ' . $location);
-        exit;
-    }
+if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off") {
+    $location = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    header('HTTP/1.1 301 Moved Permanently');
+    header('Location: ' . $location);
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -53,6 +53,9 @@
         }
     </script>
     <?php
+    // ini_set('display_errors', 1);
+    // ini_set('display_startup_errors', 1);
+    // error_reporting(E_ALL);
         set_error_handler(function() { /* ignore errors */ });
         $temp = scandir(".");
         $l = count($temp);
@@ -74,6 +77,9 @@
                $iconSrc = "/exticons/square-o/folder.svg";
             }
             else{
+            if(function_exists("explode"))
+                $namep = explode(".", strtolower($name));
+            else
                 $namep = split("[\.]", strtolower($name));
                 $iconSrc = "/exticons/square-o/". $namep[count($namep) - 1].".svg";
             }
