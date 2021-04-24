@@ -14,6 +14,7 @@ import PEText from "./types/PEText";
 import PEUniqueText from "./types/PEUniqueText";
 import PEColor from "./types/PEColor";
 import PEConst from "./types/PEConst";
+import PEEnum from "./types/PEEnum";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -41,7 +42,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     text: PEText,
     uniqueText:PEUniqueText,
     color: PEColor,
-    'const': PEConst
+    'const': PEConst,
+    'enum': PEEnum
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -240,44 +242,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
     return {};
 };
 
-
-MultiObjectPropertyEditor.prototype.loadEnumProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var selectMenu = descriptor.sign ? this.putOnceFromPool(descriptor.sign) : null;
-    var object = this.objects[this.objects.length - 1];
-
-    if (selectMenu === null) {
-        selectMenu = _({
-            tag: 'selectmenu',
-            props: {
-                items: descriptor.values.map(function (value) {
-                    return { text: value + "", value: value }
-                }),
-                value: this.getProperty(object, name)
-            },
-            on: {
-                change: function () {
-                    this.peditor.setPropertyAll(name, this.value);
-                    this.peditor.notifyChange(name, this);
-                    this.peditor.notifyStopChange(name);
-                }
-            }
-        });
-    }
-    if (descriptor.sign)
-        this.assignToPool(descriptor.sign, selectMenu);
-    selectMenu.value = this.getProperty(object, name);
-    selectMenu.peditor = this;
-    res.requestUpdate = function () {
-        var value = self.getProperty(object, name);
-        if (value != this.value) {
-            selectMenu.value = value;
-        }
-    };
-    cell.addChild(selectMenu);
-    return res;
-};
 
 
 
