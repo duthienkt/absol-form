@@ -13,6 +13,7 @@ import {AssemblerInstance} from "../core/Assembler";
 import PEText from "./types/PEText";
 import PEUniqueText from "./types/PEUniqueText";
 import PEColor from "./types/PEColor";
+import PEConst from "./types/PEConst";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -39,7 +40,8 @@ MultiObjectPropertyEditor.prototype.pools = {};
 MultiObjectPropertyEditor.prototype.type2EditorClass = {
     text: PEText,
     uniqueText:PEUniqueText,
-    color: PEColor
+    color: PEColor,
+    'const': PEConst
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -313,58 +315,7 @@ MultiObjectPropertyEditor.prototype.loadArrayOfTextProperty = function (name, de
     res.requestUpdate();
     return res;
 };
-//
-//
-// MultiObjectPropertyEditor.prototype.loadColorProperty = function (name, descriptor, cell) {
-//     var self = this;
-//     var res = {};
-//     var object = this.objects[this.objects.length - 1];
-//     res.elt = _({
-//         tag: 'colorpickerbutton',
-//         on: {
-//             change: function (event) {
-//                 self.setPropertyAll(name, '#' + event.value.toHex8());
-//                 self.notifyChange(name);
-//             },
-//             stopchange: function (event) {
-//                 self.notifyStopChange(name);
-//             }
-//         },
-//         props: {
-//             value: 'transparent',
-//             mode: 'RGBA'
-//         }
-//     });
-//
-//     cell.addChild(res.elt);
-//
-//     res.requestUpdate = function () {
-//         res.elt.value = self.getProperty(object, name) || 'transparent';
-//     };
-//
-//     res.requestUpdate();
-//     return res;
-// };
 
-
-
-MultiObjectPropertyEditor.prototype.loadConstProperty = function (name, descriptor, cell) {
-    var res = {};
-    var value = descriptor.value;
-    res.elt = _({
-        tag: 'strong'
-    });
-    cell.addChild(res.elt);
-    if (value && value.then) {
-        value.then(function (value) {
-            res.elt.addChild(_({ text: '' + value }))
-        });
-    }
-    else {
-        res.elt.addChild(_({ text: '' + value }))
-    }
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, cell) {
