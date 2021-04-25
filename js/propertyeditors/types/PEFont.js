@@ -19,11 +19,14 @@ PEFont.prototype.attachInput = function () {
         tag: 'selectmenu',
         class: 'as-need-update',
         props: {
-            items: [{ text: 'None', value: undefined }].concat(FONT_ITEMS)
+            items: [{ text: 'None', value: 'unset' }].concat(FONT_ITEMS),
+            value: 'unset'
         },
         on: {
             change: function () {
-                self.setValue(this.value);
+                if (this.value === 'unset')
+                    self.setValue(undefined);
+                else self.setValue(this.value)
                 self.notifyChange();
                 self.notifyStopChange();
             }
@@ -33,7 +36,7 @@ PEFont.prototype.attachInput = function () {
 };
 
 PEFont.prototype.reload = function () {
-    var value = this.getValue();
+    var value = this.getValue() || 'unset';
     if (value !== this.$input.value) {
         this.$input.value = value;
     }
