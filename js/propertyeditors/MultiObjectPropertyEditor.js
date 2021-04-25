@@ -16,6 +16,7 @@ import PEColor from "./types/PEColor";
 import PEConst from "./types/PEConst";
 import PEEnum from "./types/PEEnum";
 import PEArrayOfText from "./types/PEArrayOfText";
+import PEMeasureSize from "./types/PEMeasureSize";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -41,11 +42,12 @@ MultiObjectPropertyEditor.prototype.pools = {};
 
 MultiObjectPropertyEditor.prototype.type2EditorClass = {
     text: PEText,
-    uniqueText:PEUniqueText,
+    uniqueText: PEUniqueText,
     color: PEColor,
     'const': PEConst,
     'enum': PEEnum,
-    arrayOfText: PEArrayOfText
+    arrayOfText: PEArrayOfText,
+    measureSize: PEMeasureSize
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -245,7 +247,7 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-
+/*
 MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, cell) {
     var self = this;
     var res = {};
@@ -344,7 +346,7 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
     res.requestUpdate();
     return res;
 };
-
+*/
 
 MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name, descriptor, cell) {
     var self = this;
@@ -859,6 +861,9 @@ MultiObjectPropertyEditor.prototype.updatePropertyRecursive = function (name) {
     if (!this.propertyHolders[name]) return;
     if (this.propertyHolders[name].requestUpdate)
         this.propertyHolders[name].requestUpdate();
+    else if (this.propertyHolders[name].reload) {
+        this.propertyHolders[name].reload();
+    }
     this.updateDependentsOf(name);
 }
 
