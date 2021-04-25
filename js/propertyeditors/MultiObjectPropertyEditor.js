@@ -19,6 +19,7 @@ import PEArrayOfText from "./types/PEArrayOfText";
 import PEMeasureSize from "./types/PEMeasureSize";
 import PEMeasurePosition from "./types/PEMeasurePosition";
 import PEFont from "./types/PEFont";
+import PETextAlign from "./types/PETextAlign";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -51,7 +52,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     arrayOfText: PEArrayOfText,
     measureSize: PEMeasureSize,
     measurePosition: PEMeasurePosition,
-    font: PEFont
+    font: PEFont,
+    textAlign: PETextAlign
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -251,66 +253,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-
-
-MultiObjectPropertyEditor.prototype.loadTextAlignProperty = function (name, descriptor, cell) {
-    var self = this;
-    var object = this.objects[this.objects.length - 1];
-    var icons = {
-        left: 'mdi-format-align-left',
-        right: 'mdi-format-align-right',
-        center: 'mdi-format-align-center'
-    };
-    var res = {};
-    res.elt = _({
-        tag: 'button',
-        class: 'as-property-editor-text-align-input',
-        child: 'span.mdi'
-    });
-    cell.addChild(res.elt);
-
-    var $button = res.elt;
-    var $icon = $('span.mdi', $button);
-    var lasIconClass = icons[this.getProperty(object, name)] || icons.left;
-    $icon.addClass(lasIconClass);
-    res.requestUpdate = function () {
-        $icon.removeClass(lasIconClass);
-        lasIconClass = icons[self.getProperty(object, name)] || icons.left;
-        $icon.addClass(lasIconClass);
-    };
-    QuickMenu.toggleWhenClick($button, {
-        getMenuProps: function () {
-            return {
-                items: [
-                    {
-                        text: 'Left',
-                        icon: 'span.mdi.mdi-format-align-left',
-                        menuData: 'left'
-                    },
-                    {
-                        text: 'Center',
-                        icon: 'span.mdi.mdi-format-align-center',
-                        menuData: 'center'
-                    },
-                    {
-                        text: 'Right',
-                        icon: 'span.mdi.mdi-format-align-right',
-                        menuData: 'right'
-
-                    }
-                ]
-            }
-        },
-        onSelect: function (item) {
-            $icon.removeClass(lasIconClass);
-            lasIconClass = icons[item.menuData];
-            $icon.addClass(lasIconClass);
-            self.setPropertyAll(name, item.menuData);
-            self.notifyStopChange(name);
-        }
-    });
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.loadBoxAlignProperty = function (name, descriptor, cell) {
