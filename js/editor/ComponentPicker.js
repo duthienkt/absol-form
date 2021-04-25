@@ -384,7 +384,7 @@ ComponentPicker.prototype.ev_constructorBeginDrag = function (event) {
     this.$addBoxIcon = _((constructor.prototype && constructor.prototype.menuIcon) || 'span.mdi.mdi-select-place').addTo(this.$addBox);
     this.$modal.addTo(document.body);
     if (this.layoutEditor.rootLayout) {
-        this._dragRect = this.layoutEditor.rootLayout.view.getBoundingClientRect();
+        this._dragRect = this.layoutEditor.rootLayout.domElt.getBoundingClientRect();
     }
     else {
         this._dragRect = undefined;

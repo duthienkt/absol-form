@@ -193,7 +193,7 @@ LayoutEditorCmd.paste = function (event) {
     var posX = 0;
     var posY = 0;
     if (event) {
-        var bound = this.rootLayout.view.getBoundingClientRect();
+        var bound = this.rootLayout.domElt.getBoundingClientRect();
         posX = this.mouseClientX - bound.left;
         posY = this.mouseClientY - bound.top;
     }

@@ -405,7 +405,7 @@ LayoutEditor.prototype.ev_mouseMove = function (event) {
     this.mouseClientX = event.clientX;
     this.mouseClientY = event.clientY;
     if (this.rootLayout) {
-        var rootBound = this.rootLayout.view.getBoundingClientRect();
+        var rootBound = this.rootLayout.domElt.getBoundingClientRect();
         this.mouseOffsetX = Math.round(event.clientX - rootBound.left);
         this.mouseOffsetY = Math.round(event.clientY - rootBound.top);
         this.$mouseOffsetStatus.children[1].innerHTML = this.mouseOffsetX + ',' + this.mouseOffsetY;
@@ -924,10 +924,10 @@ LayoutEditor.prototype.applyData = function (data) {
     this.rootFragment = new FmFragment();
     this.rootLayout = this.buildComponent(data, this.rootFragment);
     this.rootFragment.setContentView(this.rootLayout);
-    this.$layoutCtn.clearChild().addChild(this.rootLayout.view);
+    this.$layoutCtn.clearChild().addChild(this.rootLayout.domElt);
     this.rootLayout.onAttached(this);
-    this.$vruler.measureElement(this.rootLayout.view);
-    this.$hruler.measureElement(this.rootLayout.view);
+    this.$vruler.measureElement(this.rootLayout.domElt);
+    this.$hruler.measureElement(this.rootLayout.domElt);
     this.editLayout(this.rootLayout)
     this.componentOtline.updateComponentTree();
 
@@ -1112,8 +1112,8 @@ LayoutEditor.prototype.findNearestLayoutParent = function (comp) {
 LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
     var self = this;
     var layout = this.editingLayout;
-    var rootBound = this.rootLayout.view.getBoundingClientRect();
-    var layoutBound = layout.view.getBoundingClientRect();
+    var rootBound = this.rootLayout.domElt.getBoundingClientRect();
+    var layoutBound = layout.domElt.getBoundingClientRect();
     var layoutPosX = posX - (layoutBound.left - rootBound.left);
     var layoutPosY = posY - (layoutBound.top - rootBound.top);
     var addedComponents = [];

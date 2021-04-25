@@ -526,7 +526,7 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
         // if 
     }
 
-    var layoutBound = this.layoutEditor.rootLayout.view.getBoundingClientRect();
+    var layoutBound = this.layoutEditor.rootLayout.domElt.getBoundingClientRect();
     var forcegroundBound = this.layoutEditor.$forceground.getBoundingClientRect();
     while (this.movingData.$snapYLines.length < nearestY.length) {
         this.movingData.$snapYLines.push(_({
@@ -603,7 +603,7 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
         // if 
     }
 
-    var layoutBound = this.layoutEditor.rootLayout.view.getBoundingClientRect();
+    var layoutBound = this.layoutEditor.rootLayout.domElt.getBoundingClientRect();
     var forcegroundBound = this.layoutEditor.$forceground.getBoundingClientRect();
     while (this.movingData.$snapXLines.length < nearestX.length) {
         this.movingData.$snapXLines.push(_({
