@@ -15,6 +15,7 @@ import PEUniqueText from "./types/PEUniqueText";
 import PEColor from "./types/PEColor";
 import PEConst from "./types/PEConst";
 import PEEnum from "./types/PEEnum";
+import PEArrayOfText from "./types/PEArrayOfText";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -43,7 +44,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     uniqueText:PEUniqueText,
     color: PEColor,
     'const': PEConst,
-    'enum': PEEnum
+    'enum': PEEnum,
+    arrayOfText: PEArrayOfText
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -244,44 +246,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 
 
 
-
-MultiObjectPropertyEditor.prototype.loadArrayOfTextProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-
-
-    res.elt = _({
-        tag: TokenField.tag,
-        attr: { title: 'Each value is separated by ;' },
-        props: {
-            separator: ';',
-            placeHolder: 'Enter item text, separated by ;'
-        },
-        on: {
-            change: function () {
-                self.setPropertyAll(name, this.items);
-                self.notifyChange(name, this);
-            }
-        }
-    });
-
-    cell.addChild(res.elt);
-
-    res.requestUpdate = function () {
-        res.elt.autocomplete = self.getPropertyDescriptor(object, name).autocomplete;
-        var value = self.getProperty(object, name);
-        if (value != res.value) {
-            res.value = value;
-            res.elt.items = value;
-        }
-    };
-    res.requestUpdate();
-    return res;
-};
-
-
-
 MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, cell) {
     var self = this;
     var res = {};
@@ -357,7 +321,7 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
         if (descriptor.disabled) res.numberInputElt.disabled = !!descriptor.disabled;
         var value = self.getProperty(object, name);
 
-        if (typeof value == 'number') {
+        if (typeof value === 'number') {
             res.numberInputElt.value = value;
             res.typeSelectElt.value = 'px';
         }
@@ -367,7 +331,7 @@ MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, de
                 res.numberInputElt.value = parseFloat(value.replace('%', ''));
                 res.numberInputElt.disabled = false;
             }
-            else if (value == 'match_parent' || value == 'auto') {
+            else if (value === 'match_parent' || value === 'auto') {
                 res.numberInputElt.disabled = true;
                 res.typeSelectElt.value = value;
             }
@@ -404,7 +368,7 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
     cell.addChild(res.numberInputElt)
         .addChild(res.typeSelectElt);
     res.numberInputElt.on('change', function (event) {
-        if (event.by == 'keyup') return;
+        if (event.by === 'keyup') return;
         switch (res.typeSelectElt.value) {
             case '%':
                 self.setPropertyAll(name, this.value + '%');
@@ -414,7 +378,7 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
                 break;
         }
         self.notifyChange(name);
-        if (event.by != 'long_press_button')
+        if (event.by !== 'long_press_button')
             self.notifyStopChange(name);
     })
         .on('stopchange', function () {
@@ -430,7 +394,7 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
         });
 
     res.typeSelectElt.on('change', function (event) {
-        if (this.value == 'match_parent' || this.value == 'auto') {
+        if (this.value === 'match_parent' || this.value === 'auto') {
             self.setPropertyAll(name, this.value);
             res.numberInputElt.disabled = true;
         }
@@ -438,7 +402,7 @@ MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name
             res.numberInputElt.disabled = false;
             var value = self.getProperty(object, name, this.value);
             res.numberInputElt.value = value;
-            if (this.value == '%') {
+            if (this.value === '%') {
                 self.setPropertyAll(name, value + '%');
             }
             else {
