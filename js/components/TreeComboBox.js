@@ -43,7 +43,6 @@ TreeComboBox.prototype.onCreate = function () {
 
     ];
     this.attributes.value = '0';
-    console.log(this.attributes.list);
     Object.defineProperty(this.attributes, 'text', {
             get: function () {
                 if (this.list) {
@@ -82,9 +81,9 @@ TreeComboBox.prototype.setAttributeList = function (value) {
 };
 
 TreeComboBox.prototype.getAttributeList = function () {
-    return this.view.items.map(function visit (item) {
+    return this.view.items.map(function visit(item) {
         var res = { text: item.text, value: item.value };
-        if (item.items && item.items.length >0){
+        if (item.items && item.items.length > 0) {
             res.items = item.items.map(visit);
         }
         return res;
@@ -98,7 +97,7 @@ TreeComboBox.prototype.setAttributeText = function (value) {
 
 
 TreeComboBox.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["treeList", 'value','searchable']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["treeList", 'value', 'searchable']);
 };
 
 TreeComboBox.prototype.getAttributeTreeListDescriptor = function () {
