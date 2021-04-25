@@ -18,6 +18,7 @@ import PEEnum from "./types/PEEnum";
 import PEArrayOfText from "./types/PEArrayOfText";
 import PEMeasureSize from "./types/PEMeasureSize";
 import PEMeasurePosition from "./types/PEMeasurePosition";
+import PEFont from "./types/PEFont";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -49,7 +50,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     'enum': PEEnum,
     arrayOfText: PEArrayOfText,
     measureSize: PEMeasureSize,
-    measurePosition: PEMeasurePosition
+    measurePosition: PEMeasurePosition,
+    font: PEFont
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -249,44 +251,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-
-MultiObjectPropertyEditor.prototype.loadFontProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-    var fontInput = descriptor.sign ? this.putOnceFromPool(descriptor.sign) : null;
-    if (fontInput === null) {
-        fontInput = _({
-            tag: 'selectmenu',
-            class: 'as-need-update',
-            props: {
-                items: [{ text: 'None', value: undefined }].concat(FONT_ITEMS)
-            },
-            on: {
-                change: function () {
-                    this.peditor.setPropertyAll(name, this.value);
-                    this.peditor.notifyChange(name, this);
-                    this.peditor.notifyStopChange(name);
-                }
-            }
-        });
-    }
-    if (descriptor.sign)
-        this.assignToPool(descriptor.sign, fontInput);
-    fontInput.value = this.getProperty(object, name);
-    fontInput.peditor = this;
-
-    res.elt = fontInput;
-    cell.addChild(res.elt);
-    res.requestUpdate = function () {
-        var value = self.getProperty(object, name);
-        if (value != fontInput.value) {
-            fontInput.value = value;
-        }
-    };
-
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.loadTextAlignProperty = function (name, descriptor, cell) {
