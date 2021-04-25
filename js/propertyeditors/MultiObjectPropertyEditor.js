@@ -22,6 +22,7 @@ import PEFont from "./types/PEFont";
 import PETextAlign from "./types/PETextAlign";
 import PEBoxAlign from "./types/PEBoxAlign";
 import PEBool from "./types/PEBool";
+import PENumber from "./types/PENumber";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -57,7 +58,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     font: PEFont,
     textAlign: PETextAlign,
     boxAlign: PEBoxAlign,
-    bool: PEBool
+    bool: PEBool,
+    number: PENumber
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -257,58 +259,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descriptor, cell) {
-    var self = this;
-    var object = this.objects[this.objects.length - 1];
-
-    var numberInput = this.putOnceFromPool("NUMBER_INPUT");//same with all sign
-    if (numberInput === null) {
-        numberInput = _({
-                tag: 'numberinput',
-                class: 'as-need-update',
-                props: {},
-                on: {
-                    change: function (event) {
-                        if (event.by == 'kyup') return;
-                        if (!descriptor.livePreview && event.by == 'long_press_button') return;
-                        this.peditor.setPropertyAll(this._propertyName, this.value);
-                        this.peditor.notifyChange(this._propertyName, this);
-                        if (event.by != 'long_press_button')
-                            this.peditor.notifyStopChange(this._propertyName);
-                    }
-                }
-            }
-        );
-
-    }
-    if (descriptor.sign)
-        this.assignToPool(descriptor.sign, numberInput);
-    if (typeof descriptor.floatFixed === "number")
-        numberInput.floatFixed = descriptor.floatFixed;
-    numberInput.min = typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity;
-    numberInput.max = typeof (descriptor.max) == 'number' ? descriptor.max : Infinity;
-    numberInput.value = this.getProperty(object, name);
-    numberInput.disabled = descriptor.disabled;
-    numberInput._propertyName = name;
-    numberInput.peditor = this;
-    var res = { elt: numberInput };
-    res.requestUpdate = function () {
-        var descriptor = self.getPropertyDescriptor(object, name);
-        if (typeof descriptor.floatFixed === "number")
-            res.elt.floatFixed = descriptor.floatFixed;
-        numberInput.min = typeof (descriptor.min) == 'number' ? descriptor.min : -Infinity;
-        numberInput.max = typeof (descriptor.max) == 'number' ? descriptor.max : Infinity;
-        var value = self.getProperty(object, name);
-        if (value === null)
-            res.elt.value = descriptor.defaultValue;
-        else
-            res.elt.value = value;
-        res.elt.disabled = self.getPropertyDescriptor(object, name).disabled;
-    }
-    cell.addChild(res.elt);
-    //todo NULL
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, descriptor, cell) {
