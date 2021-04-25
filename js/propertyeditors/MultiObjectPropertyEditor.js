@@ -20,6 +20,7 @@ import PEMeasureSize from "./types/PEMeasureSize";
 import PEMeasurePosition from "./types/PEMeasurePosition";
 import PEFont from "./types/PEFont";
 import PETextAlign from "./types/PETextAlign";
+import PEBoxAlign from "./types/PEBoxAlign";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -53,7 +54,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     measureSize: PEMeasureSize,
     measurePosition: PEMeasurePosition,
     font: PEFont,
-    textAlign: PETextAlign
+    textAlign: PETextAlign,
+    boxAlign: PEBoxAlign
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -253,106 +255,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-
-
-MultiObjectPropertyEditor.prototype.loadBoxAlignProperty = function (name, descriptor, cell) {
-    var self = this;
-    var object = this.objects[this.objects.length - 1];
-    var icons = {
-        lefttop: 'm0 0v24h24v-24zm1 1h22v22h-22zm2 2h10.3v2h-10.3v-2m0 4h14v2h-14v-2m0 4h9.9v2h-9.9v-2',
-        centertop: 'm24 24v-24h-24v24zm-1-1h-22v-22h22zm-6.05-18h-9.9v-2h9.9v2m2.05 4h-14v-2h14v2m-1.85 4h-10.3v-2h10.3v2',
-        righttop: 'm24 0v24h-24v-24zm-1 1h-22v22h22zm-2 2h-10.3v2h10.3v-2m0 4h-14v2h14v-2m0 4h-9.9v2h9.9v-2',
-        leftcenter: 'm0 24v-24h24v24zm1-1h22v-22h-22zm2-6h10.3v-2h-10.3v2m0-4h14v-2h-14v2m0-4h9.9v-2h-9.9v2',
-        centercenter: 'm0 24v-24h24v24zm1-1h22v-22h-22zm6.05-14h9.9v-2h-9.9v2m-2.05 4h14v-2h-14v2m1.85 4h10.3v-2h-10.3v2',
-        rightcenter: 'm24 24v-24h-24v24zm-1-1h-22v-22h22zm-2-6h-10.3v-2h10.3v2m0-4h-14v-2h14v2m0-4h-9.9v-2h9.9v2',
-        leftbottom: 'm0 24v-24h24v24zm1-1h22v-22h-22zm2-2h10.3v-2h-10.3v2m0-4h14v-2h-14v2m0-4h9.9v-2h-9.9v2',
-        centerbottom: 'm24 0v24h-24v-24zm-1 1h-22v22h22zm-6.05 18h-9.9v2h9.9v-2m2.05-4h-14v2h14v-2m-1.85-4h-10.3v2h10.3v-2',
-        rightbottom: 'm24 24v-24h-24v24zm-1-1h-22v-22h22zm-2-2h-10.3v-2h10.3v2m0-4h-14v-2h14v2m0-4h-9.9v-2h9.9v2'
-    };
-
-    function makeIcon(path) {
-        var data = '<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
-                    <path d="' + path + '" style="stroke-width:0"/>\
-                </svg>';
-        return {
-            tag: 'img',
-            style: {
-                'image-rendering': 'pixelated'
-            },
-            props: {
-                src: 'data:image/svg+xml;base64,' + base64EncodeUnicode(data)
-            }
-        };
-    }
-
-    var res = {};
-    res.elt = _('button.as-property-editor-text-align-input', res);
-    cell.addChild(res.elt);
-    res.elt.addChild(_(makeIcon(icons[this.getProperty(object, name)] || icons.lefttop)));
-    QuickMenu.toggleWhenClick(res.elt, {
-        getMenuProps: function () {
-            return {
-                items: [
-                    {
-                        text: 'Left-Top',
-                        icon: makeIcon(icons.lefttop),
-                        menuData: 'lefttop'
-                    },
-                    {
-                        text: 'Center-Top',
-                        icon: makeIcon(icons.centertop),
-                        menuData: 'centertop'
-                    },
-                    {
-                        text: 'Right-Top',
-                        icon: makeIcon(icons.righttop),
-                        menuData: 'righttop'
-                    },
-                    {
-                        text: 'Left-Center',
-                        icon: makeIcon(icons.leftcenter),
-                        menuData: 'leftcenter'
-                    },
-                    {
-                        text: 'Center-Center',
-                        icon: makeIcon(icons.centercenter),
-                        menuData: 'centercenter'
-                    },
-                    {
-                        text: 'Right-Center',
-                        icon: makeIcon(icons.rightcenter),
-                        menuData: 'rightcenter'
-                    },
-                    {
-                        text: 'Left-Botttom',
-                        icon: makeIcon(icons.leftbottom),
-                        menuData: 'leftbottom'
-                    },
-                    {
-                        text: 'Center-Botttom',
-                        icon: makeIcon(icons.centerbottom),
-                        menuData: 'centerbottom'
-                    },
-                    {
-                        text: 'Right-Botttom',
-                        icon: makeIcon(icons.rightbottom),
-                        menuData: 'rightbottom'
-                    }
-                ]
-            }
-        },
-        onSelect: function (item) {
-            res.elt.clearChild().addChild(_(makeIcon(icons[item.menuData])));
-            self.setPropertyAll(name, item.menuData);
-            self.notifyStopChange(name);
-        }
-    });
-
-    res.requestUpdate = function () {
-        res.elt.clearChild().addChild(_(makeIcon(icons[self.getProperty(object, name)] || icons.lefttop)));
-    };
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descriptor, cell) {
