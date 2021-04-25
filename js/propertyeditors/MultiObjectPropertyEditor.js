@@ -21,6 +21,7 @@ import PEMeasurePosition from "./types/PEMeasurePosition";
 import PEFont from "./types/PEFont";
 import PETextAlign from "./types/PETextAlign";
 import PEBoxAlign from "./types/PEBoxAlign";
+import PEBool from "./types/PEBool";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -55,7 +56,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     measurePosition: PEMeasurePosition,
     font: PEFont,
     textAlign: PETextAlign,
-    boxAlign: PEBoxAlign
+    boxAlign: PEBoxAlign,
+    bool: PEBool
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -255,8 +257,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-
-
 MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descriptor, cell) {
     var self = this;
     var object = this.objects[this.objects.length - 1];
@@ -310,39 +310,6 @@ MultiObjectPropertyEditor.prototype.loadNumberProperty = function (name, descrip
     return res;
 };
 
-
-MultiObjectPropertyEditor.prototype.loadBoolProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-    res.elt = _({
-        tag: 'checkboxbutton',
-        class: 'as-need-update',
-        props: {
-            checked: this.getProperty(object, name),
-            notifyChange: function () {
-
-            }
-        },
-        on: {
-            change: function () {
-                self.setPropertyAll(name, this.checked);
-                self.notifyChange(name, this);
-                self.notifyStopChange(name);
-            }
-        }
-    });
-
-    res.requestUpdate = function () {
-        var value = self.getProperty(object, name);
-        if (value != res.elt.checked) {
-            res.elt.checked = value;
-        }
-    };
-
-    cell.addChild(res.elt);
-    return res;
-};
 
 MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, descriptor, cell) {
     var self = this;
