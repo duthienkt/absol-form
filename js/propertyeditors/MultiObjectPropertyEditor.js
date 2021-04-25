@@ -17,6 +17,7 @@ import PEConst from "./types/PEConst";
 import PEEnum from "./types/PEEnum";
 import PEArrayOfText from "./types/PEArrayOfText";
 import PEMeasureSize from "./types/PEMeasureSize";
+import PEMeasurePosition from "./types/PEMeasurePosition";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -47,7 +48,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     'const': PEConst,
     'enum': PEEnum,
     arrayOfText: PEArrayOfText,
-    measureSize: PEMeasureSize
+    measureSize: PEMeasureSize,
+    measurePosition: PEMeasurePosition
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -246,212 +248,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
     return {};
 };
 
-
-/*
-MultiObjectPropertyEditor.prototype.loadMeasureSizeProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-    cell.addStyle('white-space', 'nowrap');
-    res.numberInputElt = _('numberinput').addStyle('margin-right', '5px');
-    res.typeSelectElt = _({
-        tag: 'selectmenu',
-        style: {
-            verticalAlign: 'middle'
-        },
-        props: {
-            items: [
-                { text: 'px', value: 'px' },
-                { text: '%', value: '%' },
-                { text: 'match_parent', value: 'match_parent' },
-                { text: 'auto', value: 'auto' }
-            ]
-        }
-    });
-
-    cell.addChild(res.numberInputElt)
-        .addChild(res.typeSelectElt);
-    res.numberInputElt.on('change', function (event) {
-        if (event.by == 'keyup') return;
-        switch (res.typeSelectElt.value) {
-            case '%':
-                self.setPropertyAll(name, this.value + '%');
-                break;
-            case 'px':
-                self.setPropertyAll(name, this.value);
-                break;
-        }
-        self.notifyChange(name);
-        if (event.by != 'long_press_button')
-            self.notifyStopChange(name);
-    })
-        .on('stopchange', function () {
-            switch (res.typeSelectElt.value) {
-                case '%':
-                    self.setPropertyAll(name, this.value + '%');
-                    break;
-                case 'px':
-                    self.setPropertyAll(name, this.value);
-                    break;
-            }
-            self.notifyStopChange(name);
-        });
-
-    res.typeSelectElt.on('change', function (event) {
-        if (this.value == 'match_parent' || this.value == 'auto') {
-            self.setPropertyAll(name, this.value);
-            res.numberInputElt.disabled = true;
-        }
-        else {
-            res.numberInputElt.disabled = false;
-            var value = self.getProperty(object, name, this.value);
-            res.numberInputElt.value = value;
-            if (this.value == '%') {
-                self.setPropertyAll(name, value + '%');
-            }
-            else {
-                self.setPropertyAll(name, value);
-            }
-        }
-        self.notifyChange(name);
-        self.notifyStopChange(name);
-    });
-
-
-    res.requestUpdate = function () {
-        var descriptor = self.getPropertyDescriptor(object, name);
-        if (descriptor.disabled) res.numberInputElt.disabled = !!descriptor.disabled;
-        var value = self.getProperty(object, name);
-
-        if (typeof value === 'number') {
-            res.numberInputElt.value = value;
-            res.typeSelectElt.value = 'px';
-        }
-        else if (typeof value == 'string') {
-            if (value.match(/\%$/)) {
-                res.typeSelectElt.value = '%';
-                res.numberInputElt.value = parseFloat(value.replace('%', ''));
-                res.numberInputElt.disabled = false;
-            }
-            else if (value === 'match_parent' || value === 'auto') {
-                res.numberInputElt.disabled = true;
-                res.typeSelectElt.value = value;
-            }
-            else {
-                console.error("Unknow typeof " + name, value);
-            }
-        }
-    }
-
-    res.requestUpdate();
-    return res;
-};
-*/
-
-MultiObjectPropertyEditor.prototype.loadMeasurePositionProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-    cell.addStyle('white-space', 'nowrap');
-    res.numberInputElt = _('numberinput').addStyle('margin-right', '5px');
-    res.typeSelectElt = _({
-        tag: 'selectmenu',
-        style: {
-            verticalAlign: 'middle'
-        },
-        props: {
-            items: [
-                { text: 'px', value: 'px' },
-                { text: '%', value: '%' }
-            ]
-        }
-    });
-
-    cell.addChild(res.numberInputElt)
-        .addChild(res.typeSelectElt);
-    res.numberInputElt.on('change', function (event) {
-        if (event.by === 'keyup') return;
-        switch (res.typeSelectElt.value) {
-            case '%':
-                self.setPropertyAll(name, this.value + '%');
-                break;
-            case 'px':
-                self.setPropertyAll(name, this.value);
-                break;
-        }
-        self.notifyChange(name);
-        if (event.by !== 'long_press_button')
-            self.notifyStopChange(name);
-    })
-        .on('stopchange', function () {
-            switch (res.typeSelectElt.value) {
-                case '%':
-                    self.setPropertyAll(name, this.value + '%');
-                    break;
-                case 'px':
-                    self.setPropertyAll(name, this.value);
-                    break;
-            }
-            self.notifyStopChange(name);
-        });
-
-    res.typeSelectElt.on('change', function (event) {
-        if (this.value === 'match_parent' || this.value === 'auto') {
-            self.setPropertyAll(name, this.value);
-            res.numberInputElt.disabled = true;
-        }
-        else {
-            res.numberInputElt.disabled = false;
-            var value = self.getProperty(object, name, this.value);
-            res.numberInputElt.value = value;
-            if (this.value === '%') {
-                self.setPropertyAll(name, value + '%');
-            }
-            else {
-                self.setPropertyAll(name, value);
-            }
-        }
-        self.notifyChange(name);
-        self.notifyStopChange(name);
-    });
-
-
-    res.requestUpdate = function () {
-        var descriptor = self.getPropertyDescriptor(object, name);
-        res.numberInputElt.disabled = !!descriptor.disabled;
-        var value;
-        if (descriptor.disabled) {
-            value = self.getProperty(object, name, res.typeSelectElt.value);
-            res.numberInputElt.value = value;
-            //set-back
-            if (res.typeSelectElt.value == 'px') {
-                self.setPropertyAll(name, value);
-            }
-            else if (res.typeSelectElt.value == '%') {
-                self.setPropertyAll(name, value + '%');
-            }
-        }
-        else {
-            value = self.getProperty(object, name);
-            if (typeof value == 'number') {
-                res.numberInputElt.value = value;
-                res.typeSelectElt.value = 'px';
-            }
-            else if (typeof value == 'string') {
-                if (value.match(/\%$/)) {
-                    res.typeSelectElt.value = '%';
-                    res.numberInputElt.value = parseFloat(value.replace('%', ''));
-                }
-                else {
-                    console.error("Unknow typeof " + name, value);
-                }
-            }
-        }
-    }
-
-    res.requestUpdate();
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.loadFontProperty = function (name, descriptor, cell) {
