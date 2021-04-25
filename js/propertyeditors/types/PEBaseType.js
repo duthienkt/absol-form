@@ -28,18 +28,18 @@ PEBaseType.prototype.renewDescriptor = function () {
 };
 
 PEBaseType.prototype.getValue = function () {
-    return this.editor.getProperty(this.editor.objects[0], this.pName);
+    return this.editor.getProperty.apply(this.editor, [this.editor.objects[0], this.pName].concat(Array.prototype.slice.call(arguments)));
 };
 
 PEBaseType.prototype.setValue = function (value) {
-    this.editor.setPropertyAll(this.pName, value);
+    this.editor.setPropertyAll.apply(this.editor, [this.pName, value].concat(Array.prototype.slice.call(arguments, 1)));
 };
 
-PEBaseType.prototype.notifyChange = function (){
+PEBaseType.prototype.notifyChange = function () {
     this.editor.notifyChange(this.pName, this);
 };
 
-PEBaseType.prototype.notifyStopChange = function (){
+PEBaseType.prototype.notifyStopChange = function () {
     this.editor.notifyStopChange(this.pName);
 };
 
