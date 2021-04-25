@@ -23,6 +23,7 @@ import PETextAlign from "./types/PETextAlign";
 import PEBoxAlign from "./types/PEBoxAlign";
 import PEBool from "./types/PEBool";
 import PENumber from "./types/PENumber";
+import PEFragmentClass from "./types/PEFragmentClass";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -59,7 +60,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     textAlign: PETextAlign,
     boxAlign: PEBoxAlign,
     bool: PEBool,
-    number: PENumber
+    number: PENumber,
+    fragmentClass: PEFragmentClass
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -259,8 +261,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-
-
 MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, descriptor, cell) {
     var self = this;
     var res = {};
@@ -305,42 +305,6 @@ MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, des
     return res;
 };
 
-
-MultiObjectPropertyEditor.prototype.loadFragmentClassProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-    var constructors = AssemblerInstance.fragmentConstructors;
-    var items = Object.keys(constructors).map(function (key) {
-        var cst = constructors[key];
-        var cstName = cst.prototype.displayName
-            || (cst.prototype.contentViewData
-                && cst.prototype.contentViewData.attributes
-                && cst.prototype.contentViewData.attributes.name)
-            || cst.prototype.name
-            || cst.prototype.tag;
-        return { text: cstName, value: key };
-    });
-    items.unshift({ text: "none", value: 'null', extendStyle: { "color": "#aaa" } });
-
-    res.elt = _({
-        tag: 'selectmenu',
-        props: {
-            items: items,
-            value: this.getProperty(object, name) || 'null'
-        },
-        on: {
-            change: function () {
-                if (this.value === 'null')
-                    self.setPropertyAll(name, null);
-                else
-                    self.setPropertyAll(name, this.value);
-            }
-        }
-    });
-    cell.addChild(res.elt)
-    return res;
-};
 
 MultiObjectPropertyEditor.prototype.clearAllDependents = function () {
     for (var key in this.dependents)
