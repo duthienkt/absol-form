@@ -28,7 +28,8 @@ FModel.prototype.getAcceptsAttributeNames = function () {
  */
 FModel.prototype.getAttributeDescriptor = function (name) {
     var functionName = 'getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
-    return this[functionName] && this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
+    return (this[functionName] && this[functionName].apply(this, Array.prototype.slice.call(arguments, 1)))
+        ||this.attributes.getPropertyDescriptor(name);
 };
 
 /**
