@@ -4,7 +4,12 @@
  * @constructor
  */
 function FAttributes(node) {
-    this.$$node = node;
+    Object.defineProperty(this, '$$node', {
+        enumerable: false,
+        configurable: true,
+        writable: false,
+        value: node
+    })
     Object.defineProperty(this, '_definedProperties', {
         enumerable: false,
         writable: false,
@@ -25,7 +30,7 @@ Object.defineProperty(FAttributes.prototype, 'loadAttributeHandlers', {
                 delete self[key];
             }
         });
-        Object.keys(definedHandlers).forEach(function (key) {
+        Object.keys(newHandlers).forEach(function (key) {
             if (definedHandlers[key] !== newHandlers[key]) {
                 self.defineProperty(key, newHandlers[key]);
             }
@@ -51,14 +56,14 @@ Object.defineProperty(FAttributes.prototype, 'defineProperty', {
             },
             get: function () {
                 if (handler.get)
-                    return handler.get.call(self.$$node, value);
+                    return handler.get.call(self.$$node);
                 else
                     return privateValue;
             }
         };
 
         Object.defineProperty(this, name, objectDescriptor);
-        if (value !== undefined) this[name] = value;
+        if (privateValue !== undefined) this[name] = privateValue;
     }
 });
 
@@ -89,9 +94,9 @@ Object.defineProperty(FAttributes.prototype, 'getPropertyDescriptor', {
     writable: false,
     value: function (name) {
         var handler = this._definedProperties[name];
-        if (handler.getDescriptor) return handler.getDescriptor.call(this.$$node);
+        if (handler && handler.getDescriptor) return handler.getDescriptor.call(this.$$node);
         var value = this[name];
-        return handler.descriptor || {type: typeof value}
+        return (handler && handler.descriptor) || {type: typeof value}
     }
 });
 
