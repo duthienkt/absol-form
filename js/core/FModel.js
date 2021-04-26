@@ -1,5 +1,16 @@
+import FAttributes from "./FAttributes";
+
 function FModel() {
-    this.attributes = {};
+    var attributes = new FAttributes(this);
+    Object.defineProperty(this, 'attributes', {
+        enumerable: true,
+        set: function (value) {
+            Object.assign(attributes, value)
+        },
+        get: function () {
+            return attributes;
+        }
+    });
 }
 
 
@@ -86,5 +97,11 @@ FModel.prototype.setAttributes = function (attributes) {
     });
 };
 
+
+FModel.prototype.attributeHandlers = {};
+
+FModel.prototype.getAttributeHandlers = function () {
+    return this.attributeHandlers;
+}
 
 export default FModel;

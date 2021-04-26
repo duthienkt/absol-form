@@ -1,5 +1,16 @@
+import FAttributes from "./FAttributes";
+
 function FViewable() {
-    this.style = {};
+    var style = new FAttributes(this);
+    Object.defineProperty(this, 'style', {
+        enumerable: true,
+        set: function (value) {
+            Object.assign(style, value)
+        },
+        get: function () {
+            return style;
+        }
+    });
 }
 
 
@@ -97,5 +108,7 @@ FViewable.prototype.setStyles = function (styles) {
         self.setStyle(key, styles[key]);
     });
 };
+
+FViewable.prototype.styleHandlers = {};
 
 export default FViewable;
