@@ -7,7 +7,7 @@ import TextInput from './js/components/TextInput'
 import RelativeLayout from './js/layouts/RelativeLayout'
 import Assembler, {AssemblerInstance, findComponent, findComponentByName} from './js/core/Assembler'
 import DateInput from './js/components/DateInput'
-import BaseComponent from './js/core/BaseComponent'
+import BaseComponent, {inheritComponentClass} from './js/core/BaseComponent'
 import LayoutEditor from './js/editor/LayoutEditor'
 import Fcore from './js/core/FCore'
 import FormEditor from './js/editor/FormEditor'
@@ -92,6 +92,7 @@ export default {
     AssemblerInstance: AssemblerInstance,
     findComponentsByName: findComponentByName,
     findComponent: findComponent,
-    traversal: traversal
+    traversal: traversal,
+    inheritComponentClass
 };
 
