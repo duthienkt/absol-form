@@ -74,7 +74,8 @@ Object.defineProperty(FAttributes.prototype, 'export', {
         var self = this;
         return Object.keys(this).reduce(function (ac, key) {
             var value;
-            var exporter = self._definedProperties.export;
+            var handler = self._definedProperties[key];
+            var exporter = handler && handler.export;
             if (exporter) {
                 value = exporter.call(self.$$node);
             }
@@ -83,7 +84,7 @@ Object.defineProperty(FAttributes.prototype, 'export', {
             }
             if (value !== undefined) ac[key] = value;
             return ac;
-        });
+        }, {});
     }
 });
 
