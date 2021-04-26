@@ -16,18 +16,18 @@ Object.defineProperty(FAttributes.prototype, 'loadAttributeHandlers', {
     enumerable: false,
     configurable: true,
     writable: false,
-    value: function (newDescriptors) {
+    value: function (newHandlers) {
         var self = this;
-        var definedDescriptors = this._definedProperties;
+        var definedHandlers = this._definedProperties;
         Object.keys(this._definedProperties).forEach(function (key) {
-            if (definedDescriptors[key] !== newDescriptors[key]) {
-                delete definedDescriptors[key];
+            if (definedHandlers[key] !== newHandlers[key]) {
+                delete definedHandlers[key];
                 delete self[key];
             }
         });
-        Object.keys(definedDescriptors).forEach(function (key) {
-            if (definedDescriptors[key] !== newDescriptors[key]) {
-                self.defineProperty(key, newDescriptors[key]);
+        Object.keys(definedHandlers).forEach(function (key) {
+            if (definedHandlers[key] !== newHandlers[key]) {
+                self.defineProperty(key, newHandlers[key]);
             }
         });
     }
@@ -37,21 +37,21 @@ Object.defineProperty(FAttributes.prototype, 'defineProperty', {
     enumerable: false,
     configurable: true,
     writable: false,
-    value: function (name, descriptor) {
+    value: function (name, handler) {
         var self = this;
-        this._definedProperties[name] = descriptor;
+        this._definedProperties[name] = handler;
 
         var privateValue = undefined;
         var objectDescriptor = {
             enumerable: true, configurable: true,
             set: function (value) {
-                if (descriptor.set)
-                    privateValue = descriptor.set.call(self.$$node, value);
+                if (handler.set)
+                    privateValue = handler.set.call(self.$$node, value);
                 else privateValue = value;
             },
             get: function () {
-                if (descriptor.get)
-                    return descriptor.get.call(self.$$node, value);
+                if (handler.get)
+                    return handler.get.call(self.$$node, value);
                 else
                     return privateValue;
             }
@@ -79,6 +79,19 @@ Object.defineProperty(FAttributes.prototype, 'export', {
             if (value !== undefined) ac[key] = value;
             return ac;
         });
+    }
+});
+
+
+Object.defineProperty(FAttributes.prototype, 'getPropertyDescriptor', {
+    enumerable: false,
+    configurable: true,
+    writable: false,
+    value: function (name) {
+        var handler = this._definedProperties[name];
+        if (handler.getDescriptor) return handler.getDescriptor.call(this.$$node);
+        var value = this[name];
+        return handler.descriptor || {type: typeof value}
     }
 });
 
