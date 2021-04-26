@@ -116,7 +116,7 @@ PropertyEditor.prototype.loadAttributes = function () {
     this.propertyNames.forEach(function (name) {
         var descriptor = self.getPropertyDescriptor(name) || { type: "NoDescriptor" };
         if (descriptor.dependency) {
-            self.addDepents(name, descriptor.dependency);
+            self.addDependents(name, descriptor.dependency);
         }
         var functionName = 'load' + camelCaseToPascalCase(descriptor.type) + 'Property';
         var cell = _('td');
@@ -909,7 +909,7 @@ PropertyEditor.prototype.clearAllDependents = function () {
  * @param {String} propertyName
  * @param {Array<String>} dependencyProperties
  */
-PropertyEditor.prototype.addDepents = function (propertyName, dependencyProperties) {
+PropertyEditor.prototype.addDependents = function (propertyName, dependencyProperties) {
     var dependencyProperty;
     for (var i = 0; i < dependencyProperties.length; ++i) {
         dependencyProperty = dependencyProperties[i];

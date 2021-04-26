@@ -149,7 +149,7 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
         var functionName = 'load' + camelCaseToPascalCase(descriptor.type) + 'Property';
         var cell = _('td');
         if (descriptor.dependency) {
-            // self.addDepents(name, descriptor.dependency);
+            // self.addDependents(name, descriptor.dependency);
         }
         if (!self[functionName]) {
             // throw new Error('Not support type' + descriptor.type + '!')
@@ -169,7 +169,7 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
 
         rowElt.addTo(self.$body);
         if (descriptor.dependency) {
-            self.addDepents(name, descriptor.dependency);
+            self.addDependents(name, descriptor.dependency);
         }
 
         if (EditorClass) {
@@ -275,7 +275,7 @@ MultiObjectPropertyEditor.prototype.clearAllDependents = function () {
  * @param {String} propertyName
  * @param {Array<String>} dependencyProperties
  */
-MultiObjectPropertyEditor.prototype.addDepents = function (propertyName, dependencyProperties) {
+MultiObjectPropertyEditor.prototype.addDependents = function (propertyName, dependencyProperties) {
     var dependencyProperty;
     for (var i = 0; i < dependencyProperties.length; ++i) {
         dependencyProperty = dependencyProperties[i];

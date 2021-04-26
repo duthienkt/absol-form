@@ -48,7 +48,6 @@ EditableArrayOfFragment.prototype.onCreated = function () {
     this.$addBtn = $('.as-editable-array-of-fragment-bottom .as-flexicon-button', this.domElt)
         .on('click', this.addNewRow.bind(this));
     ArrayOfFragment.prototype.onCreated.call(this);
-    console.log(this.$list);
 };
 
 
