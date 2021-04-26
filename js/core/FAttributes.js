@@ -1,6 +1,6 @@
 /***
  *
- * @param {FModel} node
+ * @param {Object} node
  * @constructor
  */
 function FAttributes(node) {
@@ -16,11 +16,9 @@ Object.defineProperty(FAttributes.prototype, 'loadAttributeHandlers', {
     enumerable: false,
     configurable: true,
     writable: false,
-    value: function () {
+    value: function (newDescriptors) {
         var self = this;
         var definedDescriptors = this._definedProperties;
-        var newDescriptors = this.$$node.getAttributeHandlers();
-
         Object.keys(this._definedProperties).forEach(function (key) {
             if (definedDescriptors[key] !== newDescriptors[key]) {
                 delete definedDescriptors[key];
