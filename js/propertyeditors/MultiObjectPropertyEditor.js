@@ -24,6 +24,7 @@ import PEBoxAlign from "./types/PEBoxAlign";
 import PEBool from "./types/PEBool";
 import PENumber from "./types/PENumber";
 import PEFragmentClass from "./types/PEFragmentClass";
+import PESelectList from "./types/PESelectList";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -61,7 +62,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     boxAlign: PEBoxAlign,
     bool: PEBool,
     number: PENumber,
-    fragmentClass: PEFragmentClass
+    fragmentClass: PEFragmentClass,
+    SelectList: PESelectList
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
@@ -261,49 +263,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
 };
 
 
-MultiObjectPropertyEditor.prototype.loadSelectListProperty = function (name, descriptor, cell) {
-    var self = this;
-    var res = {};
-    var object = this.objects[this.objects.length - 1];
-    res.elt = _({
-        tag: 'button',
-        class: 'as-from-tool-button',
-        child: 'span.mdi.mdi-table-edit',
-        on: {
-            click: function () {
-                var listData = self.getProperty(object, name);
-                /**
-                 * @type {FormEditor}
-                 */
-                var formEditor = self.getContext(R.FORM_EDITOR);
-                if (!formEditor) return;
-                object.__objectIdent__ = object.__objectIdent__ || randomIdent(24);//different between state
-                var selectListTabIdent = object.__objectIdent__ + '_selectList_' + name;
-                var selectListEditor;
-                var editorTabHolder = formEditor.getEditorHolderByIdent(selectListTabIdent);
-                if (editorTabHolder)
-                    selectListEditor = editorTabHolder.editor;
-                if (!selectListEditor) {
-                    selectListEditor = new SelectListEditor();
-                    selectListEditor.attach(self);
-                    var tabName = self.getProperty(object, 'name') + '(' + name + ')';
-                    var desc = 'SelectList';
-                    formEditor.openEditorTab(selectListTabIdent, tabName, desc, selectListEditor, { layoutEditor: this })
-                }
-                else {
-                    editorTabHolder.tabframe.requestActive();
-                }
-                selectListEditor.setData(listData);
-                selectListEditor.on('save', function () {
-                    listData = this.getData();
-                    self.setPropertyAll(name, listData);
-                });
-            }
-        }
-    });
-    cell.addChild(res.elt);
-    return res;
-};
 
 
 MultiObjectPropertyEditor.prototype.clearAllDependents = function () {
