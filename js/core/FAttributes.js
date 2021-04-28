@@ -3,6 +3,8 @@
  * @param {Object} node
  * @constructor
  */
+import Ref from "absol/src/AppPattern/Ref";
+
 function FAttributes(node) {
     Object.defineProperty(this, '$$node', {
         enumerable: false,
@@ -11,6 +13,12 @@ function FAttributes(node) {
         value: node
     })
     Object.defineProperty(this, '_definedProperties', {
+        enumerable: false,
+        writable: false,
+        value: {}
+    });
+
+    Object.defineProperty(this, '_definedComputedHandlers', {
         enumerable: false,
         writable: false,
         value: {}
@@ -24,10 +32,13 @@ Object.defineProperty(FAttributes.prototype, 'loadAttributeHandlers', {
     value: function (newHandlers) {
         var self = this;
         var definedHandlers = this._definedProperties;
+        var definedComputedHandlers = this._definedComputedHandlers;
         Object.keys(this._definedProperties).forEach(function (key) {
-            if (definedHandlers[key] !== newHandlers[key]) {
+            if (!newHandlers[key]) {
                 delete definedHandlers[key];
+                delete definedComputedHandlers[key];
                 delete self[key];
+
             }
         });
         Object.keys(newHandlers).forEach(function (key) {
@@ -45,27 +56,59 @@ Object.defineProperty(FAttributes.prototype, 'defineProperty', {
     value: function (name, handler) {
         var self = this;
         this._definedProperties[name] = handler;
-
-        var privateValue = undefined;
+        var hadValue = !!(name in this);
+        var privateValueRef = new Ref(this[name]);
         var objectDescriptor = {
             enumerable: true, configurable: true,
             set: function (value) {
                 if (handler.set)
-                    privateValue = handler.set.call(self.$$node, value);
-                else privateValue = value;
+                    privateValueRef.set(handler.set.apply(self.$$node, Array.prototype.slice.call(arguments).concat([privateValueRef])));
+                else privateValueRef.set(value);
             },
             get: function () {
                 if (handler.get)
-                    return handler.get.call(self.$$node);
+                    return handler.get.apply(self.$$node, Array.prototype.slice.call(arguments).concat([privateValueRef]));
                 else
-                    return privateValue;
+                    return privateValueRef.get();
             }
         };
 
+
+        this._definedComputedHandlers[name] = objectDescriptor;
         Object.defineProperty(this, name, objectDescriptor);
-        if (privateValue !== undefined) this[name] = privateValue;
+        if (hadValue) this[name] = privateValueRef.get();
     }
 });
+
+Object.defineProperty(FAttributes.prototype, 'getProperty', {
+    enumerable: false,
+    configurable: true,
+    writable: false,
+    value: function (name) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        var handler = this._definedComputedHandlers[name];
+        if (handler) {
+            return handler.get.apply(this, args);
+        }
+        else return this[name];
+    }
+});
+
+Object.defineProperty(FAttributes.prototype, 'setProperty', {
+    enumerable: false,
+    configurable: true,
+    writable: false,
+    value: function (name, value) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        var handler = this._definedComputedHandlers[name];
+        if (handler) {
+            return handler.set.apply(this, args);
+        }
+        else
+            this[name] = value;
+    }
+});
+
 
 Object.defineProperty(FAttributes.prototype, 'export', {
     enumerable: false,
@@ -97,9 +140,8 @@ Object.defineProperty(FAttributes.prototype, 'getPropertyDescriptor', {
         var handler = this._definedProperties[name];
         if (handler && handler.getDescriptor) return handler.getDescriptor.call(this.$$node);
         var value = this[name];
-        return (handler && handler.descriptor) || {type: typeof value}
+        return (handler && handler.descriptor) || { type: typeof value }
     }
 });
-
 
 export default FAttributes;
