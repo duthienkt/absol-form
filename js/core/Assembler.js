@@ -119,9 +119,7 @@ Assembler.prototype.buildComponent = function (data, frag) {
     var result = new construction();
     var style = data.style;
     if (typeof style == 'object')
-        for (var styleName in style) {
-            result.setStyle(styleName, style[styleName]);
-        }
+        Object.assign(result.style, style);
 
     var attributes = data.attributes;
     if (typeof attributes == 'object')
