@@ -74,8 +74,9 @@ Object.defineProperty(FAttributes.prototype, 'defineProperty', {
         };
 
 
-        this._definedComputedHandlers[name] = objectDescriptor;
         Object.defineProperty(this, name, objectDescriptor);
+        this._definedComputedHandlers[name] = objectDescriptor;
+        objectDescriptor.ref = privateValueRef;
         if (hadValue) this[name] = privateValueRef.get();
     }
 });
@@ -118,9 +119,10 @@ Object.defineProperty(FAttributes.prototype, 'export', {
         return Object.keys(this).reduce(function (ac, key) {
             var value;
             var handler = self._definedProperties[key];
+            var computedHandler = self._definedComputedHandlers[key];
             var exporter = handler && handler.export;
             if (exporter) {
-                value = exporter.call(self.$$node);
+                value = exporter.call(self.$$node, computedHandler.ref);
             }
             else {
                 value = self[key]
