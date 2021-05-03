@@ -123,9 +123,8 @@ Assembler.prototype.buildComponent = function (data, frag) {
 
     var attributes = data.attributes;
     if (typeof attributes == 'object')
-        for (var attributeName in attributes) {
-            result.setAttribute(attributeName, attributes[attributeName]);
-        }
+        Object.assign(result.attributes, attributes)
+        
 
     var events = data.events;
     if (typeof events == 'object')
@@ -137,7 +136,7 @@ Assembler.prototype.buildComponent = function (data, frag) {
         data.onCreated.apply(result, []);
     }
     else if (typeof data.onCreated === "string") {
-        new Function( data.onCreated).call(result);
+        new Function(data.onCreated).call(result);
     }
     var children = data.children;
     if (children && children.length > 0) {

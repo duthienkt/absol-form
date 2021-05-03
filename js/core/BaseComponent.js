@@ -77,7 +77,7 @@ BaseComponent.prototype.onCreate = function () {
 };
 
 BaseComponent.prototype.onCreated = function () {
-    this.updateAttributes();
+
 };
 
 /***
@@ -111,12 +111,6 @@ BaseComponent.prototype.onAnchorDetached = function () {
 
 
 BaseComponent.prototype.onAttached = function (parent) {
-};
-
-BaseComponent.prototype.updateAttributes = function () {
-    for (var key in this.attributes) {
-        this.setAttribute(key, this.attributes[key]);//set init attribute
-    }
 };
 
 BaseComponent.prototype.getData = function () {
@@ -195,9 +189,7 @@ BaseComponent.prototype.setEvents = function (events) {
 };
 
 BaseComponent.prototype.setAttributes = function (attributes) {
-    for (var name in attributes) {
-        this.setAttribute(name, attributes[name]);
-    }
+    Object.assign(this.attributes, attributes)
 };
 
 BaseComponent.prototype.setStyles = function (styles) {
