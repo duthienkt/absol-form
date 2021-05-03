@@ -34,7 +34,8 @@ FViewable.prototype.render = function () {
  */
 FViewable.prototype.getStyleDescriptor = function (name) {
     var functionName = 'getStyle' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
-    return this[functionName] && this[functionName].apply(this, Array.prototype.slice.call(arguments, 1));
+    return (this[functionName] && this[functionName].apply(this, Array.prototype.slice.call(arguments, 1)))
+        || this.style.getPropertyDescriptor(name);
 };
 
 

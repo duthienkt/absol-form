@@ -26,18 +26,19 @@ function BaseComponent() {
      * @type {FmFragment}
      */
     this.fragment = null;
-    this.anchorAcceptsStyleName = {};
     this.onCreate();
     /***
      * @type {AElement}
      */
     this.domElt = this.render();
-
+    this.domElt.fmComponent = this;
     this.view.classList.add(this.BASE_COMPONENT_CLASS_NAME);
+    this.attributes.loadAttributeHandlers(this.attributeHandlers);
+    this.style.loadAttributeHandlers(this.styleHandlers);
     this.onCreated();
 }
 
-OOP.mixClass(BaseComponent, EventEmitter, FViewable, FViewable, FModel, FNode);
+inheritComponentClass(BaseComponent, EventEmitter, FViewable, FViewable, FModel, FNode);
 
 
 extendAttributeNames.forEach(function (name) {
@@ -106,18 +107,10 @@ BaseComponent.prototype.onAnchorAttached = function () {
 };
 
 BaseComponent.prototype.onAnchorDetached = function () {
-    this.anchorAcceptsStyleName = {};
 };
 
 
 BaseComponent.prototype.onAttached = function (parent) {
-    this.updateStyle();
-};
-
-BaseComponent.prototype.updateStyle = function () {
-    for (var key in this.style) {
-        this.setStyle(key, this.style[key]);
-    }
 };
 
 BaseComponent.prototype.updateAttributes = function () {
@@ -136,14 +129,19 @@ BaseComponent.prototype.getData = function () {
         //todo: get data from fragment
     }
 
-    var attributes = this.getAttributes();
+    var key;
 
-    if (attributes) {
+    var attributes = this.attributes.export();
+    for (key in attributes) {
         data.attributes = attributes;
+        break;
     }
 
-    var style = this.getStyles();
-    if (style) data.style = style;
+    var style = this.style.export();
+    for (key in attributes) {
+        data.style = style;
+        break;
+    }
 
     var eventsKeys = Object.keys(this.events).filter(function (key) {
         return self.events[key] !== undefined || self.events[key] !== null;
@@ -159,11 +157,17 @@ BaseComponent.prototype.getData = function () {
     if (this.children.length > 0) {
         data.children = this.children.map(function (child) {
             if (child.fragment) {
-                var childStyle = child.getStyles();
-                var childAttributes = child.getAttributes();
+                var childStyle = child.style.export();
+                var childAttributes = child.attributes.export();
                 var childData = { class: child.fragment.tag };
-                if (childStyle) childData.style = childStyle;
-                if (childAttributes) childData.attributes = childAttributes;
+                for (key in childStyle) {
+                    childData.style = childStyle;
+                    break;
+                }
+                for (key in childAttributes) {
+                    childData.attributes = childAttributes;
+                    break;
+                }
                 return childData;
             }
             else {
@@ -197,9 +201,7 @@ BaseComponent.prototype.setAttributes = function (attributes) {
 };
 
 BaseComponent.prototype.setStyles = function (styles) {
-    for (var name in styles) {
-        this.setStyle(name, styles[name]);
-    }
+    Object.assign(this.style, styles);
 };
 
 BaseComponent.prototype.setEvent = function (key, value) {
@@ -218,13 +220,7 @@ BaseComponent.prototype.getAcceptsStyleNames = function () {
     return [];
 };
 
-BaseComponent.prototype.getStyleDescriptor = function (name) {
-    var res;
-    if (this.anchor)
-        res = this.anchor.getStyleDescriptor.apply(this.anchor, arguments);
-    res = res || FViewable.prototype.getStyleDescriptor.apply(this, arguments);
-    return res;
-};
+
 
 BaseComponent.prototype.reMeasure = function () {
     if (this.parent && this.parent.reMeasure)
@@ -320,104 +316,114 @@ BaseComponent.prototype.getStyle = function (name) {
     return FViewable.prototype.getStyle.apply(this, arguments);
 };
 
-BaseComponent.prototype.setStyleWidth = function (value, unit) {
-    if (this.anchor) return value;// let anchor do that
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.style.width == 'string') && this.style.width.match(/\%$/)) {
-            value = value * 100 / this.view.parentElement.getBoundingClientRect().width + '%';
+BaseComponent.prototype.styleHandlers.width = {
+    set: function (value, unit) {
+        if (arguments.length < 2) unit = undefined;
+        var currentValue = this.style.width;
+        if (unit === 'px') {//value must be a number
+            if ((typeof currentValue == 'string') && this.style.width.match(/%$/)) {
+                value = value * 100 / this.domElt.parentElement.getBoundingClientRect().width + '%';
+            }
         }
-    }
-    else if (unit == '%') {
-        if (typeof this.style.width == 'number') {
-            value = value * this.view.parentElement.getBoundingClientRect().width / 100 + '%';
+        else if (unit === '%') {
+            if (typeof currentValue == 'number') {
+                value = value * this.view.parentElement.clientWidth / 100;
+            }
         }
-    }
-    var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue == 'match_parent') styleValue = '100%';
 
-    if (typeof styleValue == "number")
-        this.view.addStyle('width', styleValue + 'px');
-    else
-        this.view.addStyle('width', styleValue);
-    return value;
+        var styleValue = value >= 0 ? value + 'px' : value;
+        if (styleValue === 'match_parent') styleValue = '100%';
+
+        if (typeof styleValue == "number")
+            this.domElt.addStyle('width', styleValue + 'px');
+        else
+            this.domElt.addStyle('width', styleValue);
+        return value;
+    },
+    get: function () {
+        var unit;
+        var ref = arguments[arguments.length - 1];
+        var value = ref.get();
+        if (arguments.length > 1) {
+            unit = arguments[1];
+        }
+        if (unit === 'px') {
+            if (typeof value != 'number')
+                return this.domElt.offsetWidth;
+            else {
+                return value;
+            }
+        }
+        else if (unit === '%') {
+            if (((typeof value == 'string') && (!value.match(/%$/)))
+                || (typeof value != 'string')) {
+                return this.domElt.offsetWidth * 100 / this.domElt.parentElement.clientWidth;
+            }
+            else {
+                return parseFloat(value.replace('%', ''));
+            }
+        }
+        else
+            return value;
+    },
+    descriptor: { type: 'measureSize' }
 };
 
-
-BaseComponent.prototype.setStyleHeight = function (value, unit) {
-    if (this.anchor) return value;// let anchor do that
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.style.height == 'string') && this.style.height.match(/\%$/)) {
-            value = value * 100 / this.view.parentElement.getBoundingClientRect().height + '%';
+BaseComponent.prototype.styleHandlers.height = {
+    set: function (value) {
+        var unit;
+        if (arguments.length < 2) unit = undefined;
+        var currentValue = this.style.height;
+        if (unit === 'px') {//value must be a number
+            if ((typeof currentValue == 'string') && this.style.height.match(/%$/)) {
+                value = value * 100 / this.domElt.parentElement.getBoundingClientRect().height + '%';
+            }
         }
-    }
-    else if (unit == '%') {
-        if (typeof this.style.height == 'number') {
-            value = value * this.view.parentElement.getBoundingClientRect().height / 100 + '%';
+        else if (unit === '%') {
+            if (typeof currentValue == 'number') {
+                value = value * this.view.parentElement.clientHeight / 100;
+            }
         }
-    }
-    var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue == 'match_parent') styleValue = '100%';
 
-    if (typeof styleValue == "number")
-        this.view.addStyle('height', styleValue + 'px');
-    else
-        this.view.addStyle('height', styleValue);
-    return value;
-};
+        var styleValue = value >= 0 ? value + 'px' : value;
+        if (styleValue === 'match_parent') styleValue = '100%';
 
+        if (typeof styleValue == "number")
+            this.domElt.addStyle('height', styleValue + 'px');
+        else
+            this.domElt.addStyle('height', styleValue);
+        return value;
 
-BaseComponent.prototype.getStyleWidth = function (unit) {
-    if (unit == 'px') {
-        if (this.style.hAlign == 'fixed' || this.style.hAlign == 'auto' || typeof this.style.width != 'number')
-            return this.view.getBoundingClientRect().width;
-        else {
-            return this.style.width;
+    },
+    get: function () {
+        var unit;
+        var ref = arguments[arguments.length - 1];
+        var value = ref.get();
+        if (arguments.length > 1) {
+            unit = arguments[1];
         }
-    }
-    else if (unit == '%') {
-        if (this.style.hAlign == 'match_parent') return 100;
-        else if (this.style.hAlign == 'fixed' || this.style.hAlign == 'auto' || ((typeof this.style.width == 'string') && (!this.style.width.match(/\%$/))) || (typeof this.style.width != 'string')) {
-            return this.view.getBoundingClientRect().width * 100 / this.view.parentElement.getBoundingClientRect().width;
+        if (unit === 'px') {
+            if (typeof value != 'number')
+                return this.domElt.offsetHeight;
+            else {
+                return value;
+            }
         }
-        else {
-            return parseFloat(this.style.width.replace('%', ''));
+        else if (unit === '%') {
+            if (((typeof value == 'string') && (!value.match(/%$/)))
+                || (typeof value != 'string')) {
+                return this.domElt.offsetHeight * 100 / this.domElt.parentElement.clientHeight;
+            }
+            else {
+                return parseFloat(value.replace('%', ''));
+            }
         }
-    }
-    else
-        return this.style.width;
-};
+        else
+            return value;
+    },
+    descriptor: { type: 'measureSize' }
+}
 
-
-BaseComponent.prototype.getStyleHeight = function (unit) {
-    if (unit == 'px') {
-        if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || typeof this.style.height != 'number')
-            return this.view.getBoundingClientRect().height;
-        else {
-            return this.style.height;
-        }
-    }
-    else if (unit == '%') {
-        if (this.style.vAlign == 'match_parent') return 100;
-        else if (this.style.vAlign == 'fixed' || this.style.vAlign == 'auto' || ((typeof this.style.height == 'string') && (!this.style.height.match(/\%$/))) || (typeof this.style.height != 'string')) {
-            return this.view.getBoundingClientRect().height * 100 / this.view.parentElement.getBoundingClientRect().height;
-        }
-        else {
-            return parseFloat(this.style.height.replace('%', ''));
-        }
-    }
-    else
-        return this.style.height;
-};
-
-
-BaseComponent.prototype.getStyleWidthDescriptor = function () {
-    return { type: 'measureSize' };
-};
-
-BaseComponent.prototype.getStyleHeightDescriptor = function () {
-    return { type: 'measureSize' };
-
-};
 
 BaseComponent.prototype.setAttributeName = function (value) {
     value = (value + '') || undefined;
@@ -444,11 +450,43 @@ BaseComponent.prototype.bindDataToObject = function (obj) {
 
 Object.defineProperty(BaseComponent.prototype, 'view', {
     get: function () {
-        if (window.ABSOL_DEBUG) {
-            console.trace('view');
-        }
+        // if (window.ABSOL_DEBUG) {
+        //     console.trace('view');
+        // }
         return this.domElt;
     }
 });
 
 export default BaseComponent;
+
+
+export function inheritComponentClass(constructor) {
+    OOP.mixClass.apply(OOP, arguments);
+    var cClass;
+    var attributeHandlers = undefined;
+    var styleHandlers = undefined;
+    var compStyleHandlers = undefined;
+    for (var i = 1; i < arguments.length; ++i) {
+        cClass = arguments[i];
+        if (cClass.prototype.attributeHandlers) {
+            attributeHandlers = attributeHandlers || {};
+            Object.assign(attributeHandlers, cClass.prototype.attributeHandlers || {});
+        }
+        if (cClass.prototype.styleHandlers) {
+            styleHandlers = styleHandlers || {};
+            Object.assign(styleHandlers, cClass.prototype.styleHandlers || {});
+
+        }
+        if (cClass.prototype.compStyleHandlers) {
+            compStyleHandlers = compStyleHandlers || {};
+            Object.assign(compStyleHandlers, cClass.prototype.compStyleHandlers || {});
+
+        }
+    }
+    if (attributeHandlers)
+        constructor.prototype.attributeHandlers = attributeHandlers;
+    if (styleHandlers)
+        constructor.prototype.styleHandlers = styleHandlers;
+    if (compStyleHandlers)
+        constructor.prototype.compStyleHandlers = compStyleHandlers;
+}

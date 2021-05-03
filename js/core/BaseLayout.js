@@ -1,14 +1,12 @@
 import ScalableComponent from "./ScalableComponent";
+import {inheritComponentClass} from "./BaseComponent";
 
 function BaseLayout(){
     ScalableComponent.call(this);
 
 }
 
-
-Object.defineProperties(BaseLayout.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-BaseLayout.prototype.constructor = BaseLayout;
-
+inheritComponentClass(BaseLayout,ScalableComponent );
 BaseLayout.prototype.isLayout = true;
 
 
@@ -19,6 +17,12 @@ BaseLayout.prototype.create = function () {
     this.style.backgroundColor = 'rgba(0, 0, 0, 0)';
     this.style.backgroundImage = '';
 };
+
+BaseLayout.prototype.styleHandlers.backgroundColor = {
+    set: function (value){
+        this.domElt.addStyle('backgroundColor', value);
+    }
+}
 
 
 BaseLayout.prototype.addChildByPosition = function (child, posX, posY) {
@@ -46,10 +50,6 @@ BaseLayout.prototype.getAcceptsStyleNames = function () {
     return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['backgroundColor', 'backgroundImage']);
 };
 
-BaseLayout.prototype.setStyleBackgroundColor = function (value) {
-    this.view.addStyle('backgroundColor', value);
-    return value;
-};
 
 BaseLayout.prototype.setStyleBackgroundImage = function (value) {
     if (value && value.length > 0){

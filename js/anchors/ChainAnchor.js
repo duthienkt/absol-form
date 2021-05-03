@@ -2,12 +2,14 @@ import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import LinearAnchor from "./LinearAnchor";
 import '../../css/chainanchor.css';
+import {inheritComponentClass} from "../core/BaseComponent";
+import makeMapStyleHandler from "./makeMapStyleHandler";
 
 var _ = Fcore._;
 var $ = Fcore.$;
 
 /***
- * @extends FViewable
+ * @extends LinearAnchor
  * @constructor
  */
 function ChainAnchor() {
@@ -23,12 +25,11 @@ function ChainAnchor() {
     this.viewBinding = {};
 
     this.onCreate();
-    this.view = this.render();
+    this.domElt = this.render();
     this.onCreated();
 }
 
-Object.defineProperties(ChainAnchor.prototype, Object.getOwnPropertyDescriptors(LinearAnchor.prototype));
-ChainAnchor.prototype.construtor = ChainAnchor;
+inheritComponentClass(ChainAnchor, LinearAnchor);
 
 ChainAnchor.prototype.TOP_CLASS_NAME = 'as-chain-anchor-box';
 
@@ -45,25 +46,29 @@ ChainAnchor.prototype.getAcceptsStyleNames = function () {
     return LinearAnchor.prototype.getAcceptsStyleNames.call(this).concat(['vAlign']);
 };
 
+['left', 'top', 'bottom', 'width', 'vAlign'].forEach(function (name) {
+    ChainAnchor.prototype.styleHandlers[name] = makeMapStyleHandler(name);
+});
 
-ChainAnchor.prototype.setStyleVAlign = function (value) {
-    if (this.VALIGN_ACCEPTS_VALUES.indexOf(value) < 0) value = this.VALIGN_ACCEPTS_VALUES[0];
-    if (this.VALIGN_CLASS_NAMES[this.style.vAlign]) {
-        this.view.removeClass(this.VALIGN_CLASS_NAMES[this.style.vAlign])
+ChainAnchor.prototype.compStyleHandlers.vAlign = {
+    set: function (value) {
+        var currentValue = arguments[arguments.length - 1].get();
+        if (this.anchor.VALIGN_ACCEPTS_VALUES.indexOf(value) < 0) value = this.anchor.VALIGN_ACCEPTS_VALUES[0];
+        if (this.anchor.VALIGN_CLASS_NAMES[currentValue]) {
+            this.anchor.domElt.removeClass(this.anchor.VALIGN_CLASS_NAMES[currentValue])
+        }
+        this.anchor.domElt.addClass(this.anchor.VALIGN_CLASS_NAMES[value]);
+        return value;
+    },
+    descriptor: function () {
+        return {
+            type: 'enum',
+            values: this.anchor.VALIGN_ACCEPTS_VALUES,
+            disabled: false,
+            sign: 'ChainAnchor_VAlign',
+            independence: true
+        }
     }
-    this.view.addClass(this.VALIGN_CLASS_NAMES[value]);
-    return value;
-};
-
-
-ChainAnchor.prototype.getStyleVAlignDescriptor = function () {
-    return {
-        type: 'enum',
-        values: this.VALIGN_ACCEPTS_VALUES,
-        disabled: false,
-        sign: 'ChainAnchor_VAlign',
-        independence: true
-    };
 };
 
 
@@ -73,7 +78,6 @@ ChainAnchor.prototype.render = function () {
     };
     return _(layout);
 };
-
 
 
 /**
@@ -88,6 +92,7 @@ ChainAnchor.prototype.attachChild = function (child) {
 
     if (child.anchor) throw new Error("Detach anchorBox first");
     this.childNode = child;
+    child.anchor = this;
     this.childNode.style.width = this.childNode.style.width || 0;
     this.childNode.style.height = this.childNode.style.height || 0;
     this.childNode.style.left = this.childNode.style.left || 0;
@@ -96,8 +101,15 @@ ChainAnchor.prototype.attachChild = function (child) {
     this.childNode.style.bottom = this.childNode.style.bottom || 0;
     this.childNode.style.vAlign = this.childNode.style.vAlign || 'top';
 
-    child.anchor = this;
+    this.style.left = this.childNode.style.left;
+    this.style.right = this.childNode.style.right;
+    this.style.top = this.childNode.style.top;
+    this.style.bottom = this.childNode.style.bottom;
+    this.style.vAlign = this.childNode.style.vAlign;
+
     this.view.addChild(child.view);
+    this.style.loadAttributeHandlers(this.styleHandlers);
+    child.style.loadAttributeHandlers(Object.assign({}, child.styleHandlers, this.compStyleHandlers));
     child.onAnchorAttached();
 };
 
