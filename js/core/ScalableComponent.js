@@ -1,6 +1,5 @@
-import BaseComponent from "../core/BaseComponent";
+import BaseComponent, {inheritComponentClass} from "../core/BaseComponent";
 import Fcore from "../core/FCore";
-import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 
@@ -11,8 +10,7 @@ var _ = Fcore._;
 function ScalableComponent() {
     BaseComponent.call(this);
 }
-
-OOP.mixClass(ScalableComponent, BaseComponent);
+inheritComponentClass(ScalableComponent, BaseComponent);
 
 
 ScalableComponent.prototype.tag = "ScalableComponent";
