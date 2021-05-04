@@ -1,7 +1,8 @@
 import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import '../../css/linearanchor.css';
-import OOP from "absol/src/HTML5/OOP";
+import {inheritComponentClass} from "../core/BaseComponent";
+import makeMapStyleHandler from "./makeMapStyleHandler";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -24,16 +25,17 @@ function LinearAnchor() {
     this.viewBinding = {};
 
     this.onCreate();
-    this.view = this.render();
+    this.domElt = this.render();
     this.onCreated();
 }
 
-OOP.mixClass(LinearAnchor, FViewable);
+inheritComponentClass(LinearAnchor, FViewable);
 
 LinearAnchor.prototype.TOP_CLASS_NAME = 'as-linear-anchor-box';
 
 
-LinearAnchor.prototype.onCreate = function () {/* NOOP */ }
+LinearAnchor.prototype.onCreate = function () {/* NOOP */
+}
 
 LinearAnchor.prototype.onCreated = function () {
     for (var key in this.viewBinding) {
@@ -42,347 +44,201 @@ LinearAnchor.prototype.onCreated = function () {
 };
 
 
-
 LinearAnchor.prototype.getAcceptsStyleNames = function () {
     return ['left', 'right', 'top', 'bottom'];
 };
 
+['left', 'top', 'bottom', 'width'].forEach(function (name) {
+    LinearAnchor.prototype.styleHandlers[name] = makeMapStyleHandler(name);
+});
 
-LinearAnchor.prototype.getStyleLeftDescriptor = function () {
-    return {
-        type: 'measurePosition',
-        min: -Infinity,
-        max: Infinity,
-        dependency: ['width'],
-        sign: 'LinearLeft',
-        independence: true
-    };
-};
+LinearAnchor.prototype.compStyleHandlers = {};
 
-
-LinearAnchor.prototype.getStyleRightDescriptor = function () {
-    return {
-        type: 'measurePosition',
-        min: -Infinity,
-        max: Infinity,
-        dependency: ['width'],
-        sign: 'LinearRight',
-        independence: true
-    };
-};
-
-
-LinearAnchor.prototype.getStyleTopDescriptor = function () {
-    return {
-        type: 'measurePosition',
-        min: -Infinity,
-        max: Infinity,
-        dependency: ['height'],
-        sign: 'LinearTop',
-        independence: true
-    };
-};
-
-
-LinearAnchor.prototype.getStyleBottomDescriptor = function () {
-    return {
-        type: 'measurePosition',
-        min: -Infinity,
-        max: Infinity,
-        dependency: ['height'],
-        sign: 'LinearBottom',
-        independence: true
-    };
-};
-
-
-LinearAnchor.prototype.setStyleLeft = function (value, unit) {
-    if (unit == 'px') {//value must be a number
-        if ((typeof this.childNode.style.left == 'string') && this.childNode.style.left.match(/\%$/)) {
-            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
+LinearAnchor.prototype.compStyleHandlers.height = {
+    set: function (value) {
+        var ref = arguments[arguments.length - 1];
+        var currentValue = ref.get();
+        var unit = arguments[1];
+        var parentBound;
+        if (unit === 'px') {//value must be a number
+            if ((typeof currentValue == 'string') && currentValue.match(/%$/)) {
+                parentBound = this.parent.domElt.getBoundingClientRect();
+                value = value * 100 / parentBound.height + '%';
+            }
         }
-    }
-    else if (unit == '%') {
-        if (typeof this.childNode.style.left == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
+        else if (unit === '%') {
+            if (typeof this.childNode.style.height == 'number') {
+                parentBound = this.parent.domElt.getBoundingClientRect();
+                value = value * parentBound.height / 100 + '%';
+            }
         }
-    }
-    var styleValue = value >= 0 ? value + 'px' : value;
-    this.view.addStyle('margin-left', styleValue);
-    return value;
-};
 
+        var styleValue = value >= 0 ? value + 'px' : value;
+        if (styleValue === 'match_parent') styleValue = '100%';
+        this.anchor.domElt.addStyle('height', styleValue);
+        this.domElt.removeStyle('height');
+        return value;
 
-LinearAnchor.prototype.getStyleLeft = function (unit) {
-    if (unit == 'px') {
-        if (this.childNode.style.left === undefined
-            || this.childNode.style.left === null
-            || (typeof this.childNode.style.left != 'number')) {
-            return parseFloat(this.view.getComputedStyleValue('margin-left').replace('px', ''));
+    },
+    get: function () {
+        var ref = arguments[arguments.length - 1];
+        var value = ref.get();
+        var unit = arguments.length[1] ? arguments[0] : undefined;
+        var bound, parentBound;
+        if (unit === 'px') {
+            if (value !== 'number') {
+                bound = this.domElt.getBoundingClientRect();
+                return bound.height;
+            }
+            else {
+                return value;
+            }
         }
-        else {
-            return this.childNode.style.left;
+        else if (unit === '%') {
+            if (typeof value === 'string' && value.match(/%$/))
+                return parseFloat(value.replace('%', ''));
+            else {
+                bound = this.domElt.getBoundingClientRect();
+                parentBound = this.parent.domElt.getBoundingClientRect();
+                return bound.height * 100 / parentBound.height;
+            }
         }
-    }
-    else if (unit == '%') {
-        if (this.childNode.style.left === undefined
-            || this.childNode.style.left === null
-            || (typeof this.childNode.style.left != 'string')
-            || (typeof this.childNode.style.left == 'string' && !this.childNode.style.left.match(/\%$/))) {
-            var parentBound = this.childNode.parent.view.getBoundingClientRect();
-            var nodeLeft = parseFloat(this.view.getComputedStyleValue('margin-left').replace('px', ''));
-            return nodeLeft * 100 / parentBound.width;
-        }
-        else {
-            return parseFloat(this.childNode.style.left.replace('%', ''));
-        }
-    }
-    else
-        return this.childNode.style.left;
-};
-
-
-
-LinearAnchor.prototype.setStyleRight = function (value, unit) {
-    if (unit === 'px') {//value must be a number
-        if ((typeof this.childNode.style.right == 'string') && this.childNode.style.right.match(/\%$/)) {
-            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
-        }
-    }
-    else if (unit === '%') {
-        if (typeof this.childNode.style.right == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
-        }
-    }
-    var styleValue = value >= 0 ? value + 'px' : value;
-    this.view.addStyle('margin-right', styleValue);
-    return value;
-};
-
-
-LinearAnchor.prototype.getStyleRight = function (unit) {
-    if (unit === 'px') {
-        if (this.childNode.style.right === undefined
-            || this.childNode.style.right === null
-            || (typeof this.childNode.style.right != 'number')) {
-            return parseFloat(this.view.getComputedStyleValue('margin-right').replace('px', ''));
-        }
-        else {
-            return this.childNode.style.right;
-        }
-    }
-    else if (unit === '%') {
-        if (this.childNode.style.right === undefined
-            || this.childNode.style.right === null
-            || (typeof this.childNode.style.right != 'string')
-            || (typeof this.childNode.style.right == 'string' && !this.childNode.style.right.match(/\%$/))) {
-            var parentBound = this.childNode.parent.view.getBoundingClientRect();
-            var nodeRight = parseFloat(this.view.getComputedStyleValue('margin-right').replace('px', ''));
-            return nodeRight * 100 / parentBound.width;
-        }
-        else {
-            return parseFloat(this.childNode.style.right.replace('%', ''));
-        }
-    }
-    else
-        return this.childNode.style.right;
-};
-
-
-LinearAnchor.prototype.setStyleTop = function (value, unit) {
-    if (unit === 'px') {//value must be a number
-        if ((typeof this.childNode.style.top == 'string') && this.childNode.style.top.match(/\%$/)) {
-            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
-        }
-    }
-    else if (unit === '%') {
-        if (typeof this.childNode.style.top == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
-        }
-    }
-    var styleValue = value >= 0 ? value + 'px' : value;
-    this.view.addStyle('margin-top', styleValue);
-    return value;
-};
-
-
-LinearAnchor.prototype.getStyleTop = function (unit) {
-    if (unit === 'px') {
-        if (this.childNode.style.top === undefined
-            || this.childNode.style.top === null
-            || (typeof this.childNode.style.top != 'number')) {
-            return parseFloat(this.view.getComputedStyleValue('margin-top').replace('px', ''));
-        }
-        else {
-            return this.childNode.style.top;
-        }
-    }
-    else if (unit === '%') {
-        if (this.childNode.style.top === undefined
-            || this.childNode.style.top === null
-            || (typeof this.childNode.style.top != 'string')
-            || (typeof this.childNode.style.top == 'string' && !this.childNode.style.top.match(/\%$/))) {
-            var parentBound = this.childNode.parent.view.getBoundingClientRect();
-            var nodeTop = parseFloat(this.view.getComputedStyleValue('margin-top').replace('px', ''));
-            return nodeTop * 100 / parentBound.width;
-        }
-        else {
-            return parseFloat(this.childNode.style.top.replace('%', ''));
-        }
-    }
-    else
-        return this.childNode.style.top;
-};
-
-
-LinearAnchor.prototype.setStyleBottom = function (value, unit) {
-    if (unit === 'px') {//value must be a number
-        if ((typeof this.childNode.style.bottom == 'string') && this.childNode.style.bottom.match(/\%$/)) {
-            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
-        }
-    }
-    else if (unit === '%') {
-        if (typeof this.childNode.style.bottom == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
-        }
-    }
-    var styleValue = value >= 0 ? value + 'px' : value;
-
-    this.view.addStyle('margin-bottom', styleValue);
-    return value;
-};
-
-
-LinearAnchor.prototype.getStyleBottom = function (unit) {
-    if (unit === 'px') {
-        if (this.childNode.style.bottom === undefined
-            || this.childNode.style.bottom === null
-            || (typeof this.childNode.style.bottom != 'number')) {
-            return parseFloat(this.view.getComputedStyleValue('margin-bottom').replace('px', ''));
-        }
-        else {
-            return this.childNode.style.bottom;
-        }
-    }
-    else if (unit === '%') {
-        if (this.childNode.style.bottom === undefined
-            || this.childNode.style.bottom === null
-            || (typeof this.childNode.style.bottom != 'string')
-            || (typeof this.childNode.style.bottom == 'string' && !this.childNode.style.bottom.match(/\%$/))) {
-            var parentBound = this.childNode.parent.view.getBoundingClientRect();
-            var nodeBottom = parseFloat(this.view.getComputedStyleValue('margin-bottom').replace('px', ''));
-            return nodeBottom * 100 / parentBound.width;
-        }
-        else {
-            return parseFloat(this.childNode.style.bottom.replace('%', ''));
-        }
-    }
-    else
-        return this.childNode.style.bottom;
-};
-
-
-LinearAnchor.prototype.setStyleWidth = function (value, unit) {
-    if (unit === 'px') {//value must be a number
-        if ((typeof this.childNode.style.width == 'string') && this.childNode.style.width.match(/\%$/)) {
-            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().width + '%';
-        }
-    }
-    else if (unit === '%') {
-        if (typeof this.childNode.style.width == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().width / 100 + '%';
-        }
-    }
-    this.childNode.style.width = value;
-    var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue === 'match_parent') styleValue = '100%';
-    this.view.addStyle('width', styleValue);
-    this.childNode.view.removeStyle('width');
-    return value;
-};
-
-
-LinearAnchor.prototype.setStyleHeight = function (value, unit) {
-    if (unit === 'px') {//value must be a number
-        if ((typeof this.childNode.style.height == 'string') && this.childNode.style.height.match(/\%$/)) {
-            value = value * 100 / this.childNode.parent.view.getBoundingClientRect().height + '%';
-        }
-    }
-    else if (unit === '%') {
-        if (typeof this.childNode.style.height == 'number') {
-            value = value * this.childNode.parent.view.getBoundingClientRect().height / 100 + '%';
-        }
-    }
-    this.childNode.style.height = value;
-    var styleValue = value >= 0 ? value + 'px' : value;
-    if (styleValue === 'match_parent') styleValue = '100%';
-
-    this.view.addStyle('height', styleValue);
-    this.childNode.view.removeStyle('height');
-    return value;
-};
-
-
-
-LinearAnchor.prototype.getStyleWidth = function (unit) {
-    if (unit === 'px') {
-        if (this.childNode.style.hAlign === 'fixed' || this.childNode.style.hAlign === 'auto' || typeof this.childNode.style.width != 'number')
-            return this.view.getBoundingClientRect().width;
-        else {
-            return this.childNode.style.width;
-        }
-    }
-    else if (unit === '%') {
-        if (this.childNode.style.hAlign === 'match_parent') return 100;
-        else if (this.childNode.style.hAlign === 'fixed' || this.childNode.style.hAlign === 'auto' || ((typeof this.childNode.style.width == 'string') && (!this.childNode.style.width.match(/\%$/))) || (typeof this.childNode.style.width != 'string')) {
-            return this.childNode.view.getBoundingClientRect().width * 100 / this.childNode.parent.view.getBoundingClientRect().width;
-        }
-        else {
-            return parseFloat(this.childNode.style.width.replace('%', ''));
-        }
-    } else
-        return this.childNode.style.width;
-};
-
-
-
-LinearAnchor.prototype.getStyleHeight = function (unit) {
-    if (unit === 'px') {
-        if (this.style.vAlign === 'auto' || typeof this.style.height != 'number')
-            return this.view.getBoundingClientRect().height;
-        else {
-            return this.style.height;
-        }
-    }
-    else if (unit === '%') {
-        if (this.style.vAlign === 'match_parent') return 100;
-        else if (this.style.vAlign === 'auto' || ((typeof this.style.height == 'string') && (!this.style.height.match(/%$/))) || (typeof this.style.height != 'string')) {
-            return this.childNode.view.getBoundingClientRect().height * 100 / this.childNode.parent.view.getBoundingClientRect().height;
-        }
-        else {
-            return parseFloat(this.style.height.replace('%', ''));
-        }
-    } else
-        return this.style.height;
-};
-
-
-
-LinearAnchor.prototype.getStyleWidthDescriptor = function () {
-    return {
-        type: 'measureSize',
-        sign: 'LinearWidth',
-        independence: true
-    };
-};
-
-LinearAnchor.prototype.getStyleHeightDescriptor = function () {
-    return {
+        else
+            return value;
+    },
+    descriptor: {
         type: 'measureSize',
         sign: 'LinearHeight',
         independence: true
-    };
+    }
 };
+
+LinearAnchor.prototype.compStyleHandlers.width = {
+    set: function (value) {
+        var ref = arguments[arguments.length - 1];
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
+        var currentValue = ref.get();
+        var parentBound;
+        if (unit === 'px') {//value must be a number
+            if ((typeof currentValue == 'string') && currentValue.match(/%$/)) {
+                parentBound = this.parent.domElt.getBoundingClientRect();
+                value = value * 100 / parentBound.width + '%';
+            }
+        }
+        else if (unit === '%') {
+            if (typeof this.childNode.style.width == 'number') {
+                parentBound = this.parent.domElt.getBoundingClientRect();
+                value = value * parentBound.width / 100 + '%';
+            }
+        }
+        var styleValue = value >= 0 ? value + 'px' : value;
+        if (styleValue === 'match_parent') styleValue = '100%';
+        this.anchor.domElt.addStyle('width', styleValue);
+        this.domElt.removeStyle('width');
+        return value;
+    },
+    get: function () {
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
+        var ref = arguments[arguments.length - 1];
+        var value = ref.get();
+        var bound, parentBound;
+        if (unit === 'px') {
+            if (value !== 'number') {
+                bound = this.domElt.getBoundingClientRect();
+                return bound.width;
+            }
+            else {
+                return value;
+            }
+        }
+        else if (unit === '%') {
+            if (typeof value === 'string' && value.match(/%$/))
+                return parseFloat(value.replace('%', ''));
+            else {
+                bound = this.domElt.getBoundingClientRect();
+                parentBound = this.parent.domElt.getBoundingClientRect();
+                return bound.width * 100 / parentBound.width;
+            }
+        }
+        else
+            return value;
+    },
+    descriptor: {
+        type: 'measureSize',
+        sign: 'LinearWidth',
+        independence: true
+    }
+};
+
+['left', 'right', 'top', 'bottom'].forEach(function (name) {
+    LinearAnchor.prototype.compStyleHandlers[name] = {
+        set: function (value) {
+            var ref = arguments[arguments.length - 1];
+            var unit = arguments.length > 2 ? arguments[1] : undefined;
+            var currentValue = ref.get();
+            var parentBound;
+            if (unit === 'px') {//value must be a number
+                if ((typeof currentValue == 'string') && currentValue.match(/%$/)) {
+                    parentBound = this.parent.domElt.getBoundingClientRect();
+                    value = value * 100 / parentBound.width + '%';
+                }
+            }
+            else if (unit === '%') {
+                if (typeof currentValue == 'number') {
+                    parentBound = this.parent.domElt.getBoundingClientRect();
+                    value = value * parentBound.width / 100;
+                }
+            }
+            var styleValue = value >= 0 ? value + 'px' : value;
+            this.anchor.domElt.addStyle('margin-' + name, styleValue);
+            return value;
+        },
+        get: function () {
+            var unit = arguments.length > 1 ? arguments[0] : undefined;
+            var ref = arguments[arguments.length - 1];
+            var value = ref.get();
+            var parentBound;
+            if (unit === 'px') {
+                if (value === undefined
+                    || value === null
+                    || (typeof value != 'number')) {
+                    return parseFloat(this.anchor.domElt.getComputedStyleValue('margin-' + name).replace('px', ''));
+                }
+                else {
+                    return value;
+                }
+            }
+            else if (unit === '%') {
+                if (value === undefined
+                    || value === null
+                    || (typeof value != 'string')
+                    || (!value.match(/%$/))) {
+                    parentBound = this.parent.domElt.getBoundingClientRect();
+                    var marginVal = parseFloat(this.anchor.domElt.getComputedStyleValue('margin-left').replace('px', ''));
+                    return marginVal * 100 / parentBound.width;
+                }
+                else {
+                    return parseFloat(value.replace('%', ''));
+                }
+            }
+            else
+                return value;
+        },
+        export: function (ref) {
+            var value = ref.get();
+            if (value === 0 || value === '0%') return value;
+            return undefined;
+        },
+        descriptor: {
+            type: 'measurePosition',
+            min: -Infinity,
+            max: Infinity,
+            dependency: ['width'],
+            sign: 'Linear' + name.substr(0, 1).toUpperCase() + name.substr(1),
+            independence: true
+        }
+    };
+});
 
 
 LinearAnchor.prototype.render = function () {
@@ -405,14 +261,21 @@ LinearAnchor.prototype.attachChild = function (child) {
 
     if (child.anchor) throw new Error("Detach anchorBox first");
     this.childNode = child;
+    child.anchor = this;
     this.childNode.style.width = this.childNode.style.width || 0;
     this.childNode.style.height = this.childNode.style.height || 0;
     this.childNode.style.left = this.childNode.style.left || 0;
     this.childNode.style.right = this.childNode.style.right || 0;
     this.childNode.style.top = this.childNode.style.top || 0;
     this.childNode.style.bottom = this.childNode.style.bottom || 0;
-    child.anchor = this;
-    this.view.addChild(child.view);
+    this.style.left = this.childNode.style.left;
+    this.style.right = this.childNode.style.right;
+    this.style.top = this.childNode.style.top;
+    this.style.bottom = this.childNode.style.bottom;
+
+    this.domElt.addChild(child.view);
+    this.style.loadAttributeHandlers(this.styleHandlers);
+    child.style.loadAttributeHandlers(Object.assign({}, child.styleHandlers, this.compStyleHandlers));
     child.onAnchorAttached();
 };
 
@@ -426,6 +289,13 @@ LinearAnchor.prototype.detachChild = function () {
     else
         throw new Error("Nothing to detach");
 };
+
+
+Object.defineProperty(LinearAnchor.prototype, 'view', {
+    get: function () {
+        return this.domElt;
+    }
+});
 
 
 export default LinearAnchor;
