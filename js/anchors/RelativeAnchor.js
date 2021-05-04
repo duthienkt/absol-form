@@ -68,9 +68,8 @@ RelativeAnchor.prototype.compStyleHandlers.hAlign = {
         var anchor = this.anchor;
         var ref = arguments[arguments.length - 1];
         var currentValue = ref.get();
-        if (currentValue === value) return value;
         if (!anchor.HALIGN_VALUE.includes(value)) value = anchor.HALIGN_VALUE[0];
-        anchor.domElt.removeClass(anchor.HALIGN_CLASS_NAMES[ref.get()]);
+        anchor.domElt.removeClass(anchor.HALIGN_CLASS_NAMES[currentValue]);
         anchor.domElt.addClass(anchor.HALIGN_CLASS_NAMES[value]);
         ref.set(value);
         this.style.left = this.style.left + 0;
@@ -91,9 +90,8 @@ RelativeAnchor.prototype.compStyleHandlers.vAlign = {
         var anchor = this.anchor;
         var ref = arguments[arguments.length - 1];
         var currentValue = ref.get();
-        if (currentValue === value) return value;
         if (!anchor.VALIGN_VALUE.includes(value)) value = anchor.VALIGN_VALUE[0];
-        anchor.domElt.removeClass(anchor.VALIGN_CLASS_NAMES[ref.get()]);
+        anchor.domElt.removeClass(anchor.VALIGN_CLASS_NAMES[currentValue]);
         anchor.domElt.addClass(anchor.VALIGN_CLASS_NAMES[value]);
         ref.set(value);
         this.style.top = this.style.top + 0;
