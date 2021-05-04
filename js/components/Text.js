@@ -25,7 +25,6 @@ Text.prototype.menuIcon = "span.mdi.mdi-format-color-text";
 Text.prototype.attributeHandlers.text = {
     set: function (value) {
         value = (value || '') + '';
-        console.log(value, this.attributes.textDecode)
         switch (this.attributes.textDecode) {
             case 'html':
                 this.domElt.innerHTML = value;
