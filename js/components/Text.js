@@ -2,7 +2,7 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import showdown from 'showdown';
 import {inheritComponentClass} from "../core/BaseComponent";
-import Color from "absol/src/Color/Color";
+import TextStyleHandlers from "./handlers/TextStyleHandlers";
 
 var _ = Fcore._;
 
@@ -62,112 +62,10 @@ Text.prototype.attributeHandlers.textDecode = {
     }
 };
 
+Object.assign(Text.prototype.styleHandlers, TextStyleHandlers);
 
-Text.prototype.styleHandlers.textColor = {
-    set: function (value) {
-        var vColor;
-        try {
-            if (value instanceof Color) vColor = value;
-            else if (typeof value === 'string') {
-                vColor = Color.parse(value)
-            }
-            else vColor = new Color([0, 0, 0, 0]);
-        } catch (err) {
-            console.error(err);
-            vColor = new Color([0, 0, 0, 0]);
-        }
-        value = vColor.toString('HEX8');
-        this.domElt.addStyle('color', value);
-        return value;
-    },
-    descriptor: {
-        type: "color",
-        sign: "TextColor"
-    }
-};
 
-Text.prototype.styleHandlers.textSize = {
-    set: function (value) {
-        if (value > 0) {
-            this.domElt.addStyle('font-size', value + 'px');
-        }
-        else {
-            this.domElt.removeStyle('font-size');
-            value = undefined;
-        }
 
-        return value;
-    },
-    descriptor: {
-        type: "FontSize",
-        sign: "FontSize"
-    }
-};
-
-Text.prototype.styleHandlers.font = {
-    set: function (value) {
-        if (value)
-            this.domElt.addStyle('font-family', value);
-        else
-            this.domElt.removeStyle('font-family');
-        return value;
-    },
-    descriptor: {
-        type: "font",
-        sign: 'TextFont'
-    }
-};
-
-Text.prototype.styleHandlers.fontStyle = {
-    set: function (value) {
-        if (!this.fontStyle2DomStyle[value]) value = 'Regular';
-        this.domElt.addStyle(this.fontStyle2DomStyle[value] || this.fontStyle2DomStyle.Regular);
-    },
-    descriptor: {
-        type: "enum",
-        values: ['Regular',
-            'Italic', 'Bold', 'Bold italic'],
-        sign: 'FontStyle'
-    },
-    export: function () {
-        var value = arguments[arguments.length - 1].get();
-        if (value === 'Regular') return undefined;
-        return value;
-    }
-};
-
-Text.prototype.fontStyle2DomStyle = {
-    Regular: {
-        fontWeight: 'normal',
-        fontStyle: 'normal'
-    },
-    Bold: {
-        fontWeight: 'bold',
-        fontStyle: 'normal'
-    },
-    'Bold italic': {
-        fontWeight: 'bold',
-        fontStyle: 'italic'
-    },
-    Italic: {
-        fontWeight: 'normal',
-        fontStyle: 'italic'
-    }
-};
-
-Text.prototype.styleHandlers.textAlign = {
-    set: function (value) {
-        if (['left', 'center', 'right'.indexOf(value) >= 0])
-            this.domElt.addStyle('text-align', value);
-        else
-            this.domElt.addStyle('text-align', 'left');
-        return value;
-    },
-    descriptor: {
-        type: "textAlign",
-        sign: "TextAlign"
-    }
-};
 
 
 Text.prototype.onCreate = function () {
