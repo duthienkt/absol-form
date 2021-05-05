@@ -21,6 +21,31 @@ OOP.mixClass(Image, ScalableComponent);
 Image.prototype.tag = "Image";
 Image.prototype.menuIcon = "span.mdi.mdi-image-outline";
 
+Image.prototype.attributeHandlers.src = {
+    set: function (value) {
+        this.domElt.src = value;
+    },
+    get: function () {
+        return this.domElt.src;
+    },
+    descriptor: {
+        type: "text",
+        long: true,
+        sign: 'SimpleUrl'
+    }
+};
+
+Image.prototype.attributeHandlers.naturalSize = {
+    descriptor: function () {
+        return {
+            type: 'const',
+            value: this.loadedSync.then(function (wh) {
+                return wh.join(' x ')
+            })
+        };
+    }
+};
+
 Image.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.src = '';
@@ -31,40 +56,10 @@ Image.prototype.render = function () {
 };
 
 
-Image.prototype.setAttributeSrc = function (value) {
-    var self = this;
-    this.view.src = value;
-    this.loadedSync = Dom.waitImageLoaded(this.view).then(function () {
-        self.naturalWidth = self.view.naturalWidth || 0;
-        self.naturalHeight = self.view.naturalHeight || 0;
-        return [self.naturalWidth, self.naturalHeight]
-    });
-
-    return value;
-};
-
-
 Image.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['src', 'naturalSize']);
 };
 
-
-Image.prototype.getAttributeSrcDescriptor = function () {
-    return {
-        type: "text",
-        long: true,
-        sign: 'SimpleUrl'
-    };
-};
-
-Image.prototype.getAttributeNaturalSizeDescriptor = function () {
-    return {
-        type: 'const',
-        value: this.loadedSync.then(function (wh) {
-            return wh.join(' x ')
-        })
-    };
-};
 
 Image.prototype.getDataBindingDescriptor = function () {
     var thisC = this;
