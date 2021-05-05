@@ -4,6 +4,7 @@ import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
 import OOP from "absol/src/HTML5/OOP";
 import CheckboxButton from "absol-acomp/js/CheckboxButton";
+import {inheritComponentClass} from "../core/BaseComponent";
 // CheckboxButton
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -16,7 +17,7 @@ function CheckBox() {
     ContentScalelessComponent.call(this);
 }
 
-OOP.mixClass(CheckBox, ContentScalelessComponent);
+inheritComponentClass(CheckBox, ContentScalelessComponent);
 
 CheckBox.prototype.tag = "CheckBox";
 CheckBox.prototype.menuIcon = "span.mdi.mdi-check-box-outline";
@@ -47,24 +48,9 @@ CheckBox.prototype.onCreated = function () {
 };
 
 
-CheckBox.prototype.setAttributeChecked = function (value) {
-    this.$content.checked = !!value;
-    return this.$content.checked;
-};
-
-
-CheckBox.prototype.getAttributeCheckedDescriptor = function () {
-    return {
-        type: "bool",
-        sign: "NotDependentBool"
-    };
-};
-
-
 CheckBox.prototype.getAcceptsAttributeNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["checked"])
 };
-
 
 
 CheckBox.prototype.getAcceptsEventNames = function () {
@@ -88,5 +74,21 @@ CheckBox.prototype.getDataBindingDescriptor = function () {
         configurable: true
     }
 };
+
+CheckBox.prototype.attributeHandlers.checked = {
+    set: function (value) {
+        this.$content.checked = !!value;
+    },
+    get: function () {
+        return this.$content.checked
+    },
+    descriptor: {
+        type: "bool",
+        sign: "NotDependentBool"
+    },
+    export: function () {
+        return this.$content.checked || undefined;
+    }
+}
 
 export default CheckBox;
