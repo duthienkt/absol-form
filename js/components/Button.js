@@ -1,7 +1,7 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import Text from "./Text";
-import OOP from "absol/src/HTML5/OOP";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 var _ = Fcore._;
 
@@ -13,17 +13,55 @@ function Button() {
     ScalableComponent.call(this);
 }
 
-OOP.mixClass(Button, ScalableComponent);
+inheritComponentClass(Button, ScalableComponent);
 
 Button.prototype.tag = "Button";
 Button.prototype.menuIcon = "span.mdi.mdi-alpha-b-box";
 
+Object.assign(Button.prototype.styleHandlers, Text.prototype.styleHandlers);
 
-Button.prototype.setStyleFont = Text.prototype.setStyleFont;
-Button.prototype.getStyleFontDescriptor = Text.prototype.getStyleFontDescriptor;
+Button.prototype.attributeHandlers.text = {
+    set: function (value) {
+        this.domElt.text = value;
+    },
+    get: function () {
+        return this.domElt.text;
+    },
+    descriptor: {
+        type: "text",
+        sign: 'SimpleText'
+    }
+};
 
-Button.prototype.setStyleTextSize = Text.prototype.setStyleTextSize;
-Button.prototype.getStyleTextSizeDescriptor = Text.prototype.getStyleTextSizeDescriptor;
+Button.prototype.attributeHandlers.icon = {
+    set: function (value) {
+        this.domElt.icon = value;
+    },
+    get: function () {
+        return this.domElt.icon;
+    },
+    descriptor: {
+        type: "icon",
+        sign: "SimpleIcon"
+    }
+};
+
+Button.prototype.colorThemeList = ['default', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'];
+
+Button.prototype.styleHandlers.colorTheme = {
+    set: function (value) {
+        if (this.colorThemeList.indexOf(value) < 0) value = this.colorThemeList[0];
+        var currentValue = arguments[arguments.length - 1].get();
+        this.domElt.removeClass(currentValue || 'default')
+            .addClass(value);
+        return value;
+    },
+    descriptor: {
+        type: 'enum',
+        values: Button.prototype.colorThemeList
+    }
+}
+
 
 Button.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
@@ -47,41 +85,6 @@ Button.prototype.render = function () {
 };
 
 
-Button.prototype.setStyleHeight = function (value) {
-    var res = ScalableComponent.prototype.setStyleHeight.call(this, value);
-    this.view.childNodes[0].addStyle('height', value - 2 + 'px');
-    return res;
-};
-
-Button.prototype.setStyleColorTheme = function (value) {
-    var view = this.view;
-    ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link', 'default'].forEach(function (name) {
-        view.removeClass(name);
-    });
-    if (['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link', 'default'].indexOf(value) < 0) value = 'default';
-    view.addClass(value);
-    return value;
-};
-
-
-Button.prototype.getStyleColorThemeDescriptor = function (value) {
-    return {
-        type: 'enum',
-        values: ['default', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link']
-    }
-};
-
-
-Button.prototype.setAttributeText = function (value) {
-    this.view.text = value;
-    return value;
-};
-
-
-Button.prototype.setAttributeIcon = function (value) {
-    this.view.icon = value;
-    return value;
-};
 
 
 Button.prototype.getAcceptsAttributeNames = function () {
@@ -93,21 +96,6 @@ Button.prototype.getAcceptsStyleNames = function () {
 };
 
 
-Button.prototype.getAttributeTextDescriptor = function () {
-    return {
-        type: "text",
-        sign: 'SimpleText'
-    };
-};
-
-
-Button.prototype.getAttributeIconDescriptor = function () {
-    return {
-        type: "icon",
-        sign: "SimpleIcon"
-    };
-};
-
 Button.prototype.getAcceptsEventNames = function () {
     return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['click']);
 };
@@ -116,16 +104,5 @@ Button.prototype.measureMinSize = function () {
     var fontSize = this.view.getFontSize();
     return { width: fontSize * 2 + 2, height: fontSize * 2 + 2 }
 };
-
-
-Object.defineProperty(Button.prototype, 'text', {
-    configurable: true,
-    set: function (value) {
-        this.view.value = value;
-    },
-    get: function () {
-        return this.view.value;
-    }
-});
 
 export default Button;
