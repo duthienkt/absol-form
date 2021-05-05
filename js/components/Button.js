@@ -1,7 +1,7 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import Text from "./Text";
 import {inheritComponentClass} from "../core/BaseComponent";
+import TextStyleHandlers from "./handlers/TextStyleHandlers";
 
 var _ = Fcore._;
 
@@ -18,7 +18,7 @@ inheritComponentClass(Button, ScalableComponent);
 Button.prototype.tag = "Button";
 Button.prototype.menuIcon = "span.mdi.mdi-alpha-b-box";
 
-Object.assign(Button.prototype.styleHandlers, Text.prototype.styleHandlers);
+Object.assign(Button.prototype.styleHandlers, TextStyleHandlers);
 
 Button.prototype.attributeHandlers.text = {
     set: function (value) {
