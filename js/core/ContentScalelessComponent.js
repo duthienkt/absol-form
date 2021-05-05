@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 
 import '../../css/component.css';
 import ScalableComponent from "../core/ScalableComponent";
+import {inheritComponentClass} from "./BaseComponent";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -14,8 +15,7 @@ function ContentScalelessComponent() {
     ScalableComponent.call(this);
 }
 
-Object.defineProperties(ContentScalelessComponent.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-ContentScalelessComponent.prototype.constructor = ContentScalelessComponent;
+inheritComponentClass(ContentScalelessComponent, ScalableComponent);
 
 ContentScalelessComponent.prototype.tag = "ContentScalelessComponent";
 
@@ -33,26 +33,35 @@ ContentScalelessComponent.prototype.BOX_ALIGN_CLASSES = {
     rightbottom: 'as-align-right-bottom'
 };
 
+ContentScalelessComponent.prototype.styleHandlers.boxAlign = {
+    set: function (value) {
+        var accepts = Object.keys(this.BOX_ALIGN_CLASSES);
+        if (accepts.indexOf(value) < 0) value = 'lefttop';
+        var lastClass = this.BOX_ALIGN_CLASSES[this.style.boxAlign];
+        if (lastClass) this.view.removeClass(lastClass);
+        this.domElt.addClass(this.BOX_ALIGN_CLASSES[value]);
+        return value;
+    },
+    descriptor: {
+        type: 'boxAlign'
+    }
+}
+
 ContentScalelessComponent.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.style.boxAlign = 'lefttop';
 };
 
 
-ContentScalelessComponent.prototype.onCreated = function () {
-    this.$cell = $('.as-component-content-scaleless-cell', this.view);
-    this.$content = this.$cell.childNodes[0];
-    ScalableComponent.prototype.onCreated.call(this);
-};
-
-
 ContentScalelessComponent.prototype.render = function () {
+    this.$content = this.renderContent();
+    this.$cell = _({
+        class: 'as-component-content-scaleless-cell',
+        child:this.$content
+    });
     return _({
         class: 'as-component-content-scaleless',
-        child: {
-            class: 'as-component-content-scaleless-cell',
-            child: this.renderContent()
-        }
+        child: this.$cell
     });
 };
 
@@ -64,22 +73,6 @@ ContentScalelessComponent.prototype.renderContent = function () {
 
 ContentScalelessComponent.prototype.getAcceptsStyleNames = function () {
     return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['boxAlign']);
-};
-
-
-ContentScalelessComponent.prototype.getStyleBoxAlignDescriptor = function () {
-    return {
-        type: 'boxAlign'
-    }
-};
-
-ContentScalelessComponent.prototype.setStyleBoxAlign = function (value) {
-    var accepts = Object.keys(this.BOX_ALIGN_CLASSES);
-    if (accepts.indexOf(value) < 0) value = 'lefttop';
-    var lastClass = this.BOX_ALIGN_CLASSES[this.style.boxAlign];
-    if (lastClass) this.view.removeClass(lastClass);
-    this.view.addClass(this.BOX_ALIGN_CLASSES[value]);
-    return value;
 };
 
 
