@@ -136,7 +136,7 @@ NumberInput.prototype.getDataBindingDescriptor = function () {
             thisC.setAttribute('value', value);
         },
         get: function () {
-            return this.getAttribute('value');
+            return thisC.getAttribute('value');
         }
     };
 };
