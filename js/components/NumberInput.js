@@ -1,14 +1,18 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 var _ = Fcore._;
 
+/***
+ * @extends ScalableComponent
+ * @constructor
+ */
 function NumberInput() {
     ScalableComponent.call(this);
 }
 
-Object.defineProperties(NumberInput.prototype, Object.getOwnPropertyDescriptors(ScalableComponent.prototype));
-NumberInput.prototype.constructor = NumberInput;
+inheritComponentClass(NumberInput, ScalableComponent);
 
 NumberInput.prototype.tag = "NumberInput";
 NumberInput.prototype.menuIcon = 'span.mdi.mdi-numeric-2-box-outline';
@@ -16,6 +20,100 @@ NumberInput.prototype.menuIcon = 'span.mdi.mdi-numeric-2-box-outline';
 
 NumberInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 NumberInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
+
+
+NumberInput.prototype.attributeHandlers.value = {
+    set: function (value) {
+        this.domElt.value = value;
+    },
+    get: function () {
+        return this.domElt.value;
+    },
+    getDescriptor: function () {
+        return {
+            type: "number",
+            max: this.attributes.max,
+            min: this.attributes.min
+        };
+    }
+};
+
+
+NumberInput.prototype.attributeHandlers.min = {
+    set: function (value) {
+        this.domElt.min = value;
+    },
+    get: function () {
+        return this.domElt.min;
+    },
+    getDescriptor: function () {
+        return {
+            type: "number",
+            nullable: true,
+            defaultValue: -Infinity,
+        };
+    },
+    export: function () {
+        var value = this.attributes.min;
+        if (value === -Infinity) return undefined;
+        return value;
+    }
+};
+
+
+NumberInput.prototype.attributeHandlers.max = {
+    set: function (value) {
+        this.domElt.max = value;
+    },
+    get: function () {
+        return this.domElt.max;
+    },
+    getDescriptor: function () {
+        return {
+            type: "number",
+            nullable: true,
+            defaultValue: Infinity,
+        };
+    },
+    export: function () {
+        var value = this.attributes.max;
+        if (value === Infinity) return undefined;
+        return value;
+    }
+};
+
+NumberInput.prototype.attributeHandlers.decimalSeparator = {
+    set: function (value) {
+        this.domElt.decimalSeparator = value;
+    },
+    get: function () {
+        return this.domElt.decimalSeparator;
+    },
+    descriptor: {
+        type: 'enum',
+        values: ['', ',', '.']
+    },
+    export: function () {
+        var value = this.attributes.decimalSeparator;
+        if (!value || value === '') return undefined;
+        return value;
+    }
+};
+
+NumberInput.prototype.attributeHandlers.floatFixed = {
+    set: function (value) {
+        this.domElt.floatFixed = value;
+    },
+    get: function () {
+        return this.domElt.floatFixed;
+    },
+    descriptor: {
+        type: "number",
+        max: 100,
+        min: -1
+    }
+};
+
 
 NumberInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
@@ -30,32 +128,10 @@ NumberInput.prototype.onCreated = function () {
             console.log("TODO: exec", self.events.change);
     });
     this.view._debug = true;
-    //load default value from view
-    this.attributes.min = this.view.min;
-    this.attributes.max = this.view.max;
-    this.attributes.value = this.view.value;
-
-    this.attributes.decimalSeparator = this.view.decimalSeparator;
-    this.attributes.thousandsSeparator = this.view.thousandsSeparator;
-    this.attributes.floatFixed = this.view.floatFixed;
 };
 
 NumberInput.prototype.render = function () {
     return _('numberinput');
-};
-
-
-NumberInput.prototype.setAttributeValue = function (value) {
-    this.view.value = value;
-    this.attributes.min = this.view.min == -Infinity ? null : this.view.min;
-    this.attributes.max = this.view.max == Infinity ? null : this.view.max;
-    return this.view.value;
-};
-
-
-NumberInput.prototype.setAttributeDecimalSerapator = function (value) {
-    this.view.decimalSerapator = value;
-    return this.view.decimalSerapator;
 };
 
 
@@ -65,61 +141,8 @@ NumberInput.prototype.setAttributeFloatFixed = function (value) {
 };
 
 
-NumberInput.prototype.setAttributeMax = function (value) {
-    if (value === null)
-        this.view.max = Infinity;
-    else this.view.max = value;
-    this.attributes.min = this.view.min == -Infinity ? null : this.view.min;
-    this.attributes.value = this.view.value;
-    return value;
-};
-
-NumberInput.prototype.setAttributeMin = function (value) {
-    if (value === null)
-        this.view.min = -Infinity;
-    else this.view.min = value;
-    this.attributes.max = this.view.max == Infinity ? null : this.view.max;
-    this.attributes.value = this.view.value;
-    return value;
-};
-
 NumberInput.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["value", "floatFixed", 'min', 'max']);
-};
-
-
-NumberInput.prototype.getAttributeValueDescriptor = function () {
-    return {
-        type: "number",
-        max: this.attributes.max,
-        min: this.attributes.min
-    };
-};
-
-
-NumberInput.prototype.getAttributeFloatFixedDescriptor = function () {
-    return {
-        type: "number",
-        max: 100,
-        min: -1
-    };
-};
-
-NumberInput.prototype.getAttributeMinDescriptor = function () {
-    return {
-        type: "number",
-        nullable: true,
-        defaultValue: -Infinity,
-
-    };
-};
-
-NumberInput.prototype.getAttributeMaxDescriptor = function () {
-    return {
-        type: "number",
-        nullable: true,
-        defaultValue: Infinity
-    };
 };
 
 
