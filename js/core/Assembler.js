@@ -82,7 +82,7 @@ Assembler.prototype.buildFragment = function (data) {
             return ac;
         }, window);
     }
-    else if (typeof data.class === "function" && data.class.type === "FRAGMENT") {
+    else if (typeof data.class === "function" && data.class.prototype.type === "FRAGMENT") {
         constructor = data.class;
     }
     if (!constructor) {
