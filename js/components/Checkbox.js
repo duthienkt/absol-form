@@ -38,15 +38,6 @@ CheckBox.prototype.renderContent = function () {
     return _('checkboxbutton');
 };
 
-CheckBox.prototype.onCreated = function () {
-    ContentScalelessComponent.prototype.onCreated.call(this);
-    var self = this;
-    this.view.on('change', function () {
-        self.attributes.checked = this.checked;
-        // this.emit('change', { type: "change", checked: self.attributes.checked, target: this }, this);
-    });
-};
-
 
 CheckBox.prototype.getAcceptsAttributeNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["checked"])
@@ -80,7 +71,7 @@ CheckBox.prototype.attributeHandlers.checked = {
         this.$content.checked = !!value;
     },
     get: function () {
-        return this.$content.checked
+        return this.$content.checked;
     },
     descriptor: {
         type: "bool",
@@ -89,6 +80,6 @@ CheckBox.prototype.attributeHandlers.checked = {
     export: function () {
         return this.$content.checked || undefined;
     }
-}
+};
 
 export default CheckBox;
