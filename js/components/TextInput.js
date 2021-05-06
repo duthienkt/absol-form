@@ -50,8 +50,7 @@ TextInput.prototype.attributeHandlers.placeHolder = {
         sign: "TextPlaceHolder"
     },
     export: function () {
-        var ref = arguments[arguments.length - 1];
-        var value = ref.get();
+        var value = this.domElt.placeholder;
         return value || undefined;
     }
 };
