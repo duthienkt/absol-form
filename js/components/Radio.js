@@ -3,6 +3,7 @@ import Fcore from "../core/FCore";
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
 import OOP from "absol/src/HTML5/OOP";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -12,11 +13,58 @@ function Radio() {
     ContentScalelessComponent.call(this);
 }
 
-Object.defineProperties(Radio.prototype, Object.getOwnPropertyDescriptors(ContentScalelessComponent.prototype));
+inheritComponentClass(Radio, ContentScalelessComponent);
 
-Radio.prototype.constructor = Radio;
 Radio.prototype.tag = "Radio";
 Radio.prototype.menuIcon = "span.mdi.mdi-radiobox-marked";
+
+Radio.prototype.attributeHandlers.checked = {
+    set: function (value) {
+        this.$content.checked = !!value;
+    },
+    get: function () {
+        return this.$content.checked;
+    },
+    descriptor: {
+        type: "bool"
+    }
+};
+
+
+Radio.prototype.attributeHandlers.groupName = {
+    set: function (value) {
+        value = (value || '') + '';
+        this.$content.attr('name', value);
+    },
+    get: function () {
+        return this.$content.attr('name');
+    },
+    descriptor: {
+        type: "text",
+        regex: /[a-zA-Z0-9_\-]+/,
+        sign: "RadioGroupIndent",
+        independence: true
+    },
+    export: function () {
+        var value = this.groupName || '';
+        if (value === '') return undefined;
+        return value;
+    }
+};
+
+Radio.prototype.attributeHandlers.value = {
+    set: function (value) {
+        this.$content.value = value;
+    },
+    get: function () {
+        return this.$content.value;
+    },
+    descriptor: {
+        type: "text",
+        sign: "RadioValue",
+        independence: true
+    }
+}
 
 
 Radio.prototype.onCreate = function () {
@@ -30,19 +78,6 @@ Radio.prototype.onCreate = function () {
     this.attributes.checked = false;
     this.attributes.value = '';
     this.attributes.groupName = 'Radio_group_' + this.constructor.count;
-};
-
-Radio.prototype.onCreated = function () {
-    ContentScalelessComponent.prototype.onCreated.call(this);
-    OOP.drillProperty(this.attributes, this.$content, 'checked');
-    OOP.drillProperty(this.attributes, this.$content, 'value');
-    var self = this;
-    this.$content.on('change', function () {
-        // self.attributes.checked = this.checked;
-        if (self.events.change)
-            console.log("TODO: exec", self.events.change);
-    });
-
 };
 
 
@@ -66,36 +101,6 @@ Radio.prototype.setStyleHeight = function (value) {
 Radio.prototype.setAttributeGroupName = function (value) {
     this.$content.attr('name', value);
     return value;
-};
-
-Radio.prototype.getAttributeGroupNameDescriptor = function () {
-    return {
-        type: "text",
-        regex: /[a-zA-Z0-9\_\-]+/,
-        sign: "RadioGroupIndent",
-        independence: true
-    };
-};
-
-Radio.prototype.setAttributValue = function (value) {
-    this.$content.attr('value', value + '');
-    return value;
-};
-
-
-Radio.prototype.getAttributeValueDescriptor = function () {
-    return {
-        type: "text",
-        sign: "RadioValue",
-        independence: true
-    };
-};
-
-
-Radio.prototype.getAttributeCheckedDescriptor = function () {
-    return {
-        type: "bool"
-    };
 };
 
 
@@ -128,6 +133,7 @@ Radio.prototype.bindDataToObject = function (obj) {
                 for (var i = 0; i < obj[groupPropertyName].length; ++i) {
                     if (obj[groupPropertyName][i].getAttribute('value') == value) {
                         obj[groupPropertyName][i].setAttribute('checked', true);
+                        console.log(obj[groupPropertyName][i].domElt)
                     }
                     else {
                         obj[groupPropertyName][i].setAttribute('checked', false);
