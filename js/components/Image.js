@@ -36,7 +36,7 @@ Image.prototype.attributeHandlers.src = {
 };
 
 Image.prototype.attributeHandlers.naturalSize = {
-    descriptor: function () {
+    getDescriptor: function () {
         return {
             type: 'const',
             value: this.loadedSync.then(function (wh) {

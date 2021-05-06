@@ -60,7 +60,7 @@ ChainAnchor.prototype.compStyleHandlers.vAlign = {
         this.anchor.domElt.addClass(this.anchor.VALIGN_CLASS_NAMES[value]);
         return value;
     },
-    descriptor: function () {
+    getDescriptor: function () {
         return {
             type: 'enum',
             values: this.anchor.VALIGN_ACCEPTS_VALUES,
