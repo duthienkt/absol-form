@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF8"/>
+    <title>TextInput</title>
+    <link rel="stylesheet" href="//cdn.materialdesignicons.com/4.5.95/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://absol.cf/hightlight/styles/default.css">
+    <script src="https://absol.cf/hightlight/highlight.pack.js"></script>
+    <link
+            href="https://fonts.googleapis.com/css?family=Alegreya|Alegreya+SC|Alegreya+Sans|Alegreya+Sans+SC|Alfa+Slab+One|Amatic+SC|Andika|Anton|Archivo|Archivo+Narrow|Arima+Madurai|Arimo|Arsenal|Asap|Asap+Condensed|Athiti|Bahianita|Bai+Jamjuree|Baloo|Baloo+Bhai|Baloo+Bhaijaan|Baloo+Bhaina|Baloo+Chettan|Baloo+Da|Baloo+Paaji|Baloo+Tamma|Baloo+Tammudu|Baloo+Thambi|Bangers|Barlow|Barlow+Condensed|Barlow+Semi+Condensed|Barriecito|Be+Vietnam|Bevan|Big+Shoulders+Display|Big+Shoulders+Text|Bungee|Bungee+Hairline|Bungee+Inline|Bungee+Outline|Bungee+Shade|Cabin|Cabin+Condensed|Chakra+Petch|Charm|Charmonman|Chonburi|Coiny|Comfortaa|Cormorant|Cormorant+Garamond|Cormorant+Infant|Cormorant+SC|Cormorant+Unicase|Cormorant+Upright|Cousine|Crimson+Pro|Cuprum|Dancing+Script|Darker+Grotesque|David+Libre|Dosis|EB+Garamond|Encode+Sans|Encode+Sans+Condensed|Encode+Sans+Expanded|Encode+Sans+Semi+Condensed|Encode+Sans+Semi+Expanded|Exo|Exo+2|Fahkwang|Farsan|Faustina|Fira+Sans|Fira+Sans+Condensed|Fira+Sans+Extra+Condensed|Francois+One|Grenze|Hepta+Slab|IBM+Plex+Mono|IBM+Plex+Sans|IBM+Plex+Sans+Condensed|IBM+Plex+Serif|Inconsolata|Itim|Josefin+Sans|Judson|Jura|K2D|Kanit|KoHo|Kodchasan|Krub|Lalezar|Lemonada|Lexend+Deca|Lexend+Exa|Lexend+Giga|Lexend+Mega|Lexend+Peta|Lexend+Tera|Lexend+Zetta|Literata|Livvic|Lobster|Lora|M+PLUS+1p|M+PLUS+Rounded+1c|Maitree|Major+Mono+Display|Mali|Manuale|Markazi+Text|Maven+Pro|Merriweather|Metrophobic|Mitr|Montserrat|Montserrat+Alternates|Muli|Niramit|Noticia+Text|Noto+Sans|Noto+Sans+SC|Noto+Serif|Noto+Serif+SC|Noto+Serif+TC|Nunito|Nunito+Sans|Old+Standard+TT|Open+Sans|Open+Sans+Condensed:300|Oswald|Pacifico|Pangolin|Patrick+Hand|Patrick+Hand+SC|Pattaya|Paytone+One|Philosopher|Play|Playfair+Display|Playfair+Display+SC|Podkova|Prata|Pridi|Prompt|Quicksand|Roboto|Roboto+Condensed|Roboto+Mono|Roboto+Slab|Rokkitt|Rosario|Saira|Saira+Condensed|Saira+Extra+Condensed|Saira+Semi+Condensed|Saira+Stencil+One|Sarabun|Sawarabi+Gothic|Sedgwick+Ave|Sedgwick+Ave+Display|Sigmar+One|Source+Code+Pro|Source+Sans+Pro|Space+Mono|Spectral|Spectral+SC|Sriracha|Srisakdi|Taviraj|Thasadith|Tinos|Trirong|VT323|Varela+Round|Vollkorn|Vollkorn+SC|Yanone+Kaffeesatz|Yeseva+One&display=swap"
+            rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://absol.cf/absol-full/absol/absol.dependents.js"></script>
+    <script src="../absol/absol_form.js"></script>
+
+    <style>
+        html,
+        body,
+        :root {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #layout-ctn {
+            border: 1px solid black;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+<div id="layout-ctn"></div>
+<script>
+    !(function () {
+
+        var AssemblerInstance = absol.form.AssemblerInstance;
+        var $ = absol.$;
+        var _ = absol._;
+        var JSZip = absol.JSZip;
+        var makeFmFragmentClass = absol.form.makeFmFragmentClass;
+        var layout = {
+            tag: "LinearLayout",
+            style: {
+                width: 'auto',
+                height: 'auto'
+            },
+            children: [{
+                tag: 'ChainLayout',
+                style: {
+                    height: 'auto',
+                    width: 'auto'
+                },
+                children: [
+                    {
+                        tag: 'Label',
+                        attributes: {
+                            text: 'Avatar'
+                        },
+                        style: {
+                            textColor: 'green',
+                            textSize: 18,
+                            font: 'arial',
+                            height: 'auto',
+                            width: 120,
+                            vAlign: 'center',
+                            fontStyle: 'Bold italic',
+                            boxAlign: 'rightcenter'
+                        }
+                    }, {
+                        tag: 'Image',
+                        attributes: {
+                            src: "https://scontent-hkg4-2.xx.fbcdn.net/v/t1.6435-1/p200x200/94387669_2781477368638115_7953545783058366464_n.jpg?_nc_cat=110&ccb=1-3&_nc_sid=7206a8&_nc_ohc=QiP8e1tz6XIAX9f6shg&_nc_ht=scontent-hkg4-2.xx&tp=6&oh=2e4f8bcaef8f700ddaeb41d02134a535&oe=60B96C6E",
+                        },
+                        style: {
+                            width: 250,
+                            height: 250,
+                            left: 10,
+                            right: 10,
+                            top: 5,
+                            bottom: 5,
+                            vAlign: "center"
+                        }
+                    }
+                ]
+            }, {
+                tag: 'ChainLayout',
+                style: { width: 'auto', height: 'auto' },
+                children: [{
+                    tag: 'Text',
+                    attributes: {
+                        textDecode: 'html',
+                        text: '<strong>N</strong>ame'
+                    },
+                    style: {
+                        textColor: 'green',
+                        textSize: 18,
+                        font: 'arial',
+                        height: 'auto',
+                        width: 120,
+                        vAlign: 'center',
+                        fontStyle: 'Bold italic',
+                        textAlign: 'right'
+                    }
+                }, {
+                    tag: 'TextInput',
+                    attributes: {
+                        value: "Hello"
+                    },
+                    style: {
+                        width: 250,
+                        left: 10,
+                        right: 10,
+                        top: 5,
+                        bottom: 5,
+                        vAlign: 'center',
+
+                        textColor: 'green',
+                        textSize: 18,
+                        font: 'arial',
+                        height: 'auto',
+                        fontStyle: 'Bold italic',
+                        textAlign: 'center'
+                    }
+                }]
+            },
+                {
+                    tag: 'ChainLayout',
+                    style: { width: 'auto', height: 'auto' },
+                    children: [{
+                        tag: 'Label',
+                        attributes: {
+                            text: 'Password'
+                        },
+                        style: {
+                            textColor: 'green',
+                            textSize: 18,
+                            font: 'arial',
+                            height: 'auto',
+                            width: 120,
+                            vAlign: 'center',
+                            fontStyle: 'Bold italic',
+                            textAlign: 'right',
+                            boxAlign: "rightcenter"
+                        }
+                    }, {
+                        tag: 'TextInput',
+                        attributes: {
+                            value: "Hello",
+                            textType: 'password'
+                        },
+                        style: {
+                            width: 250,
+                            left: 10,
+                            right: 10,
+                            top: 5,
+                            bottom: 5,
+                            vAlign: 'center',
+
+                            textColor: 'green',
+                            textSize: 18,
+                            font: 'arial',
+                            height: 'auto',
+                            fontStyle: 'Bold italic',
+                            textAlign: 'center'
+                        }
+                    }]
+                },
+                {
+                    tag: 'ChainLayout',
+                    style: { width: 'auto', height: 'auto' },
+                    children: [{
+                        tag: 'Text',
+                        attributes: {
+                            textDecode: 'html',
+                            text: '<strong>D</strong>escription'
+                        },
+                        style: {
+                            textColor: 'green',
+                            textSize: 18,
+                            font: 'arial',
+                            height: 'auto',
+                            width: 120,
+                            vAlign: 'center',
+                            fontStyle: 'Bold italic',
+                            textAlign: 'right'
+                        }
+                    }, {
+                        tag: 'TextArea',
+                        attributes: {
+                            value: "Hello",
+                            textType: 'password'
+                        },
+                        style: {
+                            width: 250,
+                            left: 10,
+                            right: 10,
+                            height: 70,
+                            top: 5,
+                            bottom: 5,
+                            vAlign: 'center',
+
+                            textColor: 'green',
+                            textSize: 18,
+                            font: 'arial',
+                            fontStyle: 'Bold italic',
+                            textAlign: 'center'
+                        }
+                    }]
+                },
+                {
+                    tag: 'ChainLayout',
+                    style: { width: 'auto', height: 'auto' },
+                    children: [{
+                        tag: 'Label',
+                        attributes: {
+                            text: 'Accept'
+                        },
+                        style: {
+                            textColor: 'green',
+                            textSize: 18,
+                            font: 'arial',
+                            height: 'auto',
+                            width: 120,
+                            vAlign: 'center',
+                            fontStyle: 'Bold italic',
+                            textAlign: 'right',
+                            boxAlign: "rightcenter"
+                        }
+                    }, {
+                        tag: 'CheckBox',
+                        attributes: {
+                            checked: true,
+                        },
+                        style: {
+                            width: 250,
+                            left: 10,
+                            right: 10,
+                            top: 5,
+                            bottom: 5,
+                            boxAlign: 'centercenter'
+                        }
+                    }]
+                },
+                {
+                    tag: 'ChainLayout',
+                    style: { width: 'auto', height: 'auto' },
+                    children: [{
+                        tag: 'Label',
+                        attributes: {
+                            text: 'Sex'
+                        },
+                        style: {
+                            textColor: 'green',
+                            textSize: 18,
+                            font: 'arial',
+                            height: 'auto',
+                            width: 120,
+                            vAlign: 'center',
+                            fontStyle: 'Bold italic',
+                            textAlign: 'right',
+                            boxAlign: "rightcenter"
+                        }
+                    }, {
+                        tag: 'Radio',
+                        attributes: {
+                            checked: true,
+                            value: '1',
+                            groupName: 'sex'
+                        },
+                        style: {
+                            width: 20,
+                            left: 10,
+                            right: 10,
+                            top: 5,
+                            bottom: 5,
+                            boxAlign: 'centercenter',
+                            vAlign: "center"
+                        }
+                    },
+                        {
+                            tag: 'Radio',
+                            attributes: {
+                                checked: true,
+                                value: '2',
+                                groupName: 'sex'
+                            },
+                            style: {
+                                width: 20,
+                                left: 10,
+                                right: 10,
+                                top: 5,
+                                bottom: 5,
+                                boxAlign: 'centercenter',
+                                vAlign: "center"
+                            }
+                        }
+                    ]
+                }, {
+                    tag: 'ChainLayout',
+                    style: {
+                        width: "auto",
+                        height: 'auto'
+                    },
+                    children: [
+                        {
+                            tag: 'Label',
+                            attributes: {
+                                text: "Old"
+                            },
+                            style: {
+                                textColor: 'green',
+                                textSize: 18,
+                                font: 'arial',
+                                height: 30,
+                                width: 120,
+                                fontStyle: 'Bold italic',
+                                textAlign: 'right',
+                                boxAlign: "rightcenter"
+                            }
+                        }, {
+                            tag: "NumberInput",
+                            attributes: {
+                                min: 0,
+                                max: 120,
+                                value: 18,
+                                floatFixed: 2
+                            },
+                            style: {
+                                left: 10
+                            }
+                        }
+                    ]
+                }, {
+                    tag: 'ChainLayout',
+                    style: {
+                        width: "auto",
+                        height: 'auto'
+                    },
+                    children: [
+                        {
+                            tag: 'Label',
+                            attributes: {
+                                text: "Skill"
+                            },
+                            style: {
+                                textColor: 'green',
+                                textSize: 18,
+                                font: 'arial',
+                                height: 30,
+                                width: 120,
+                                fontStyle: 'Bold italic',
+                                textAlign: 'right',
+                                boxAlign: "rightcenter"
+                            }
+                        }, {
+                            tag: "TrackBarInput",
+                            attributes: {
+                                name: 'skill',
+                                rightValue: 100,
+                                value: 30,
+                                unit: '%'
+                            },
+                            style: {
+                                left: 10,
+                                width: 250
+                            }
+                        }
+                    ]
+                }, {
+                    tag: 'ChainLayout',
+                    style: {
+                        width: "auto",
+                        height: 'auto'
+                    },
+                    children: [
+                        {
+                            tag: 'Label',
+                            attributes: {
+                                text: "Education"
+                            },
+                            style: {
+                                textColor: 'green',
+                                textSize: 18,
+                                font: 'arial',
+                                height: 30,
+                                width: 120,
+                                fontStyle: 'Bold italic',
+                                textAlign: 'right',
+                                boxAlign: "rightcenter"
+                            }
+                        }, {
+                            tag: "ComboBox",
+                            attributes: {
+                                name: 'education',
+                                value: 3,
+                                searchable: true,
+                                list: [
+                                    { text: "0", value: '0' },
+                                    { text: "1", value: '1' },
+                                    { text: "2", value: '2' },
+                                    { text: "3", value: '3' }
+                                ]
+                            },
+                            style: {
+                                left: 10,
+                                width: 250
+                            }
+                        }
+                    ]
+                }, {
+                    tag: 'ChainLayout',
+                    style: {
+                        width: "auto",
+                        height: 'auto'
+                    },
+                    children: [
+                        {
+                            tag: 'Label',
+                            attributes: {
+                                text: "Language"
+                            },
+                            style: {
+                                textColor: 'green',
+                                textSize: 18,
+                                font: 'arial',
+                                height: 30,
+                                width: 120,
+                                fontStyle: 'Bold italic',
+                                textAlign: 'right',
+                                boxAlign: "rightcenter"
+                            }
+                        }, {
+                            tag: "MultiselectCombobox",
+                            attributes: {
+                                name: 'language',
+                                value: 3,
+                                searchable: true,
+                                list: [
+                                    { text: "C++", value: '0' },
+                                    { text: "C#", value: '1' },
+                                    { text: "JS", value: '2' },
+                                    { text: "PHP", value: '3' }
+                                ]
+                            },
+                            style: {
+                                left: 10,
+                                width: 250
+                            }
+                        }
+                    ]
+                }, {
+                    tag: 'ChainLayout',
+                    style: {
+                        width: "auto",
+                        height: 'auto'
+                    },
+                    children: [
+                        {
+                            tag: 'Label',
+                            attributes: {
+                                text: "Work"
+                            },
+                            style: {
+                                textColor: 'green',
+                                textSize: 18,
+                                font: 'arial',
+                                height: 30,
+                                width: 120,
+                                fontStyle: 'Bold italic',
+                                textAlign: 'right',
+                                boxAlign: "rightcenter"
+                            }
+                        }, {
+                            tag: "TreeComboBox",
+                            attributes: {
+                                name: 'Work',
+                                value: 4,
+                                searchable: true,
+                                treeList: [
+                                    { text: "C++", value: '0' },
+                                    {
+                                        text: "C#", value: '1',
+                                        items: [{ text: ".NET", value: '4' }, { text: "Windows App", value:'5' }]
+                                    },
+                                    { text: "JS", value: '2' },
+                                    { text: "PHP", value: '3' }
+                                ]
+                            },
+                            style: {
+                                left: 10,
+                                width: 250
+                            }
+                        }
+                    ]
+                },
+                {
+                    tag: 'RelativeLayout',
+                    style: {
+                        height: 50,
+                        width: 'auto'
+                    },
+                    children: [{
+                        tag: 'Button',
+                        attributes: {
+                            text: "Submit",
+                            icon: 'span.mdi.mdi-send'
+                        },
+                        style: {
+                            vAlign: "center",
+                            hAlign: "center",
+                            colorTheme: 'info'
+                        }
+                    }]
+                }
+            ]
+        }
+        var PInfo = makeFmFragmentClass({
+            tag: "PInfo",
+            contentViewData: layout
+        });
+        var lo = AssemblerInstance.buildFragment({ class: PInfo });
+        lo.domElt.addTo($('#layout-ctn'));
+        window.lo = lo;
+
+    })();
+</script>
+</body>
+
+</html>
