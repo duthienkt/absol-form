@@ -58,7 +58,7 @@ LinearAnchor.prototype.compStyleHandlers.height = {
     set: function (value) {
         var ref = arguments[arguments.length - 1];
         var currentValue = ref.get();
-        var unit = arguments[1];
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
         var parentBound;
         if (unit === 'px') {//value must be a number
             if ((typeof currentValue == 'string') && currentValue.match(/%$/)) {
@@ -83,7 +83,7 @@ LinearAnchor.prototype.compStyleHandlers.height = {
     get: function () {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
-        var unit = arguments.length[1] ? arguments[0] : undefined;
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var bound, parentBound;
         if (unit === 'px') {
             if (value !== 'number') {
