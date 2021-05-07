@@ -2,6 +2,8 @@ import ScalableComponent from "../core/ScalableComponent";
 import OOP from "absol/src/HTML5/OOP";
 import {_} from "../core/FCore";
 import {AssemblerInstance} from "../core/Assembler";
+import {inheritComponentClass} from "../core/BaseComponent";
+import "../../css/arrayoffragment.css";
 
 
 /***
@@ -14,10 +16,28 @@ function ArrayOfFragment() {
     this._makeArray();
 }
 
-OOP.mixClass(ArrayOfFragment, ScalableComponent);
+inheritComponentClass(ArrayOfFragment, ScalableComponent);
 
 ArrayOfFragment.prototype.tag = "ArrayOfFragment";
 ArrayOfFragment.prototype.menuIcon = "span.mdi.mdi-tray-full";
+
+ArrayOfFragment.prototype.styleHandlers.itemSpacing = {
+    set: function (value) {
+        this.domElt.addStyle('--as-aof-item-spacing', value + 'px');
+        return value;
+    },
+    descriptor: {
+        type: 'measureSize',
+        units: ['px']
+    },
+    export: function () {
+        var ref = arguments[arguments.length - 1];
+        var value = ref.get();
+        if (value === 10) return undefined;
+        return value;
+    }
+};
+
 
 ArrayOfFragment.prototype.render = function () {
     return _({
@@ -25,8 +45,17 @@ ArrayOfFragment.prototype.render = function () {
     });
 };
 
+ArrayOfFragment.prototype.onCreate = function () {
+    ScalableComponent.prototype.onCreate.call(this);
+    this.style.itemSpacing = 0;
+}
+
 ArrayOfFragment.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat("itemFragmentClass");
+};
+
+ArrayOfFragment.prototype.getAcceptsStyleNames = function () {
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat("itemSpacing");
 };
 
 
@@ -48,7 +77,7 @@ ArrayOfFragment.prototype._makeArray = function () {
     this._dataArr = [];
 
     this._dataArr.push = function () {
-        this.splice.apply(this, [this.length,this.length].concat(Array.prototype.slice.apply(arguments)));
+        this.splice.apply(this, [this.length, this.length].concat(Array.prototype.slice.apply(arguments)));
         return arguments.length;
     }
 
@@ -98,10 +127,11 @@ ArrayOfFragment.prototype._makeArray = function () {
                 class: className
             });
             frag.props = item;
+            frag.attach(self);
             return frag;
         });
         var endElt = self.fragments[end] && self.fragments[end].domElt;
-        var removedFragments = self.fragments.splice.apply(self.fragments,[start, end].concat(newFragments));
+        var removedFragments = self.fragments.splice.apply(self.fragments, [start, end].concat(newFragments));
         removedFragments.forEach(function (frg) {
             frg.domElt.remove();
         });

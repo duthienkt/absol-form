@@ -121,6 +121,7 @@ EditableArrayOfFragment.prototype._makeArray = function () {
                 class: className
             });
             frag.props = item;
+            frag.attach(self);
             return frag;
         });
         var endCtnElt = self.fragments[start + deleteCount] && self.fragments[start + deleteCount].domElt.parentElement;

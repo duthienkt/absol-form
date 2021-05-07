@@ -1,15 +1,17 @@
 .as-editable-array-of-fragment {
     padding-bottom: 40px;
     position: relative;
-    min-width: 100px;
+    min-width: calc(var(--button-min-width) + 20px);
+    --as-aof-item-spacing: 10px;
 }
 
 .as-editable-array-of-fragment-list {
     overflow: auto;
+    padding-top: 5px;
 }
 
-.as-editable-array-of-fragment-item {
-
+.as-editable-array-of-fragment-item:not(:last-child):not(:first-child) {
+    margin-bottom: var(--as-aof-item-spacing);
 }
 
 
@@ -18,7 +20,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: 40px;
+    height: 35px;
     padding-left: 10px;
     padding-right: 10px;
     text-align: center;
@@ -26,6 +28,7 @@
 
 .as-editable-array-of-fragment-bottom > .as-flexicon-button {
     height: 30px;
+    min-width: var(--button-min-width);
 }
 
 .as-editable-array-of-fragment-item {
@@ -65,3 +68,6 @@
     color: rgb(255, 70, 71);
 }
 
+body:not(.bsc-white) {
+    --button-min-width: 110px;
+}
