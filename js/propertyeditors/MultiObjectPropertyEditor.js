@@ -50,6 +50,7 @@ MultiObjectPropertyEditor.prototype.pools = {};
 
 MultiObjectPropertyEditor.prototype.type2EditorClass = {
     text: PEText,
+    string: PEText,
     uniqueText: PEUniqueText,
     color: PEColor,
     'const': PEConst,
@@ -61,6 +62,7 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     textAlign: PETextAlign,
     boxAlign: PEBoxAlign,
     bool: PEBool,
+    boolean: PEBool,
     number: PENumber,
     fragmentClass: PEFragmentClass,
     SelectList: PESelectList
@@ -126,14 +128,14 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
     var editabledNames = names.filter(function (name) {
         var descriptor;
         var lastSign = null;
-        if (objects.length == 1) return true;
+        if (objects.length === 1) return true;
         for (var i = 0; i < objects.length; ++i) {
             descriptor = self.getPropertyDescriptor(objects[i], name);
             if (!descriptor.independence) return false;
             if (lastSign === null) {
                 lastSign = descriptor.sign;
             }
-            else if (lastSign != descriptor.sign) {
+            else if (lastSign !== descriptor.sign) {
                 return false;
             }
         }
@@ -261,8 +263,6 @@ MultiObjectPropertyEditor.prototype.loadNotSupportedProperty = function (name, d
         }));
     return {};
 };
-
-
 
 
 MultiObjectPropertyEditor.prototype.clearAllDependents = function () {
