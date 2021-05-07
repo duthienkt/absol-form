@@ -16,6 +16,7 @@ import Rectangle from 'absol/src/Math/Rectangle';
 import RelativeAnchorEditor from '../anchoreditors/RelativeAnchorEditor';
 import FmFragment from "../core/FmFragment";
 import BaseComponent from "../core/BaseComponent";
+import OOP from "absol/src/HTML5/OOP";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -98,6 +99,8 @@ function LayoutEditor() {
         });
 }
 
+OOP.mixClass(LayoutEditor, Assembler, BaseEditor);
+
 LayoutEditor.prototype.refresh = function(){
     if (!this.rootLayout) return;
     var data = this.getData();
@@ -116,8 +119,7 @@ LayoutEditor.prototype.refresh = function(){
 };
 
 
-Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(BaseEditor.prototype));
-Object.defineProperties(LayoutEditor.prototype, Object.getOwnPropertyDescriptors(Assembler.prototype));
+
 
 LayoutEditor.prototype._bindEvent = function () {
     for (var key in this) {
@@ -1292,6 +1294,8 @@ LayoutEditor.prototype.execCmd = function () {
     try {
         return BaseEditor.prototype.execCmd.apply(this, arguments);
     } catch (error) {
+        if (!error.message.startsWith('No command'))
+        console.error(error);
     }
 
     try {
@@ -1300,9 +1304,8 @@ LayoutEditor.prototype.execCmd = function () {
             return focusEditor.execCmd.apply(focusEditor, arguments);
         }
     } catch (error1) {
-        //other 
-        console.log(error1);
-
+        if (!error1.message.startsWith('No command'))
+            console.error(error1);
     }
 };
 
