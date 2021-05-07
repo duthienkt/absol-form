@@ -14,6 +14,7 @@ OOP.mixClass(PEMeasureSize, PEBaseType);
 
 PEMeasureSize.prototype.attachInput = function () {
     var self = this;
+    var units = this.descriptor.units || ['px', '%', 'match_parent', 'auto'];
     this.cellElt.addStyle('white-space', 'nowrap');
     this.$numberInput = _('numberinput').addStyle('margin-right', '5px');
     this.$typeSelect = _({
@@ -22,12 +23,9 @@ PEMeasureSize.prototype.attachInput = function () {
             verticalAlign: 'middle'
         },
         props: {
-            items: [
-                { text: 'px', value: 'px' },
-                { text: '%', value: '%' },
-                { text: 'match_parent', value: 'match_parent' },
-                { text: 'auto', value: 'auto' }
-            ]
+            items: units.map(function (unit) {
+                return { text: unit, value: unit };
+            })
         }
     });
 
