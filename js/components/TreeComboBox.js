@@ -1,6 +1,8 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import OOP from "absol/src/HTML5/OOP";
+import ComboBox from "./ComboBox";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 var _ = Fcore._;
 
@@ -12,7 +14,7 @@ function TreeComboBox() {
     ScalableComponent.call(this);
 }
 
-OOP.mixClass(TreeComboBox, ScalableComponent);
+inheritComponentClass(TreeComboBox, ScalableComponent);
 
 TreeComboBox.prototype.tag = "TreeComboBox";
 
@@ -25,6 +27,23 @@ TreeComboBox.prototype.menuIcon = [
     '</svg>'
 ].join('\n');
 
+TreeComboBox.prototype.attributeHandlers.value = ComboBox.prototype.attributeHandlers.value;
+TreeComboBox.prototype.attributeHandlers.searchable = ComboBox.prototype.attributeHandlers.searchable;
+TreeComboBox.prototype.attributeHandlers.treeList = Object.assign({}, ComboBox.prototype.attributeHandlers.list, {
+    descriptor: {
+        type: 'SelectTreeList'
+    },
+    export: function () {
+        var treeList = this.domElt.items;
+        return treeList.map(function copyItem(item) {
+            var newItem = { value: item.value, text: item.text };
+            if (item.items && item.items.length)
+                newItem.items = item.items.map(copyItem);
+            return newItem;
+        });
+    }
+});
+console.log(TreeComboBox.prototype.attributeHandlers.treeList)
 
 TreeComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
@@ -43,27 +62,12 @@ TreeComboBox.prototype.onCreate = function () {
 
     ];
     this.attributes.value = '0';
-    Object.defineProperty(this.attributes, 'text', {
-            get: function () {
-                if (this.list) {
-                    for (var i = 0; i < this.list.length; ++i)
-                        if (this.list[i].value == this.value) return this.list[i].text;
-                    return '';
-                }
-                else {
-                    return "";
-                }
-            }
-        }
-    )
 };
 
 
 TreeComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
-    this.bindAttribute('searchable', 'enableSearch');
-    this.bindAttribute('value', 'value');
     this.view.on('change', function () {
         self.emit("change", { type: 'change', value: this.value }, self);
     });
@@ -72,12 +76,6 @@ TreeComboBox.prototype.onCreated = function () {
 
 TreeComboBox.prototype.render = function () {
     return _('selecttreemenu');
-};
-
-
-TreeComboBox.prototype.setAttributeList = function (value) {
-    this.view.items = value;
-    return this.view.items;
 };
 
 TreeComboBox.prototype.getAttributeList = function () {
@@ -91,32 +89,8 @@ TreeComboBox.prototype.getAttributeList = function () {
 };
 
 
-TreeComboBox.prototype.setAttributeText = function (value) {
-    return value;
-};
-
-
 TreeComboBox.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["treeList", 'value', 'searchable']);
-};
-
-TreeComboBox.prototype.getAttributeTreeListDescriptor = function () {
-    return {
-        type: 'SelectTreeList'
-    };
-};
-
-TreeComboBox.prototype.getAttributeValueDescriptor = function () {
-    return {
-        type: 'text'
-    };
-};
-
-
-TreeComboBox.prototype.getAttributeSearchableDescriptor = function () {
-    return {
-        type: 'bool'
-    };
 };
 
 
@@ -148,10 +122,10 @@ TreeComboBox.prototype.getDataBindingDescriptor = function () {
             enumerable: true,
             configurable: true,
             get: function () {
-                return thisC.getAttribute('list');
+                return thisC.getAttribute('treeList');
             },
             set: function (value) {
-                thisC.setAttribute('list', value);
+                thisC.setAttribute('treeList', value);
             }
         }
     });
