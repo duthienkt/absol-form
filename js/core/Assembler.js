@@ -47,6 +47,7 @@ function Assembler() {
     this.addConstructor(Rectangle);
     this.addConstructor(MultiselectCombobox);
     this.addConstructor(TrackBar);
+    this.addConstructor('Trackbar',TrackBar);
     this.addConstructor(TrackBarInput);
     this.addConstructor(TableInput);
     this.addComponent(ArrayOfFragment);
@@ -141,7 +142,7 @@ Assembler.prototype.buildComponent = function (data, frag) {
     var children = data.children;
     if (children && children.length > 0) {
         for (var i = 0; i < children.length; ++i) {
-            var child = this.build(children[i]);
+            var child = this.build(children[i], frag);
             if (child.type === "FRAGMENT") {
                 result.addChild(child.view);
                 if (frag)
