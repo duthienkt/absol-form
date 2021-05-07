@@ -109,11 +109,8 @@ RelativeAnchor.prototype.compStyleHandlers.vAlign = {
 
 RelativeAnchor.prototype.compStyleHandlers.left = {
     set: function (value) {
-        var unit;
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
         var ref = arguments[arguments.length - 1];
-        if (arguments.length > 2) {
-            unit = arguments[1];
-        }
         var currentValue = ref.get();
         var parentBound;
         if (unit === 'px') {//value must be a number
@@ -139,9 +136,7 @@ RelativeAnchor.prototype.compStyleHandlers.left = {
     get: function () {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
-        var unit;
-        if (arguments.length > 1)
-            unit = arguments[0];
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var bound;
         var parentBound;
         if (unit === 'px') {
@@ -182,11 +177,8 @@ RelativeAnchor.prototype.compStyleHandlers.left = {
 
 RelativeAnchor.prototype.compStyleHandlers.right = {
     set: function (value) {
-        var unit;
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
         var ref = arguments[arguments.length - 1];
-        if (arguments.length > 2) {
-            unit = arguments[1];
-        }
         var currentValue = ref.get();
         var parentBound;
         if (unit === 'px') {//value must be a number
@@ -211,15 +203,13 @@ RelativeAnchor.prototype.compStyleHandlers.right = {
     get: function () {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
-        var unit;
-        if (arguments.length > 1)
-            unit = arguments[0];
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var bound, parentBound;
         if (unit === 'px') {
             if (typeof value != 'number') {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
-                return bound.right + parentBound.right;
+                return  parentBound.right - bound.right;
             }
             else {
                 return value;
@@ -230,7 +220,7 @@ RelativeAnchor.prototype.compStyleHandlers.right = {
                 || (typeof value != 'string')) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
-                return (bound.left - parentBound.left) * 100 / parentBound.width;
+                return (parentBound.right - bound.right) * 100 / parentBound.width;
             }
             else {
                 return parseFloat(value.replace('%', ''));
@@ -244,7 +234,7 @@ RelativeAnchor.prototype.compStyleHandlers.right = {
             type: 'measurePosition',
             min: -Infinity,
             max: Infinity,
-            disabled: this.style.hAlign === 'center' || this.style.hAlign === 'right',
+            disabled: this.style.hAlign === 'center' || this.style.hAlign === 'left',
             livePreview: true,
             dependency: ['hAlign', 'right', 'width']
         };
@@ -254,11 +244,8 @@ RelativeAnchor.prototype.compStyleHandlers.right = {
 
 RelativeAnchor.prototype.compStyleHandlers.top = {
     set: function (value) {
-        var unit;
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
         var ref = arguments[arguments.length - 1];
-        if (arguments.length > 2) {
-            unit = arguments[1];
-        }
         var currentValue = ref.get();
         var parentBound;
         if (unit === 'px') {//value must be a number
@@ -283,9 +270,7 @@ RelativeAnchor.prototype.compStyleHandlers.top = {
     get: function () {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
-        var unit;
-        if (arguments.length > 1)
-            unit = arguments[0];
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var bound, parentBound;
         if (unit === 'px') {
             if (typeof value != 'number') {
@@ -328,11 +313,8 @@ RelativeAnchor.prototype.compStyleHandlers.top = {
 
 RelativeAnchor.prototype.compStyleHandlers.bottom = {
     set: function (value) {
-        var unit;
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
         var ref = arguments[arguments.length - 1];
-        if (arguments.length > 2) {
-            unit = arguments[1];
-        }
         var currentValue = ref.get();
         var parentBound;
         if (unit === 'px') {//value must be a number
@@ -357,15 +339,13 @@ RelativeAnchor.prototype.compStyleHandlers.bottom = {
     get: function () {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
-        var unit;
-        if (arguments.length > 1)
-            unit = arguments[0];
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var bound, parentBound;
         if (unit === 'px') {
             if (typeof value != 'number') {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
-                return bound.bottom + parentBound.bottom;
+                return parentBound.bottom - bound.bottom;
             }
             else {
                 return value;
@@ -376,7 +356,7 @@ RelativeAnchor.prototype.compStyleHandlers.bottom = {
                 || (typeof value != 'string')) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
-                return (bound.top - parentBound.top) * 100 / parentBound.height;
+                return (parentBound.bottom - bound.bottom) * 100 / parentBound.height;
             }
             else {
                 return parseFloat(value.replace('%', ''));
@@ -390,7 +370,7 @@ RelativeAnchor.prototype.compStyleHandlers.bottom = {
             type: 'measurePosition',
             min: -Infinity,
             max: Infinity,
-            disabled: this.style.vAlign === 'center' || this.style.vAlign === 'bottom',
+            disabled: this.style.vAlign === 'center' || this.style.vAlign === 'top',
             livePreview: true,
             dependency: ['vAlign', 'bottom', 'height']
         };
