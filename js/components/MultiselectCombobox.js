@@ -1,8 +1,8 @@
-import OOP from "absol/src/HTML5/OOP";
 import MultiSelectMenu from "absol-acomp/js/MultiSelectMenu";
 import {_} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import ComboBox from "./ComboBox";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 
 /***
@@ -13,7 +13,7 @@ function MultiselectCombobox() {
     ScalableComponent.call(this);
 }
 
-OOP.mixClass(MultiselectCombobox, ScalableComponent);
+inheritComponentClass(MultiselectCombobox, ScalableComponent);
 
 MultiselectCombobox.prototype.tag = 'MultiselectCombobox';
 
@@ -27,6 +27,7 @@ MultiselectCombobox.prototype.render = function () {
 
 MultiselectCombobox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
+    this.style.height = 'auto';
     this.attributes.list = [
         { text: '0', value: '0' },
         { text: '1', value: '1' },
@@ -41,25 +42,32 @@ MultiselectCombobox.prototype.onCreated = function () {
     this.bindAttribute('searchable', 'enableSearch');
 };
 
+MultiselectCombobox.prototype.attributeHandlers.list = ComboBox.prototype.attributeHandlers.list;
+MultiselectCombobox.prototype.attributeHandlers.searchable = ComboBox.prototype.attributeHandlers.searchable;
+MultiselectCombobox.prototype.attributeHandlers.values = {
+    set: function (value) {
+        this.domElt.values = value;
+    },
+    get: function () {
+        return this.domElt.values;
+    },
+    getDescriptor: function () {
+        return {
+            type: 'arrayOfText',
+            dependency: ['list'],
+            autocomplete: this.getAttribute('list').map(function (it) {
+                return it.value;
+            })
+        };
+    }
+}
 
-MultiselectCombobox.prototype.setAttributeList = ComboBox.prototype.setAttributeList;
-MultiselectCombobox.prototype.getAttributeList = ComboBox.prototype.getAttributeList;
+
 MultiselectCombobox.prototype.measureMinSize = function () {
     var minWidthStyle = parseFloat(this.view.getComputedStyleValue('min-width').replace('px'));
     return { width: Math.max(minWidthStyle, 24), height: 30 };
 };
-MultiselectCombobox.prototype.getAttributeListDescriptor = ComboBox.prototype.getAttributeListDescriptor;
-MultiselectCombobox.prototype.getAttributeSearchableDescriptor = ComboBox.prototype.getAttributeSearchableDescriptor;
 
-MultiselectCombobox.prototype.getAttributeValuesDescriptor = function () {
-    return {
-        type: 'arrayOfText',
-        dependency:['list'],
-        autocomplete: this.getAttribute('list').map(function (it){
-            return it.value;
-        })
-    };
-};
 
 MultiselectCombobox.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'values', 'searchable']);
