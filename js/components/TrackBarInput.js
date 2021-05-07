@@ -1,12 +1,13 @@
 import {_} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import OOP from "absol/src/HTML5/OOP";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 function TrackBarInput() {
     ScalableComponent.call(this);
 }
 
-OOP.mixClass(TrackBarInput, ScalableComponent);
+inheritComponentClass(TrackBarInput, ScalableComponent);
 
 TrackBarInput.prototype.tag = 'TrackBarInput';
 TrackBarInput.prototype.menuIcon = 'span.mdi.mdi-source-commit.mdi-rotate-90'
@@ -15,6 +16,74 @@ TrackBarInput.prototype.render = function () {
     return _('trackbarinput');
 };
 
+TrackBarInput.prototype.attributeHandlers.value = {
+    set: function (value) {
+        this.domElt.value = value;
+    },
+    get: function () {
+        return this.domElt.value;
+    },
+    getDescriptor: function () {
+        return {
+            type: 'number',
+            max: this.domElt.rightValue,
+            min: this.domElt.leftValue,
+            floatFixed: 2,
+            dependency: ['leftValue', 'rightValue']
+        };
+    }
+};
+
+TrackBarInput.prototype.attributeHandlers.leftValue = {
+    set: function (value) {
+        this.domElt.leftValue = value;
+    },
+    get: function () {
+        return this.domElt.leftValue;
+    },
+    getDescriptor: function () {
+        return {
+            type: 'number',
+            max: this.domElt.rightValue,
+            floatFixed: 2,
+            dependency: ['rightValue', 'value']
+        };
+    }
+};
+
+
+TrackBarInput.prototype.attributeHandlers.rightValue = {
+    set: function (value) {
+        this.domElt.rightValue = value;
+    },
+    get: function () {
+        return this.domElt.rightValue;
+    },
+    getDescriptor: function () {
+        return {
+            type: 'number',
+            min: this.domElt.leftValue,
+            floatFixed: 2,
+            dependency: ['leftValue', 'value']
+        };
+    }
+};
+
+TrackBarInput.prototype.attributeHandlers.unit = {
+    set: function (value) {
+        this.domElt.unit = value;
+    },
+    get: function () {
+        return this.domElt.unit;
+    },
+    getDescriptor: function () {
+        return {
+            type: 'text'
+        };
+    }
+};
+
+
 TrackBarInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.apply(this, arguments);
     this.style.height = 26;
@@ -22,48 +91,10 @@ TrackBarInput.prototype.onCreate = function () {
 
 TrackBarInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.apply(this, arguments);
-    this.bindAttribute('value');
-    this.bindAttribute('leftValue');
-    this.bindAttribute('rightValue');
-    this.bindAttribute('unit');
-};
-
-TrackBarInput.prototype.getAttributeValueDescriptor = function () {
-    return {
-        type: 'number',
-        max: this.view.rightValue,
-        min: this.view.leftValue,
-        floatFixed: 2,
-        dependency: ['leftValue', 'rightValue']
-    };
-};
-
-TrackBarInput.prototype.getAttributeLeftValueDescriptor = function () {
-    return {
-        type: 'number',
-        max: this.view.rightValue,
-        floatFixed: 2,
-        dependency:['rightValue', 'value']
-    };
-};
-
-TrackBarInput.prototype.getAttributeRightValueDescriptor = function () {
-    return {
-        type: 'number',
-        min: this.view.leftValue,
-        floatFixed: 2,
-        dependency:['leftValue', 'value']
-    };
-};
-TrackBarInput.prototype.getAttributeUnitDescriptor = function () {
-    return {
-        type: 'text'
-    };
 };
 
 
-
-TrackBarInput.prototype.getAcceptsAttributeNames = function (){
+TrackBarInput.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'leftValue', 'rightValue', 'unit']);
 };
 
