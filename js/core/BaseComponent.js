@@ -5,6 +5,7 @@ import FModel from './FModel';
 import PluginManager from './PluginManager';
 import FormEditorPreconfig from '../FormEditorPreconfig';
 import OOP from "absol/src/HTML5/OOP";
+import noop from "absol/src/Code/noop";
 
 var extendAttributeNames = Object.keys(FormEditorPreconfig.extendAttributes);
 
@@ -76,9 +77,7 @@ BaseComponent.prototype.onCreate = function () {
     });
 };
 
-BaseComponent.prototype.onCreated = function () {
-
-};
+BaseComponent.prototype.onCreated = noop;
 
 /***
  *
@@ -117,10 +116,6 @@ BaseComponent.prototype.getData = function () {
     var self = this;
     var data = {
         tag: this.tag
-    }
-
-    if (this.fragment) {
-        //todo: get data from fragment
     }
 
     var key;
@@ -213,7 +208,6 @@ BaseComponent.prototype.getAcceptsStyleNames = function () {
 };
 
 
-
 BaseComponent.prototype.reMeasure = function () {
     if (this.parent && this.parent.reMeasure)
         this.parent.reMeasureChild(this);
@@ -299,18 +293,10 @@ BaseComponent.prototype.setStyle = function (name, value) {
     return FViewable.prototype.setStyle.apply(this, [name, value].concat(Array.prototype.slice.call(arguments, 2)));
 };
 
-BaseComponent.prototype.getStyle = function (name) {
-    var functionName = 'getStyle' + name.substr(0, 1).toUpperCase() + name.substr(1);
-    if (this.anchor && this.anchor[functionName]) {//anchor will handle this
-        return this.anchor.getStyle.apply(this.anchor, arguments);
-    }
-    // self handle
-    return FViewable.prototype.getStyle.apply(this, arguments);
-};
 
 BaseComponent.prototype.styleHandlers.width = {
-    set: function (value, unit) {
-        if (arguments.length < 2) unit = undefined;
+    set: function (value) {
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
         var currentValue = this.style.width;
         if (unit === 'px') {//value must be a number
             if ((typeof currentValue == 'string') && this.style.width.match(/%$/)) {
@@ -333,15 +319,13 @@ BaseComponent.prototype.styleHandlers.width = {
         return value;
     },
     get: function () {
-        var unit;
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
-        if (arguments.length > 1) {
-            unit = arguments[1];
-        }
         if (unit === 'px') {
-            if (typeof value != 'number')
+            if (typeof value != 'number') {
                 return this.domElt.offsetWidth;
+            }
             else {
                 return value;
             }
@@ -363,8 +347,7 @@ BaseComponent.prototype.styleHandlers.width = {
 
 BaseComponent.prototype.styleHandlers.height = {
     set: function (value) {
-        var unit;
-        if (arguments.length < 2) unit = undefined;
+        var unit = arguments.length > 2 ? arguments[1] : undefined;
         var currentValue = this.style.height;
         if (unit === 'px') {//value must be a number
             if ((typeof currentValue == 'string') && this.style.height.match(/%$/)) {
@@ -388,12 +371,9 @@ BaseComponent.prototype.styleHandlers.height = {
 
     },
     get: function () {
-        var unit;
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
-        if (arguments.length > 1) {
-            unit = arguments[1];
-        }
         if (unit === 'px') {
             if (typeof value != 'number')
                 return this.domElt.offsetHeight;
