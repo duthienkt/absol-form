@@ -46,20 +46,34 @@ PEMeasureSize.prototype.attachInput = function () {
     });
 
     this.$typeSelect.on('change', function (event) {
+        var cValue;
+        switch (this.value) {
+            case "px":
+                cValue = self.getValue('px');
+                self.$numberInput.value = cValue;
+                console.log(cValue)
+                break;
+            case 'match_parent':
+                cValue = '100%';
+                self.$numberInput.value = 100;
+                break;
+            case '%':
+                cValue = self.getValue('%');
+                self.$numberInput.value = cValue;
+                cValue += '%';
+                break;
+            case 'auto':
+                self.$numberInput.value = self.getValue('px');
+                cValue = 'auto';
+                break;
+        }
+        self.setValue(cValue);
         if (this.value === 'match_parent' || this.value === 'auto') {
-            self.setValue(this.value);
             self.$numberInput.disabled = true;
+
         }
         else {
             self.$numberInput.disabled = false;
-            var value = self.getValue(this.value);
-            self.$numberInput.value = value;
-            if (this.value === '%') {
-                self.setValue(value + '%');
-            }
-            else {
-                self.setValue(value);
-            }
         }
         self.notifyChange();
         self.notifyStopChange();
@@ -70,7 +84,6 @@ PEMeasureSize.prototype.reload = function () {
     var descriptor = this.renewDescriptor();
     if (descriptor.disabled) this.$numberInput.disabled = !!descriptor.disabled;
     var value = this.getValue();
-
     if (typeof value === 'number') {
         this.$numberInput.value = value;
         this.$typeSelect.value = 'px';
