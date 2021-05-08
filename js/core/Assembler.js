@@ -25,6 +25,7 @@ import {traversal} from "./FNode";
 import ArrayOfFragment from "../components/ArrayOfFragment";
 import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
 import TreeComboBox from "../components/TreeComboBox";
+import ImageFileInput from "../components/ImageFileInput";
 
 function Assembler() {
     this.addConstructor(Button);
@@ -40,6 +41,7 @@ function Assembler() {
     this.addConstructor(Text);
     this.addConstructor(TextArea);
     this.addConstructor(TextInput);
+    this.addConstructor(ImageFileInput);
     this.addConstructor(LinearLayout);
     this.addConstructor(RelativeLayout);
     this.addConstructor(ChainLayout);

@@ -30,6 +30,7 @@ import TableInput from "../components/TableInput";
 import ArrayOfFragment from "../components/ArrayOfFragment";
 import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
 import TreeComboBox from "../components/TreeComboBox";
+import ImageFileInput from "../components/ImageFileInput";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -220,6 +221,14 @@ ComponentPicker.prototype.getView = function () {
                                 name: TableInput.prototype.tag,
                                 icon: TableInput.prototype.menuIcon,
                                 componentConstructor: TableInput
+                            }
+                        },
+                        {
+                            tag: 'exptree',
+                            props: {
+                                name: ImageFileInput.prototype.tag,
+                                icon: ImageFileInput.prototype.menuIcon,
+                                componentConstructor: ImageFileInput
                             }
                         }
                     ]
