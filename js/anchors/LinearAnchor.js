@@ -226,8 +226,8 @@ LinearAnchor.prototype.compStyleHandlers.width = {
         },
         export: function (ref) {
             var value = ref.get();
-            if (value === 0 || value === '0%') return value;
-            return undefined;
+            if (value === 0 || value === '0%') return undefined;
+            return value;
         },
         descriptor: {
             type: 'measurePosition',
