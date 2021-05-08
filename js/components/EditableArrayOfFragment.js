@@ -33,8 +33,7 @@ EditableArrayOfFragment.prototype.render = function () {
                     {
                         tag: FlexiconButton.tag,
                         props: {
-                            icon: 'span.mdi.mdi-plus',
-                            text: 'Add'
+                            text: ('LanguageModule' in window) ? LanguageModule.text('txt_add') : 'Add'
                         }
                     }
                 ]
