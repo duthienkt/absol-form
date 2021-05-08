@@ -1,0 +1,37 @@
+.asf-image-file-input {
+    position: relative;
+    border: 1px solid #d6d6d6;
+    cursor: pointer;
+}
+
+.asf-image-file-input-img{
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 10%;
+    bottom: 10%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.7;
+}
+
+.asf-image-file-input:hover .asf-image-file-input-img{
+    opacity: 1;
+}
+
+.asf-image-file-input:hover{
+    border-color: #aaaaaa;
+}
+
+.asf-image-file-input.as-has-file .asf-image-file-input-img{
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 1;
+}
+
+.asf-image-file-input.as-has-file:hover .asf-image-file-input-img{
+    opacity: 0.8;
+}
