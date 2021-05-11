@@ -4,6 +4,7 @@ import TableEditor from "absol-sheet/js/fragment/TableEditor";
 import {randomSentence} from "absol/src/String/stringGenerate";
 import {_} from "../core/FCore";
 import DomSignal from "absol/src/HTML5/DomSignal";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 
 /***
@@ -16,7 +17,7 @@ function TableInput() {
 }
 
 
-OOP.mixClass(TableInput, ScalableComponent);
+inheritComponentClass(TableInput, ScalableComponent);
 
 TableInput.prototype.tag = 'TableInput';
 
@@ -25,6 +26,60 @@ TableInput.prototype.menuIcon = 'span.mdi.mdi-table-edit';
 TableInput.prototype.render = function () {
     return this.editor.getView();
 };
+
+
+TableInput.prototype.attributeHandlers.propertyNames = {
+    set: function (value){
+        this._dataFlushed = false;
+        this._requestUpdateContent();
+        return value;
+    },
+    get: function (){
+        var ref = arguments[arguments.length - 1];
+        if (this._dataFlushed) {
+            return this.editor.tableData.propertyNames;
+        }
+        else {
+            return ref.get();
+        }
+    }
+};
+
+TableInput.prototype.attributeHandlers.propertyDescriptors = {
+    set: function (value){
+        this._dataFlushed = false;
+        this._requestUpdateContent();
+        return value;
+    },
+    get: function (){
+        var ref = arguments[arguments.length - 1];
+        if (this._dataFlushed) {
+            return this.editor.tableData.propertyDescriptors;
+        }
+        else {
+            return ref.get();
+        }
+    }
+};
+
+
+TableInput.prototype.attributeHandlers.records = {
+    set: function (value){
+        this._dataFlushed = false;
+        this._requestUpdateContent();
+        return value;
+    },
+    get: function (){
+        var ref = arguments[arguments.length - 1];
+        if (this._dataFlushed) {
+            return this.editor.tableData.records;
+        }
+        else {
+            return ref.get();
+        }
+    }
+}
+
 
 TableInput.prototype.onCreated = function () {
     this.$domSignal = _('attachhook.as-dom-signal');
@@ -78,6 +133,7 @@ TableInput.prototype._updateContent = function () {
             propertyDescriptors: this.attributes.propertyDescriptors,
             records: this.attributes.records
         });
+        this._dataFlushed = true;
     }
 };
 
@@ -85,53 +141,6 @@ TableInput.prototype._requestUpdateContent = function () {
     this.domSignal.emit('requestUpdateContent');
 };
 
-TableInput.prototype.setAttributePropertyNames = function (value) {
-    this._dataFlushed = false;
-    this._requestUpdateContent();
-    return value;
-};
-
-TableInput.prototype.getAttributePropertyNames = function () {
-    if (this._dataFlushed) {
-        return this.editor.tableData.propertyNames;
-    }
-    else {
-        return this.attributes.propertyNames;
-    }
-};
-
-
-TableInput.prototype.setAttributePropertyDescriptors = function (value) {
-    this._dataFlushed = false;
-    this._requestUpdateContent();
-    return value;
-};
-
-
-TableInput.prototype.getAttributePropertyDescriptors = function () {
-    if (this._dataFlushed) {
-        return this.editor.tableData.propertyDescriptors;
-    }
-    else {
-        return this.attributes.propertyDescriptors;
-    }
-};
-
-
-TableInput.prototype.setAttributeRecords = function (value) {
-    this._dataFlushed = false;
-    this._requestUpdateContent();
-    return value;
-};
-
-TableInput.prototype.getAttributeRecords = function () {
-    if (this._dataFlushed) {
-        return this.editor.tableData.records;
-    }
-    else {
-        return this.attributes.records;
-    }
-};
 
 TableInput.prototype.getDataBindingDescriptor = function () {
     var thisTI = this;
