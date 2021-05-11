@@ -5,6 +5,7 @@ import {AssemblerInstance} from "../core/Assembler";
 import ArrayOfFragment from "./ArrayOfFragment";
 import FlexiconButton from "absol-acomp/js/FlexiconButton";
 import '../../css/editablearrayoffragment.css';
+import {inheritComponentClass} from "../core/BaseComponent";
 
 
 /***
@@ -17,7 +18,7 @@ function EditableArrayOfFragment() {
     this._makeArray();
 }
 
-OOP.mixClass(EditableArrayOfFragment, ArrayOfFragment);
+inheritComponentClass(EditableArrayOfFragment, ArrayOfFragment);
 
 EditableArrayOfFragment.prototype.tag = "EditableArrayOfFragment";
 EditableArrayOfFragment.prototype.menuIcon = "span.mdi.mdi-tray-full";

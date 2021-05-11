@@ -47,7 +47,7 @@ ArrayOfFragment.prototype.render = function () {
 
 ArrayOfFragment.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.style.itemSpacing = 0;
+    this.style.itemSpacing = 10;
 }
 
 ArrayOfFragment.prototype.getAcceptsAttributeNames = function () {
@@ -55,7 +55,7 @@ ArrayOfFragment.prototype.getAcceptsAttributeNames = function () {
 };
 
 ArrayOfFragment.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat("itemSpacing");
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(["itemSpacing"]);
 };
 
 
