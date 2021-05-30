@@ -27,14 +27,40 @@ TableInput.prototype.render = function () {
     return this.editor.getView();
 };
 
+TableInput.prototype.styleHandlers.maxHeight = {
+    set: function (value) {
+        if (!(value > 0 && value < Infinity)) value = null;
+        if (value) {
+            this.domElt.addStyle('max-height', value + 'px');
+        }
+        else {
+            this.domElt.removeStyle('max-height');
+        }
+        return value;
+    },
+    export: function () {
+        var ref = arguments[arguments.length - 1];
+        var value = ref.get();
+        if (value) return value;
+        return undefined;
+    },
+    descriptor:{
+        type:'LengthInPixel'
+    }
+};
+
+TableInput.prototype.getAcceptsStyleNames = function () {
+    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['maxHeight']);
+};
+
 
 TableInput.prototype.attributeHandlers.propertyNames = {
-    set: function (value){
+    set: function (value) {
         this._dataFlushed = false;
         this._requestUpdateContent();
         return value;
     },
-    get: function (){
+    get: function () {
         var ref = arguments[arguments.length - 1];
         if (this._dataFlushed) {
             return this.editor.tableData.propertyNames;
@@ -46,12 +72,12 @@ TableInput.prototype.attributeHandlers.propertyNames = {
 };
 
 TableInput.prototype.attributeHandlers.propertyDescriptors = {
-    set: function (value){
+    set: function (value) {
         this._dataFlushed = false;
         this._requestUpdateContent();
         return value;
     },
-    get: function (){
+    get: function () {
         var ref = arguments[arguments.length - 1];
         if (this._dataFlushed) {
             return this.editor.tableData.propertyDescriptors;
@@ -64,12 +90,12 @@ TableInput.prototype.attributeHandlers.propertyDescriptors = {
 
 
 TableInput.prototype.attributeHandlers.records = {
-    set: function (value){
+    set: function (value) {
         this._dataFlushed = false;
         this._requestUpdateContent();
         return value;
     },
-    get: function (){
+    get: function () {
         var ref = arguments[arguments.length - 1];
         if (this._dataFlushed) {
             return this.editor.tableData.records;
@@ -101,7 +127,7 @@ TableInput.prototype.onCreated = function () {
             type: 'boolean'
         },
         enum: {
-            type:'enum',
+            type: 'enum',
             items: [
                 { text: 'Type 0', value: '0' },
                 { text: 'Type 1', value: '1' },
