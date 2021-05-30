@@ -42,9 +42,11 @@ PELengthInPixel.prototype.attachInput = function () {
 
     this.$unsetCBx.on('change', function () {
         if (this.checked) {
+            self.$numberInput.disabled = true;
             self.setValue(null);
         }
         else {
+            self.$numberInput.disabled = false;
             self.setValue(512);
         }
     });
@@ -53,6 +55,7 @@ PELengthInPixel.prototype.attachInput = function () {
 PELengthInPixel.prototype.reload = function () {
     var descriptor = this.renewDescriptor();
     this.$numberInput.disabled = !!descriptor.disabled;
+    this.$unsetCBx.disabled = !!descriptor.disabled;
     var value = this.getValue();
     if (value > 0 && value < Infinity) {
         this.$numberInput.value = value;
@@ -61,6 +64,7 @@ PELengthInPixel.prototype.reload = function () {
     else {
         this.$numberInput.value = 512;
         this.$unsetCBx.checked = true;
+        this.$numberInput.disabled = false;
     }
 };
 
