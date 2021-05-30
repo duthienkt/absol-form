@@ -43,7 +43,6 @@ TreeComboBox.prototype.attributeHandlers.treeList = Object.assign({}, ComboBox.p
         });
     }
 });
-console.log(TreeComboBox.prototype.attributeHandlers.treeList)
 
 TreeComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
