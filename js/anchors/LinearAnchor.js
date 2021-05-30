@@ -72,7 +72,12 @@ LinearAnchor.prototype.compStyleHandlers.height = {
                 value = value * parentBound.height / 100 + '%';
             }
         }
-
+        if (value === 'auto') {
+            this.anchor.domElt.addClass('as-height-auto');
+        }
+        else {
+            this.anchor.domElt.removeClass('as-height-auto');
+        }
         var styleValue = value >= 0 ? value + 'px' : value;
         if (styleValue === 'match_parent') styleValue = '100%';
         this.anchor.domElt.addStyle('height', styleValue);
@@ -130,6 +135,12 @@ LinearAnchor.prototype.compStyleHandlers.width = {
                 parentBound = this.parent.domElt.getBoundingClientRect();
                 value = value * parentBound.width / 100 + '%';
             }
+        }
+        if (value === 'auto') {
+            this.anchor.domElt.addClass('as-width-auto');
+        }
+        else {
+            this.anchor.domElt.removeClass('as-width-auto');
         }
         var styleValue = value >= 0 ? value + 'px' : value;
         if (styleValue === 'match_parent') styleValue = '100%';

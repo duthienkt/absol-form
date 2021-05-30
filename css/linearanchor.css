@@ -3,7 +3,10 @@
 }
 
 
-.as-linear-anchor-box>.as-base-component{
+.as-linear-anchor-box:not(.as-width-auto) > .as-base-component {
     width: 100%;
+}
+
+.as-linear-anchor-box:not(.as-height-auto) > .as-base-component {
     height: 100%;
 }
