@@ -137,10 +137,11 @@ RelativeAnchor.prototype.compStyleHandlers.left = {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
         var unit = arguments.length > 1 ? arguments[0] : undefined;
+        var disabled = this.style.hAlign === 'center' || this.style.hAlign === 'right';
         var bound;
         var parentBound;
         if (unit === 'px') {
-            if (typeof value != 'number') {
+            if (typeof value != 'number' || disabled) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
                 return bound.left - parentBound.left;
@@ -151,7 +152,7 @@ RelativeAnchor.prototype.compStyleHandlers.left = {
         }
         else if (unit === '%') {
             if (((typeof value == 'string') && (!value.match(/%$/)))
-                || (typeof value != 'string')) {
+                || (typeof value != 'string') || disabled) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
                 return (bound.left - parentBound.left) * 100 / parentBound.width;
@@ -204,12 +205,13 @@ RelativeAnchor.prototype.compStyleHandlers.right = {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
         var unit = arguments.length > 1 ? arguments[0] : undefined;
+        var disabled = this.style.hAlign === 'center' || this.style.hAlign === 'left';
         var bound, parentBound;
         if (unit === 'px') {
-            if (typeof value != 'number') {
+            if (typeof value != 'number' || disabled) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
-                return  parentBound.right - bound.right;
+                return parentBound.right - bound.right;
             }
             else {
                 return value;
@@ -217,7 +219,7 @@ RelativeAnchor.prototype.compStyleHandlers.right = {
         }
         else if (unit === '%') {
             if (((typeof value == 'string') && (!value.match(/%$/)))
-                || (typeof value != 'string')) {
+                || (typeof value != 'string') || disabled) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
                 return (parentBound.right - bound.right) * 100 / parentBound.width;
@@ -271,9 +273,10 @@ RelativeAnchor.prototype.compStyleHandlers.top = {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
         var unit = arguments.length > 1 ? arguments[0] : undefined;
+        var disabled = this.style.vAlign === 'center' || this.style.vAlign === 'bottom';
         var bound, parentBound;
         if (unit === 'px') {
-            if (typeof value != 'number') {
+            if (typeof value != 'number' || disabled) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
                 return bound.top - parentBound.top;
@@ -284,7 +287,7 @@ RelativeAnchor.prototype.compStyleHandlers.top = {
         }
         else if (unit === '%') {
             if (((typeof value == 'string') && (!value.match(/%$/)))
-                || (typeof value != 'string')) {
+                || (typeof value != 'string') || disabled) {
                 {
                     bound = this.domElt.getBoundingClientRect();
                     parentBound = this.parent.domElt.getBoundingClientRect();
@@ -340,9 +343,10 @@ RelativeAnchor.prototype.compStyleHandlers.bottom = {
         var ref = arguments[arguments.length - 1];
         var value = ref.get();
         var unit = arguments.length > 1 ? arguments[0] : undefined;
+        var disabled = this.style.vAlign === 'center' || this.style.vAlign === 'top';
         var bound, parentBound;
         if (unit === 'px') {
-            if (typeof value != 'number') {
+            if (typeof value != 'number' || disabled) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
                 return parentBound.bottom - bound.bottom;
@@ -353,7 +357,7 @@ RelativeAnchor.prototype.compStyleHandlers.bottom = {
         }
         else if (unit === '%') {
             if (((typeof value == 'string') && (!value.match(/%$/)))
-                || (typeof value != 'string')) {
+                || (typeof value != 'string') || disabled) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
                 return (parentBound.bottom - bound.bottom) * 100 / parentBound.height;
@@ -437,11 +441,10 @@ RelativeAnchor.prototype.compStyleHandlers.width = {
         var value = ref.get();
         var unit = arguments.length > 1 ? arguments[0] : undefined;
         var hAlign = this.style.hAlign;
-        var vAlign = this.style.vAlign;
+        var disabled = this.style.hAlign === 'fixed';
         var bound, parentBound;
         if (unit === 'px') {
-            if (hAlign === 'fixed' || hAlign === 'auto'
-                || typeof value != 'number') {
+            if (disabled || typeof value != 'number') {
                 bound = this.anchor.domElt.getBoundingClientRect();
                 return bound.width
             }
@@ -451,8 +454,7 @@ RelativeAnchor.prototype.compStyleHandlers.width = {
         }
         else if (unit === '%') {
             if (hAlign === 'match_parent') return 100;
-            else if (hAlign === 'fixed' || hAlign === 'auto'
-                || ((typeof value === 'string') && (!value.match(/%$/)))
+            else if (disabled || ((typeof value === 'string') && (!value.match(/%$/)))
                 || (typeof value != 'string')) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
@@ -515,11 +517,12 @@ RelativeAnchor.prototype.compStyleHandlers.height = {
     get: function () {
         var ref = arguments[arguments.length - 1];
         var unit = arguments.length > 1 ? arguments[1] : undefined;
+        var disabled = this.style.vAlign === 'fixed';
         var parentBound, bound;
         var currentValue = ref.get();
         var vAlign = this.style.vAlign;
         if (unit === 'px') {
-            if (vAlign === 'fixed' || vAlign === 'auto' || typeof currentValue != 'number') {
+            if (disabled || typeof currentValue != 'number') {
                 bound = this.domElt.getBoundingClientRect();
                 return bound.height;
             }
@@ -529,9 +532,7 @@ RelativeAnchor.prototype.compStyleHandlers.height = {
         }
         else if (unit === '%') {
             if (vAlign === 'match_parent') return 100;
-            else if (vAlign === 'fixed'
-                || vAlign === 'auto'
-                || ((typeof currentValue === 'string') && (!currentValue.match(/%$/)))
+            else if (disabled || ((typeof currentValue === 'string') && (!currentValue.match(/%$/)))
                 || (typeof currentValue != 'string')) {
                 bound = this.domElt.getBoundingClientRect();
                 parentBound = this.parent.domElt.getBoundingClientRect();
