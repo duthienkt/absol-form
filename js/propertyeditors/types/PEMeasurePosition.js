@@ -61,7 +61,7 @@ PEMeasurePosition.prototype.attachInput = function () {
 
 PEMeasurePosition.prototype.reload = function () {
     var descriptor = this.renewDescriptor();
-    if (descriptor.disabled) this.$numberInput.disabled = !!descriptor.disabled;
+    this.$numberInput.disabled = !!descriptor.disabled;
     var value;
     if (descriptor.disabled) {
         value = this.getValue(this.$typeSelect.value);

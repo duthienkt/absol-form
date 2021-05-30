@@ -80,7 +80,7 @@ PEMeasureSize.prototype.attachInput = function () {
 
 PEMeasureSize.prototype.reload = function () {
     var descriptor = this.renewDescriptor();
-    if (descriptor.disabled) this.$numberInput.disabled = !!descriptor.disabled;
+    this.$numberInput.disabled = !!descriptor.disabled;
     var value = this.getValue();
     if (typeof value === 'number') {
         this.$numberInput.value = value;
