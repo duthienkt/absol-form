@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {beginOfDay} from "absol/src/Time/datetime";
 import OOP from "absol/src/HTML5/OOP";
+import {inheritComponentClass} from "../core/BaseComponent";
 
 
 var _ = Fcore._;
@@ -14,7 +15,7 @@ function DateInput() {
     ScalableComponent.call(this);
 }
 
-OOP.mixClass(DateInput, ScalableComponent);
+inheritComponentClass(DateInput, ScalableComponent);
 
 
 DateInput.prototype.tag = "DateInput";
@@ -22,6 +23,25 @@ DateInput.prototype.menuIcon = "span.mdi.mdi-calendar-edit";
 DateInput.prototype.SUPPORT_STYLE_NAMES = ['top', 'left', 'right', 'top', 'bottom', 'width', 'height'];
 DateInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 DateInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
+
+DateInput.prototype.attributeHandlers.value = {
+    set: function (value) {
+        if (value instanceof Date)
+            this.view.value = value;
+        else if (typeof value == 'string' || typeof value == "number") {
+            value = new Date(value);
+            this.view.value = value;
+        }
+        else {
+            value = null;
+            this.view.value = null;
+        }
+        return this.view.value;
+    },
+    get: function () {
+        return this.view.value;
+    }
+};
 
 
 DateInput.prototype.render = function () {
@@ -43,21 +63,6 @@ DateInput.prototype.onCreated = function () {
         self.attributes.value = this.value;
         self.emit('change', { type: 'change', value: this.value }, self);
     });
-};
-
-
-DateInput.prototype.setAttributeValue = function (value) {
-    if (value instanceof Date)
-        this.view.value = value;
-    else if (typeof value == 'string' || typeof value == "number") {
-        this.attributes.value = new Date(value);
-        this.view.value = this.attributes.value;
-    }
-    else {
-        this.attributes.value = null;
-        this.view.value = this.attributes.value;
-    }
-    return this.view.value;
 };
 
 
