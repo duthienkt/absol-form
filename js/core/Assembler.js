@@ -26,6 +26,7 @@ import ArrayOfFragment from "../components/ArrayOfFragment";
 import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
 import TreeComboBox from "../components/TreeComboBox";
 import ImageFileInput from "../components/ImageFileInput";
+import TimeInput from "../components/TimeInput";
 
 function Assembler() {
     this.addConstructor(Button);
@@ -33,6 +34,7 @@ function Assembler() {
     this.addConstructor(ComboBox);
     this.addConstructor(TreeComboBox);
     this.addConstructor(DateInput);
+    this.addConstructor(TimeInput);
     this.addConstructor(Image);
     this.addConstructor(Label);
     this.addConstructor(NumberInput);
@@ -49,7 +51,7 @@ function Assembler() {
     this.addConstructor(Rectangle);
     this.addConstructor(MultiselectCombobox);
     this.addConstructor(TrackBar);
-    this.addConstructor('Trackbar',TrackBar);
+    this.addConstructor('Trackbar', TrackBar);
     this.addConstructor(TrackBarInput);
     this.addConstructor(TableInput);
     this.addComponent(ArrayOfFragment);
@@ -127,7 +129,7 @@ Assembler.prototype.buildComponent = function (data, frag) {
     var attributes = data.attributes;
     if (typeof attributes == 'object')
         Object.assign(result.attributes, attributes)
-        
+
 
     var events = data.events;
     if (typeof events == 'object')

@@ -31,6 +31,7 @@ import ArrayOfFragment from "../components/ArrayOfFragment";
 import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
 import TreeComboBox from "../components/TreeComboBox";
 import ImageFileInput from "../components/ImageFileInput";
+import TimeInput from "../components/TimeInput";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -130,6 +131,13 @@ ComponentPicker.prototype.getView = function () {
                                 name: "DateInput",
                                 icon: DateInput.prototype.menuIcon,
                                 componentConstructor: DateInput
+                            }
+                        }, {
+                            tag: 'exptree',
+                            props: {
+                                name: "TimeInput",
+                                icon: TimeInput.prototype.menuIcon,
+                                componentConstructor: TimeInput
                             }
                         },
                         {

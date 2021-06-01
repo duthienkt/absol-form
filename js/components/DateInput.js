@@ -56,14 +56,6 @@ DateInput.prototype.onCreate = function () {
     this.style.height = 30;
 };
 
-DateInput.prototype.onCreated = function () {
-    ScalableComponent.prototype.onCreated.call(this);
-    var self = this;
-    this.view.on('change', function (event) {
-        self.attributes.value = this.value;
-        self.emit('change', { type: 'change', value: this.value }, self);
-    });
-};
 
 
 DateInput.prototype.getAcceptsAttributeNames = function () {
