@@ -44,8 +44,8 @@ TableInput.prototype.styleHandlers.maxHeight = {
         if (value) return value;
         return undefined;
     },
-    descriptor:{
-        type:'LengthInPixel'
+    descriptor: {
+        type: 'LengthInPixel'
     }
 };
 
@@ -85,6 +85,26 @@ TableInput.prototype.attributeHandlers.propertyDescriptors = {
         else {
             return ref.get();
         }
+    }
+};
+
+TableInput.prototype.attributeHandlers.config = {
+    set: function (value) {
+        this._dataFlushed = false;
+        this._requestUpdateContent();
+        return value;
+    },
+    get: function () {
+        var ref = arguments[arguments.length - 1];
+        if (this._dataFlushed) {
+            return this.editor.tableData.config;
+        }
+        else {
+            return ref.get();
+        }
+    },
+    export: function () {
+        return Object.assign({}, this.attributes.config);
     }
 };
 
@@ -157,7 +177,8 @@ TableInput.prototype._updateContent = function () {
         this.editor.setData({
             propertyNames: this.attributes.propertyNames,
             propertyDescriptors: this.attributes.propertyDescriptors,
-            records: this.attributes.records
+            records: this.attributes.records,
+            config: this.attributes.config
         });
         this._dataFlushed = true;
     }
