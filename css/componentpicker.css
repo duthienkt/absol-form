@@ -1,4 +1,6 @@
-.as-compopnent-picker {}
+.as-compopnent-picker {
+    overflow-y: auto;
+}
 
 
 .as-compopnent-picker-forceground {

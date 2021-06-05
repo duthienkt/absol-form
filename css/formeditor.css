@@ -225,7 +225,9 @@ table.as-form-params > tbody > tr > td > textarea {
 }
 
 .as-form-left-tool-site-tab .as-component-outline,
-.as-form-left-tool-site-tab .as-form-explorer {
+.as-form-left-tool-site-tab .as-form-explorer,
+.as-form-left-tool-site-tab .as-compopnent-picker
+{
     height: calc(100% - 2em);
 }
 
