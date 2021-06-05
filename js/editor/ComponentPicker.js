@@ -12,26 +12,12 @@ import Context from "absol/src/AppPattern/Context";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
 
 import '../../css/componentpicker.css';
-import Text from "../components/Text";
 import Draggable from "absol-acomp/js/Draggable";
 import R from "../R";
-import Image from "../components/Image";
-import Button from "../components/Button";
-import Table from "../components/Table";
-import LinearLayout from "../layouts/LinearLayout";
+
 import PluginManager from "../core/PluginManager";
-import Ellipse from "../shapes/Ellipse";
-import Rectangle from "../shapes/Rectangle";
-import ChainLayout from "../layouts/ChainLayout";
-import MultiselectCombobox from "../components/MultiselectCombobox";
-import TrackBar from "../components/TrackBar";
-import TrackBarInput from "../components/TrackBarInput";
-import TableInput from "../components/TableInput";
-import ArrayOfFragment from "../components/ArrayOfFragment";
-import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
-import TreeComboBox from "../components/TreeComboBox";
-import ImageFileInput from "../components/ImageFileInput";
-import TimeInput from "../components/TimeInput";
+
+import ComponentTreeList from "../components/ComponentTreeList";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -65,306 +51,44 @@ ComponentPicker.prototype.getView = function () {
         this.status = { open: 'close', close: 'open' }[this.status]
     }
 
+    function makeExp(node) {
+        if (typeof node === 'object') {
+            return {
+                tag: 'exptree',
+                props: {
+                    name: node.text,
+                    status: 'close'
+                },
+                on: {
+                    press: toggleGroup
+                },
+                child: node.children ? node.children.map(makeExp) : []
+            };
+        }
+        else if (typeof node === 'function') {
+            return {
+                tag: 'exptree',
+                props: {
+                    name: node.prototype.tag,
+                    icon: node.prototype.menuIcon,
+                    componentConstructor: node
+
+                }
+            };
+        }
+        else {
+            console.error('Invalid node ', node);
+        }
+    }
+
 
     this.$view = _({
-        class: 'as-compopnent-picker',
-        child: [{
-            tag: 'exptree',
-            props: {
-                name: 'all',
-                status: 'open'
-            },
-            on: {
-                press: toggleGroup
-            },
-            child: [
-                {
-                    tag: 'exptree',
-                    props: {
-                        name: 'layouts',
-                        status: 'close'
-                    },
-                    on: {
-                        press: toggleGroup
-                    },
-                    child: [
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "RelativeLayout",
-                                icon: RelativeLayout.prototype.menuIcon,
-                                componentConstructor: RelativeLayout
-
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "LinearLayout",
-                                icon: LinearLayout.prototype.menuIcon,
-                                componentConstructor: LinearLayout
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "ChainLayout",
-                                icon: ChainLayout.prototype.menuIcon,
-                                componentConstructor: ChainLayout
-                            }
-                        }
-                    ]
-                },
-                {
-                    tag: 'exptree',
-                    props: {
-                        name: 'inputs',
-                        status: 'close'
-                    },
-                    on: {
-                        press: toggleGroup
-                    },
-                    child: [
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "DateInput",
-                                icon: DateInput.prototype.menuIcon,
-                                componentConstructor: DateInput
-                            }
-                        }, {
-                            tag: 'exptree',
-                            props: {
-                                name: "TimeInput",
-                                icon: TimeInput.prototype.menuIcon,
-                                componentConstructor: TimeInput
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "TextInput",
-                                icon: TextInput.prototype.menuIcon,
-                                componentConstructor: TextInput
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "TextArea",
-                                icon: TextArea.prototype.menuIcon,
-                                componentConstructor: TextArea
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "NumberInput",
-                                icon: NumberInput.prototype.menuIcon,
-                                componentConstructor: NumberInput
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "ComboBox",
-                                icon: ComboBox.prototype.menuIcon,
-                                componentConstructor: ComboBox
-
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: MultiselectCombobox.prototype.tag,
-                                icon: MultiselectCombobox.prototype.menuIcon,
-                                componentConstructor: MultiselectCombobox
-
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: TreeComboBox.prototype.tag,
-                                icon: TreeComboBox.prototype.menuIcon,
-                                componentConstructor: TreeComboBox
-
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Radio",
-                                icon: Radio.prototype.menuIcon,
-                                componentConstructor: Radio
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "CheckBox",
-                                icon: CheckBox.prototype.menuIcon,
-                                componentConstructor: CheckBox
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: TrackBar.prototype.tag,
-                                icon: TrackBar.prototype.menuIcon,
-                                componentConstructor: TrackBar
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: TrackBarInput.prototype.tag,
-                                icon: TrackBarInput.prototype.menuIcon,
-                                componentConstructor: TrackBarInput
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: TableInput.prototype.tag,
-                                icon: TableInput.prototype.menuIcon,
-                                componentConstructor: TableInput
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: ImageFileInput.prototype.tag,
-                                icon: ImageFileInput.prototype.menuIcon,
-                                componentConstructor: ImageFileInput
-                            }
-                        }
-                    ]
-                },
-                {
-                    tag: 'exptree',
-                    props: {
-                        name: "static",
-                        status: 'close'
-                    },
-                    on: {
-                        press: toggleGroup
-                    },
-                    child: [
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Label",
-                                icon: Label.prototype.menuIcon,
-                                componentConstructor: Label
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Text",
-                                icon: Text.prototype.menuIcon,
-                                componentConstructor: Text
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Image",
-                                icon: Image.prototype.menuIcon,
-                                componentConstructor: Image
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Table",
-                                icon: Table.prototype.menuIcon,
-                                componentConstructor: Table
-                            }
-                        }
-                    ]
-                },
-                {
-                    tag: 'exptree',
-                    props: {
-                        name: "trigger",
-                        status: 'close'
-                    },
-                    on: {
-                        press: toggleGroup
-                    },
-                    child: [
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Button",
-                                icon: Button.prototype.menuIcon,
-                                componentConstructor: Button
-                            }
-                        }
-                    ]
-                },
-                {
-                    tag: 'exptree',
-                    props: {
-                        name: 'mapping',
-                        status: 'close'
-                    },
-                    child: [
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: ArrayOfFragment.prototype.tag,
-                                icon: ArrayOfFragment.prototype.menuIcon,
-                                componentConstructor: ArrayOfFragment
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: EditableArrayOfFragment.prototype.tag,
-                                icon: EditableArrayOfFragment.prototype.menuIcon,
-                                componentConstructor: EditableArrayOfFragment
-                            }
-                        }
-                    ]
-                },
-                {
-                    tag: 'exptree',
-                    props: {
-                        name: 'shapes',
-                        status: 'close'
-                    },
-                    on: {
-                        press: toggleGroup
-                    },
-                    child: [
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Ellipse",
-                                icon: Ellipse.prototype.menuIcon,
-                                componentConstructor: Ellipse
-                            }
-                        },
-                        {
-                            tag: 'exptree',
-                            props: {
-                                name: "Rectangle",
-                                icon: Rectangle.prototype.menuIcon,
-                                componentConstructor: Rectangle
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-        ]
+        class: ['as-compopnent-picker', 'as-bscroller'],
+        child: makeExp(ComponentTreeList)
     });
 
     this.$all = $('exptree', this.$view);
-
+    this.$all.status = 'open';
 
     var context = { self: this, toggleGroup: toggleGroup, $view: this.$view };
     PluginManager.exec(this, R.PLUGINS.COMPONENT_PICKER_VIEW, context);
