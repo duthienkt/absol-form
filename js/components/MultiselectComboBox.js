@@ -9,23 +9,23 @@ import {inheritComponentClass} from "../core/BaseComponent";
  * @extends ScalableComponent
  * @constructor
  */
-function MultiselectCombobox() {
+function MultiselectComboBox() {
     ScalableComponent.call(this);
 }
 
-inheritComponentClass(MultiselectCombobox, ScalableComponent);
+inheritComponentClass(MultiselectComboBox, ScalableComponent);
 
-MultiselectCombobox.prototype.tag = 'MultiselectCombobox';
+MultiselectComboBox.prototype.tag = 'MultiselectComboBox';
 
-MultiselectCombobox.prototype.menuIcon = 'span.mdi.mdi-chevron-down-box-outline';
+MultiselectComboBox.prototype.menuIcon = 'span.mdi.mdi-chevron-down-box-outline';
 
-MultiselectCombobox.prototype.render = function () {
+MultiselectComboBox.prototype.render = function () {
     return _({
         tag: MultiSelectMenu.tag
     });
 };
 
-MultiselectCombobox.prototype.onCreate = function () {
+MultiselectComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.style.height = 'auto';
     this.attributes.list = [
@@ -36,15 +36,15 @@ MultiselectCombobox.prototype.onCreate = function () {
     ];
 };
 
-MultiselectCombobox.prototype.onCreated = function () {
+MultiselectComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     this.bindAttribute('values');
     this.bindAttribute('searchable', 'enableSearch');
 };
 
-MultiselectCombobox.prototype.attributeHandlers.list = ComboBox.prototype.attributeHandlers.list;
-MultiselectCombobox.prototype.attributeHandlers.searchable = ComboBox.prototype.attributeHandlers.searchable;
-MultiselectCombobox.prototype.attributeHandlers.values = {
+MultiselectComboBox.prototype.attributeHandlers.list = ComboBox.prototype.attributeHandlers.list;
+MultiselectComboBox.prototype.attributeHandlers.searchable = ComboBox.prototype.attributeHandlers.searchable;
+MultiselectComboBox.prototype.attributeHandlers.values = {
     set: function (value) {
         this.domElt.values = value;
     },
@@ -63,18 +63,18 @@ MultiselectCombobox.prototype.attributeHandlers.values = {
 }
 
 
-MultiselectCombobox.prototype.measureMinSize = function () {
+MultiselectComboBox.prototype.measureMinSize = function () {
     var minWidthStyle = parseFloat(this.view.getComputedStyleValue('min-width').replace('px'));
     return { width: Math.max(minWidthStyle, 24), height: 30 };
 };
 
 
-MultiselectCombobox.prototype.getAcceptsAttributeNames = function () {
+MultiselectComboBox.prototype.getAcceptsAttributeNames = function () {
     return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'values', 'searchable']);
 };
 
 
-MultiselectCombobox.prototype.getDataBindingDescriptor = function () {
+MultiselectComboBox.prototype.getDataBindingDescriptor = function () {
     var thisC = this;
     var subObj = {};
     Object.defineProperties(subObj, {
@@ -106,4 +106,4 @@ MultiselectCombobox.prototype.getDataBindingDescriptor = function () {
     };
 };
 
-export default MultiselectCombobox;
+export default MultiselectComboBox;
