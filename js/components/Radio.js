@@ -1,9 +1,9 @@
 import Fcore from "../core/FCore";
-
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
-import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
+import CheckBox from "./Checkbox";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -17,6 +17,8 @@ inheritComponentClass(Radio, ContentScalelessComponent);
 
 Radio.prototype.tag = "Radio";
 Radio.prototype.menuIcon = "span.mdi.mdi-radiobox-marked";
+
+Object.assign(Radio.prototype.attributeHandlers, InputAttributeHandlers);
 
 Radio.prototype.attributeHandlers.checked = {
     set: function (value) {
@@ -34,10 +36,10 @@ Radio.prototype.attributeHandlers.checked = {
 Radio.prototype.attributeHandlers.groupName = {
     set: function (value) {
         value = (value || '') + '';
-        this.$content.attr('name', value);
+        this.$content.name = value;
     },
     get: function () {
-        return this.$content.attr('name');
+        return this.$content.name;
     },
     descriptor: {
         type: "text",
@@ -46,7 +48,7 @@ Radio.prototype.attributeHandlers.groupName = {
         independence: true
     },
     export: function () {
-        var value = this.groupName || '';
+        var value = this.attributes.groupName || '';
         if (value === '') return undefined;
         return value;
     }
@@ -65,7 +67,7 @@ Radio.prototype.attributeHandlers.value = {
         independence: true
     }
 }
-
+Radio.prototype.attributeHandlers.disabled = CheckBox.prototype.attributeHandlers.disabled;
 
 Radio.prototype.onCreate = function () {
     ContentScalelessComponent.prototype.onCreate.call(this);
@@ -105,7 +107,9 @@ Radio.prototype.setAttributeGroupName = function (value) {
 
 
 Radio.prototype.getAcceptsAttributeNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["groupName", "checked", 'value'])
+    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this)
+        .concat(["groupName", "checked", 'value'])
+        .concat(InputAttributeNames);
 };
 
 
