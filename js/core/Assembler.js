@@ -27,6 +27,7 @@ import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
 import TreeComboBox from "../components/TreeComboBox";
 import ImageFileInput from "../components/ImageFileInput";
 import TimeInput from "../components/TimeInput";
+import DateTimeInput from "../components/DateTimeInput";
 
 function Assembler() {
     this.addConstructor(Button);
@@ -57,6 +58,8 @@ function Assembler() {
     this.addConstructor(TableInput);
     this.addComponent(ArrayOfFragment);
     this.addComponent(EditableArrayOfFragment);
+    this.addComponent(DateTimeInput);
+
 }
 
 

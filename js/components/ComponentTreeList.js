@@ -23,6 +23,7 @@ import ArrayOfFragment from "./ArrayOfFragment";
 import EditableArrayOfFragment from "./EditableArrayOfFragment";
 import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
+import DateTimeInput from "./DateTimeInput";
 
 var ComponentTreeList = {
     text: "all",
@@ -40,6 +41,7 @@ var ComponentTreeList = {
             children: [
                 DateInput,
                 TimeInput,
+                DateTimeInput,
                 TextArea,
                 NumberInput,
                 ComboBox,
