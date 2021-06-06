@@ -1,8 +1,9 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import {beginOfDay} from "absol/src/Time/datetime";
+import {beginOfDay, MILLIS_PER_DAY} from "absol/src/Time/datetime";
 import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 
 var _ = Fcore._;
@@ -21,14 +22,38 @@ inheritComponentClass(TimeInput, ScalableComponent);
 TimeInput.prototype.tag = "TimeInput";
 TimeInput.prototype.menuIcon = "span.mdi.mdi-clock-outline";
 
+Object.assign(TimeInput.prototype.attributeHandlers, InputAttributeHandlers);
+
 TimeInput.prototype.attributeHandlers.value = {
     set: function (value) {
         this.domElt.dayOffset = value;
     },
     get: function () {
-        return  this.domElt.dayOffset;
+        return this.domElt.dayOffset;
+    },
+    descriptor: {
+        type: 'number',
+        min: 0,
+        max: MILLIS_PER_DAY - 1
     }
 };
+
+TimeInput.prototype.attributeHandlers.format = {
+    set: function (value) {
+        this.domElt.format = value;
+    },
+    get: function () {
+        return this.domElt.format;
+    },
+    export: function () {
+        if (this.domElt.format === 'hh:mm a') return undefined;
+        return this.domElt.format;
+    },
+    descriptor: {
+        type: 'enum',
+        values:['hh:mm a', 'HH:mm']
+    }
+}
 
 
 TimeInput.prototype.render = function () {
@@ -39,6 +64,7 @@ TimeInput.prototype.render = function () {
 TimeInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.value = null;
+    this.attributes.format = 'hh:mm a';
     this.style.width = 100;
     this.style.height = 30;
 };
@@ -50,15 +76,8 @@ TimeInput.prototype.onCreated = function () {
 
 
 TimeInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value']);
-};
-
-
-TimeInput.prototype.getAttributeValueDescriptor = function () {
-    return {
-        type: 'number',
-        sign: 'DateOffset'
-    }
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'format'])
+        .concat(InputAttributeNames);
 };
 
 

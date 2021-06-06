@@ -1,6 +1,7 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 var _ = Fcore._;
 
@@ -21,6 +22,7 @@ NumberInput.prototype.menuIcon = 'span.mdi.mdi-numeric-2-box-outline';
 NumberInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 NumberInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
+Object.assign(NumberInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 NumberInput.prototype.attributeHandlers.value = {
     set: function (value) {
@@ -142,7 +144,8 @@ NumberInput.prototype.setAttributeFloatFixed = function (value) {
 
 
 NumberInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["value", "floatFixed", 'min', 'max']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["value", "floatFixed", 'min', 'max'])
+        .concat(InputAttributeNames);
 };
 
 
