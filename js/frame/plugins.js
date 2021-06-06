@@ -53,6 +53,8 @@ function lsWorkspace(path) {
         }).filter(function (obj) {
             return obj.name.indexOf('.') != 0;
         });
+    }).catch(function (error) {
+        console.error(error);
     });
 }
 
