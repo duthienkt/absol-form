@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 var _ = Fcore._;
 
@@ -17,6 +18,8 @@ inheritComponentClass(ComboBox, ScalableComponent);
 
 ComboBox.prototype.tag = "ComboBox";
 ComboBox.prototype.menuIcon = 'span.mdi.mdi-arrow-down-drop-circle-outline';
+
+Object.assign(ComboBox.prototype.attributeHandlers, InputAttributeHandlers);
 
 ComboBox.prototype.attributeHandlers.value = {
     set: function (value) {
@@ -116,7 +119,8 @@ ComboBox.prototype.render = function () {
 
 
 ComboBox.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value', 'text', 'searchable']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'value', 'text', 'searchable'])
+        .concat(InputAttributeNames);
 };
 
 

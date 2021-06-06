@@ -3,6 +3,7 @@ import {_} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import ComboBox from "./ComboBox";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 
 /***
@@ -27,7 +28,9 @@ MultiselectComboBox.prototype.render = function () {
 
 MultiselectComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.style.height = 'auto';
+    this.style.height = 30;
+    this.style.width = 100;
+
     this.attributes.list = [
         { text: '0', value: '0' },
         { text: '1', value: '1' },
@@ -41,6 +44,10 @@ MultiselectComboBox.prototype.onCreated = function () {
     this.bindAttribute('values');
     this.bindAttribute('searchable', 'enableSearch');
 };
+
+
+Object.assign(MultiselectComboBox.prototype.attributeHandlers, InputAttributeHandlers);
+
 
 MultiselectComboBox.prototype.attributeHandlers.list = ComboBox.prototype.attributeHandlers.list;
 MultiselectComboBox.prototype.attributeHandlers.searchable = ComboBox.prototype.attributeHandlers.searchable;
@@ -70,7 +77,8 @@ MultiselectComboBox.prototype.measureMinSize = function () {
 
 
 MultiselectComboBox.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'values', 'searchable']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["list", 'values', 'searchable'])
+        .concat(InputAttributeNames);
 };
 
 

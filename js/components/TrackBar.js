@@ -1,6 +1,7 @@
 import {_} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 function TrackBar() {
     ScalableComponent.call(this);
@@ -10,6 +11,9 @@ inheritComponentClass(TrackBar, ScalableComponent);
 
 TrackBar.prototype.tag = 'TrackBar';
 TrackBar.prototype.menuIcon = 'span.mdi.mdi-source-commit.mdi-rotate-90';
+
+
+Object.assign(TrackBar.prototype.attributeHandlers, InputAttributeHandlers);
 
 TrackBar.prototype.attributeHandlers.value = {
     set: function(value){
@@ -41,7 +45,8 @@ TrackBar.prototype.onCreated = function () {
 
 
 TrackBar.prototype.getAcceptsAttributeNames = function (){
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value'])
+        .concat(InputAttributeNames);
 };
 
 

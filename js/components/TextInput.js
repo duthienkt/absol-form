@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import '../../css/component.css';
 import Text from "./Text";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 
 var _ = Fcore._;
@@ -24,6 +25,8 @@ TextInput.prototype.menuIcon = "span.mdi.mdi-textbox";
 
 TextInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 TextInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
+
+Object.assign(TextInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 TextInput.prototype.attributeHandlers.value = {
     set: function (value) {
@@ -115,7 +118,8 @@ TextInput.prototype.getAcceptsStyleNames = function () {
 
 
 TextInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'placeHolder', 'textType']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'placeHolder', 'textType'])
+        .concat(InputAttributeNames);
 };
 
 

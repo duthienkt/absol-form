@@ -1,7 +1,7 @@
 import ScalableComponent from "../core/ScalableComponent";
 import {_} from "../core/FCore";
-import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 
 /***
@@ -24,6 +24,9 @@ DateTimeInput.prototype.onCreate = function () {
     this.style.height = 30;
     this.attributes.format = 'dd/MM/yyyy hh:mm a';
 };
+
+
+Object.assign(DateTimeInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 DateTimeInput.prototype.attributeHandlers.format = {
     set: function (value) {
@@ -53,20 +56,20 @@ DateTimeInput.prototype.attributeHandlers.value = {
         type: 'DateTime'
     },
     export: function () {
-        var value = this.value;
-        if (value) return value;
-        return undefined;
+        return this.value || undefined;
     }
 };
 
+
+
 DateTimeInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames().concat('value', 'format');
+    return ScalableComponent.prototype.getAcceptsAttributeNames().concat('value', 'format').concat(InputAttributeNames);
 }
 
 DateTimeInput.prototype.render = function () {
     return _({
         tag: 'datetimeinput'
-    })
+    });
 };
 
 

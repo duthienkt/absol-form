@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import {beginOfDay} from "absol/src/Time/datetime";
 import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 
 var _ = Fcore._;
@@ -23,6 +24,8 @@ DateInput.prototype.menuIcon = "span.mdi.mdi-calendar-edit";
 DateInput.prototype.SUPPORT_STYLE_NAMES = ['top', 'left', 'right', 'top', 'bottom', 'width', 'height'];
 DateInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 DateInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
+
+Object.assign(DateInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 DateInput.prototype.attributeHandlers.value = {
     set: function (value) {
@@ -59,7 +62,7 @@ DateInput.prototype.onCreate = function () {
 
 
 DateInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value']).concat(InputAttributeNames);
 };
 
 
@@ -69,7 +72,7 @@ DateInput.prototype.getAttributeValueDescriptor = function () {
         nullable: true,
         defaultValue: beginOfDay(new Date()),
         sign: 'SimpleDate'
-    }
+    };
 };
 
 

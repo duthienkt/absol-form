@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import OOP from "absol/src/HTML5/OOP";
 import ComboBox from "./ComboBox";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 var _ = Fcore._;
 
@@ -26,6 +27,8 @@ TreeComboBox.prototype.menuIcon = [
     '<path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4" />',
     '</svg>'
 ].join('\n');
+
+Object.assign(TreeComboBox.prototype.attributeHandlers, InputAttributeHandlers);
 
 TreeComboBox.prototype.attributeHandlers.value = ComboBox.prototype.attributeHandlers.value;
 TreeComboBox.prototype.attributeHandlers.searchable = ComboBox.prototype.attributeHandlers.searchable;
@@ -89,7 +92,8 @@ TreeComboBox.prototype.getAttributeList = function () {
 
 
 TreeComboBox.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["treeList", 'value', 'searchable']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["treeList", 'value', 'searchable'])
+        .concat(InputAttributeNames);
 };
 
 

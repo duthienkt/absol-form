@@ -5,6 +5,7 @@ import ContentScalelessComponent from "../core/ContentScalelessComponent";
 import OOP from "absol/src/HTML5/OOP";
 import CheckboxButton from "absol-acomp/js/CheckboxButton";
 import {inheritComponentClass} from "../core/BaseComponent";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 // CheckboxButton
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -40,7 +41,7 @@ CheckBox.prototype.renderContent = function () {
 
 
 CheckBox.prototype.getAcceptsAttributeNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["checked"])
+    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["checked"]).concat(InputAttributeNames);
 };
 
 
@@ -79,6 +80,21 @@ CheckBox.prototype.attributeHandlers.checked = {
     },
     export: function () {
         return this.$content.checked || undefined;
+    }
+};
+
+
+Object.assign(CheckBox.prototype.attributeHandlers, InputAttributeHandlers);
+
+CheckBox.prototype.attributeHandlers.disabled = {
+    set: function (value) {
+        this.$content.disabled = value;
+    },
+    get: function () {
+        return this.$content.disabled;
+    },
+    export: function () {
+        return this.$content.disabled || undefined;
     }
 };
 
