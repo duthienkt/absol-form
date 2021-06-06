@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {inheritComponentClass} from "../core/BaseComponent";
 import TextStyleHandlers from "./handlers/TextStyleHandlers";
+import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 
 var _ = Fcore._;
 
@@ -19,6 +20,8 @@ Button.prototype.tag = "Button";
 Button.prototype.menuIcon = "span.mdi.mdi-alpha-b-box";
 
 Object.assign(Button.prototype.styleHandlers, TextStyleHandlers);
+
+Object.assign(Button.prototype.attributeHandlers, InputAttributeHandlers);
 
 Button.prototype.attributeHandlers.text = {
     set: function (value) {
@@ -85,10 +88,8 @@ Button.prototype.render = function () {
 };
 
 
-
-
 Button.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text', 'icon']);
+    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text', 'icon']).concat(InputAttributeNames);
 };
 
 Button.prototype.getAcceptsStyleNames = function () {
