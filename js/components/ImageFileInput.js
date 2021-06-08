@@ -30,6 +30,9 @@ ImageFileInput.prototype.attributeHandlers.value = {
         else if ((value instanceof File) || (value instanceof Blob)) {
             this._imageSrc = URL.createObjectURL(value);
         }
+        else if (value && value.url) {
+            this._imageSrc = value.url;
+        }
         else {
             this._imageSrc = undefined;
             value = null;
@@ -98,11 +101,20 @@ ImageFileInput.prototype.onCreated = function () {
 };
 
 ImageFileInput.prototype.openImageFileDialog = function () {
-    openFileDialog({ accept: 'image/*' }).then(function (files) {
-        if (files && files.length > 0) {
-            this.attributes.value = files[0];
-        }
-    }.bind(this));
+    if (window.contentModule && window.contentModule.chooseFile) {
+        window.contentModule.chooseFile({ type: "image_file" }).then(function (result) {
+            if (result) {
+                this.attributes.value = result;
+            }
+        }.bind(this));
+    }
+    else {
+        openFileDialog({ accept: 'image/*' }).then(function (files) {
+            if (files && files.length > 0) {
+                this.attributes.value = files[0];
+            }
+        }.bind(this));
+    }
 }
 
 

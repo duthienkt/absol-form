@@ -28,6 +28,7 @@ import TreeComboBox from "../components/TreeComboBox";
 import ImageFileInput from "../components/ImageFileInput";
 import TimeInput from "../components/TimeInput";
 import DateTimeInput from "../components/DateTimeInput";
+import FileInput from "../components/FileInput";
 
 function Assembler() {
     this.addConstructor(Button);
@@ -45,6 +46,7 @@ function Assembler() {
     this.addConstructor(TextArea);
     this.addConstructor(TextInput);
     this.addConstructor(ImageFileInput);
+    this.addConstructor(FileInput);
     this.addConstructor(LinearLayout);
     this.addConstructor(RelativeLayout);
     this.addConstructor(ChainLayout);

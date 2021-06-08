@@ -24,6 +24,7 @@ import EditableArrayOfFragment from "./EditableArrayOfFragment";
 import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
 import DateTimeInput from "./DateTimeInput";
+import FileInput from "./FileInput";
 
 var ComponentTreeList = {
     text: "all",
@@ -52,7 +53,8 @@ var ComponentTreeList = {
                 TrackBar,
                 TrackBarInput,
                 TableInput,
-                ImageFileInput
+                ImageFileInput,
+                FileInput
             ]
         },
         {
