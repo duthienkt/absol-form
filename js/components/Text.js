@@ -77,7 +77,7 @@ Text.prototype.onCreate = function () {
     this.style.textSize = 0;
     this.style.textAlign = 'left';
     this.style.textColor = 'black';
-    this.style.font = 'None';
+    this.style.font = 'unset';
 };
 
 Text.prototype.render = function () {

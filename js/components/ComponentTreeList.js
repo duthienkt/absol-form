@@ -25,6 +25,7 @@ import Ellipse from "../shapes/Ellipse";
 import Rectangle from "../shapes/Rectangle";
 import DateTimeInput from "./DateTimeInput";
 import FileInput from "./FileInput";
+import TextInput from "./TextInput";
 
 var ComponentTreeList = {
     text: "all",
@@ -43,6 +44,7 @@ var ComponentTreeList = {
                 DateInput,
                 TimeInput,
                 DateTimeInput,
+                TextInput,
                 TextArea,
                 NumberInput,
                 ComboBox,

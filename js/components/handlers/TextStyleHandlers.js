@@ -43,7 +43,7 @@ TextStyleHandlers.textSize = {
 
 TextStyleHandlers.font = {
     set: function (value) {
-        if (value)
+        if (value && value !== 'None')
             this.domElt.addStyle('font-family', value);
         else
             this.domElt.removeStyle('font-family');

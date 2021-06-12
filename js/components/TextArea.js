@@ -18,7 +18,7 @@ function TextArea() {
 inheritComponentClass(TextArea, TextInput);
 
 TextArea.prototype.tag = "TextArea";
-TextArea.prototype.menuIcon = "span.mdi.mdi-textarea";
+TextArea.prototype.menuIcon = "span.mdi.mdi-form-textarea";
 
 
 TextArea.prototype.render = function () {

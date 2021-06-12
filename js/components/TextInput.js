@@ -21,7 +21,7 @@ delete TextInput.prototype.attributeHandlers.text;
 delete TextInput.prototype.attributeHandlers.textDecode;
 
 TextInput.prototype.tag = "TextInput";
-TextInput.prototype.menuIcon = "span.mdi.mdi-textbox";
+TextInput.prototype.menuIcon = "span.mdi.mdi-form-textbox";
 
 TextInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
 TextInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
@@ -103,7 +103,7 @@ TextInput.prototype.onCreate = function () {
     this.style.textColor = 'black';
     this.style.textSize = 0;
     this.style.textAlign = 'left';
-    this.style.font = 'None';
+    this.style.font = 'unset';
 };
 
 
