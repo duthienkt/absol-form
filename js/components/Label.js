@@ -6,6 +6,7 @@ import Text from "./Text";
 import OOP from "absol/src/HTML5/OOP";
 import TextStyleHandlers from "./handlers/TextStyleHandlers";
 import {inheritComponentClass} from "../core/BaseComponent";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -87,5 +88,7 @@ Label.prototype.getDataBindingDescriptor = function () {
         }
     };
 };
+
+AssemblerInstance.addClass(Label);
 
 export default Label;

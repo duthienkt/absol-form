@@ -1,9 +1,9 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {beginOfDay, MILLIS_PER_DAY} from "absol/src/Time/datetime";
-import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 
 var _ = Fcore._;
@@ -51,7 +51,7 @@ TimeInput.prototype.attributeHandlers.format = {
     },
     descriptor: {
         type: 'enum',
-        values:['hh:mm a', 'HH:mm']
+        values: ['hh:mm a', 'HH:mm']
     }
 }
 
@@ -102,5 +102,6 @@ TimeInput.prototype.getDataBindingDescriptor = function () {
     };
 };
 
+AssemblerInstance.addClass(TimeInput);
 
 export default TimeInput;

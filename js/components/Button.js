@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import {inheritComponentClass} from "../core/BaseComponent";
 import TextStyleHandlers from "./handlers/TextStyleHandlers";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -105,5 +106,7 @@ Button.prototype.measureMinSize = function () {
     var fontSize = this.view.getFontSize();
     return { width: fontSize * 2 + 2, height: fontSize * 2 + 2 }
 };
+
+AssemblerInstance.addClass(Button);
 
 export default Button;

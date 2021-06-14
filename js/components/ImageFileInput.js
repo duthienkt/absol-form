@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import {inheritComponentClass} from "../core/BaseComponent";
 import '../../css/imagefileinput.css';
 import {openFileDialog} from "absol-acomp/js/utils";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -154,5 +155,8 @@ ImageFileInput.prototype.getDataBindingDescriptor = function () {
         }
     }
 };
+
+
+AssemblerInstance.addClass(ImageFileInput);
 
 export default ImageFileInput;

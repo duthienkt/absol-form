@@ -2,6 +2,7 @@ import {_} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 function TrackBar() {
     ScalableComponent.call(this);
@@ -67,5 +68,7 @@ TrackBar.prototype.getDataBindingDescriptor = function () {
         }
     }
 };
+
+AssemblerInstance.addClass(TrackBar);
 
 export default TrackBar;

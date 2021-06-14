@@ -5,6 +5,7 @@ import {randomSentence} from "absol/src/String/stringGenerate";
 import {_} from "../core/FCore";
 import DomSignal from "absol/src/HTML5/DomSignal";
 import {inheritComponentClass} from "../core/BaseComponent";
+import {AssemblerInstance} from "../core/Assembler";
 
 
 /***
@@ -232,5 +233,7 @@ TableInput.prototype.getDataBindingDescriptor = function () {
         }
     };
 };
+
+AssemblerInstance.addClass(TableInput);
 
 export default TableInput;

@@ -3,6 +3,7 @@ import LinearAnchorEditor from "../anchoreditors/LinearAnchorEditor";
 import ChainAnchor from "../anchors/ChainAnchor";
 import LinearLayout from "./LinearLayout";
 import BaseLayout from "../core/BaseLayout";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -99,5 +100,6 @@ ChainLayout.prototype.addChildByPosition = function (child, posX, posY) {
     }
 };
 
+AssemblerInstance.addClass(ChainLayout);
 
 export default ChainLayout;

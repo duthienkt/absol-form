@@ -217,5 +217,7 @@ EditableArrayOfFragment.prototype.addNewRow = function () {
     }
 };
 
+AssemblerInstance.addClass(EditableArrayOfFragment);
+
 export default EditableArrayOfFragment;
 

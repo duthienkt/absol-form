@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import Dom from "absol/src/HTML5/Dom";
 import OOP from "absol/src/HTML5/OOP";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -74,5 +75,6 @@ Image.prototype.getDataBindingDescriptor = function () {
     }
 };
 
+AssemblerInstance.addClass(Image);
 
 export default Image;

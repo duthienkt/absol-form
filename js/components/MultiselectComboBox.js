@@ -4,6 +4,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import ComboBox from "./ComboBox";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 
 /***
@@ -113,5 +114,8 @@ MultiselectComboBox.prototype.getDataBindingDescriptor = function () {
         }
     };
 };
+
+AssemblerInstance.addClass(MultiselectComboBox);
+AssemblerInstance.addClass('MultiselectCombobox',MultiselectComboBox);
 
 export default MultiselectComboBox;

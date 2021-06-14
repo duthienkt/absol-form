@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import showdown from 'showdown';
 import {inheritComponentClass} from "../core/BaseComponent";
 import TextStyleHandlers from "./handlers/TextStyleHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -104,5 +105,7 @@ Text.prototype.getDataBindingDescriptor = function () {
         }
     }
 };
+
+AssemblerInstance.addClass(Text);
 
 export default Text;

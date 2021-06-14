@@ -4,6 +4,7 @@ import ContentScalelessComponent from "../core/ContentScalelessComponent";
 import {inheritComponentClass} from "../core/BaseComponent";
 import CheckBox from "./Checkbox";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -160,6 +161,8 @@ Radio.prototype.bindDataToObject = function (obj) {
 
 
 };
+
+AssemblerInstance.addClass(Radio);
 
 
 export default Radio;

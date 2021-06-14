@@ -5,6 +5,7 @@ import '../../css/imagefileinput.css';
 import {openFileDialog} from "absol-acomp/js/utils";
 import MessageInput, {prepareIcon} from "absol-acomp/js/MessageInput";
 import ImageFileInput from "./ImageFileInput";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -104,5 +105,6 @@ FileInput.prototype.openFileDialog = function () {
     }
 };
 
+AssemblerInstance.addClass(FileInput);
 
 export default FileInput;

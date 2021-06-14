@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -169,5 +170,7 @@ ComboBox.prototype.getDataBindingDescriptor = function () {
         }
     };
 };
+
+AssemblerInstance.addClass(ComboBox);
 
 export default ComboBox;

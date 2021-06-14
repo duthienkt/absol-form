@@ -4,6 +4,7 @@ import '../../css/component.css';
 import Text from "./Text";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 
 var _ = Fcore._;
@@ -140,5 +141,7 @@ TextInput.prototype.getDataBindingDescriptor = function () {
         }
     };
 };
+
+AssemblerInstance.addClass(TextInput);
 
 export default TextInput;

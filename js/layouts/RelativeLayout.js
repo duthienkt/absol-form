@@ -3,6 +3,7 @@ import Fcore from "../core/FCore";
 import BaseLayout from "../core/BaseLayout";
 import RelativeAnchorEditor from "../anchoreditors/RelativeAnchorEditor";
 import OOP from "absol/src/HTML5/OOP";
+import Assembler, {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -112,6 +113,9 @@ RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
     child.setStyle('left', posX);
     child.setStyle('top', posY);
 };
+
+
+AssemblerInstance.addClass(RelativeLayout);
 
 
 export default RelativeLayout;

@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 function TrackBarInput() {
     ScalableComponent.call(this);
@@ -107,5 +108,6 @@ TrackBarInput.prototype.measureMinSize = function () {
     return { width: 40, height: 26 };
 };
 
+AssemblerInstance.addClass(TrackBarInput);
 
 export default TrackBarInput;

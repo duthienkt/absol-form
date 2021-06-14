@@ -2,6 +2,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import {_} from "../core/FCore";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 
 /***
@@ -72,6 +73,8 @@ DateTimeInput.prototype.render = function () {
     });
 };
 
+
+AssemblerInstance.addClass(DateTimeInput);
 
 export default DateTimeInput;
 

@@ -4,6 +4,7 @@ import OOP from "absol/src/HTML5/OOP";
 import ComboBox from "./ComboBox";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -142,5 +143,7 @@ TreeComboBox.prototype.getDataBindingDescriptor = function () {
         }
     };
 };
+
+AssemblerInstance.addClass(TreeComboBox);
 
 export default TreeComboBox;

@@ -6,7 +6,8 @@ import OOP from "absol/src/HTML5/OOP";
 import CheckboxButton from "absol-acomp/js/CheckboxButton";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
-// CheckboxButton
+import {AssemblerInstance} from "../core/Assembler";
+
 var _ = Fcore._;
 var $ = Fcore.$;
 
@@ -97,5 +98,7 @@ CheckBox.prototype.attributeHandlers.disabled = {
         return this.$content.disabled || undefined;
     }
 };
+
+AssemblerInstance.addClass(CheckBox);
 
 export default CheckBox;

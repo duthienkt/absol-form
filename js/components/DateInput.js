@@ -4,6 +4,7 @@ import {beginOfDay} from "absol/src/Time/datetime";
 import OOP from "absol/src/HTML5/OOP";
 import {inheritComponentClass} from "../core/BaseComponent";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
+import {AssemblerInstance} from "../core/Assembler";
 
 
 var _ = Fcore._;
@@ -96,6 +97,8 @@ DateInput.prototype.getDataBindingDescriptor = function () {
         }
     };
 };
+
+AssemblerInstance.addClass(DateInput);
 
 
 export default DateInput;

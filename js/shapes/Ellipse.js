@@ -1,5 +1,6 @@
 import Svg from "absol/src/HTML5/Svg";
 import BaseShape from "../core/BaseShape";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Svg.ShareInstance._;
 var $ = Svg.ShareInstance.$;
@@ -56,5 +57,6 @@ Ellipse.prototype.updateShape = function () {
 };
 
 
+AssemblerInstance.addClass(Ellipse);
 
 export default Ellipse;

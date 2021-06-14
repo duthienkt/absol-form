@@ -1,6 +1,7 @@
 import Svg from "absol/src/HTML5/Svg";
 import BaseShape from "../core/BaseShape";
 import Ellipse from "./Ellipse";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Svg.ShareInstance._;
 var $ = Svg.ShareInstance.$;
@@ -89,5 +90,6 @@ Rectangle.prototype.updateShape = function () {
     });
 };
 
+AssemblerInstance.addClass(Rectangle);
 
 export default Rectangle;

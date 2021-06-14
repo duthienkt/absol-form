@@ -2,6 +2,7 @@ import Fcore from "../core/FCore";
 import BaseLayout from "../core/BaseLayout";
 import LinearAnchor from "../anchors/LinearAnchor";
 import LinearAnchorEditor from "../anchoreditors/LinearAnchorEditor";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -127,5 +128,6 @@ LinearLayout.prototype.addChildByPosition = function (child, posX, posY) {
     }
 };
 
+AssemblerInstance.addClass(LinearLayout);
 
 export default LinearLayout;
