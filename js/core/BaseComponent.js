@@ -6,6 +6,9 @@ import PluginManager from './PluginManager';
 import FormEditorPreconfig from '../FormEditorPreconfig';
 import OOP from "absol/src/HTML5/OOP";
 import noop from "absol/src/Code/noop";
+import {randomIdent} from "absol/src/String/stringGenerate";
+import {randomUniqueIdent} from "./utils";
+import CCBlock from "absol/src/AppPattern/circuit/CCBlock";
 
 var extendAttributeNames = Object.keys(FormEditorPreconfig.extendAttributes);
 
@@ -22,6 +25,8 @@ function BaseComponent() {
     FViewable.call(this);
     FNode.call(this);
     FModel.call(this);
+    CCBlock.call(this, { id: randomUniqueIdent() });
+
     /***
      *
      * @type {FmFragment}
@@ -66,6 +71,40 @@ BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
 BaseComponent.prototype.isLayout = false;
 
+BaseComponent.prototype.attributeHandlers.id = {
+    set: function (value) {
+        if (!value) value = randomIdent(16);
+        this.id = value + '';
+    },
+    get: function () {
+        return this.id;
+    },
+    getDescriptor: function () {
+        return {
+            type: 'const',
+            value: this.id
+        };
+    }
+};
+
+BaseComponent.prototype.attributeHandlers.tooltip = {
+    set: function (value) {
+        if (!value) this.domElt.attr('title', undefined);
+         else this.domElt.title = value;
+    },
+    get: function () {
+        return this.domElt.title;
+    },
+    descriptor: {
+        type: 'text',
+        long: true
+    },
+    export: function () {
+        return this.domElt.title || undefined;
+    }
+};
+
+
 BaseComponent.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
@@ -98,19 +137,12 @@ BaseComponent.prototype.bindAttribute = function (attrName, viewPropertyName) {
     });
 }
 
-BaseComponent.prototype.onAnchorAttached = function () {
-    this.anchorAcceptsStyleName = this.anchor.getAcceptsStyleNames().reduce(function (ac, key) {
-        ac[key] = true;
-        return ac;
-    }, {});
-};
+BaseComponent.prototype.onAnchorAttached = noop;
 
-BaseComponent.prototype.onAnchorDetached = function () {
-};
+BaseComponent.prototype.onAnchorDetached = noop;
 
 
-BaseComponent.prototype.onAttached = function (parent) {
-};
+BaseComponent.prototype.onAttached = noop;
 
 BaseComponent.prototype.getData = function () {
     var self = this;
@@ -219,7 +251,7 @@ BaseComponent.prototype.measureMinSize = function () {
 }
 
 BaseComponent.prototype.getAcceptsAttributeNames = function () {
-    return ["type", "name"].concat(extendAttributeNames)
+    return ["type", 'id', "name", 'tooltip'].concat(extendAttributeNames)
         .concat((!this.isLayout || this.fragment) ? ['dataBinding'] : [])
         .concat(['irremovable']);
 };
