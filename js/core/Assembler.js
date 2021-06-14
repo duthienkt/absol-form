@@ -1,72 +1,37 @@
 import PluginManager from "./PluginManager";
 import R from "../R";
-import RelativeLayout from "../layouts/RelativeLayout";
-import Button from "../components/Button";
-import CheckBox from "../components/Checkbox";
-import ComboBox from "../components/ComboBox";
-import DateInput from "../components/DateInput";
-import Image from "../components/Image";
-import Label from "../components/Label";
-import NumberInput from "../components/NumberInput";
-import Radio from "../components/Radio";
-import Table from "../components/Table";
-import Text from "../components/Text";
-import TextArea from "../components/TextArea";
-import TextInput from "../components/TextInput";
-import LinearLayout from "../layouts/LinearLayout";
-import Ellipse from "../shapes/Ellipse";
-import Rectangle from "../shapes/Rectangle";
-import ChainLayout from "../layouts/ChainLayout";
-import MultiselectComboBox from "../components/MultiselectComboBox";
-import TrackBar from "../components/TrackBar";
-import TrackBarInput from "../components/TrackBarInput";
-import TableInput from "../components/TableInput";
+
 import {traversal} from "./FNode";
-import ArrayOfFragment from "../components/ArrayOfFragment";
-import EditableArrayOfFragment from "../components/EditableArrayOfFragment";
-import TreeComboBox from "../components/TreeComboBox";
-import ImageFileInput from "../components/ImageFileInput";
-import TimeInput from "../components/TimeInput";
-import DateTimeInput from "../components/DateTimeInput";
-import FileInput from "../components/FileInput";
+import BaseComponent from "./BaseComponent";
+import FmFragment from "./FmFragment";
 
 function Assembler() {
-    this.addConstructor(Button);
-    this.addConstructor(CheckBox);
-    this.addConstructor(ComboBox);
-    this.addConstructor(TreeComboBox);
-    this.addConstructor(DateInput);
-    this.addConstructor(TimeInput);
-    this.addConstructor(Image);
-    this.addConstructor(Label);
-    this.addConstructor(NumberInput);
-    this.addConstructor(Radio);
-    this.addConstructor(Table);
-    this.addConstructor(Text);
-    this.addConstructor(TextArea);
-    this.addConstructor(TextInput);
-    this.addConstructor(ImageFileInput);
-    this.addConstructor(FileInput);
-    this.addConstructor(LinearLayout);
-    this.addConstructor(RelativeLayout);
-    this.addConstructor(ChainLayout);
-    this.addConstructor(Ellipse);
-    this.addConstructor(Rectangle);
-    this.addConstructor(MultiselectComboBox);
-    this.addConstructor('MultiselectCombobox', MultiselectComboBox);//old name
-    this.addConstructor(TrackBar);
-    this.addConstructor('Trackbar', TrackBar);
-    this.addConstructor(TrackBarInput);
-    this.addConstructor(TableInput);
-    this.addComponent(ArrayOfFragment);
-    this.addComponent(EditableArrayOfFragment);
-    this.addComponent(DateTimeInput);
-
 }
 
-
+Assembler.prototype.classes = {};
 Assembler.prototype.componentConstructors = {};
 Assembler.prototype.fragmentConstructors = {};//share data
+
+Assembler.prototype.addClass = function () {
+    var type;
+    var tag;
+    var clazz;
+    if (arguments.length === 1) {
+        clazz = arguments[0];
+        if (typeof clazz !== 'function') return this;
+        tag = clazz.prototype.tag;
+    }
+    else if (arguments.length === 2) {
+        clazz = arguments[1];
+        if (typeof clazz !== 'function') return this;
+        tag = arguments[0];
+    }
+    if (!clazz) return this;
+    type = clazz.prototype.type;
+    this.classes[type] = this.classes[type] || {};
+    this.classes[type][tag] = clazz;
+};
+
 /***
  *
  * @param data
@@ -86,7 +51,7 @@ Assembler.prototype.build = function (data, frag) {
 Assembler.prototype.buildFragment = function (data) {
     var constructor;
     if (typeof data.class === 'string') {
-        constructor = this.fragmentConstructors[data.class] || data.class.split('.').reduce(function (ac, cr) {
+        constructor = this.classes[FmFragment.prototype.type][data.class] || data.class.split('.').reduce(function (ac, cr) {
             if (ac) {
                 ac = ac[cr];
             }
@@ -124,7 +89,7 @@ Assembler.prototype.buildComponent = function (data, frag) {
     var construction;
     if (typeof data.tag === "function")
         construction = data.tag;
-    else construction = this.componentConstructors[data.tag];
+    else construction = this.classes[BaseComponent.prototype.type][data.tag];
     if (!construction) throw new Error("Invalid tag " + data.tag);
 
     var result = new construction();
@@ -166,30 +131,8 @@ Assembler.prototype.buildComponent = function (data, frag) {
     return result;
 };
 
-Assembler.prototype.addConstructor = function (arg0, arg1) {
-    var name;
-    var constructor;
-    if (typeof arg0 == 'function') {
-        var name = arg0.prototype.tag || arg0.name;
-        constructor = arg0;
-        this.componentConstructors[name] = arg0;
-    }
-    else if (typeof arg0 == 'string') {
-        name = arg0;
-        constructor = arg1;
-        this.componentConstructors[arg0] = arg1;
-    }
-    else {
-        throw new Error('Invalid params');
-    }
-    switch (constructor.prototype.type) {
-        case 'COMPONENT':
-            this.componentConstructors[name] = constructor;
-            break;
-        case 'FRAGMENT':
-            this.fragmentConstructors[name] = constructor;
-            break;
-    }
+Assembler.prototype.addConstructor = function (){
+  return this.addClass.apply(this, arguments);
 };
 
 Assembler.prototype.removeConstructor = function (arg0, arg1) {
