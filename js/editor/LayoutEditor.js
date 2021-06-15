@@ -40,7 +40,6 @@ function LayoutEditor() {
     this.setContext(R.LAYOUT_EDITOR, this);
     this.setContext(R.HAS_CMD_EDITOR, this);
 
-
     //setup cmd
     this.cmdRunner.assign(LayoutEditorCMD);
     Object.keys(LayoutEditorCmdDescriptors).forEach(function (cmd) {
@@ -49,7 +48,7 @@ function LayoutEditor() {
     });
 
     /**
-     * @type {Array<import('../anchoreditors/AnchorEditor')>}
+     * @type {Array<AnchorEditor>}
      */
     this.anchorEditors = [];
 
@@ -65,11 +64,10 @@ function LayoutEditor() {
         else {
             self.editLayout(self.rootLayout);
         }
-        self.setActiveComponentByName.apply(self, selected);
+        self.setActiveComponentById.apply(self, selected);
         self.updateAnchor();
         self.notifyCmdDescriptorsChange();
         self.notifyUnsaved();
-        // self.mComponentOutline.updateComponentTree();
     });
     this.setContext(R.UNDO_HISTORY, this.undoHistory);// because it had it's ContextManager
 
@@ -94,18 +92,20 @@ function LayoutEditor() {
                 }).join(', ') + '}');
                 self.commitHistory('edit', compName + '.' + event.name + '');
                 self.notifyUnsaved();
-
+                if (event.name === 'name'){
+                    self.componentOtline.updateComponentTree();
+                }
             }
         });
 }
 
 OOP.mixClass(LayoutEditor, Assembler, BaseEditor);
 
-LayoutEditor.prototype.refresh = function(){
+LayoutEditor.prototype.refresh = function () {
     if (!this.rootLayout) return;
     var data = this.getData();
     var selected = this.getSelected();
-   var editing = this.editingLayout.getAttribute('name');
+    var editing = this.editingLayout.getAttribute('name');
     this.applyData(data);
     if (editing) {
         this.editLayoutByName(editing);
@@ -117,8 +117,6 @@ LayoutEditor.prototype.refresh = function(){
     this.updateAnchor();
     this.notifyCmdDescriptorsChange();
 };
-
-
 
 
 LayoutEditor.prototype._bindEvent = function () {
@@ -188,11 +186,8 @@ LayoutEditor.prototype.onResume = function () {
     }
     ClipboardManager.on('set', this.ev_clipboardSet);
     this.getView().focus();
-    //
     this.statusBarElt = this.getContext(R.STATUS_BAR_ELT);
     this.$mouseOffsetStatus.addTo(this.statusBarElt.$rightCtn);
-
-
 };
 
 
@@ -417,7 +412,7 @@ LayoutEditor.prototype.ev_mouseMove = function (event) {
 
 
 LayoutEditor.prototype.ev_clickEditorSpaceCtn = function (event) {
-    if (event.target == this.$editorSpaceCtn) {
+    if (event.target === this.$editorSpaceCtn) {
         this.setActiveComponent();
     }
 };
@@ -425,7 +420,7 @@ LayoutEditor.prototype.ev_clickEditorSpaceCtn = function (event) {
 
 LayoutEditor.prototype.ev_mousedownForceGround = function (event) {
     if (!EventEmitter.isMouseLeft(event)) return;
-    if (event.target != this.$forceground) return;
+    if (event.target !== this.$forceground) return;
     var hitComponent = this.findComponentsByMousePosition(event.clientX, event.clientY);
     if (hitComponent) {
         if (event.shiftKey)
@@ -492,8 +487,6 @@ LayoutEditor.prototype.ev_mouseMoveForceGround = function (event) {
             left: this._forgroundMovingData.left + 'px',
             width: this._forgroundMovingData.width + 'px',
         });
-
-
     }
     if (this._forgroundMovingData.height < 0) {
         this.$mouseSelectingBox.addStyle({
@@ -561,7 +554,7 @@ LayoutEditor.prototype.ev_layoutCtnScroll = function () {
 
 LayoutEditor.prototype.ev_contextMenuLayout = function (event) {
     var self = this;
-    if (event.target == this.$forceground) {
+    if (event.target === this.$forceground) {
         event.showContextMenu({
             // play-box-outline
             items: [
@@ -608,7 +601,7 @@ LayoutEditor.prototype.updateEditing = function () {
     });
 
     var foregroundBound = this.$forceground.getBoundingClientRect();
-    if (this.editingLayout == this.rootLayout) {
+    if (this.editingLayout === this.rootLayout) {
         this.$curtainLeft.addStyle({
             visibility: 'hidden'
         });
@@ -623,7 +616,6 @@ LayoutEditor.prototype.updateEditing = function () {
         this.$curtainTop.addStyle({
             visibility: 'hidden'
         });
-
     }
     else {
         this.$curtainLeft.addStyle({
@@ -691,7 +683,7 @@ LayoutEditor.prototype.findComponentsByName = function (name, from) {
     from = from || this.rootLayout;
     if (!from) return;
     var res = undefined;
-    if (from.getAttribute('name') == name) {
+    if (from.attributes.name === name) {
         return [from];
     }
     var self = this;
@@ -701,6 +693,25 @@ LayoutEditor.prototype.findComponentsByName = function (name, from) {
             if (found) return ac.concat(found);
             return ac;
         }, []);
+    if (res.length > 0) return res;
+    return undefined;
+};
+
+LayoutEditor.prototype.findComponentsById = function (id, from) {
+    from = from || this.rootLayout;
+    if (!from) return undefined;
+    var res = undefined;
+    if (from.attributes.id === id) {
+        return [from];
+    }
+    var self = this;
+    if (from.children) {
+        res = from.children.reduce(function (ac, child) {
+            var found = self.findComponentsByName(id, child);
+            if (found) return ac.concat(found);
+            return ac;
+        }, []);
+    }
     if (res.length > 0) return res;
     return undefined;
 };
@@ -728,7 +739,6 @@ LayoutEditor.prototype.updateSize = function () {
     });
     this.$propertyCtn.addStyle({
         top: headerBound.height + 'px',
-
     });
 };
 
@@ -861,6 +871,26 @@ LayoutEditor.prototype.setActiveComponentByName = function () {
     this.setActiveComponent.apply(this, components);
 };
 
+
+LayoutEditor.prototype.setActiveComponentById = function () {
+    var components = Array(arguments.length).fill(null);
+    var dict = Array.prototype.reduce.call(arguments, function (ac, cr, i) {
+        ac[cr] = i;
+        return ac;
+    }, {});
+
+    function visit(node) {
+        var id = node.attributes.id;
+        if (typeof dict[id] == 'number') {
+            components[dict[id]] = node;
+        }
+        node.children.forEach(visit);
+    }
+
+    visit(this.rootLayout);
+    this.setActiveComponent.apply(this, components);
+};
+
 /**
  * @argument {Array<import('../core/BaseComponent').default>}
  */
@@ -898,7 +928,7 @@ LayoutEditor.prototype.toggleActiveComponent = function () {
 
 LayoutEditor.prototype.findAnchorEditorByComponent = function (comp) {
     for (var i = 0; i < this.anchorEditors.length; ++i) {
-        if (this.anchorEditors[i].component == comp) return this.anchorEditors[i];
+        if (this.anchorEditors[i].component === comp) return this.anchorEditors[i];
     }
     return undefined;
 };
@@ -1255,7 +1285,7 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
     var parent = comp.parent;
     if (!parent) return;
     var firstChild = parent.children[0];
-    if (firstChild == comp) return;
+    if (firstChild === comp) return;
     comp.remove();
     parent.addChildBefore(comp, firstChild);
     this.emit('movetotopcomponent', { type: 'movetotopcomponent', target: this, component: comp }, this);
@@ -1275,8 +1305,8 @@ LayoutEditor.prototype.notifySaved = function () {
 
 LayoutEditor.prototype.getSelected = function () {
     return this.anchorEditors.map(function (aed) {
-        return aed.component.getAttribute('name');
-    })
+        return aed.component.attributes.id;
+    });
 };
 
 LayoutEditor.prototype.commitHistory = function (type, description) {
@@ -1295,7 +1325,7 @@ LayoutEditor.prototype.execCmd = function () {
         return BaseEditor.prototype.execCmd.apply(this, arguments);
     } catch (error) {
         if (!error.message.startsWith('No command'))
-        console.error(error);
+            console.error(error);
     }
 
     try {
