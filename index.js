@@ -5,7 +5,7 @@ import './css/layouteditor.css'
 import RelativeAnchor from './js/anchors/RelativeAnchor'
 import TextInput from './js/components/TextInput'
 import RelativeLayout from './js/layouts/RelativeLayout'
-import Assembler, {AssemblerInstance, findComponent, findComponentByName} from './js/core/Assembler'
+import Assembler, {AssemblerInstance, findComponent, findComponentById, findComponentByName} from './js/core/Assembler'
 import DateInput from './js/components/DateInput'
 import BaseComponent, {inheritComponentClass} from './js/core/BaseComponent'
 import LayoutEditor from './js/editor/LayoutEditor'
@@ -92,6 +92,7 @@ export default {
     AssemblerInstance: AssemblerInstance,
     findComponentsByName: findComponentByName,
     findComponent: findComponent,
+    findComponentsById: findComponentById,
     traversal: traversal,
     inheritComponentClass
 };
