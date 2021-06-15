@@ -178,6 +178,17 @@ export function findComponentByName(root, name) {
 
     return res;
 }
+export function findComponentById(root, id) {
+    var res = null;
+    traversal(root, function (ac) {
+        if (ac.node.attributes.id === id) {
+            ac.stop();
+            res = ac.node;
+        }
+    });
+
+    return res;
+}
 
 export function findComponent(root, opt) {
     var res = null;
