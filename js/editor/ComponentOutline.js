@@ -156,15 +156,15 @@ ComponentOutline.prototype.updateComponentTree = function () {
 
     function onPressNode(comp, event) {
         var target = event.target;
-        if ((this.status == 'open' || this.status == 'close') && this.$node.$iconCtn.getBoundingClientRect().left > event.clientX - 3) {
-            this.status = this.status == 'open' ? 'close' : 'open';
+        if ((this.status === 'open' || this.status === 'close') && this.$node.$iconCtn.getBoundingClientRect().left > event.clientX - 3) {
+            this.status = this.status === 'open' ? 'close' : 'open';
         }
         else {
             var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
-            if (event.shiftKey && parentLayout == self.layoutEditor.editingLayout)
+            if (event.shiftKey && parentLayout === self.layoutEditor.editingLayout)
                 self.layoutEditor.toggleActiveComponent(comp);
             else {
-                if (parentLayout != self.layoutEditor.editingLayout) {
+                if (parentLayout !== self.layoutEditor.editingLayout) {
                     self.layoutEditor.editLayout(parentLayout || self.layoutEditor.rootLayout);
                 }
                 self.layoutEditor.setActiveComponent(comp);
