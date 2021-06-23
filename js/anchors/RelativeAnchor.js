@@ -474,6 +474,7 @@ RelativeAnchor.prototype.compStyleHandlers.width = {
 
 RelativeAnchor.prototype.compStyleHandlers.height = {
     set: function (value) {
+        if (value && value.startsWith && value.startsWith('auto')) value = 'auto';
         var ref = arguments[arguments.length - 1];
         var unit = arguments.length > 2 ? arguments[1] : undefined;
         var parentBound;
@@ -496,7 +497,7 @@ RelativeAnchor.prototype.compStyleHandlers.height = {
 
         if (vAlign === 'center') {
             this.anchor.domElt.removeStyle('height');
-            this.domElt.addStyle('height', styleValue);// set height to cell will be fail
+            this.domElt.addStyle('height', styleValue);
         }
         else {
             this.domElt.removeStyle('height');
@@ -511,7 +512,7 @@ RelativeAnchor.prototype.compStyleHandlers.height = {
     },
     get: function () {
         var ref = arguments[arguments.length - 1];
-        var unit = arguments.length > 1 ? arguments[1] : undefined;
+        var unit = arguments.length > 1 ? arguments[0] : undefined;
         var disabled = this.style.vAlign === 'fixed';
         var parentBound, bound;
         var currentValue = ref.get();
