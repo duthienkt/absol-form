@@ -4,11 +4,14 @@ import FNode from './FNode';
 import FModel from './FModel';
 import PluginManager from './PluginManager';
 import FormEditorPreconfig from '../FormEditorPreconfig';
-import OOP from "absol/src/HTML5/OOP";
 import noop from "absol/src/Code/noop";
 import {randomIdent} from "absol/src/String/stringGenerate";
 import {randomUniqueIdent} from "./utils";
 import CCBlock from "absol/src/AppPattern/circuit/CCBlock";
+import inheritComponentClass from "./inheritComponentClass";
+import BaseBlock from "./BaseBlock";
+import FAttributes from "./FAttributes";
+import IndexedPropertyNames from "./IndexedPropertyNames";
 
 var extendAttributeNames = Object.keys(FormEditorPreconfig.extendAttributes);
 
@@ -17,11 +20,10 @@ var extendAttributeNames = Object.keys(FormEditorPreconfig.extendAttributes);
  * @augments EventEmitter
  * @augments FViewable
  * @augments FNode
- * @augments FModel
+ * @augments BaseBlock
  */
 function BaseComponent() {
     EventEmitter.call(this);
-    this.events = {};
     FViewable.call(this);
     FNode.call(this);
     FModel.call(this);
@@ -41,10 +43,12 @@ function BaseComponent() {
     this.view.classList.add(this.BASE_COMPONENT_CLASS_NAME);
     this.attributes.loadAttributeHandlers(this.attributeHandlers);
     this.style.loadAttributeHandlers(this.styleHandlers);
+    this.events = new FAttributes(this);
+    this.compiledEvents = {};
     this.onCreated();
 }
 
-inheritComponentClass(BaseComponent, EventEmitter, FViewable, FViewable, FModel, FNode);
+inheritComponentClass(BaseComponent, FViewable, FNode, BaseBlock);
 
 
 extendAttributeNames.forEach(function (name) {
@@ -67,7 +71,6 @@ BaseComponent.prototype.BASE_COMPONENT_CLASS_NAME = 'as-base-component';
 
 BaseComponent.prototype.anchor = null;
 
-BaseComponent.prototype.SUPPORT_STYLE_NAMES = [];
 
 BaseComponent.prototype.isLayout = false;
 
@@ -87,10 +90,42 @@ BaseComponent.prototype.attributeHandlers.id = {
     }
 };
 
+BaseComponent.prototype.attributeHandlers.name = {
+    set: function (value) {
+        value = value || randomUniqueIdent();
+        value = value + '';
+        this.domElt.attr('data-fm-name', value);
+        return value;
+    },
+    getDescriptor: function () {
+        var root = this;
+        while (root.parent && !root.formType) {
+            root = root.parent;
+        }
+        var names = {};
+        var self = this;
+
+        function visit(node) {
+            if (node !== self) {
+                names[node.attributes.name] = node;
+            }
+            node.children.forEach(visit);
+        }
+
+        visit(root);
+
+        return {
+            type: 'uniqueText',
+            others: names,
+            regex: /^[a-zA-Z_0-9]$/
+        };
+    }
+}
+
 BaseComponent.prototype.attributeHandlers.tooltip = {
     set: function (value) {
         if (!value) this.domElt.attr('title', undefined);
-         else this.domElt.title = value;
+        else this.domElt.title = value;
     },
     get: function () {
         return this.domElt.title;
@@ -104,10 +139,35 @@ BaseComponent.prototype.attributeHandlers.tooltip = {
     }
 };
 
+BaseComponent.prototype.attributeHandlers.disembark = {
+    set: function (value, ref) {
+        if (value !== false || value === 'false') value = true;
+        else value = false;
+        ref.set(value);
+        if (value) {
+            this.domElt.addClass('as-disembark');
+        }
+        else {
+            this.domElt.removeClass('as-disembark');
+        }
+        this.notifyEmbark(value);
+        return value;
+    },
+    export: function (ref) {
+        var value = ref.get();
+        if (!value) return undefined;
+        return !!value;
+    },
+    descriptor: {
+        type: 'bool'
+    }
+};
+
 
 BaseComponent.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
+    this.attributes.embark = true;
     this.attributes.dataBinding = true;
     var self = this;
     extendAttributeNames.forEach(function (name) {
@@ -177,7 +237,7 @@ BaseComponent.prototype.getData = function () {
 
     if (this.children.length > 0) {
         data.children = this.children.map(function (child) {
-            if (child.fragment) {
+            if (child.isFragmentView) {
                 var childStyle = child.style.export();
                 var childAttributes = child.attributes.export();
                 var childData = { class: child.fragment.tag };
@@ -234,26 +294,20 @@ BaseComponent.prototype.setEvent = function (key, value) {
 
 
 BaseComponent.prototype.getAcceptsStyleNames = function () {
+    var dict = Object.assign({}, this.styleHandlers);
     if (this.anchor)
-        return this.anchor.getAcceptsStyleNames();
-    return [];
-};
-
-
-BaseComponent.prototype.reMeasure = function () {
-    if (this.parent && this.parent.reMeasure)
-        this.parent.reMeasureChild(this);
+        Object.assign(dict, this.anchor.styleHandlers)
+    var names = Object.keys(dict);
+    var indexed = IndexedPropertyNames;
+    names.sort(function (a, b) {
+        return indexed[a] - indexed[b];
+    });
+    return names;
 };
 
 
 BaseComponent.prototype.measureMinSize = function () {
     return { width: 0, height: 0 };
-}
-
-BaseComponent.prototype.getAcceptsAttributeNames = function () {
-    return ["type", 'id', "name", 'tooltip'].concat(extendAttributeNames)
-        .concat((!this.isLayout || this.fragment) ? ['dataBinding'] : [])
-        .concat(['irremovable']);
 };
 
 BaseComponent.prototype.getAcceptsEventNames = function () {
@@ -287,31 +341,6 @@ BaseComponent.prototype.getAttributeDataBindingDescriptor = function () {
         type: 'bool',
         value: !!this.attributes.dataBinding,
         default: true
-    };
-};
-
-
-BaseComponent.prototype.getAttributeNameDescriptor = function () {
-    var root = this;
-    while (root.parent && !root.formType) {
-        root = root.parent;
-    }
-    var names = {};
-    var self = this;
-
-    function visit(node) {
-        if (node != self) {
-            names[node.attributes.name] = node;
-        }
-        node.children.forEach(visit);
-    }
-
-    visit(root);
-
-    return {
-        type: 'uniqueText',
-        others: names,//todo
-        regex: /^[a-zA-Z\_0-9]$/
     };
 };
 
@@ -433,7 +462,8 @@ BaseComponent.prototype.setAttributeName = function (value) {
     value = (value + '') || undefined;
     this.domElt.attr('data-attr-name', value);
     return value;
-}
+};
+
 
 /***
  * @returns {PropertyDescriptor||{}|null}
@@ -452,45 +482,27 @@ BaseComponent.prototype.bindDataToObject = function (obj) {
     return !!descriptor;
 };
 
+BaseComponent.prototype.notifyEmbark = function (value) {
+
+};
+
+BaseComponent.prototype.binDataToFragmentProps = function () {
+
+};
+
+
 Object.defineProperty(BaseComponent.prototype, 'view', {
     get: function () {
-        // if (window.ABSOL_DEBUG) {
-        //     console.trace('view');
-        // }
         return this.domElt;
+    }
+});
+
+
+Object.defineProperty(BaseComponent.prototype, 'isFragmentView', {
+    get: function () {
+        return this.fragment && this.fragment.view === this;
     }
 });
 
 export default BaseComponent;
 
-
-export function inheritComponentClass(constructor) {
-    OOP.mixClass.apply(OOP, arguments);
-    var cClass;
-    var attributeHandlers = undefined;
-    var styleHandlers = undefined;
-    var compStyleHandlers = undefined;
-    for (var i = 1; i < arguments.length; ++i) {
-        cClass = arguments[i];
-        if (cClass.prototype.attributeHandlers) {
-            attributeHandlers = attributeHandlers || {};
-            Object.assign(attributeHandlers, cClass.prototype.attributeHandlers || {});
-        }
-        if (cClass.prototype.styleHandlers) {
-            styleHandlers = styleHandlers || {};
-            Object.assign(styleHandlers, cClass.prototype.styleHandlers || {});
-
-        }
-        if (cClass.prototype.compStyleHandlers) {
-            compStyleHandlers = compStyleHandlers || {};
-            Object.assign(compStyleHandlers, cClass.prototype.compStyleHandlers || {});
-
-        }
-    }
-    if (attributeHandlers)
-        constructor.prototype.attributeHandlers = attributeHandlers;
-    if (styleHandlers)
-        constructor.prototype.styleHandlers = styleHandlers;
-    if (compStyleHandlers)
-        constructor.prototype.compStyleHandlers = compStyleHandlers;
-}
