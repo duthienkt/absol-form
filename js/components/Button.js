@@ -1,6 +1,6 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import TextStyleHandlers from "./handlers/TextStyleHandlers";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
@@ -50,6 +50,15 @@ Button.prototype.attributeHandlers.icon = {
     }
 };
 
+Button.prototype.pinHandlers.signal = {
+    get: function () {
+        return true;
+    },
+    descriptor: {
+        type: "bool"
+    }
+};
+
 Button.prototype.colorThemeList = ['default', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'];
 
 Button.prototype.styleHandlers.colorTheme = {
@@ -78,8 +87,9 @@ Button.prototype.onCreate = function () {
 Button.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
-    this.view.on('click', function (event) {
-        self.emit('click', { type: 'click', target: this, originEvent: event.originEvent || event }, self)
+    this.domElt.on('click', function (event) {
+        self.emit('click', { type: 'click', target: this, originEvent: event.originEvent || event }, self);
+        self.pinFire('signal');
     });
 };
 
