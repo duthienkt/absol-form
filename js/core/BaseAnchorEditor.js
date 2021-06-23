@@ -60,7 +60,7 @@ BaseAnchorEditor.prototype.getCmdDescriptor = function (name) {
 
 BaseAnchorEditor.prototype.ev_dblClick = function () {
     if (!this.component) return;
-    if (this.component.fragment) {
+    if (this.component.isFragmentView) {
         var message = Toast.make({
             props: {
                 title: "TODO",
