@@ -1,13 +1,54 @@
 import ScalableComponent from "./ScalableComponent";
-import {inheritComponentClass} from "./BaseComponent";
+import inheritComponentClass from "./inheritComponentClass";
 
-function BaseLayout(){
+function BaseLayout() {
     ScalableComponent.call(this);
-
 }
 
-inheritComponentClass(BaseLayout,ScalableComponent );
+inheritComponentClass(BaseLayout, ScalableComponent);
 BaseLayout.prototype.isLayout = true;
+
+
+BaseLayout.prototype.styleHandlers.backgroundImage = {
+    set: function (value) {
+        if (value && value.length > 0) {
+            this.domElt.addStyle('backgroundImage', 'url(' + value + ')');
+            this.domElt.addStyle('backgroundSize', '100% 100%');
+        }
+        else {
+            this.domElt.removeStyle('backgroundImage');
+            this.domElt.removeStyle('backgroundSize');
+        }
+        return value;
+    },
+    export: function (ref) {
+        return ref.get() || undefined;
+    },
+    descriptor: {
+        type: 'text',
+        long: true,
+        sign: 'BackgroundImageSrc',
+        independence: true
+    }
+};
+
+
+BaseLayout.prototype.styleHandlers.backgroundColor = {
+    set: function (value) {
+        if (value) {
+            this.domElt.addStyle('backgroundColor', value);
+        }
+        else {
+            this.domElt.removeStyle('backgroundColor');
+        }
+        return value;
+    },
+    descriptor: {
+        type: 'color',
+        sign: 'BackgroundColor',
+        independence: true
+    }
+};
 
 
 BaseLayout.prototype.create = function () {
@@ -18,31 +59,9 @@ BaseLayout.prototype.create = function () {
     this.style.backgroundImage = '';
 };
 
-BaseLayout.prototype.styleHandlers.backgroundColor = {
-    set: function (value){
-        this.domElt.addStyle('backgroundColor', value);
-    }
-}
-
 
 BaseLayout.prototype.addChildByPosition = function (child, posX, posY) {
     throw new Error("Not implement!");
-};
-
-
-BaseLayout.prototype.getAcceptsAttributeNames = function () {
-    var res = ScalableComponent.prototype.getAcceptsAttributeNames.call(this);
-    if (this.attributes.formType) {
-        res = ['formType'].concat(res);
-    }
-    return res;
-};
-
-BaseLayout.prototype.getAttributeFormTypeDescriptor = function () {
-    return {
-        type: 'const',
-        value: this.attributes.formType
-    }
 };
 
 
@@ -50,34 +69,5 @@ BaseLayout.prototype.getAcceptsStyleNames = function () {
     return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['backgroundColor', 'backgroundImage']);
 };
 
-
-BaseLayout.prototype.setStyleBackgroundImage = function (value) {
-    if (value && value.length > 0){
-        this.view.addStyle('backgroundImage', 'url(' + value + ')');
-        this.view.addStyle('backgroundSize', '100% 100%');
-    }
-    else{
-        this.view.removeStyle('backgroundImage');
-        this.view.removeStyle('backgroundSize');
-    }
-    return value;
-};
-
-BaseLayout.prototype.getStyleBackgroundColorDescriptor = function () {
-    return {
-        type: 'color',
-        sign:'BackgroundColor',
-        independence: true
-    };
-};
-
-BaseLayout.prototype.getStyleBackgroundImageDescriptor = function () {
-    return {
-        type: 'text',
-        long:true, 
-        sign:'BackgroundImageSrc',
-        independence: true
-    };
-};
 
 export default BaseLayout;
