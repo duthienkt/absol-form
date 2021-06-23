@@ -1,4 +1,5 @@
 import FAttributes from "./FAttributes";
+import IndexedPropertyNames from "./IndexedPropertyNames";
 
 function FModel() {
     var attributes = new FAttributes(this);
@@ -18,7 +19,13 @@ function FModel() {
  * @returns {Array<String>}
  */
 FModel.prototype.getAcceptsAttributeNames = function () {
-    return [];
+    var dict = Object.assign({}, this.attributeHandlers);
+    var names = Object.keys(dict);
+    var indexed = IndexedPropertyNames;
+    names.sort(function (a, b) {
+        return indexed[a] - indexed[b];
+    });
+    return names;
 };
 
 
@@ -27,9 +34,7 @@ FModel.prototype.getAcceptsAttributeNames = function () {
  * @returns {}
  */
 FModel.prototype.getAttributeDescriptor = function (name) {
-    var functionName = 'getAttribute' + name.substr(0, 1).toUpperCase() + name.substr(1) + 'Descriptor';
-    return (this[functionName] && this[functionName].apply(this, Array.prototype.slice.call(arguments, 1)))
-        ||this.attributes.getPropertyDescriptor(name);
+    return this.attributes.getPropertyDescriptor(name);
 };
 
 /**
@@ -71,8 +76,8 @@ FModel.prototype.getAttribute = function (name) {
 
 
 FModel.prototype.getAttributes = function () {
-    var res =  Object.assign({}, this.attributes.export());
-    for (var key in res){
+    var res = Object.assign({}, this.attributes.export());
+    for (var key in res) {
         return res;
     }
     return null;

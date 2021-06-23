@@ -1,4 +1,5 @@
 import FAttributes from "./FAttributes";
+import IndexedPropertyNames from "./IndexedPropertyNames";
 
 function FViewable() {
     var style = new FAttributes(this);
@@ -18,7 +19,13 @@ function FViewable() {
  * @returns {Array<String>}
  */
 FViewable.prototype.getAcceptsStyleNames = function () {
-    return [];
+    var dict = Object.assign({}, this.styleHandlers);
+    var names = Object.keys(dict);
+    var indexed = IndexedPropertyNames;
+    names.sort(function (a, b) {
+        return indexed[a] - indexed[b];
+    });
+    return names;
 };
 
 /***

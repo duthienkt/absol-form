@@ -2,8 +2,7 @@ import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import '../../css/relativeanchor.css';
 import '../../css/alignbox.css';
-import OOP from "absol/src/HTML5/OOP";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import makeMapStyleHandler from "./makeMapStyleHandler";
 
 var _ = Fcore._;
@@ -56,10 +55,6 @@ RelativeAnchor.prototype.VALIGN_CLASS_NAMES = {
     fixed: 'as-valign-fixed'
 };
 
-
-RelativeAnchor.prototype.getAcceptsStyleNames = function () {
-    return ['hAlign', 'vAlign', 'left', 'right', 'top', 'bottom'];
-};
 
 RelativeAnchor.prototype.compStyleHandlers = {};
 
@@ -555,7 +550,7 @@ RelativeAnchor.prototype.compStyleHandlers.height = {
 };
 
 
-['hAlign', 'vAlign', 'left', 'top', 'bottom', 'width'].forEach(function (name) {
+['hAlign', 'vAlign', 'left', 'right', 'top', 'bottom', 'width', 'height'].forEach(function (name) {
     RelativeAnchor.prototype.styleHandlers[name] = makeMapStyleHandler(name);
 });
 

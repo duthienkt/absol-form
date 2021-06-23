@@ -1,7 +1,7 @@
 import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import '../../css/linearanchor.css';
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import makeMapStyleHandler from "./makeMapStyleHandler";
 
 var _ = Fcore._;
@@ -43,14 +43,6 @@ LinearAnchor.prototype.onCreated = function () {
     }
 };
 
-
-LinearAnchor.prototype.getAcceptsStyleNames = function () {
-    return ['left', 'right', 'top', 'bottom'];
-};
-
-['left', 'top', 'bottom', 'width'].forEach(function (name) {
-    LinearAnchor.prototype.styleHandlers[name] = makeMapStyleHandler(name);
-});
 
 LinearAnchor.prototype.compStyleHandlers = {};
 
@@ -180,6 +172,11 @@ LinearAnchor.prototype.compStyleHandlers.width = {
         independence: true
     }
 };
+
+
+['left','right', 'top', 'bottom', 'width', 'height'].forEach(function (name) {
+    LinearAnchor.prototype.styleHandlers[name] = makeMapStyleHandler(name);
+});
 
 ['left', 'right', 'top', 'bottom'].forEach(function (name) {
     LinearAnchor.prototype.compStyleHandlers[name] = {
