@@ -2,7 +2,7 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import {beginOfDay} from "absol/src/Time/datetime";
 import OOP from "absol/src/HTML5/OOP";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
 
@@ -22,8 +22,7 @@ inheritComponentClass(DateInput, ScalableComponent);
 
 DateInput.prototype.tag = "DateInput";
 DateInput.prototype.menuIcon = "span.mdi.mdi-calendar-edit";
-DateInput.prototype.SUPPORT_STYLE_NAMES = ['top', 'left', 'right', 'top', 'bottom', 'width', 'height'];
-DateInput.prototype.SUPPORT_ATTRIBUTE_NAMES = ['value'];
+
 DateInput.prototype.SUPPORT_EVENT_NAMES = ['change'];
 
 Object.assign(DateInput.prototype.attributeHandlers, InputAttributeHandlers);
@@ -40,13 +39,37 @@ DateInput.prototype.attributeHandlers.value = {
             value = null;
             this.view.value = null;
         }
-        return this.view.value;
+        this.pinFire('value');
     },
     get: function () {
         return this.view.value;
+    },
+    descriptor: {
+        type: 'date',
+        nullable: true,
+        defaultValue: beginOfDay(new Date()),
+        sign: 'SimpleDate'
     }
 };
 
+
+DateInput.prototype.pinHandlers.min = {
+    receives: function (value) {
+        this.domElt.min = value;
+    },
+    descriptor: {
+        type: "Date"
+    }
+};
+
+DateInput.prototype.pinHandlers.max = {
+    receives: function (value) {
+        this.domElt.max = value;
+    },
+    descriptor: {
+        type: "Date"
+    }
+};
 
 DateInput.prototype.render = function () {
     return _('dateinput');
@@ -61,20 +84,11 @@ DateInput.prototype.onCreate = function () {
 };
 
 
-
-DateInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value']).concat(InputAttributeNames);
+DateInput.prototype.onCreated = function () {
+    ScalableComponent.prototype.onCreated.call(this);
+    this.domElt.on('change',this.ev_inputChange.bind(this));
 };
 
-
-DateInput.prototype.getAttributeValueDescriptor = function () {
-    return {
-        type: 'date',
-        nullable: true,
-        defaultValue: beginOfDay(new Date()),
-        sign: 'SimpleDate'
-    };
-};
 
 
 DateInput.prototype.getAcceptsEventNames = function () {
@@ -96,6 +110,10 @@ DateInput.prototype.getDataBindingDescriptor = function () {
             return thisC.getAttribute('value');
         }
     };
+};
+
+DateInput.prototype.ev_inputChange = function () {
+    this.pinFire('value');
 };
 
 AssemblerInstance.addClass(DateInput);
