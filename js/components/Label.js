@@ -5,7 +5,7 @@ import ContentScalelessComponent from "../core/ContentScalelessComponent";
 import Text from "./Text";
 import OOP from "absol/src/HTML5/OOP";
 import TextStyleHandlers from "./handlers/TextStyleHandlers";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
@@ -65,16 +65,6 @@ Label.prototype.setAttributeText = function (value) {
     return value;
 };
 
-Label.prototype.getAcceptsAttributeNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["text"]);
-};
-
-Label.prototype.getAttributeTextDescriptor = function () {
-    return {
-        type: "text",
-        sign: "SimpleText"
-    }
-};
 
 Label.prototype.getDataBindingDescriptor = function () {
     var thisC = this;
