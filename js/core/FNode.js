@@ -54,7 +54,7 @@ FNode.prototype.addChild = function (child) {
     this.children.push(child);
     child.parent = this;
     //data ready
-    this.onAttach();
+    child.onAttach();
     this.onAddChild(child, -1);//negative index for appending child
     child.onAttached();
 };
