@@ -118,10 +118,21 @@ BaseEditor.prototype.bindKeyToCmd = function (key, cmd) {
 };
 
 
+BaseEditor.prototype._isInputSupportedKey = function (target, key){
+    if (target.tagName && target.tagName.toLowerCase().match(/input|textarea/)){
+        if (['Ctrl-A','Ctrl-C', 'Ctrl-X','Ctrl-V', 'Ctrl-Z', 'Ctrl-Y', 'Del', 'Backspace',
+            'Esc', 'Enter', 'Alt-Enter', 'Ctrl-Enter'].indexOf(key)>=0){
+            return true;
+        }
+    }
+    return false;
+}
+
 /**
  * @param {KeyboardEvent}event
  */
 BaseEditor.prototype.ev_cmdKeyDown = function (event) {
+    console.log(event.target);
     var specKeys = [];
     if (event.ctrlKey)
         specKeys.push('Ctrl');
@@ -134,7 +145,7 @@ BaseEditor.prototype.ev_cmdKeyDown = function (event) {
     var key1 = specKeys.concat([key]).join('-');
     var key2 = specKeys.concat([event.keyCode]).join('-');
     var cmd = this.cmdBindKeys[key1] || this.cmdBindKeys[key2];
-    if (cmd) {
+    if (cmd && !this._isInputSupportedKey(event.target, key1)) {
         this.execCmd(cmd, event);
         event.preventDefault();
     }
