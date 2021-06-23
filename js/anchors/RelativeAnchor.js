@@ -67,9 +67,9 @@ RelativeAnchor.prototype.compStyleHandlers.hAlign = {
         anchor.domElt.removeClass(anchor.HALIGN_CLASS_NAMES[currentValue]);
         anchor.domElt.addClass(anchor.HALIGN_CLASS_NAMES[value]);
         ref.set(value);
-        this.style.left = this.style.left + 0;
-        this.style.right = this.style.right + 0;
-        this.style.width = this.style.width + 0;
+        this.style['left'] = this.style.left;
+        this.style['right'] = this.style.right;
+        this.style['width'] = this.style.width;
         return value;
     },
     descriptor: {
@@ -89,9 +89,9 @@ RelativeAnchor.prototype.compStyleHandlers.vAlign = {
         anchor.domElt.removeClass(anchor.VALIGN_CLASS_NAMES[currentValue]);
         anchor.domElt.addClass(anchor.VALIGN_CLASS_NAMES[value]);
         ref.set(value);
-        this.style.top = this.style.top + 0;
-        this.style.bottom = this.style.bottom + 0;
-        this.style.height = this.style.height + 0;
+        this.style['top'] = this.style.top;
+        this.style['bottom'] = this.style.bottom;
+        this.style['height'] = this.style.height;
         return value;
     },
     descriptor: {
@@ -440,7 +440,7 @@ RelativeAnchor.prototype.compStyleHandlers.width = {
         var bound, parentBound;
         if (unit === 'px') {
             if (disabled || typeof value != 'number') {
-                bound = this.anchor.domElt.getBoundingClientRect();
+                bound = this.domElt.getBoundingClientRect();
                 return bound.width
             }
             else {
