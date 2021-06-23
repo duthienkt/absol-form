@@ -7,7 +7,6 @@ import {AssemblerInstance} from "../core/Assembler";
 var _ = Fcore._;
 
 
-
 function LinearLayout() {
     BaseLayout.call(this);
 
@@ -22,8 +21,25 @@ LinearLayout.prototype.menuIcon = 'span.mdi.mdi-post-outline';
 LinearLayout.prototype.TOP_CLASS_NAME = 'as-linear-layout';
 LinearLayout.prototype.SUPPORT_STYLE_NAMES = ['width', 'height'];//, 'left', 'right', 'top', 'bottom'];
 
+LinearLayout.prototype.styleHandlers.overflowY = {
+    set: function (value) {
+        if (['visible', 'hidden', 'auto'].indexOf(value) < 0) value = 'visible';
+        this.domElt.addStyle('overflowY', value);
+        return value;
+    },
+    export: function (ref) {
+        var value = ref.get();
+        if (value === 'visible' || !value) return undefined;
+        return value;
+    },
+    descriptor: {
+        type: 'enum',
+        values: ['visible', 'hidden', 'auto']
+    }
+};
 
-LinearLayout.prototype.onCreate = function(){
+
+LinearLayout.prototype.onCreate = function () {
     BaseLayout.prototype.onCreate.apply(this, arguments);
     this.style.overflowY = false;
 };
@@ -36,25 +52,6 @@ LinearLayout.prototype.getAnchorEditorConstructor = function () {
     return LinearAnchorEditor;
 };
 
-
-LinearLayout.prototype.getAcceptsStyleNames = function(){
-    return BaseLayout.prototype.getAcceptsStyleNames.call(this).concat(['overflowY']);
-};
-
-
-LinearLayout.prototype.setStyleOverflowY = function(value){
-    if (['visible', 'hidden', 'auto'].indexOf(value)<0) value = 'visible';
-    this.view.addStyle('overflowY', value);
-    return value;
-};
-
-
-LinearLayout.prototype.getStyleOverflowYDescriptor = function(){
-    return {
-        type:'enum',
-        values:['visible', 'hidden', 'auto']
-    };
-}; 
 
 LinearLayout.prototype.render = function () {
     return _({ class: this.TOP_CLASS_NAME });
@@ -78,16 +75,10 @@ LinearLayout.prototype.onRemoveChild = function (child, index) {
     anchor.view.remove();
 };
 
-/**
- * @param {BaseComponent} component
- * @returns {BaseComponent} auto set disable style 
- */
-LinearLayout.prototype.reMeasureChild = function (component) {
-};
 
 /**
- * 
- * @returns {{width:Number, height:Number}} 
+ *
+ * @returns {{width:Number, height:Number}}
  */
 LinearLayout.prototype.measureMinSize = function () {
     //todo
@@ -119,7 +110,7 @@ LinearLayout.prototype.addChildByPosition = function (child, posX, posY) {
             break;
         }
     }
-    
+
     if (at) {
         this.addChildBefore(child, at);
     }
