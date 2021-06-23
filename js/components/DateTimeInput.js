@@ -1,6 +1,6 @@
 import ScalableComponent from "../core/ScalableComponent";
 import {_} from "../core/FCore";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
 
@@ -49,6 +49,7 @@ DateTimeInput.prototype.attributeHandlers.format = {
 DateTimeInput.prototype.attributeHandlers.value = {
     set: function (value) {
         this.domElt.value = value;
+        this.pinFire('value');
     },
     get: function () {
         return this.domElt.value;
@@ -61,11 +62,25 @@ DateTimeInput.prototype.attributeHandlers.value = {
     }
 };
 
+DateTimeInput.prototype.pinHandlers.value = {
+    receives: function (value) {
+        console.log(this)
+        this.domElt.value = value;
+    },
+    get: function () {
+        return this.domElt.value;
+    },
+    descriptor: {
+        type: "Date"
+    }
+};
 
+DateTimeInput.prototype.onCreated = function (){
+  this.domElt.on('change', function (){
+      this.pinFire('value');
+  }.bind(this))
+};
 
-DateTimeInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames().concat('value', 'format').concat(InputAttributeNames);
-}
 
 DateTimeInput.prototype.render = function () {
     return _({
