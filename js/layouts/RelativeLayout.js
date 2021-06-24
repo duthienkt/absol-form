@@ -3,7 +3,7 @@ import Fcore from "../core/FCore";
 import BaseLayout from "../core/BaseLayout";
 import RelativeAnchorEditor from "../anchoreditors/RelativeAnchorEditor";
 import OOP from "absol/src/HTML5/OOP";
-import Assembler, {AssemblerInstance} from "../core/Assembler";
+import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
 
@@ -53,51 +53,6 @@ RelativeLayout.prototype.onRemoveChild = function (child, index) {
     var anchor = child.anchor;
     anchor.detachChild();
     anchor.view.remove();
-};
-
-/**
- * @param {BaseComponent} component
- * @returns {BaseComponent} auto set disable style
- */
-RelativeLayout.prototype.reMeasureChild = function (component) {
-    if (window.ABSOL_DEBUG &&!window.remesureChecked) {
-        window.remesureChecked = true;
-        console.trace("Remeasure was removed");
-    }
-    return;
-
-    switch (component.style.hAlign) {
-        case "left":
-            component.setStyle('right', this.style.width - component.style.left - component.style.width);
-            break;
-        case "right":
-            component.setStyle('left', this.style.width - component.style.right - component.style.width);
-            break;
-        case "center":
-            component.setStyle('right', (this.style.width - component.style.width) / 2);
-            component.setStyle('left', (this.style.width - component.style.width) / 2);
-            break;
-        case "fixed":
-            component.setStyle('width', this.style.width - component.style.right - component.style.left);
-            break;
-    }
-
-
-    switch (component.style.vAlign) {
-        case "top":
-            component.setStyle('bottom', this.style.height - component.style.top - component.style.height);
-            break;
-        case "bottom":
-            component.setStyle('top', this.style.height - component.style.bottom - component.style.height);
-            break;
-        case "center":
-            component.setStyle('bottom', (this.style.height - component.style.height) / 2);
-            component.setStyle('top', (this.style.height - component.style.height) / 2);
-            break;
-        case "fixed":
-            component.setStyle('height', this.style.height - component.style.bottom - component.style.top);
-            break;
-    }
 };
 
 
