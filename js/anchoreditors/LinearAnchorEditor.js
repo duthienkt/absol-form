@@ -86,7 +86,7 @@ LinearAnchorEditor.prototype.ev_contextMenu = function (event) {
         'equaliseHeight'
     ]).concat([null]).map(makeItem);
 
-    if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
+    if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.isLayout) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
             text: 'Edit Layout',
@@ -194,7 +194,6 @@ LinearAnchorEditor.prototype.update = function () {
 
 LinearAnchorEditor.prototype.updatePosition = function () {
     if (this.component) {
-        this.component.reMeasure();
         var bound = this.layoutEditor.$forceground.getBoundingClientRect();
         var compBound = this.component.view.getBoundingClientRect();
         this.$resizeBox.addStyle({
@@ -322,7 +321,6 @@ LinearAnchorEditor.prototype.ev_moving = function (userAction, event) {
     }
 
 
-    movingData.comp.reMeasure();
     this.updatePosition();
     if (positionIsChange) {
         this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event, repeatEvent: event }, this);
@@ -356,7 +354,6 @@ LinearAnchorEditor.prototype.ev_movingMargin = function (userAction, event) {
     }
 
     this.updatePosition();
-    movingData.comp.reMeasure();
     if (positionIsChange) {
         this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event }, this);
         movingData.isChange = true;
@@ -384,7 +381,6 @@ LinearAnchorEditor.prototype.ev_endMove = function (userAction, event) {
 
 LinearAnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { // right - left
     if (!this.component) return;
-    this.component.reMeasure();
     var currentHAlign = this.component.getStyle('hAlign');
     var cRight = this.component.getStyle('right');
     var cLeft = this.component.getStyle('left');
@@ -407,7 +403,6 @@ LinearAnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { //
             break;
     }
     this.updatePosition();
-    this.component.reMeasure();
 };
 
 
