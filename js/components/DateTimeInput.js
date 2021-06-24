@@ -48,8 +48,11 @@ DateTimeInput.prototype.attributeHandlers.format = {
 
 DateTimeInput.prototype.attributeHandlers.value = {
     set: function (value) {
+        var prev = this.domElt.value;
         this.domElt.value = value;
-        this.pinFire('value');
+        var cur = this.domElt.value;
+        if (!prev !== !cur || (prev && cur && prev.getTime() === cur.getTime()))
+            this.pinFire('value');
     },
     get: function () {
         return this.domElt.value;
@@ -75,10 +78,10 @@ DateTimeInput.prototype.pinHandlers.value = {
     }
 };
 
-DateTimeInput.prototype.onCreated = function (){
-  this.domElt.on('change', function (){
-      this.pinFire('value');
-  }.bind(this))
+DateTimeInput.prototype.onCreated = function () {
+    this.domElt.on('change', function () {
+        this.pinFire('value');
+    }.bind(this));
 };
 
 
