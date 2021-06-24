@@ -41,7 +41,9 @@ function FmFragment() {
     this.onCreate();
     this.buildContentView();
     this.onCreated();
-    this.domSignal.on('request_fragment_auto_start', this.start.bind(this));
+    this.domSignal.on('request_fragment_auto_start', function () {
+        if (!this.parent) this.start();
+    }.bind(this));
     this.domSignal.emit('request_fragment_auto_start');
 }
 
@@ -84,7 +86,7 @@ FmFragment.prototype.buildContentView = function () {
             block = AssemblerInstance.buildBlock(blocks[i], this);
             blockDict[block.attributes.id] = block;
             this.blocks.push(block);
-            if (block.tag === 'CBEntry'){
+            if (block.tag === 'CBEntry') {
                 this.entrys.push(block);
             }
         }
@@ -95,7 +97,7 @@ FmFragment.prototype.buildContentView = function () {
             if (line) this.lines.push(line);
         }
     }
-    if (!this.view.domElt.domSignal){
+    if (!this.view.domElt.domSignal) {
         this.view.domElt.$domSignal = _('attachhook');
         this.view.domElt.appendChild(this.view.domElt.$domSignal);
         this.view.domElt.domSignal = new DomSignal(this.view.domElt.$domSignal);
@@ -103,13 +105,17 @@ FmFragment.prototype.buildContentView = function () {
     this.domSignal = this.view.domElt.domSignal;
 };
 
-FmFragment.prototype.execEntry = function (){
-    for (var i = 0; i < this.entrys.length; ++ i){
+FmFragment.prototype.execEntry = function () {
+    for (var i = 0; i < this.entrys.length; ++i) {
         this.entrys[i].exec();
     }
 };
 
 
+FmFragment.prototype.onAddChild = function (child, index) {
+    if (this.state === "RUNNING")
+        child.start();
+};
 
 
 //reassign this property in constructor or onCreate to change default layout,
@@ -125,7 +131,7 @@ FmFragment.prototype.onCreate = noop;
  */
 FmFragment.prototype.onCreated = noop;
 
-FmFragment.prototype.start = function (){
+FmFragment.prototype.start = function () {
     if (this.state.match(/DIE/)) {
         console.error(this, 'DIED!');
         return;
@@ -138,6 +144,9 @@ FmFragment.prototype.start = function (){
         //start entry before call onStart
         this.execEntry();
         this.onStart && this.onStart();
+        this.children.forEach(function (fc) {
+            fc.start();
+        })
     }
     if (this.state.match(/STANDBY|PAUSE/)) {
         this.resume();
