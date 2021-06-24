@@ -93,7 +93,7 @@ CBFunction.prototype.rebuildFunction = function () {
 };
 
 CBFunction.prototype.exec = function () {
-    var self;
+    var self = this;
     var receivedArgValues = this.receivedArgValues;
     var completeArg = true;
     var result;
