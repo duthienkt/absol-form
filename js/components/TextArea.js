@@ -1,8 +1,6 @@
 import Fcore from "../core/FCore";
 import TextInput from "./TextInput";
-import OOP from "absol/src/HTML5/OOP";
-import {inheritComponentClass} from "../core/BaseComponent";
-import InputAttributeHandlers from "./handlers/InputAttributeHandlers";
+import inheritComponentClass from "../core/inheritComponentClass";
 import {AssemblerInstance} from "../core/Assembler";
 
 var _ = Fcore._;
@@ -41,6 +39,8 @@ TextArea.prototype.attributeHandlers.placeHolder.descriptor = {
     long: true,
     sign: "SimpleTextLong"
 };
+
+delete TextArea.prototype.attributeHandlers.textType;
 
 AssemblerInstance.addClass(TextArea);
 
