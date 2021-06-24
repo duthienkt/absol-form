@@ -1,4 +1,5 @@
 import MultiObjectPropertyEditor from "../propertyeditors/MultiObjectPropertyEditor";
+import IndexedPropertyNames from "../core/IndexedPropertyNames";
 
 function AllPropertyEditor() {
     MultiObjectPropertyEditor.call(this);
@@ -39,7 +40,10 @@ AllPropertyEditor.prototype.getPropertyDescriptor = function (object, name) {
 
 
 AllPropertyEditor.prototype.getPropertyNames = function (object) {
-    return (Object.keys(object.__AllPropertyEditorGroupName__.attributes).concat(Object.keys(object.__AllPropertyEditorGroupName__.style))).sort();
+    var indexed = IndexedPropertyNames;
+    return (Object.keys(object.__AllPropertyEditorGroupName__.attributes).concat(Object.keys(object.__AllPropertyEditorGroupName__.style))).sort(function (a, b){
+        return indexed[a] - indexed[b];
+    });
 };
 
 
