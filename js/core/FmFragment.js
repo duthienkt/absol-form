@@ -2,8 +2,10 @@ import GrandContext from "absol/src/AppPattern/GrandContext";
 import OOP from "absol/src/HTML5/OOP";
 import noop from "absol/src/Code/noop";
 import {randomIdent} from "absol/src/String/stringGenerate";
-import FNode from "./FNode";
+import FNode, {traversal} from "./FNode";
 import FModel from "./FModel";
+import {AssemblerInstance} from "./Assembler";
+
 
 /***
  * @constructor
@@ -15,10 +17,27 @@ function FmFragment() {
     GrandContext.call(this);
     FNode.call(this);
     FModel.call(this);
-    this.view = null;
+
     this._componentNameList = [];
+
+    this.embarkedProps = {};
     this._props = {};
+    Object.defineProperty(this, 'props', {
+        set: function (value) {
+            Object.assign(this.props);
+        },
+        get: function () {
+            return this._props;
+        }
+    });
+
+    this.view = null;
+    this.blocks = [];
+    this.lines = [];
+    this.entrys = [];
     this.onCreate();
+    this.buildContentView();
+    this.onCreated();
 }
 
 OOP.mixClass(FmFragment, GrandContext, FNode, FModel);
@@ -28,16 +47,52 @@ FmFragment.prototype.tag = 'FmFragment';
 
 FmFragment.prototype.menuIcon = 'span.mdi.mdi-terraform';
 
-/***
- * call by Assembler
- * @param {BaseComponent} view
- */
-FmFragment.prototype.setContentView = function (view) {
-    this.view = view;
-    this.view.fragment = this;
-    this.view.domElt.fragment = this;
-    this._bindView();
-    this._bindData();
+FmFragment.prototype.buildContentView = function () {
+    var contentViewData = this.contentViewData;
+    var blocks;
+    var layout;
+    var lines;
+    var i;
+    var block;
+    var line;
+    var blockDict = {};
+    if (contentViewData.tag) {
+        layout = contentViewData;
+    }
+    else {
+        layout = contentViewData.layout;
+        blocks = contentViewData.circuit && contentViewData.circuit.blocks;
+        lines = contentViewData.circuit && contentViewData.circuit.lines;
+    }
+    if (layout) {
+        this.view = AssemblerInstance.buildComponent(layout);
+        traversal(this.view, function (path) {
+            blockDict[path.node.attributes.id] = path.node;
+            blockDict[path.node.attributes.name] = path.node;
+        })
+    }
+    else {
+        throw new Error("Invalid Fragment class: layout must not be null!");
+    }
+    if (blocks) {
+        for (i = 0; i < blocks.length; ++i) {
+            block = AssemblerInstance.buildBlock(blocks[i], this);
+            blockDict[block.attributes.id] = block;
+            this.blocks.push(block);
+            if (block.tag === 'CBEntry'){
+                this.entrys.push(block);
+            }
+        }
+    }
+    if (lines) {
+        for (i = 0; i < lines.length; ++i) {
+            line = AssemblerInstance.buildLine(lines[i], blockDict);
+            if (line) this.lines.push(line);
+        }
+    }
+    for (i = 0; i < this.entrys.length; ++ i){
+        this.entrys[i].exec();
+    }
 };
 
 //reassign this property in constructor or onCreate to change default layout,
@@ -91,7 +146,7 @@ FmFragment.prototype._bindData = function () {
     this._props = props;
 
     function visit(node, isRoot) {
-        if (node.fragment && !isRoot) {
+        if (node.isFragmentView && !isRoot) {
             Object.defineProperty(props, node.getAttribute('name'), {
                 enumerable: true,
                 configurable: true,
@@ -104,8 +159,8 @@ FmFragment.prototype._bindData = function () {
             })
         }
         else {
-         if (node.getAttribute('dataBinding'))
-            node.bindDataToObject(props);
+            if (node.getAttribute('dataBinding'))
+                node.bindDataToObject(props);
             for (var i = 0; i < node.children.length; ++i) {
                 visit(node.children[i]);
             }
@@ -148,7 +203,7 @@ export default FmFragment;
 /***
  *
  * @param {{tag: string ,contentViewData?:Object, prototype?: Object}} opt
- * @return {CustomFmFragment}
+ * @return {Function}
  */
 export function makeFmFragmentClass(opt) {
     function CustomFmFragment() {
