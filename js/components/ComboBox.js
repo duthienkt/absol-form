@@ -1,9 +1,9 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import OOP from "absol/src/HTML5/OOP";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
+import DomSignal from "absol/src/HTML5/DomSignal";
 
 var _ = Fcore._;
 
@@ -24,7 +24,10 @@ Object.assign(ComboBox.prototype.attributeHandlers, InputAttributeHandlers);
 
 ComboBox.prototype.attributeHandlers.value = {
     set: function (value) {
+        var prev = this.domElt.value;
         this.domElt.value = value;
+        if (prev !== value && this.domSignal)
+            this.domSignal.emit('pinFireAll');
     },
     get: function () {
         return this.domElt.value;
@@ -37,6 +40,8 @@ ComboBox.prototype.attributeHandlers.value = {
 ComboBox.prototype.attributeHandlers.list = {
     set: function (value) {
         this.domElt.items = value;
+        if (this.domSignal)
+            this.domSignal.emit('pinFireAll');
     },
     get: function () {
         return this.domElt.items;
@@ -86,30 +91,53 @@ ComboBox.prototype.attributeHandlers.text = {
     }
 };
 
+ComboBox.prototype.pinHandlers.list = {
+    receives: function (value) {
+        this.attributes.list = value;
+    },
+    descriptor: {
+        type: 'SelectList'
+    }
+};
+
+ComboBox.prototype.pinHandlers.value = {
+    receives: function (value) {
+        this.attributes.value = value;
+    },
+    get: function () {
+        return this.domElt.value;
+    },
+    descriptor: {
+        type: 'text|number'
+    }
+};
+
 
 ComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.attributes.list = [
-        { text: '0', value: '0' },
-        { text: '1', value: '1' },
-        { text: '2', value: '2' },
-        { text: '3', value: '3' }
-    ];
-    this.attributes.value = '0';
-
 };
 
 
 ComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
-    this.view.on('minwidthchange', function (event) {
+    if (!this.domElt.domSignal){
+        this.domElt.$domSignal = _('attachhook').addTo(this.domElt);
+        this.domElt.domSignal = new DomSignal(this.domElt.$domSignal);
+    }
+    /***
+     * @type DomSignal
+     */
+    this.domSignal = this.domElt.domSignal;
+    this.domSignal.on('pinFireAll', this.pinFireAll.bind(this));
+    this.domElt.on('minwidthchange', function (event) {
         if (!(self.style.width > event.value)) {
             self.setStyle('width', event.value);
         }
     }).on('change', function () {
         // self.attributes.value = this.value;
         self.emit("change", { type: 'change', value: this.value }, self);
+        self.pinFire('value');
     });
 };
 
