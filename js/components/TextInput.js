@@ -2,7 +2,7 @@ import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import '../../css/component.css';
 import Text from "./Text";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
 
@@ -31,7 +31,10 @@ Object.assign(TextInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 TextInput.prototype.attributeHandlers.value = {
     set: function (value) {
+        var prev = this.domElt.value;
         this.domElt.value = value;
+        if (prev !== this.domElt.value)
+            this.pinFire('value');
     },
     get: function () {
         return this.domElt.value;
@@ -78,7 +81,16 @@ TextInput.prototype.attributeHandlers.textType = {
         var value = ref.get();
         return value === 'normal' ? undefined : value;
     }
-}
+};
+
+TextInput.prototype.pinHandlers.value = {
+    get: function () {
+        return this.attributes.value;
+    },
+    receives: function (value) {
+        this.attributes.value = value;
+    }
+};
 
 TextInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
@@ -91,6 +103,7 @@ TextInput.prototype.onCreated = function () {
         .on('keyup', function () {
             if (this.value !== lastValue) {
                 self.emit('change', this.value, self);
+                self.pinFire('value');
             }
         });
 };
@@ -115,12 +128,6 @@ TextInput.prototype.render = function () {
 
 TextInput.prototype.getAcceptsStyleNames = function () {
     return Text.prototype.getAcceptsStyleNames.call(this);
-};
-
-
-TextInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'placeHolder', 'textType'])
-        .concat(InputAttributeNames);
 };
 
 
