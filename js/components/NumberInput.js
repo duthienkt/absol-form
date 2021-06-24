@@ -1,6 +1,6 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
 
@@ -44,6 +44,8 @@ NumberInput.prototype.attributeHandlers.value = {
 
 NumberInput.prototype.attributeHandlers.min = {
     set: function (value) {
+        if (typeof value !== "number") value = -Infinity;
+        if (isNaN(value)) value = -Infinity;
         this.domElt.min = value;
     },
     get: function () {
@@ -53,7 +55,7 @@ NumberInput.prototype.attributeHandlers.min = {
         return {
             type: "number",
             nullable: true,
-            defaultValue: -Infinity,
+            defaultValue: -10000,
         };
     },
     export: function () {
@@ -66,6 +68,8 @@ NumberInput.prototype.attributeHandlers.min = {
 
 NumberInput.prototype.attributeHandlers.max = {
     set: function (value) {
+        if (typeof value !== "number") value = Infinity;
+        if (isNaN(value)) value = Infinity;
         this.domElt.max = value;
     },
     get: function () {
@@ -75,7 +79,7 @@ NumberInput.prototype.attributeHandlers.max = {
         return {
             type: "number",
             nullable: true,
-            defaultValue: Infinity,
+            defaultValue: 10000,
         };
     },
     export: function () {
@@ -118,6 +122,39 @@ NumberInput.prototype.attributeHandlers.floatFixed = {
 };
 
 
+NumberInput.prototype.pinHandlers.value = {
+    receives: function (value) {
+        this.domElt.value = value;
+    },
+    get: function () {
+        return this.domElt.value;
+    },
+    descriptor:{
+        type:'number'
+    }
+};
+
+
+NumberInput.prototype.pinHandlers.min = {
+    receives: function (value){
+        this.attributes.min  = value;
+    },
+    descriptor:{
+        type:'number'
+    }
+};
+
+NumberInput.prototype.pinHandlers.max = {
+    receives: function (value){
+        this.attributes.max  = value;
+    },
+    descriptor:{
+        type:'number'
+    }
+};
+
+
+
 NumberInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
 };
@@ -125,28 +162,16 @@ NumberInput.prototype.onCreate = function () {
 NumberInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
-    this.view.on('change', function (event) {
-        self.attributes.value = event.value;
+    this.domElt.on('change', function (event) {
         if (self.events.change)
             console.log("TODO: exec", self.events.change);
+        self.pinFire('value');
     });
     this.view._debug = true;
 };
 
 NumberInput.prototype.render = function () {
     return _('numberinput');
-};
-
-
-NumberInput.prototype.setAttributeFloatFixed = function (value) {
-    this.view.floatFixed = value;
-    return this.view.floatFixed;
-};
-
-
-NumberInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(["value", "floatFixed", 'min', 'max'])
-        .concat(InputAttributeNames);
 };
 
 
