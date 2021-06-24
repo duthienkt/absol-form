@@ -79,8 +79,8 @@ ComponentOutline.prototype.ev_contextNode = function (comp, event) {
     if (comp.isLayout) {
         items = [{
             icon: 'span.mdi.mdi-square-edit-outline',
-            text: comp.fragment ? "Edit Fragment" : 'Edit Layout',
-            cmd: comp.fragment ? 'edit_fragment' : 'edit_layout',
+            text: comp.isFragmentView ? "Edit Fragment" : 'Edit Layout',
+            cmd: comp.isFragmentView ? 'edit_fragment' : 'edit_layout',
             extendStyle: {
                 color: 'blue'
             }
@@ -133,12 +133,10 @@ ComponentOutline.prototype.moveToTop = function (comp) {
 
 ComponentOutline.prototype.moveUp = function (comp) {
     this.layoutEditor.moveUpComponent(comp);
-    this.updateComponentTree();
 };
 
 ComponentOutline.prototype.moveDown = function (comp) {
     this.layoutEditor.moveDownComponent(comp);
-    this.updateComponentTree();
 }
 
 ComponentOutline.prototype.moveToBottom = function (comp) {
@@ -156,19 +154,14 @@ ComponentOutline.prototype.updateComponentTree = function () {
 
     function onPressNode(comp, event) {
         var target = event.target;
-        if ((this.status === 'open' || this.status === 'close') && this.$node.$iconCtn.getBoundingClientRect().left > event.clientX - 3) {
-            this.status = this.status === 'open' ? 'close' : 'open';
-        }
+        var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
+        if (event.shiftKey && parentLayout === self.layoutEditor.editingLayout)
+            self.layoutEditor.toggleActiveComponent(comp);
         else {
-            var parentLayout = self.layoutEditor.findNearestLayoutParent(comp.parent);
-            if (event.shiftKey && parentLayout === self.layoutEditor.editingLayout)
-                self.layoutEditor.toggleActiveComponent(comp);
-            else {
-                if (parentLayout !== self.layoutEditor.editingLayout) {
-                    self.layoutEditor.editLayout(parentLayout || self.layoutEditor.rootLayout);
-                }
-                self.layoutEditor.setActiveComponent(comp);
+            if (parentLayout !== self.layoutEditor.editingLayout) {
+                self.layoutEditor.editLayout(parentLayout || self.layoutEditor.rootLayout);
             }
+            self.layoutEditor.setActiveComponent(comp);
         }
     }
 
@@ -178,19 +171,19 @@ ComponentOutline.prototype.updateComponentTree = function () {
                 var childElt = _({
                     tag: 'exptree',
                     props: {
-                        icon: childComp.fragment ? childComp.fragment.menuIcon : childComp.menuIcon,
+                        icon: childComp.isFragmentView ? childComp.fragment.menuIcon : childComp.menuIcon,
                         name: childComp.getAttribute('name'),
                         __comp__: childComp
                     }
                 });
                 childElt.getNode().defineEvent(['contextmenu']);
+                childElt.on('press',  onPressNode.bind(childElt, childComp));
                 childElt.getNode().on({
-                    click: onPressNode.bind(childElt, childComp),
                     contextmenu: self.ev_contextNode.bind(self, childComp)
                 });
                 expTree.addChild(childElt);
                 self.$expNodes.push(childElt);
-                if (!childComp.fragment)
+                if (!childComp.isFragmentView)
                     visit(childElt, childComp);
                 expTree.status = 'open';
             });
