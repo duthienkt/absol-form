@@ -49,7 +49,6 @@ PEMeasureSize.prototype.attachInput = function () {
             case "px":
                 cValue = self.getValue('px');
                 self.$numberInput.value = cValue;
-                console.log(cValue)
                 break;
             case 'match_parent':
                 cValue = '100%';
