@@ -14,9 +14,10 @@ import ClipboardManager from '../ClipboardManager';
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import Rectangle from 'absol/src/Math/Rectangle';
 import RelativeAnchorEditor from '../anchoreditors/RelativeAnchorEditor';
-import FmFragment from "../core/FmFragment";
+import FmFragment, {makeFmFragmentClass} from "../core/FmFragment";
 import BaseComponent from "../core/BaseComponent";
 import OOP from "absol/src/HTML5/OOP";
+import ResizeSystem from "absol/src/HTML5/ResizeSystem";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -29,14 +30,11 @@ function LayoutEditor() {
     var self = this;
     this.rootLayout = null;
     this.editingLayout = null;
-    this.snapshots = [];
-    this.snapshotsIndex = 0;
     this.lastCommitData = {
         editing: null,
         data: null,
         selected: []
     };
-    this._changeCommited = true;
     this.setContext(R.LAYOUT_EDITOR, this);
     this.setContext(R.HAS_CMD_EDITOR, this);
 
@@ -79,12 +77,12 @@ function LayoutEditor() {
         .on({
             change: function (event) {
                 self.updateAnchorPosition();
+                self.updateEditing();
                 Dom.updateResizeSystem();
                 if (event.name && event.name.match(/vAlign|hAlign|top|bottom|left|right/)) {
                     self.updateAnchor();
                     self.updateEditing();
                 }
-                this.component.reMeasure();
             },
             stopchange: function (event) {
                 var compName = event.object ? event.object.getAttribute('name') : ('{' + event.objects.map(function (object) {
@@ -953,16 +951,20 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 
 
 LayoutEditor.prototype.applyData = function (data) {
-    this.rootFragment = new FmFragment();
-    this.rootLayout = this.buildComponent(data, this.rootFragment);
-    this.rootFragment.setContentView(this.rootLayout);
+    var FmClass = makeFmFragmentClass({
+        tag:'LayoutTest',
+        contentViewData:{
+            layout: data
+        }
+    });
+    this.rootFragment = new FmClass();
+    this.rootLayout = this.rootFragment.view;
     this.$layoutCtn.clearChild().addChild(this.rootLayout.domElt);
     this.rootLayout.onAttached(this);
     this.$vruler.measureElement(this.rootLayout.domElt);
     this.$hruler.measureElement(this.rootLayout.domElt);
-    this.editLayout(this.rootLayout)
+    this.editLayout(this.rootLayout);
     this.componentOtline.updateComponentTree();
-
     this.emit('change', { type: 'change', target: this, data: data }, this);
 };
 
@@ -1158,8 +1160,7 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
         if (typeof cst == 'function') {
             if (cst.prototype.type === FmFragment.prototype.type) {
                 var frg = new cst();
-                comp = self.buildComponent(cst.prototype.contentViewData, frg);
-                frg.setContentView(comp);
+                comp = frg.view;
                 self.rootFragment.addChild(frg);
             }
             else if (cst.prototype.type === BaseComponent.prototype.type) {
@@ -1170,7 +1171,6 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
             comp = self.buildComponent(cst, self.rootFragment);
         }
         layout.addChildByPosition(comp, layoutPosX, layoutPosY);
-        comp.reMeasure();
         return comp;
     });
 
@@ -1178,10 +1178,12 @@ LayoutEditor.prototype.addNewComponent = function (constructor, posX, posY) {
     this.setActiveComponent.apply(this, addedComponents);
     this.notifyDataChange();
     setTimeout(this.updateAnchorPosition.bind(this), 1);
+    this.updateEditing();
     this.componentOtline.updateComponentTree();
     this.commitHistory('add', "Add " + addedComponents.map(function (comp) {
-        return comp.getAttribute('name')
+        return comp.getAttribute('name');
     }).join(', '));
+    this.componentOtline.updateComponentTree();
     this.notifyUnsaved();
 };
 
@@ -1293,6 +1295,7 @@ LayoutEditor.prototype.moveToTopComponent = function (comp) {
     this.componentOtline.updateComponentTree();
     this.commitHistory('move-order', 'Move ' + comp.getAttribute('name') + ' to top');
     this.notifyUnsaved();
+    this.updateAnchorPosition();
 };
 
 LayoutEditor.prototype.notifyUnsaved = function () {
