@@ -120,7 +120,7 @@ BaseEditor.prototype.bindKeyToCmd = function (key, cmd) {
 
 BaseEditor.prototype._isInputSupportedKey = function (target, key){
     if (target.tagName && target.tagName.toLowerCase().match(/input|textarea/)){
-        if (['Ctrl-A','Ctrl-C', 'Ctrl-X','Ctrl-V', 'Ctrl-Z', 'Ctrl-Y', 'Del', 'Backspace',
+        if (['Ctrl-A','Ctrl-C', 'Ctrl-X','Ctrl-V', 'Ctrl-Z', 'Ctrl-Y', 'Delete', 'Backspace',
             'Esc', 'Enter', 'Alt-Enter', 'Ctrl-Enter'].indexOf(key)>=0){
             return true;
         }
