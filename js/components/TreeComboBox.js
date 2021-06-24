@@ -1,10 +1,10 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import OOP from "absol/src/HTML5/OOP";
 import ComboBox from "./ComboBox";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
+import DomSignal from "absol/src/HTML5/DomSignal";
 
 var _ = Fcore._;
 
@@ -48,47 +48,39 @@ TreeComboBox.prototype.attributeHandlers.treeList = Object.assign({}, ComboBox.p
     }
 });
 
+TreeComboBox.prototype.pinHandlers.treeList = {
+    receives: function (value) {
+        this.attributes.treeList = value;
+    },
+    descriptor: {
+        type: 'SelectTreeList'
+    }
+};
+
+TreeComboBox.prototype.pinHandlers.value = ComboBox.prototype.pinHandlers.value;
+
 TreeComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.attributes.list = [
-        {
-            text: '0', value: '0',
-            items: [
-                { text: "13", value: '13' },
-                { text: "14", value: '14' },
-            ]
-        },
-        { text: '1', value: '1' },
-        { text: '2', value: '2' },
-        { text: '3', value: '3' },
-
-
-    ];
-    this.attributes.value = '0';
 };
 
 
 TreeComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
+    if (!this.domElt.domSignal){
+        this.domElt.$domSignal = _('attachhook').addTo(this.domElt);
+        this.domElt.domSignal = new DomSignal(this.domElt.$domSignal);
+    }
+    this.domSignal = this.domElt.domSignal;
+    this.domSignal.on('pinFireAll', this.pinFireAll.bind(this));
     this.view.on('change', function () {
         self.emit("change", { type: 'change', value: this.value }, self);
+        self.pinFire('value');
     });
 };
-
 
 TreeComboBox.prototype.render = function () {
     return _('selecttreemenu');
-};
-
-TreeComboBox.prototype.getAttributeList = function () {
-    return this.view.items.map(function visit(item) {
-        var res = { text: item.text, value: item.value };
-        if (item.items && item.items.length > 0) {
-            res.items = item.items.map(visit);
-        }
-        return res;
-    });
 };
 
 
