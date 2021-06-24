@@ -1,7 +1,7 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import showdown from 'showdown';
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import TextStyleHandlers from "./handlers/TextStyleHandlers";
 import {AssemblerInstance} from "../core/Assembler";
 
@@ -66,7 +66,14 @@ Text.prototype.attributeHandlers.textDecode = {
 Object.assign(Text.prototype.styleHandlers, TextStyleHandlers);
 
 
-
+Text.prototype.pinHandlers.text = {
+    receives: function (value){
+        this.attributes.text = value;
+    },
+    descriptor:{
+        type: 'text'
+    }
+};
 
 
 Text.prototype.onCreate = function () {
@@ -85,10 +92,6 @@ Text.prototype.render = function () {
     return _('div.absol-bscroller');
 };
 
-
-Text.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text', 'textDecode']);
-};
 
 Text.prototype.getAcceptsStyleNames = function () {
     return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textAlign', 'textColor']);
