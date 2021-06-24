@@ -36,8 +36,13 @@ TextStyleHandlers.textSize = {
         return value;
     },
     descriptor: {
-        type: "FontSize",
+        type: "number",
+        nullable: true,
+        defaultValue: 14,
         sign: "FontSize"
+    },
+    export: function (ref) {
+        return ref.get() || undefined;
     }
 };
 
@@ -73,7 +78,7 @@ TextStyleHandlers.fontStyle = {
     }
 };
 
-export  var fontStyle2DomStyle = {
+export var fontStyle2DomStyle = {
     Regular: {
         fontWeight: 'normal',
         fontStyle: 'normal'
