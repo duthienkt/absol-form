@@ -2,7 +2,7 @@ import Fcore from "../core/FCore";
 import FViewable from "../core/FViewable";
 import LinearAnchor from "./LinearAnchor";
 import '../../css/chainanchor.css';
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import makeMapStyleHandler from "./makeMapStyleHandler";
 
 var _ = Fcore._;
@@ -46,7 +46,7 @@ ChainAnchor.prototype.getAcceptsStyleNames = function () {
     return LinearAnchor.prototype.getAcceptsStyleNames.call(this).concat(['vAlign']);
 };
 
-['left', 'top', 'bottom', 'width', 'vAlign'].forEach(function (name) {
+['left', 'right', 'top', 'bottom', 'width', 'height', 'vAlign'].forEach(function (name) {
     ChainAnchor.prototype.styleHandlers[name] = makeMapStyleHandler(name);
 });
 
