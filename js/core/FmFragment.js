@@ -5,6 +5,8 @@ import {randomIdent} from "absol/src/String/stringGenerate";
 import FNode, {traversal} from "./FNode";
 import FModel from "./FModel";
 import {AssemblerInstance} from "./Assembler";
+import {_} from "./FCore";
+import DomSignal from "absol/src/HTML5/DomSignal";
 
 
 /***
@@ -35,9 +37,12 @@ function FmFragment() {
     this.blocks = [];
     this.lines = [];
     this.entrys = [];
+    this.domSignal = null;
     this.onCreate();
     this.buildContentView();
     this.onCreated();
+    this.domSignal.on('request_fragment_auto_start', this.start.bind(this));
+    this.domSignal.emit('request_fragment_auto_start');
 }
 
 OOP.mixClass(FmFragment, GrandContext, FNode, FModel);
@@ -90,10 +95,22 @@ FmFragment.prototype.buildContentView = function () {
             if (line) this.lines.push(line);
         }
     }
-    for (i = 0; i < this.entrys.length; ++ i){
+    if (!this.view.domElt.domSignal){
+        this.view.domElt.$domSignal = _('attachhook');
+        this.view.domElt.appendChild(this.view.domElt.$domSignal);
+        this.view.domElt.domSignal = new DomSignal(this.view.domElt.$domSignal);
+    }
+    this.domSignal = this.view.domElt.domSignal;
+};
+
+FmFragment.prototype.execEntry = function (){
+    for (var i = 0; i < this.entrys.length; ++ i){
         this.entrys[i].exec();
     }
 };
+
+
+
 
 //reassign this property in constructor or onCreate to change default layout,
 // this data will be use for assembler
@@ -107,6 +124,25 @@ FmFragment.prototype.onCreate = noop;
  * call by assembly
  */
 FmFragment.prototype.onCreated = noop;
+
+FmFragment.prototype.start = function (){
+    if (this.state.match(/DIE/)) {
+        console.error(this, 'DIED!');
+        return;
+    }
+
+    if (this.state.match(/RUNNING/)) return;
+
+    if (this.state.match(/STOP|CREATE/)) {
+        this.state = "STANDBY";
+        //start entry before call onStart
+        this.execEntry();
+        this.onStart && this.onStart();
+    }
+    if (this.state.match(/STANDBY|PAUSE/)) {
+        this.resume();
+    }
+}
 
 /***
  *
