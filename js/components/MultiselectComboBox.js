@@ -2,10 +2,21 @@ import MultiSelectMenu from "absol-acomp/js/MultiSelectMenu";
 import {_} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
 import ComboBox from "./ComboBox";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
+import DomSignal from "absol/src/HTML5/DomSignal";
 
+
+function valueListCmp(a, b) {
+    var dictA = a.reduce(function (ac, cr) {
+        ac[cr] = cr;
+        return ac;
+    }, {});
+    return a.length === b.length && b.every(function (it) {
+        return dictA[it] === it;
+    });
+}
 
 /***
  * @extends ScalableComponent
@@ -31,19 +42,23 @@ MultiselectComboBox.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.style.height = 30;
     this.style.width = 100;
-
-    this.attributes.list = [
-        { text: '0', value: '0' },
-        { text: '1', value: '1' },
-        { text: '2', value: '2' },
-        { text: '3', value: '3' }
-    ];
 };
 
 MultiselectComboBox.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
-    this.bindAttribute('values');
-    this.bindAttribute('searchable', 'enableSearch');
+    var self = this;
+    if (!this.domElt.domSignal) {
+        this.domElt.$domSignal = _('attachhook').addTo(this.domElt);
+        this.domElt.domSignal = new DomSignal(this.domElt.$domSignal);
+    }
+    /***
+     * @type DomSignal
+     */
+    this.domSignal = this.domElt.domSignal;
+    this.domSignal.on('pinFireAll', this.pinFireAll.bind(this));
+    this.domElt.on('change', function () {
+        self.pinFire('values');
+    })
 };
 
 
@@ -54,7 +69,12 @@ MultiselectComboBox.prototype.attributeHandlers.list = ComboBox.prototype.attrib
 MultiselectComboBox.prototype.attributeHandlers.searchable = ComboBox.prototype.attributeHandlers.searchable;
 MultiselectComboBox.prototype.attributeHandlers.values = {
     set: function (value) {
+        if (!value || !value.forEach) value = [];
+        var prev = this.domElt.values.slice();
         this.domElt.values = value;
+        if (this.domSignal && !valueListCmp(value, prev)) {
+            this.domSignal.emit('pinFireAll');
+        }
     },
     get: function () {
         return this.domElt.values;
@@ -68,8 +88,21 @@ MultiselectComboBox.prototype.attributeHandlers.values = {
             })
         };
     }
-}
+};
 
+MultiselectComboBox.prototype.pinHandlers.list = ComboBox.prototype.pinHandlers.list;
+
+MultiselectComboBox.prototype.pinHandlers.values = {
+    receives: function (value) {
+        this.attributes.values = value;
+    },
+    get: function () {
+        return this.domElt.values;
+    },
+    descriptor: {
+        type: 'arrayOfText'
+    }
+};
 
 MultiselectComboBox.prototype.measureMinSize = function () {
     var minWidthStyle = parseFloat(this.view.getComputedStyleValue('min-width').replace('px'));
@@ -116,6 +149,6 @@ MultiselectComboBox.prototype.getDataBindingDescriptor = function () {
 };
 
 AssemblerInstance.addClass(MultiselectComboBox);
-AssemblerInstance.addClass('MultiselectCombobox',MultiselectComboBox);
+AssemblerInstance.addClass('MultiselectCombobox', MultiselectComboBox);
 
 export default MultiselectComboBox;

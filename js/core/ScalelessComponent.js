@@ -1,5 +1,6 @@
 import BaseComponent from "../core/BaseComponent";
 import Fcore from "../core/FCore";
+import inheritComponentClass from "./inheritComponentClass";
 
 var _ = Fcore._;
 
@@ -7,8 +8,7 @@ function ScalelessComponent() {
     BaseComponent.call(this);
 }
 
-Object.defineProperties(ScalelessComponent.prototype, Object.getOwnPropertyDescriptors(BaseComponent.prototype));
-ScalelessComponent.prototype.constructor = ScalelessComponent;
+inheritComponentClass(ScalelessComponent, BaseComponent);
 
 ScalelessComponent.prototype.tag = "ScalableComponent";
 ScalelessComponent.prototype.SUPPORT_STYLE_NAMES = ['top', 'left', 'right', 'top', 'bottom'];
@@ -22,7 +22,6 @@ ScalelessComponent.prototype.onCreate = function () {
     this.style.top = 0;
     this.style.bottom = 0;
 };
-
 
 
 ScalelessComponent.prototype.handleStyleWidth = function (value) {

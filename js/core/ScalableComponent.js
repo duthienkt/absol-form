@@ -1,5 +1,6 @@
-import BaseComponent, {inheritComponentClass} from "../core/BaseComponent";
+import BaseComponent from "../core/BaseComponent";
 import Fcore from "../core/FCore";
+import inheritComponentClass from "./inheritComponentClass";
 
 var _ = Fcore._;
 
