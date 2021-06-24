@@ -1,6 +1,6 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import {beginOfDay} from "absol/src/Time/datetime";
+import {beginOfDay, compareDate} from "absol/src/Time/datetime";
 import OOP from "absol/src/HTML5/OOP";
 import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
@@ -29,17 +29,20 @@ Object.assign(DateInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 DateInput.prototype.attributeHandlers.value = {
     set: function (value) {
+        var prev = this.domElt.value;
         if (value instanceof Date)
-            this.view.value = value;
+            this.domElt.value = value;
         else if (typeof value == 'string' || typeof value == "number") {
             value = new Date(value);
-            this.view.value = value;
+            this.domElt.value = value;
         }
         else {
             value = null;
-            this.view.value = null;
+            this.domElt.value = null;
         }
-        this.pinFire('value');
+        var cur = this.domElt.value;
+        if (prev !== cur || (prev && cur && compareDate(prev, cur) !== 0))
+            this.pinFire('value');
     },
     get: function () {
         return this.view.value;
@@ -70,6 +73,18 @@ DateInput.prototype.pinHandlers.max = {
         type: "Date"
     }
 };
+DateInput.prototype.pinHandlers.value = {
+    receives: function (value) {
+        this.attributes.value = value;
+    },
+    get: function () {
+        return this.domElt.value;
+    },
+    descriptor: {
+        type: "Date"
+    }
+}
+
 
 DateInput.prototype.render = function () {
     return _('dateinput');
@@ -86,9 +101,8 @@ DateInput.prototype.onCreate = function () {
 
 DateInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
-    this.domElt.on('change',this.ev_inputChange.bind(this));
+    this.domElt.on('change', this.ev_inputChange.bind(this));
 };
-
 
 
 DateInput.prototype.getAcceptsEventNames = function () {
