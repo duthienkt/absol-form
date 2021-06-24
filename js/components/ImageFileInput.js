@@ -1,6 +1,6 @@
 import Fcore, {$} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import '../../css/imagefileinput.css';
 import {openFileDialog} from "absol-acomp/js/utils";
 import {AssemblerInstance} from "../core/Assembler";

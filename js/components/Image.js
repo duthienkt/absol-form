@@ -3,6 +3,7 @@ import ScalableComponent from "../core/ScalableComponent";
 import Dom from "absol/src/HTML5/Dom";
 import OOP from "absol/src/HTML5/OOP";
 import {AssemblerInstance} from "../core/Assembler";
+import inheritComponentClass from "../core/inheritComponentClass";
 
 var _ = Fcore._;
 
@@ -17,7 +18,7 @@ function Image() {
     this.loadedSync = Promise.resolve([0, 0]);
 }
 
-OOP.mixClass(Image, ScalableComponent);
+inheritComponentClass(Image, ScalableComponent);
 
 Image.prototype.tag = "Image";
 Image.prototype.menuIcon = "span.mdi.mdi-image-outline";

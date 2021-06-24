@@ -2,7 +2,7 @@ import Fcore from "../core/FCore";
 
 import '../../css/component.css';
 import ScalableComponent from "../core/ScalableComponent";
-import {inheritComponentClass} from "./BaseComponent";
+import inheritComponentClass from "./inheritComponentClass";
 
 var _ = Fcore._;
 var $ = Fcore.$;

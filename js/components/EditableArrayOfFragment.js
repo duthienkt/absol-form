@@ -5,7 +5,7 @@ import {AssemblerInstance} from "../core/Assembler";
 import ArrayOfFragment from "./ArrayOfFragment";
 import FlexiconButton from "absol-acomp/js/FlexiconButton";
 import '../../css/editablearrayoffragment.css';
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 
 
 /***
