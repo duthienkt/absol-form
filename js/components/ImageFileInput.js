@@ -25,6 +25,8 @@ ImageFileInput.prototype._defaultBackgroundImg = 'data:image/svg+xml;base64,PD94
 
 ImageFileInput.prototype.attributeHandlers.value = {
     set: function (value) {
+        var ref = arguments[arguments.length - 1];
+        var prev = ref.get();
         if (typeof value === 'string') {
             this._imageSrc = value;
         }
@@ -46,6 +48,8 @@ ImageFileInput.prototype.attributeHandlers.value = {
             this.$img.addStyle('backgroundImage', 'url(' + this._defaultBackgroundImg + ')');
             this.domElt.removeClass('as-has-file');
         }
+        ref.set(value); //set before send to pin
+        if (value !== prev) this.pinFire('value');
         return value;
     },
     descriptor: {
@@ -85,6 +89,16 @@ ImageFileInput.prototype.styleHandlers.previewSize = {
     descriptor: {
         type: 'enum',
         values: ['contain', 'cover']
+    }
+};
+
+
+ImageFileInput.prototype.pinHandlers.value = {
+    get: function () {
+        return this.attributes.value;
+    },
+    descriptor: {
+        type: "ImageFile"
     }
 };
 
