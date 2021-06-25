@@ -26,6 +26,7 @@ import PENumber from "./types/PENumber";
 import PEFragmentClass from "./types/PEFragmentClass";
 import PESelectList from "./types/PESelectList";
 import PELengthInPixel from "./types/PELengthInPixel";
+import PEIcon from "./types/PEIcon";
 
 var _ = Fcore._;
 var $ = Fcore.$;
@@ -67,7 +68,8 @@ MultiObjectPropertyEditor.prototype.type2EditorClass = {
     number: PENumber,
     fragmentClass: PEFragmentClass,
     SelectList: PESelectList,
-    LengthInPixel: PELengthInPixel
+    LengthInPixel: PELengthInPixel,
+    icon: PEIcon
 };
 
 MultiObjectPropertyEditor.prototype.getPropertyNames = function (object) {
