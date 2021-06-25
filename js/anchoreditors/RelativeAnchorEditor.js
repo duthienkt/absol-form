@@ -2,7 +2,10 @@ import Fcore from '../core/FCore';
 import '../../css/anchoreditor.css';
 import '../dom/Icons';
 import BaseAnchorEditor from '../core/BaseAnchorEditor';
-import RelativeAnchorEditorCmd, { RelativeAnchorEditorCmdTree, RelativeAnchorEditorCmdDescriptors } from '../cmds/RelativeAnchorEditorCmd';
+import RelativeAnchorEditorCmd, {
+    RelativeAnchorEditorCmdTree,
+    RelativeAnchorEditorCmdDescriptors
+} from '../cmds/RelativeAnchorEditorCmd';
 import OOP from "absol/src/HTML5/OOP";
 import ResizeSystem from "absol/src/HTML5/ResizeSystem";
 
@@ -53,6 +56,7 @@ OOP.mixClass(RelativeAnchorEditor, BaseAnchorEditor);
 RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
     var self = this;
     var items = [];
+
     function makeItem(name) {
         if (name === null) return '=====';
         var cmdDescriptor = RelativeAnchorEditorCmdDescriptors[name];
@@ -66,6 +70,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
         }
         return res;
     }
+
     if (this.layoutEditor.anchorEditors.length > 1) {
         items.push.apply(items, [
             'alignLeftDedge',
@@ -97,7 +102,7 @@ RelativeAnchorEditor.prototype.ev_contextMenu = function (event) {
         ].map(makeItem));
     }
 
-    if (this.layoutEditor.anchorEditors.length == 1 && this.layoutEditor.anchorEditors[0].component.reMeasureChild) {
+    if (this.layoutEditor.anchorEditors.length === 1 && this.layoutEditor.anchorEditors[0].component.isLayout) {
         items.push({
             icon: 'span.mdi.mdi-square-edit-outline[style="color:blue"]',
             text: 'Edit Layout',
@@ -245,10 +250,8 @@ RelativeAnchorEditor.prototype.updatePosition = function () {
 };
 
 
-
 RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
     var bound = this.layoutEditor.$forceground.getBoundingClientRect();
-    this.component.reMeasure();
     var snapLines = this.getSnapLines();
     this.movingData = {
         userAction: userAction,
@@ -281,13 +284,17 @@ RelativeAnchorEditor.prototype.ev_beginMove = function (userAction, event) {
         nearestX: [],
     };
     if (userAction) {
-        this.emit('beginmove', { type: 'beginmove', target: this, originEvent: event.originEvent || event, repeatEvent: event }, this);
+        this.emit('beginmove', {
+            type: 'beginmove',
+            target: this,
+            originEvent: event.originEvent || event,
+            repeatEvent: event
+        }, this);
         this.$modal.addTo(document.body);
         this._updateSnapLines();
         this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
     }
 };
-
 
 
 RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
@@ -413,14 +420,25 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
     }
 
     this.updatePosition();
-    movingData.comp.reMeasure();
     if (positionIsChange) {
-        this.emit("reposition", { type: 'reposition', component: movingData.comp, movingData: movingData, originEvent: event.originEvent || event, repeatEvent: event }, this);
+        this.emit("reposition", {
+            type: 'reposition',
+            component: movingData.comp,
+            movingData: movingData,
+            originEvent: event.originEvent || event,
+            repeatEvent: event
+        }, this);
         movingData.isChange = true;
         ResizeSystem.updateDown(movingData.comp.view);
     }
     if (userAction) {
-        this.emit('moving', { taget: this, type: 'moving', originEvent: event.originEvent || event, target: this, repeatEvent: event }, this);
+        this.emit('moving', {
+            taget: this,
+            type: 'moving',
+            originEvent: event.originEvent || event,
+            target: this,
+            repeatEvent: event
+        }, this);
         this._updateSnapLines();
         this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = ' Δ' + this.movingData.dx + ', ' + this.movingData.dy;
     }
@@ -429,11 +447,23 @@ RelativeAnchorEditor.prototype.ev_moving = function (userAction, event) {
 
 RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
     if (this.movingData.isChange) {
-        this.emit('change', { type: 'change', target: this, component: this.movingData.comp, originEvent: event.originEvent || event, repeatEvent: event }, this);
+        this.emit('change', {
+            type: 'change',
+            target: this,
+            component: this.movingData.comp,
+            originEvent: event.originEvent || event,
+            repeatEvent: event
+        }, this);
     }
 
     if (userAction) {
-        this.emit('endmove', { taget: this, type: 'moving', originEvent: event.originEvent || event, target: this, repeatEvent: event }, this);
+        this.emit('endmove', {
+            taget: this,
+            type: 'moving',
+            originEvent: event.originEvent || event,
+            target: this,
+            repeatEvent: event
+        }, this);
         this.$modal.remove();
         this.layoutEditor.$mouseOffsetStatus.children[2].innerHTML = '';
         this.movingData.$snapYLines.forEach(function (e) {
@@ -469,7 +499,8 @@ RelativeAnchorEditor.prototype.ev_endMove = function (userAction, event) {
                 this.alignBottomDedge(this.layoutEditor.rootLayout.style.height - firsLineY.value, this.movingData.body);
             }
         }
-    };
+    }
+    ;
 
     this.movingData = undefined;
 };
@@ -634,8 +665,6 @@ RelativeAnchorEditor.prototype._updateSnapLines = function () {
 };
 
 
-
-
 RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue, keepSize) {
     if (!this.component) return;
     var lLeft = this.component.getStyle('left', 'px');
@@ -643,7 +672,8 @@ RelativeAnchorEditor.prototype.alignLeftDedge = function (leftValue, keepSize) {
     var currentHAlign = this.component.getStyle('hAlign');
     switch (currentHAlign) {
         case 'left':
-            this.component.setStyle('left', leftValue, 'px'); break;
+            this.component.setStyle('left', leftValue, 'px');
+            break;
         case 'fixed':
             this.component.setStyle('left', leftValue, 'px');
             if (keepSize) {
@@ -725,7 +755,6 @@ RelativeAnchorEditor.prototype.alignHorizontalCenter = function (centerValue) { 
 
 RelativeAnchorEditor.prototype.equaliseWidth = function (widthValue) {
     if (!this.component) return;
-    this.component.reMeasure();
     var currentHAlign = this.component.getStyle('hAlign');
     var cRight = this.component.getStyle('right', 'px');
     var cLeft = this.component.getStyle('left', 'px');
@@ -758,8 +787,6 @@ RelativeAnchorEditor.prototype.equaliseWidth = function (widthValue) {
     }
     this.updatePosition();
 };
-
-
 
 
 RelativeAnchorEditor.prototype.alignTopDedge = function (topValue, keepSize) {
@@ -885,8 +912,6 @@ RelativeAnchorEditor.prototype.equaliseHeight = function (heightValue) {
 };
 
 
-
-
 /**
  * @returns {{x:Array<{components:Array, value:Number}>, y:Array<{components:Array, value:Number}, flat:Number>}}
  */
@@ -899,7 +924,6 @@ RelativeAnchorEditor.prototype.getSnapLines = function () {
     for (var i = 0; i < children.length; ++i) {
         comp = children[i];
         if (this.component == comp) continue;
-        comp.reMeasure();
         xComp.push({ component: comp, value: comp.style.left, flat: 1 });
         xComp.push({ component: comp, value: comp.style.left + comp.style.width / 2, flat: 2 });
         xComp.push({ component: comp, value: comp.style.left + comp.style.width, flat: 4 });
