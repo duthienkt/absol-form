@@ -20,7 +20,6 @@ button.as-font-icon-picker-icon {
     height: 3em;
     width: 3em;
     padding: 0;
-    margin: 0;
     margin: 0.1em;
     font-size: 1em;
     box-sizing: border-box;
@@ -42,6 +41,7 @@ button.as-font-icon-picker-icon>span {
     text-align: center;
     height: 19.2em;
     width: 20.2em;
+    overflow-y: auto;
 }
 
 button.as-font-icon-picker-icon.as-font-icon-picker-selected {
