@@ -7,6 +7,7 @@ import FModel from "./FModel";
 import {AssemblerInstance} from "./Assembler";
 import {_} from "./FCore";
 import DomSignal from "absol/src/HTML5/DomSignal";
+import EventEmitter from "absol/src/HTML5/EventEmitter";
 
 
 /***
@@ -19,7 +20,7 @@ function FmFragment() {
     GrandContext.call(this);
     FNode.call(this);
     FModel.call(this);
-
+    this.emittor = new EventEmitter();
     this._componentNameList = [];
 
     this.embarkedProps = {};
@@ -55,6 +56,7 @@ FmFragment.prototype.tag = 'FmFragment';
 FmFragment.prototype.menuIcon = 'span.mdi.mdi-terraform';
 
 FmFragment.prototype.buildContentView = function () {
+    var self = this;
     var contentViewData = this.contentViewData;
     var blocks;
     var layout;
@@ -72,10 +74,13 @@ FmFragment.prototype.buildContentView = function () {
         lines = contentViewData.circuit && contentViewData.circuit.lines;
     }
     if (layout) {
-        this.view = AssemblerInstance.buildComponent(layout);
+        this.view = AssemblerInstance.buildComponent(layout, this);
         traversal(this.view, function (path) {
             blockDict[path.node.attributes.id] = path.node;
             blockDict[path.node.attributes.name] = path.node;
+            if (path.node.fragment !== self){
+                path.skipChildren();
+            }
         })
     }
     else {
@@ -103,6 +108,9 @@ FmFragment.prototype.buildContentView = function () {
         this.view.domElt.domSignal = new DomSignal(this.view.domElt.$domSignal);
     }
     this.domSignal = this.view.domElt.domSignal;
+    this.blocks.forEach(function (block) {
+        if (block.onAttached) block.onAttached();
+    });
 };
 
 FmFragment.prototype.execEntry = function () {
