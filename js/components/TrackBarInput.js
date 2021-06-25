@@ -1,9 +1,9 @@
 import {_} from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import OOP from "absol/src/HTML5/OOP";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
+import TrackBar from "./TrackBar";
 
 function TrackBarInput() {
     ScalableComponent.call(this);
@@ -21,12 +21,8 @@ TrackBarInput.prototype.render = function () {
 Object.assign(TrackBarInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 TrackBarInput.prototype.attributeHandlers.value = {
-    set: function (value) {
-        this.domElt.value = value;
-    },
-    get: function () {
-        return this.domElt.value;
-    },
+    set: TrackBar.prototype.attributeHandlers.value.set,
+    get: TrackBar.prototype.attributeHandlers.value.get,
     getDescriptor: function () {
         return {
             type: 'number',
@@ -87,6 +83,17 @@ TrackBarInput.prototype.attributeHandlers.unit = {
     }
 };
 
+TrackBarInput.prototype.pinHandlers.value = Object.assign({}, TrackBar.prototype.pinHandlers.value,
+    {
+        descriptor: function () {
+            return {
+                type: 'number',
+                max: this.domElt.rightValue,
+                min: this.domElt.leftValue,
+                floatFixed: 2
+            };
+        }
+    });
 
 TrackBarInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.apply(this, arguments);
@@ -95,6 +102,9 @@ TrackBarInput.prototype.onCreate = function () {
 
 TrackBarInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.apply(this, arguments);
+    this.domElt.on('change', function (){
+        this.pinFire('value');
+    }.bind(this));
 };
 
 
