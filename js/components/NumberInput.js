@@ -27,7 +27,10 @@ Object.assign(NumberInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 NumberInput.prototype.attributeHandlers.value = {
     set: function (value) {
+        var prev = this.domElt.value;
         this.domElt.value = value;
+        if (prev !== this.domElt.value)
+            this.pinFire(value);
     },
     get: function () {
         return this.domElt.value;
@@ -124,35 +127,34 @@ NumberInput.prototype.attributeHandlers.floatFixed = {
 
 NumberInput.prototype.pinHandlers.value = {
     receives: function (value) {
-        this.domElt.value = value;
+        this.attributes.value = value;
     },
     get: function () {
         return this.domElt.value;
     },
-    descriptor:{
-        type:'number'
+    descriptor: {
+        type: 'number'
     }
 };
 
 
 NumberInput.prototype.pinHandlers.min = {
-    receives: function (value){
-        this.attributes.min  = value;
+    receives: function (value) {
+        this.attributes.min = value;
     },
-    descriptor:{
-        type:'number'
+    descriptor: {
+        type: 'number'
     }
 };
 
 NumberInput.prototype.pinHandlers.max = {
-    receives: function (value){
-        this.attributes.max  = value;
+    receives: function (value) {
+        this.attributes.max = value;
     },
-    descriptor:{
-        type:'number'
+    descriptor: {
+        type: 'number'
     }
 };
-
 
 
 NumberInput.prototype.onCreate = function () {
@@ -163,8 +165,6 @@ NumberInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
     var self = this;
     this.domElt.on('change', function (event) {
-        if (self.events.change)
-            console.log("TODO: exec", self.events.change);
         self.pinFire('value');
     });
     this.view._debug = true;
