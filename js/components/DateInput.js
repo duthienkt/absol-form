@@ -41,7 +41,7 @@ DateInput.prototype.attributeHandlers.value = {
             this.domElt.value = null;
         }
         var cur = this.domElt.value;
-        if (prev !== cur || (prev && cur && compareDate(prev, cur) !== 0))
+        if (!!prev !== !!cur || (prev && cur && compareDate(prev, cur) !== 0))
             this.pinFire('value');
     },
     get: function () {
