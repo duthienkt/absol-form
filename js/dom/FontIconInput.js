@@ -1,14 +1,19 @@
 import Fcore from "../core/FCore";
 import './FontIconPicker';
-import Dom from "absol/src/HTML5/Dom";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
+
 var _ = Fcore._;
 var $ = Fcore.$;
 
+/***
+ * @extends AElement
+ * @constructor
+ */
 function FontIconInput() {
-    this.prepare();
     this.on('click', this.eventHandler.click);
 }
+
+FontIconInput.tag = 'FontIconInput'.toLowerCase();
 
 FontIconInput.eventHandler = {};
 
@@ -18,15 +23,27 @@ FontIconInput.eventHandler.click = function (event) {
 
 FontIconInput.eventHandler.clickIcon = function (event) {
     this.value = event.value;
-    this.emit('change', { type: 'change', value: event.value, target: this, originEvent: event.originEvent || event }, this);
+    this.emit('change', {
+        type: 'change',
+        value: event.value,
+        target: this,
+        originEvent: event.originEvent || event
+    }, this);
     this.closePicker();
-
 };
+
+FontIconInput.prototype.share = {
+    $follower: null,
+    $picker: null,
+    $holder: null
+};
+
 
 FontIconInput.eventHandler.clickBody = function (event) {
-    if (EventEmitter.hitElement(this, event) || EventEmitter.hitElement(this.$fontIconPicker, event)) return;
+    if (EventEmitter.hitElement(this, event) || EventEmitter.hitElement(this.share.$picker, event)) return;
     this.closePicker();
 };
+
 
 FontIconInput.prototype.togglePicker = function () {
     if (this.containsClass('as-font-icon-selecting')) {
@@ -39,46 +56,40 @@ FontIconInput.prototype.togglePicker = function () {
 
 
 FontIconInput.prototype.openPicker = function () {
-    if (FontIconInput.lastOpen) {
-        FontIconInput.lastOpen.closePicker();
+    this.prepare();
+    if (this.share.$holder) {
+        this.share.$holder.closePicker();
     }
-    FontIconInput.lastOpen = this;
+    this.share.$holder = this;
     this.addClass('as-font-icon-selecting');
-    this.$fontIconPicker.on('clickicon', this.eventHandler.clickIcon);
-    this.$ctn.addTo(document.body);
-    this.$follower.followTarget = this;
+
+    this.share.$picker.on('clickicon', this.eventHandler.clickIcon);
+    this.share.$follower.addTo(document.body);
+    this.share.$follower.followTarget = this;
     $(document.body).on('click', this.eventHandler.clickBody);
-    this.$fontIconPicker.selectValues(this.value);
+    this.share.$picker.selectValues(this.value);
 };
 
 
 FontIconInput.prototype.closePicker = function () {
     this.removeClass('as-font-icon-selecting');
-    if (FontIconInput.lastOpen == this) {
-        FontIconInput.lastOpen == null;
-        this.$ctn.remove();
-    }
     document.body.off('click', this.eventHandler.clickBody);
-    this.$fontIconPicker.off('clickicon', this.eventHandler.clickIcon);
+    this.share.$picker.off('clickicon', this.eventHandler.clickIcon);
+    if (this.share.$holder === this) {
+        this.share.$holder = null;
+        this.share.$follower.remove();
+    }
 };
 
 FontIconInput.prototype.prepare = function () {
-    if (!FontIconInput.$fontIconPicker) {
-        FontIconInput.$ctn = _('.absol-context-hinge-fixed-container');
-        FontIconInput.$follower = _('follower').addTo(FontIconInput.$ctn);
-        FontIconInput.$fontIconPicker = _('fonticonpicker').addTo(FontIconInput.$follower);
-        FontIconInput.lastOpen = null;
+    if (!this.share.$picker) {
+        this.share.$follower = _('follower.as-font-icon-follower');
+        this.share.$picker = _('fonticonpicker').addTo(this.share.$follower);
     }
-
-    this.$follower = FontIconInput.$follower;
-
-    this.$fontIconPicker = FontIconInput.$fontIconPicker;
-    this.$ctn = FontIconInput.$ctn;
 };
 
 FontIconInput.render = function () {
     return _({
-        extendEvent: 'change',
         tag: 'button',
         extendEvent: 'change',
         class: 'as-font-icon-input'
@@ -103,6 +114,6 @@ FontIconInput.property.value = {
 };
 
 
-Fcore.install('FontIconInput'.toLowerCase(), FontIconInput);
+Fcore.install(FontIconInput);
 
 export default FontIconInput;

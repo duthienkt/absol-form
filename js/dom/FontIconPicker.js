@@ -1,6 +1,5 @@
 
 import Fcore from "../core/FCore";
-import Dom from "absol/src/HTML5/Dom";
 import '../../css/fonticonpicker.css';
 
 import { wordsMatch } from "absol/src/String/stringMatching";
@@ -134,7 +133,7 @@ FontIconPicker.render = function () {
 FontIconPicker.eventHandler = {};
 FontIconPicker.eventHandler.clickContent = function (event) {
     var target = event.target;
-    while (target != this && target) {
+    while (target !== this && target) {
         if (target.containsClass('as-font-icon-picker-icon')) break;
         target = target.parentNode;
     }
