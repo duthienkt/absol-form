@@ -48,6 +48,13 @@ Image.prototype.attributeHandlers.naturalSize = {
     }
 };
 
+Image.prototype.pinHandlers.src = {
+    receives: function (value) {
+        this.attributes.src = value;
+    }
+};
+
+
 Image.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.src = '';
