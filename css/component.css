@@ -42,5 +42,9 @@ table.as-inner-table > thead > tr > th {
     box-sizing: border-box;
     padding: 0.25em;
     white-space: nowrap;
+}
 
+
+.as-base-component.as-text {
+    white-space: pre-wrap;
 }
