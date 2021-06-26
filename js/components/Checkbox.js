@@ -2,9 +2,7 @@ import Fcore from "../core/FCore";
 
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
-import OOP from "absol/src/HTML5/OOP";
-import CheckboxButton from "absol-acomp/js/CheckboxButton";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
 
@@ -36,13 +34,17 @@ CheckBox.prototype.onCreate = function () {
 };
 
 
-CheckBox.prototype.renderContent = function () {
-    return _('checkboxbutton');
+CheckBox.prototype.onCreated = function () {
+    ContentScalelessComponent.prototype.onCreated.call(this);
+    this.$content.on('change', function () {
+        this.pinFire('checked');
+    }.bind(this));
 };
 
 
-CheckBox.prototype.getAcceptsAttributeNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this).concat(["checked"]).concat(InputAttributeNames);
+
+CheckBox.prototype.renderContent = function () {
+    return _('checkboxbutton');
 };
 
 
@@ -96,6 +98,19 @@ CheckBox.prototype.attributeHandlers.disabled = {
     },
     export: function () {
         return this.$content.disabled || undefined;
+    }
+};
+
+
+CheckBox.prototype.pinHandlers.checked = {
+    receives: function (value) {
+        this.attributes.checked = !!value;
+    },
+    get: function () {
+        return this.$content.checked;
+    },
+    descriptor: {
+        type: "bool"
     }
 };
 
