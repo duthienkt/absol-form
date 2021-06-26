@@ -49,7 +49,9 @@ ImageFileInput.prototype.attributeHandlers.value = {
             this.domElt.removeClass('as-has-file');
         }
         ref.set(value); //set before send to pin
-        if (value !== prev) this.pinFire('value');
+        if (!value !== !prev || (value && prev && value !== prev)) {
+            this.pinFire('value');
+        }
         return value;
     },
     descriptor: {
