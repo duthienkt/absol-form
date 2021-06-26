@@ -48,12 +48,21 @@ Text.prototype.attributeHandlers.text = {
 
 Text.prototype.attributeHandlers.textDecode = {
     set: function (value) {
+        if (['none', 'markdown', 'html'].indexOf(value) < 0) value = 'none';
         var ref = arguments[arguments.length - 1];
         var currentValue = ref.get();
         if (currentValue !== value) {
+            this.domElt.removeClass('as-decode-' + currentValue);
+            this.domElt.addClass('as-decode-' + value);
             ref.set(value);
-            this.attributes.text = this.attributes.text + '';
+            this.attributes.text = this.attributes.text + '';//conf 10 p----
         }
+        return value;
+    },
+
+    export: function (ref) {
+        var value = ref.get();
+        if (value === 'none') return undefined;
         return value;
     },
     descriptor: {
@@ -67,10 +76,10 @@ Object.assign(Text.prototype.styleHandlers, TextStyleHandlers);
 
 
 Text.prototype.pinHandlers.text = {
-    receives: function (value){
+    receives: function (value) {
         this.attributes.text = value;
     },
-    descriptor:{
+    descriptor: {
         type: 'text'
     }
 };
@@ -89,7 +98,7 @@ Text.prototype.onCreate = function () {
 };
 
 Text.prototype.render = function () {
-    return _('div.absol-bscroller');
+    return _('div.absol-bscroller.as-text');
 };
 
 
