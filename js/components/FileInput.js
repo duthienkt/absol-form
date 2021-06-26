@@ -34,6 +34,8 @@ FileInput.prototype._defaultBackgroundImg = 'data:image/svg+xml;base64,PD94bWwgd
 
 FileInput.prototype.attributeHandlers.value = {
     set: function (value) {
+        var ref = arguments[arguments.length - 1];
+        var prev = ref.get();
         prepareIcon();
         MessageInput.iconSupportAsync.then(function (result) {
             if (value) {
@@ -70,6 +72,10 @@ FileInput.prototype.attributeHandlers.value = {
 
         }.bind(this));
         if (!value) value = null;
+        ref.set(value);
+        if (!value !== !prev || (value && prev && value !== prev)) {
+            this.pinFire('value');
+        }
         return value;
     },
     descriptor: {
@@ -80,6 +86,15 @@ FileInput.prototype.attributeHandlers.value = {
         return this.value || undefined;
     }
 };
+
+FileInput.prototype.pinHandlers.value = {
+    get: function () {
+        return this.attributes.value;
+    },
+    descriptor: {
+        type: "FileSource"
+    }
+}
 
 
 FileInput.prototype.onCreated = function () {
