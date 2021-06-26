@@ -1,7 +1,7 @@
 import Fcore from "../core/FCore";
 import ScalableComponent from "../core/ScalableComponent";
-import {beginOfDay, MILLIS_PER_DAY} from "absol/src/Time/datetime";
-import {inheritComponentClass} from "../core/BaseComponent";
+import {MILLIS_PER_DAY} from "absol/src/Time/datetime";
+import inheritComponentClass from "../core/inheritComponentClass";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
 
@@ -26,7 +26,11 @@ Object.assign(TimeInput.prototype.attributeHandlers, InputAttributeHandlers);
 
 TimeInput.prototype.attributeHandlers.value = {
     set: function (value) {
+        var prev = this.domElt.dayOffset;
         this.domElt.dayOffset = value;
+        if (this.domElt.dayOffset !== value) {
+            this.pinFire('value');
+        }
     },
     get: function () {
         return this.domElt.dayOffset;
@@ -53,6 +57,18 @@ TimeInput.prototype.attributeHandlers.format = {
         type: 'enum',
         values: ['hh:mm a', 'HH:mm']
     }
+};
+
+TimeInput.prototype.pinHandlers.value = {
+    receives: function (value) {
+        this.attributes.value = value;
+    },
+    get: function () {
+        return this.domElt.dayOffset;
+    },
+    descriptor: {
+        type: 'number'
+    }
 }
 
 
@@ -65,13 +81,15 @@ TimeInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
     this.attributes.value = null;
     this.attributes.format = 'hh:mm a';
-    this.style.width = 100;
+    this.style.width = 130;
     this.style.height = 30;
 };
 
 TimeInput.prototype.onCreated = function () {
     ScalableComponent.prototype.onCreated.call(this);
-    var self = this;
+    this.domElt.on('change', function () {
+        this.pinFire('value');
+    }.bind(this));
 };
 
 
