@@ -1,9 +1,5 @@
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
-import FViewable from './FViewable';
-import FNode from './FNode';
 import FModel from './FModel';
-import PluginManager from './PluginManager';
-import FormEditorPreconfig from '../FormEditorPreconfig';
 import noop from "absol/src/Code/noop";
 import {randomIdent} from "absol/src/String/stringGenerate";
 import {randomUniqueIdent} from "./utils";
@@ -22,12 +18,16 @@ function BaseBlock() {
     EventEmitter.call(this);
     FModel.call(this);
     CCBlock.call(this, { id: randomUniqueIdent() });
+    /***
+     *
+     * @type {null|FmFragment}
+     */
+    this.fragment = null;
     this.attributes.loadAttributeHandlers(this.attributeHandlers);
     this.onCreated();
 }
 
 inheritComponentClass(BaseBlock, EventEmitter, FModel, CCBlock);
-
 
 
 BaseBlock.prototype.type = "BLOCK";
@@ -49,7 +49,6 @@ BaseBlock.prototype.attributeHandlers.id = {
         };
     }
 };
-
 
 
 BaseBlock.prototype.onCreate = function () {
