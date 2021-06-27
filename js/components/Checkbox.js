@@ -57,7 +57,7 @@ CheckBox.prototype.measureMinSize = function () {
     return { width: 18, height: 18 };
 };
 
-CheckBox.prototype.getDataBindingDescriptor = function () {
+CheckBox.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         set: function (value) {

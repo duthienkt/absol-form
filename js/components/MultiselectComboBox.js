@@ -116,7 +116,7 @@ MultiselectComboBox.prototype.getAcceptsAttributeNames = function () {
 };
 
 
-MultiselectComboBox.prototype.getDataBindingDescriptor = function () {
+MultiselectComboBox.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     var subObj = {};
     Object.defineProperties(subObj, {

@@ -1,10 +1,9 @@
 import ScalableComponent from "../core/ScalableComponent";
-import OOP from "absol/src/HTML5/OOP";
 import TableEditor from "absol-sheet/js/fragment/TableEditor";
 import {randomSentence} from "absol/src/String/stringGenerate";
 import {_} from "../core/FCore";
 import DomSignal from "absol/src/HTML5/DomSignal";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import {AssemblerInstance} from "../core/Assembler";
 
 
@@ -190,7 +189,7 @@ TableInput.prototype._requestUpdateContent = function () {
 };
 
 
-TableInput.prototype.getDataBindingDescriptor = function () {
+TableInput.prototype.createDataBindingDescriptor = function () {
     var thisTI = this;
     var props = {};
     Object.defineProperties(props, {

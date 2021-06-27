@@ -180,7 +180,7 @@ NumberInput.prototype.getAcceptsEventNames = function () {
 };
 
 
-NumberInput.prototype.getDataBindingDescriptor = function () {
+NumberInput.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         configurable: true,

@@ -113,7 +113,7 @@ DateInput.prototype.measureMinSize = function () {
     return { width: 75, height: 16 };
 };
 
-DateInput.prototype.getDataBindingDescriptor = function () {
+DateInput.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         configurable: true,

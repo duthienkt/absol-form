@@ -21,7 +21,7 @@ DateTimeInput.prototype.menuIcon = 'span.mdi.mdi-calendar-clock';
 
 DateTimeInput.prototype.onCreate = function () {
     ScalableComponent.prototype.onCreate.call(this);
-    this.style.width = 170;
+    this.style.width = 174;
     this.style.height = 30;
     this.attributes.format = 'dd/MM/yyyy hh:mm a';
 };
@@ -89,6 +89,20 @@ DateTimeInput.prototype.render = function () {
     return _({
         tag: 'datetimeinput'
     });
+};
+
+
+DateTimeInput.prototype.createDataBindingDescriptor = function (){
+    var thisC = this;
+    return {
+        configurable: true,
+        set: function (value) {
+            thisC.attributes.value = value;
+        },
+        get: function () {
+            return thisC.attributes.value;
+        }
+    };
 };
 
 

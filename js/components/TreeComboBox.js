@@ -100,7 +100,7 @@ TreeComboBox.prototype.measureMinSize = function () {
     return { width: Math.max(minWidthStyle, 24), height: 25 };
 };
 
-TreeComboBox.prototype.getDataBindingDescriptor = function () {
+TreeComboBox.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     var subObj = {};
     Object.defineProperties(subObj, {
