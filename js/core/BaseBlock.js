@@ -82,22 +82,4 @@ BaseBlock.prototype.setAttributes = function (attributes) {
 };
 
 
-/***
- * @returns {PropertyDescriptor||{}|null}
- */
-BaseBlock.prototype.getDataBindingDescriptor = function () {
-    return null;
-};
-
-BaseBlock.prototype.bindDataToObject = function (obj) {
-    var name = this.getAttribute('name');
-    var descriptor = this.getDataBindingDescriptor();
-    if (descriptor) {
-        Object.assign(descriptor, { enumerable: true, configurable: true });
-        Object.defineProperty(obj, name, descriptor);
-    }
-    return !!descriptor;
-};
-
-
 export default BaseBlock;
