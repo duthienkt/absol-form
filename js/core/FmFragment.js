@@ -29,7 +29,7 @@ function FmFragment() {
     this.emittor = this;
     this._componentNameList = [];
 
-    this.embarkedProps = {};
+    this.boundProps = {};
     this._props = {};
     Object.defineProperty(this, 'props', {
         set: function (value) {
@@ -116,9 +116,16 @@ FmFragment.prototype.buildContentView = function () {
         this.view.domElt.domSignal = new DomSignal(this.view.domElt.$domSignal);
     }
     this.domSignal = this.view.domElt.domSignal;
+    traversal(this.view, function (path) {
+        path.node.onFragmentAttached();
+        if (path.node.fragment !== self) {
+            path.skipChildren();
+        }
+    });
     this.blocks.forEach(function (block) {
         if (block.onAttached) block.onAttached();
     });
+    this.view.updateEmbark();
 };
 
 FmFragment.prototype.execEntry = function () {
