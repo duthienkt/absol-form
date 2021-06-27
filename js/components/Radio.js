@@ -1,7 +1,7 @@
 import Fcore from "../core/FCore";
 import '../../css/component.css';
 import ContentScalelessComponent from "../core/ContentScalelessComponent";
-import {inheritComponentClass} from "../core/BaseComponent";
+import inheritComponentClass from "../core/inheritComponentClass";
 import CheckBox from "./Checkbox";
 import InputAttributeHandlers, {InputAttributeNames} from "./handlers/InputAttributeHandlers";
 import {AssemblerInstance} from "../core/Assembler";
@@ -23,7 +23,15 @@ Object.assign(Radio.prototype.attributeHandlers, InputAttributeHandlers);
 
 Radio.prototype.attributeHandlers.checked = {
     set: function (value) {
+        var prev = this.$content.checked;
         this.$content.checked = !!value;
+        if (prev !== this.$content.checked && this.fragment) {
+            this.fragment.emittor.emit('radio.' + this.attributes.name, {
+                target: this,
+                checked: this.$content.checked,
+                value: this.attributes.value
+            });
+        }
     },
     get: function () {
         return this.$content.checked;
@@ -36,11 +44,13 @@ Radio.prototype.attributeHandlers.checked = {
 
 Radio.prototype.attributeHandlers.groupName = {
     set: function (value) {
+        var ref = arguments[arguments.length - 1];
         value = (value || '') + '';
-        this.$content.name = value;
-    },
-    get: function () {
-        return this.$content.name;
+        if (this.fragment)
+            this.$content.name = this.fragment + value;
+        else this.$content.name = value;
+        this._assignToFragment(ref.get(), value);
+        return value;
     },
     descriptor: {
         type: "text",
@@ -67,7 +77,8 @@ Radio.prototype.attributeHandlers.value = {
         sign: "RadioValue",
         independence: true
     }
-}
+};
+
 Radio.prototype.attributeHandlers.disabled = CheckBox.prototype.attributeHandlers.disabled;
 
 Radio.prototype.onCreate = function () {
@@ -81,6 +92,20 @@ Radio.prototype.onCreate = function () {
     this.attributes.checked = false;
     this.attributes.value = '';
     this.attributes.groupName = 'Radio_group_' + this.constructor.count;
+};
+
+
+Radio.prototype.onCreated = function () {
+    ContentScalelessComponent.prototype.onCreated.call(this);
+    this.$content.on('change', function () {
+        if (this.fragment) {
+            this.fragment.emittor.emit('radio.' + this.attributes.groupName, {
+                target: this,
+                checked: this.$content.checked,
+                value: this.attributes.value
+            });
+        }
+    }.bind(this));
 };
 
 
@@ -107,13 +132,6 @@ Radio.prototype.setAttributeGroupName = function (value) {
 };
 
 
-Radio.prototype.getAcceptsAttributeNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsAttributeNames.call(this)
-        .concat(["groupName", "checked", 'value'])
-        .concat(InputAttributeNames);
-};
-
-
 Radio.prototype.getAcceptsEventNames = function () {
     return ContentScalelessComponent.prototype.getAcceptsEventNames.call(this).concat(['change']);
 };
@@ -123,6 +141,27 @@ Radio.prototype.measureMinSize = function () {
     return { width: 18, height: 18 };
 };
 
+
+Radio.prototype._assignToFragment = function (oldGName, newGName) {
+    if (!this.fragment) return;
+    this.fragment.__radio_assigned__ = this.fragment.__radio_assigned__ || {};
+    var assigned = this.fragment.__radio_assigned__;
+    var list = assigned[oldGName];
+    var idx = -1;
+    if (list) {
+        idx = list.indexOf(this);
+    }
+    if (idx >= 0) {
+        list.splice(idx, 1);
+    }
+    list = assigned[newGName];
+    if (!list) {
+        list = [];
+        assigned[newGName] = list;
+    }
+
+    list.push(this);
+};
 
 Radio.prototype.bindDataToObject = function (obj) {
     var groupName = this.getAttribute('groupName');
