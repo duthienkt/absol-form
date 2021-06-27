@@ -1,6 +1,6 @@
 import EventEmitter from 'absol/src/HTML5/EventEmitter';
 import FViewable from './FViewable';
-import FNode from './FNode';
+import FNode, {traversal} from './FNode';
 import FModel from './FModel';
 import PluginManager from './PluginManager';
 import FormEditorPreconfig from '../FormEditorPreconfig';
@@ -44,6 +44,7 @@ function BaseComponent() {
     this.attributes.loadAttributeHandlers(this.attributeHandlers);
     this.style.loadAttributeHandlers(this.styleHandlers);
     this.events = new FAttributes(this);
+    this.dataBindingDescriptor = this.createDataBindingDescriptor();
     this.compiledEvents = {};
     this.onCreated();
 }
@@ -92,9 +93,14 @@ BaseComponent.prototype.attributeHandlers.id = {
 
 BaseComponent.prototype.attributeHandlers.name = {
     set: function (value) {
+        var ref = arguments[arguments.length - 1];
+        var prev = ref.get();
         value = value || randomUniqueIdent();
         value = value + '';
         this.domElt.attr('data-fm-name', value);
+        if (value !== prev) this.unbindDataInFragment();
+        ref.set(value);
+        this.bindDataToFragment();
         return value;
     },
     getDescriptor: function () {
@@ -144,13 +150,7 @@ BaseComponent.prototype.attributeHandlers.disembark = {
         if (value !== false || value === 'false') value = true;
         else value = false;
         ref.set(value);
-        if (value) {
-            this.domElt.addClass('as-disembark');
-        }
-        else {
-            this.domElt.removeClass('as-disembark');
-        }
-        this.notifyEmbark(value);
+        this.updateEmbark();
         return value;
     },
     export: function (ref) {
@@ -162,6 +162,22 @@ BaseComponent.prototype.attributeHandlers.disembark = {
         type: 'bool'
     }
 };
+
+BaseComponent.prototype.attributeHandlers.dataBinding = {
+    set: function (value) {
+        var ref = arguments[arguments.length - 1];
+        value = !!value;
+        ref.set(value);
+        if (value) {
+            this.bindDataToFragment();
+        }
+        else {
+            this.unbindDataInFragment();
+        }
+        return value;
+    },
+    descriptor: { type: 'bool' }
+}
 
 
 BaseComponent.prototype.onCreate = function () {
@@ -178,24 +194,6 @@ BaseComponent.prototype.onCreate = function () {
 
 BaseComponent.prototype.onCreated = noop;
 
-/***
- *
- * @param {string} attrName
- * @param {string=}viewPropertyName
- */
-BaseComponent.prototype.bindAttribute = function (attrName, viewPropertyName) {
-    viewPropertyName = viewPropertyName || attrName;
-    var view = this.view;
-    Object.defineProperty(this.attributes, attrName, {
-        enumerable: true,
-        set: function (value) {
-            view[viewPropertyName] = value;
-        },
-        get: function () {
-            return view[viewPropertyName];
-        }
-    });
-}
 
 BaseComponent.prototype.onAnchorAttached = noop;
 
@@ -203,6 +201,8 @@ BaseComponent.prototype.onAnchorDetached = noop;
 
 
 BaseComponent.prototype.onAttached = noop;
+
+BaseComponent.prototype.onFragmentAttached = noop;
 
 BaseComponent.prototype.getData = function () {
     var self = this;
@@ -322,19 +322,6 @@ BaseComponent.prototype.getEventDescriptor = function (name) {
     return { type: 'function' };
 };
 
-BaseComponent.prototype.getAttributeTypeDescriptor = function () {
-    return {
-        type: 'const',
-        value: this.tag
-    };
-};
-
-BaseComponent.prototype.getAttributeIrremovableDescriptor = function () {
-    return {
-        type: 'const',
-        value: !!this.attributes.irremovable
-    };
-};
 
 BaseComponent.prototype.getAttributeDataBindingDescriptor = function () {
     return {
@@ -457,37 +444,72 @@ BaseComponent.prototype.styleHandlers.height = {
     descriptor: { type: 'measureSize' }
 }
 
-
-BaseComponent.prototype.setAttributeName = function (value) {
-    value = (value + '') || undefined;
-    this.domElt.attr('data-attr-name', value);
-    return value;
-};
-
-
-/***
- * @returns {PropertyDescriptor||{}|null}
- */
-BaseComponent.prototype.getDataBindingDescriptor = function () {
-    return null;
-};
-
-BaseComponent.prototype.bindDataToObject = function (obj) {
-    var name = this.getAttribute('name');
-    var descriptor = this.getDataBindingDescriptor();
-    if (descriptor) {
-        Object.assign(descriptor, { enumerable: true, configurable: true });
-        Object.defineProperty(obj, name, descriptor);
+BaseComponent.prototype.updateEmbark = function () {
+    if (!this.fragment || !this.fragment.view) return;
+    var parent = this.parent;
+    var disembark = this.attributes.disembark;
+    while (parent) {
+        if (parent.attributes.disembark)
+            break;
+        parent = parent.parent;
     }
-    return !!descriptor;
+    if (parent) return;
+    var fragment = this.fragment;
+    if (disembark) {
+        this.domElt.addClass('as-disembark');
+        if (this.anchor)
+            this.anchor.domElt.addClass('as-disembark');
+    }
+    else {
+        this.domElt.removeClass('as-disembark');
+        if (this.anchor)
+            this.anchor.domElt.removeClass('as-disembark');
+    }
+    traversal(this, function (path) {
+        var node = path.node;
+        if (node.fragment !== fragment) {
+            path.skipChildren();
+            return;
+        }
+        if (node.attributes.disembark) return;
+        node.bindDataToFragment();
+    });
+
 };
 
-BaseComponent.prototype.notifyEmbark = function (value) {
+
+BaseComponent.prototype.createDataBindingDescriptor = function () {
 
 };
 
-BaseComponent.prototype.binDataToFragmentProps = function () {
 
+BaseComponent.prototype.bindDataToFragment = function () {
+    if (!this.fragment) return;
+    var name = this.attributes.name;
+    if (!name) return;
+    var boundProp = this.fragment.boundProps[name];
+    if (boundProp === this) return;
+    var descriptor = this.dataBindingDescriptor;
+    if (!descriptor) return;
+    if (!this.attributes.dataBinding) return;
+    var obj = this.fragment.props;
+    Object.assign(descriptor, {
+        enumerable: !this.attributes.disembark,
+        configurable: true
+    });
+    Object.defineProperty(obj, name, descriptor);
+    this.fragment.boundProps[name] = this;
+};
+
+BaseComponent.prototype.unbindDataInFragment = function () {
+    if (!this.fragment) return;
+    var name = this.attributes.name;
+    if (!name) return;
+    var boundProp = this.fragment.boundProps[name];
+    if (boundProp !== this) return;
+    var obj = this.fragment.props;
+    delete obj[name];
+    delete this.fragment.boundProps[name];
 };
 
 
