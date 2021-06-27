@@ -8,19 +8,25 @@ import {AssemblerInstance} from "./Assembler";
 import {_} from "./FCore";
 import DomSignal from "absol/src/HTML5/DomSignal";
 import EventEmitter from "absol/src/HTML5/EventEmitter";
+import CCBlock from "absol/src/AppPattern/circuit/CCBlock";
+import inheritComponentClass from "./inheritComponentClass";
+import {randomUniqueIdent} from "./utils";
+import BaseBlock from "./BaseBlock";
 
 
 /***
  * @constructor
  * @augments GrandContext
  * @augments FNode
- * @augments FModel
+ * @augments BaseBlock
  */
 function FmFragment() {
     GrandContext.call(this);
     FNode.call(this);
+    EventEmitter.call(this);
     FModel.call(this);
-    this.emittor = new EventEmitter();
+    CCBlock.call(this, { id: randomUniqueIdent() });
+    this.emittor = this;
     this._componentNameList = [];
 
     this.embarkedProps = {};
@@ -44,11 +50,13 @@ function FmFragment() {
     this.onCreated();
     this.domSignal.on('request_fragment_auto_start', function () {
         if (!this.parent) this.start();
+        this.onReady();
+        this.emit('ready', { target: this, type: 'ready' }, this);
     }.bind(this));
     this.domSignal.emit('request_fragment_auto_start');
 }
 
-OOP.mixClass(FmFragment, GrandContext, FNode, FModel);
+inheritComponentClass(FmFragment, GrandContext, FNode, BaseBlock);
 
 FmFragment.prototype.type = 'FRAGMENT';
 FmFragment.prototype.tag = 'FmFragment';
@@ -78,7 +86,7 @@ FmFragment.prototype.buildContentView = function () {
         traversal(this.view, function (path) {
             blockDict[path.node.attributes.id] = path.node;
             blockDict[path.node.attributes.name] = path.node;
-            if (path.node.fragment !== self){
+            if (path.node.fragment !== self) {
                 path.skipChildren();
             }
         })
@@ -124,6 +132,8 @@ FmFragment.prototype.onAddChild = function (child, index) {
     if (this.state === "RUNNING")
         child.start();
 };
+
+FmFragment.prototype.onReady = noop;
 
 
 //reassign this property in constructor or onCreate to change default layout,
