@@ -163,7 +163,7 @@ ComboBox.prototype.measureMinSize = function () {
     return { width: Math.max(minWidthStyle, 24), height: 25 };
 };
 
-ComboBox.prototype.getDataBindingDescriptor = function () {
+ComboBox.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     var subObj = {};
     Object.defineProperties(subObj, {
