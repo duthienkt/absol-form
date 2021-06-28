@@ -150,8 +150,8 @@ LayoutEditorCmd.cut = function () {
 
     function visit(node) {
         if (node.attributes && node.attributes.name) {
-            // node.attributes.name = undefined;
-            // delete node.attributes.name;
+            node.attributes.id = undefined;
+            delete node.attributes.id;
         }
         if (node.children)
             node.children.forEach(visit);
@@ -180,6 +180,8 @@ LayoutEditorCmd.copy = function () {
         if (node.attributes && node.attributes.name) {
             node.attributes.name = undefined;
             delete node.attributes.name;
+            node.attributes.id = undefined;
+            delete node.attributes.id;
         }
         if (node.children)
             node.children.forEach(visit);
