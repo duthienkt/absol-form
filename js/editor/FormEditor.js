@@ -493,27 +493,6 @@ FormEditor.prototype.createView = function () {
 };
 
 
-FormEditor.prototype.ev_styleEditorChange = function (event) {
-    // this.mLayoutEditor.autoExpandRootLayout();
-    if (this._focusElement) this._focusElement.reMeasure();
-    Dom.updateResizeSystem();
-    if (event.name == 'vAlign' || event.name == 'hAlign')
-        this.mLayoutEditor.updateAnchor();
-    else
-        this.mLayoutEditor.updateAnchorPosition();
-    this.emit('change', Object.assign({ formEditor: this }, event), this);
-};
-
-
-FormEditor.prototype.setComponentProperty = function (name, value) {
-    return this.component.setAttribute(name, value);
-};
-
-
-FormEditor.prototype.getComponentProperty = function (name) {
-    return this.component.getAttribute(name);
-};
-
 
 FormEditor.prototype.ev_resize = function () {
 
