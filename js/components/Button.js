@@ -99,15 +99,6 @@ Button.prototype.render = function () {
 };
 
 
-Button.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['text', 'icon']).concat(InputAttributeNames);
-};
-
-Button.prototype.getAcceptsStyleNames = function () {
-    return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'textSize', 'colorTheme']);
-};
-
-
 Button.prototype.getAcceptsEventNames = function () {
     return ScalableComponent.prototype.getAcceptsEventNames.call(this).concat(['click']);
 };
