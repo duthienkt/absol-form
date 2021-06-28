@@ -65,8 +65,7 @@ CheckBox.prototype.createDataBindingDescriptor = function () {
         },
         get: function () {
             return thisC.getAttribute('checked');
-        },
-        configurable: true
+        }
     }
 };
 
