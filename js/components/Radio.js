@@ -41,15 +41,19 @@ Radio.prototype.attributeHandlers.checked = {
     }
 };
 
-
+// after fragment complete created, do not change groupName, it make the disembark work incorrectly
 Radio.prototype.attributeHandlers.groupName = {
     set: function (value) {
         var ref = arguments[arguments.length - 1];
+        var prev = ref.get();
         value = (value || '') + '';
         if (this.fragment)
-            this.$content.name = this.fragment + value;
+            this.$content.name = this.fragment.id + value;
         else this.$content.name = value;
-        this._assignToFragment(ref.get(), value);
+        this._assignToFragment(prev, value);
+        if (value !== prev) this.unbindDataInFragment();
+        ref.set(value);
+        if (value !== prev) this.bindDataToFragment();
         return value;
     },
     descriptor: {
@@ -163,42 +167,54 @@ Radio.prototype._assignToFragment = function (oldGName, newGName) {
     list.push(this);
 };
 
-Radio.prototype.bindDataToObject = function (obj) {
-    var groupName = this.getAttribute('groupName');
-    var groupPropertyName = '__radioGroup_' + groupName + '__';
-    if (obj[groupPropertyName] === undefined) {
-        Object.defineProperty(obj, groupPropertyName, {
-            enumerable: false,
-            configurable: true,
-            value: []
-        });
+
+Radio.prototype.bindDataToFragment = function () {
+    if (!this.fragment) return;
+    var obj = this.fragment.props;
+    var assigned = this.fragment.__radio_assigned__;
+    if (!assigned) return;
+    var groupName = this.attributes.groupName;
+    var list = assigned[groupName];
+    if (!list) return;// not assigned yet
+    if (!obj.hasOwnProperty(groupName)) {
         Object.defineProperty(obj, groupName, {
+            enumerable: !this.attributes.disembark,
+            configurable: true,
             set: function (value) {
-                for (var i = 0; i < obj[groupPropertyName].length; ++i) {
-                    if (obj[groupPropertyName][i].getAttribute('value') == value) {
-                        obj[groupPropertyName][i].setAttribute('checked', true);
-                        console.log(obj[groupPropertyName][i].domElt)
-                    }
-                    else {
-                        obj[groupPropertyName][i].setAttribute('checked', false);
+                var tempList = list.slice();
+                var radio;
+                for (var i = 0; i < list.length; ++i) {
+                    radio = tempList[i];
+                    if (radio.attributes.value === value) {
+                        radio.attributes.checked = false;
                     }
                 }
             },
             get: function () {
-                for (var i = 0; i < obj[groupPropertyName].length; ++i) {
-                    if (obj[groupPropertyName][i].getAttribute('checked')) {
-                        return obj[groupPropertyName][i].getAttribute('value');
+                var tempList = list.slice();
+                var radio;
+                for (var i = 0; i < list.length; ++i) {
+                    radio = tempList[i];
+                    if (radio.attributes.checked) {
+                        return radio.attributes.value;
                     }
                 }
-                return undefined;
             }
-        });
+        })
     }
-    if (obj[groupPropertyName].indexOf(this) < 0) {
-        obj[groupPropertyName].push(this);
+};
+
+Radio.prototype.unbindDataInFragment = function () {
+    if (!this.fragment) return;
+    var obj = this.fragment.props;
+    var assigned = this.fragment.__radio_assigned__;
+    if (!assigned) return;
+    var groupName = this.attributes.groupName;
+    var list = assigned[groupName];
+    if (!list) return;// not assigned yet
+    if (list.length === 1 && list[0] === this) {
+        delete obj[groupName];
     }
-
-
 };
 
 AssemblerInstance.addClass(Radio);
