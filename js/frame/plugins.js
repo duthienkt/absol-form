@@ -7,8 +7,9 @@ import R from '../R';
 import ExpTree from "absol-acomp/js/ExpTree";
 import {makeFmFragmentClass} from "../core/FmFragment";
 import {AssemblerInstance} from "../core/Assembler";
+import OnScreenWindow from "absol-acomp/js/OnsScreenWindow";
 
-var WOKSPACE_FOLDER = 'formeditor/workspace';
+var WORKSPACE_FOLDER = 'formeditor/workspace';
 
 var extIcons = {
     form: 'span.mdi.mdi-card-bulleted-outline',
@@ -24,10 +25,101 @@ var extIcons = {
 }
 
 
+function openNewFormDialog() {
+    var nameInput = _(`<input type="text"></input>`);
+    var typeInput = _({
+        tag: 'selectmenu',
+        props: {
+            items: [
+                { text: 'RelativeLayout', value: 'RelativeLayout' },
+                { text: 'LinearLayout', value: 'LinearLayout' },
+                { text: 'ChainLayout', value: 'ChainLayout' }
+            ]
+        }
+    })
+    var rows = [
+        ['Name', nameInput],
+        ['Layout type', typeInput]
+    ];
+    var okBtn = _({ tag: 'button', style: { marginLeft: '20px' }, child: { text: 'OK' } });
+    var cancelBtn = _({ tag: 'button', child: { text: 'Cancel' } });
+
+    /***
+     * @type {OnScreenWindow}
+     */
+    var windowElt = _({
+        tag: OnScreenWindow.tag,
+        style: {
+            left: 'calc(50vw - 150px)',
+            top: 'calc(40vh - 100px)',
+            width: '300px',
+            height: '135px'
+        },
+        props: {
+            windowTitle: 'New Form',
+            windowIcon: 'span.mdi.mdi-file-plus-outline'
+        },
+        child: [
+            {
+                style: { padding: '5px', width: '100%', boxSizing: 'border-box', display: 'table' },
+                child: rows.map(function (row) {
+                    return {
+                        style: { display: 'table-row' },
+                        child: [`<label style="display: table-cell">${row[0]} </label>`, {
+                            style: { display: 'table-cell', paddingBottom: '10px' },
+                            child: row[1]
+                        }]
+                    }
+                })
+            },
+            {
+                style: { textAlign: 'center' },
+                child: [cancelBtn, okBtn]
+            }
+        ]
+    });
+    windowElt.$minimizeBtn.addStyle('display', 'none');
+    windowElt.$dockBtn.addStyle('display', 'none');
+
+
+    var modal = _({
+        tag: 'modal',
+        style: { zIndex: 100000 },
+        child: windowElt
+    });
+
+    modal.addTo(document.body);
+
+    return new Promise(function (rs, rj) {
+        okBtn.on('click', function () {
+            var name = nameInput.value;
+            if (name.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/)) {
+                modal.remove();
+                rs({ name: name, layoutType: typeInput.value });
+
+            }
+            else {
+                nameInput.focus();
+                nameInput.select();
+            }
+        });
+
+        function onCancel() {
+            modal.remove();
+            rj();
+        }
+
+        cancelBtn.on('click', onCancel);
+        windowElt.$closeBtn.on('click', onCancel);
+
+    });
+}
+
+
 function lsWorkspace(path) {
     return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
         cmd: 'ls -la -F "' + path + '"',
-        cwd: WOKSPACE_FOLDER
+        cwd: WORKSPACE_FOLDER
     })).then(function (out) {
         return out.trim().split(/[\r\n]+/).slice(1).map(function (line) {
             var parts = line.split(/\s+/);
@@ -61,7 +153,7 @@ function lsWorkspace(path) {
 function writeFileBase64(path, b64) {
     return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
         cmd: 'echo \'' + b64 + '\'>' + path,
-        cwd: WOKSPACE_FOLDER
+        cwd: WORKSPACE_FOLDER
     })).then(function (out) {
         console.log(out);
 
@@ -74,17 +166,17 @@ function writeFile(path, text) {
 
     return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
         cmd: 'echo \'' + b64 + '\' | base64 -d >' + path,
-        cwd: WOKSPACE_FOLDER
+        cwd: WORKSPACE_FOLDER
     })).then(function (out) {
         console.log(out);
 
     });
-};
+}
 
 function catWorkspace(path) {
     return XHR.postRepquest('https://absol.cf/shell_exec.php', JSON.stringify({
         cmd: 'cat "' + path + '"',
-        cwd: WOKSPACE_FOLDER
+        cwd: WORKSPACE_FOLDER
     }));
 }
 
@@ -181,6 +273,19 @@ export function PluginProjectExplore(context) {
         var droppanel = self.$droppanel;
         visit(droppanel, [self.data.projectName]);
     };
+    self.$newFormBtn = _({
+        tag: 'button',
+        child: 'span.mdi.mdi-file-plus-outline',
+        on:{
+            click: function (){
+                openNewFormDialog().then(function (result) {
+                    console.log(result);
+                });
+            }
+        }
+    });
+    self.$cmdCtn.addChildBefore(self.$newFormBtn, self.$cmdCtn.firstChild);
+
 
 }
 
@@ -229,7 +334,7 @@ export function PluginLoadContentData(accumulator) {
         });
     }
     else if (accumulator.contentArguments.ext == 'jpg') {
-        accumulator.editor.setData({ images: ['//absol.cf/' + WOKSPACE_FOLDER + '/' + accumulator.contentArguments.fullPath] });
+        accumulator.editor.setData({ images: ['//absol.cf/' + WORKSPACE_FOLDER + '/' + accumulator.contentArguments.fullPath] });
         sync = Promise.resolve();
     }
     accumulator.waitFor(sync);
