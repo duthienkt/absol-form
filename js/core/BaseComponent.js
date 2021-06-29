@@ -446,9 +446,10 @@ BaseComponent.prototype.styleHandlers.height = {
 
 BaseComponent.prototype.updateEmbark = function () {
     if (!this.fragment || !this.fragment.view) return;
+    var self = this;
     var parent = this.parent;
     var disembark = this.attributes.disembark;
-    while (parent) {
+    while (parent && parent.isFragmentView) {
         if (parent.attributes.disembark)
             break;
         parent = parent.parent;
@@ -467,12 +468,10 @@ BaseComponent.prototype.updateEmbark = function () {
     }
     traversal(this, function (path) {
         var node = path.node;
-        if (node.fragment !== fragment) {
+        node.bindDataToFragment(disembark);
+        if ((node != self && node.attributes.disembark) || node.fragment !== fragment) {
             path.skipChildren();
-            return;
         }
-        if (node.attributes.disembark) return;
-        node.bindDataToFragment();
     });
 
 };
@@ -482,8 +481,11 @@ BaseComponent.prototype.createDataBindingDescriptor = function () {
 
 };
 
-
-BaseComponent.prototype.bindDataToFragment = function () {
+/***
+ *
+ * @param {boolean=} parentDisembark
+ */
+BaseComponent.prototype.bindDataToFragment = function (parentDisembark) {
     if (!this.fragment) return;
     var name = this.attributes.name;
     if (!name) return;
@@ -494,7 +496,7 @@ BaseComponent.prototype.bindDataToFragment = function () {
     if (!this.attributes.dataBinding) return;
     var obj = this.fragment.props;
     Object.assign(descriptor, {
-        enumerable: !this.attributes.disembark,
+        enumerable: !this.attributes.disembark && !parentDisembark,
         configurable: true
     });
     Object.defineProperty(obj, name, descriptor);
@@ -511,6 +513,19 @@ BaseComponent.prototype.unbindDataInFragment = function () {
     delete obj[name];
     delete this.fragment.boundProps[name];
 };
+
+BaseComponent.prototype.notifyChange = function () {
+    var bounded;
+    if (this.attributes.dataBinding && this.fragment) {
+        bounded = this.fragment.boundProps[this.attributes.name];
+        if (bounded) {
+            if (bounded === this || (bounded.indexOf && bounded.indexOf(this) >= 0)) {
+                this.fragment.notifyPropsChange();
+            }
+        }
+
+    }
+}
 
 
 Object.defineProperty(BaseComponent.prototype, 'view', {

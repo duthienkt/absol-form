@@ -1,5 +1,6 @@
 import ScalableComponent from "./ScalableComponent";
 import inheritComponentClass from "./inheritComponentClass";
+import BaseComponent from "./BaseComponent";
 
 function BaseLayout() {
     ScalableComponent.call(this);
@@ -67,6 +68,57 @@ BaseLayout.prototype.addChildByPosition = function (child, posX, posY) {
 
 BaseLayout.prototype.getAcceptsStyleNames = function () {
     return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['backgroundColor', 'backgroundImage']);
+};
+
+
+BaseLayout.prototype.bindDataToFragment = function (parentDisembark) {
+    if (!this.fragment) return;
+    if (!this.fragment.parent) return;
+    /***
+     *
+     * @type {FmFragment}
+     */
+    var parentFragment = this.fragment.parent;
+    var fragment = this.fragment;
+    var name = this.attributes.name;
+    if (!name) return;
+    var boundProp = parentFragment.boundProps[name];
+    if (boundProp === this) return;
+    var descriptor = {
+        set: function (obj) {
+            fragment.props = obj;
+        },
+        get: function () {
+            return fragment.props;
+        }
+    }
+
+    if (!this.attributes.dataBinding) return;
+    var obj = parentFragment.props;
+    Object.assign(descriptor, {
+        enumerable: !this.attributes.disembark && parentDisembark,
+        configurable: true
+    });
+    Object.defineProperty(obj, name, descriptor);
+    this.fragment.boundProps[name] = this;
+};
+
+BaseLayout.prototype.unbindDataInFragment = function () {
+    if (!this.fragment) return;
+    if (!this.fragment.parent) return;
+    var name = this.attributes.name;
+    if (!name) return;
+    /***
+     *
+     * @type {FmFragment}
+     */
+    var parentFragment = this.fragment.parent;
+    console.log(parentFragment)
+    var boundProp = parentFragment.boundProps[name];
+    if (boundProp !== this) return;
+    var obj = parentFragment.props;
+    delete obj[name];
+    delete parentFragment.boundProps[name];
 };
 
 
