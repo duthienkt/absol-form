@@ -147,10 +147,14 @@ BaseComponent.prototype.attributeHandlers.tooltip = {
 
 BaseComponent.prototype.attributeHandlers.disembark = {
     set: function (value, ref) {
+        var prev = ref.get();
         if (value !== false || value === 'false') value = true;
         else value = false;
         ref.set(value);
         this.updateEmbark();
+        if (prev !== value) {
+            this.notifyChange();
+        }
         return value;
     },
     export: function (ref) {
@@ -177,7 +181,25 @@ BaseComponent.prototype.attributeHandlers.dataBinding = {
         return value;
     },
     descriptor: { type: 'bool' }
-}
+};
+
+BaseComponent.prototype.pinHandlers.disembark = {
+    receives: function (value) {
+        this.attributes.disembark = !!value;
+    },
+    descriptor: {
+        type: 'bool'
+    }
+};
+
+BaseComponent.prototype.pinHandlers.embark = {
+    receives: function (value) {
+        this.attributes.disembark = !value;
+    },
+    descriptor: {
+        type: 'bool'
+    }
+};
 
 
 BaseComponent.prototype.onCreate = function () {
@@ -445,17 +467,7 @@ BaseComponent.prototype.styleHandlers.height = {
 }
 
 BaseComponent.prototype.updateEmbark = function () {
-    if (!this.fragment || !this.fragment.view) return;
-    var self = this;
-    var parent = this.parent;
     var disembark = this.attributes.disembark;
-    while (parent && parent.isFragmentView) {
-        if (parent.attributes.disembark)
-            break;
-        parent = parent.parent;
-    }
-    if (parent) return;
-    var fragment = this.fragment;
     if (disembark) {
         this.domElt.addClass('as-disembark');
         if (this.anchor)
@@ -466,10 +478,26 @@ BaseComponent.prototype.updateEmbark = function () {
         if (this.anchor)
             this.anchor.domElt.removeClass('as-disembark');
     }
+    if (!this.fragment || !this.fragment.view) return;
+
+    var self = this;
+    var parent = this.parent;
+    while (parent && !parent.isFragmentView) {
+        if (parent.attributes.disembark)
+            break;
+        parent = parent.parent;
+    }
+
+    if (parent && !parent.isFragmentView) return;
+    var fragment = this.fragment;
+
     traversal(this, function (path) {
         var node = path.node;
-        node.bindDataToFragment(disembark);
-        if ((node != self && node.attributes.disembark) || node.fragment !== fragment) {
+        var pDE = path.path.some(function (node) {
+            return node.attributes.disembark;
+        });
+        node.bindDataToFragment(disembark || pDE, true);
+        if (node.fragment !== fragment) {
             path.skipChildren();
         }
     });
@@ -484,13 +512,15 @@ BaseComponent.prototype.createDataBindingDescriptor = function () {
 /***
  *
  * @param {boolean=} parentDisembark
+ * @param {boolean=} reset
  */
-BaseComponent.prototype.bindDataToFragment = function (parentDisembark) {
+BaseComponent.prototype.bindDataToFragment = function (parentDisembark, reset) {
     if (!this.fragment) return;
     var name = this.attributes.name;
     if (!name) return;
+
     var boundProp = this.fragment.boundProps[name];
-    if (boundProp === this) return;
+    if (boundProp === this && !reset) return;
     var descriptor = this.dataBindingDescriptor;
     if (!descriptor) return;
     if (!this.attributes.dataBinding) return;
@@ -520,12 +550,11 @@ BaseComponent.prototype.notifyChange = function () {
         bounded = this.fragment.boundProps[this.attributes.name];
         if (bounded) {
             if (bounded === this || (bounded.indexOf && bounded.indexOf(this) >= 0)) {
-                this.fragment.notifyPropsChange();
+                this.fragment.notifyPropsChange({ name: this.attributes.name });
             }
         }
-
     }
-}
+};
 
 
 Object.defineProperty(BaseComponent.prototype, 'view', {

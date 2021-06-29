@@ -71,7 +71,7 @@ BaseLayout.prototype.getAcceptsStyleNames = function () {
 };
 
 
-BaseLayout.prototype.bindDataToFragment = function (parentDisembark) {
+BaseLayout.prototype.bindDataToFragment = function (parentDisembark, reset) {
     if (!this.fragment) return;
     if (!this.fragment.parent) return;
     /***
@@ -83,7 +83,7 @@ BaseLayout.prototype.bindDataToFragment = function (parentDisembark) {
     var name = this.attributes.name;
     if (!name) return;
     var boundProp = parentFragment.boundProps[name];
-    if (boundProp === this) return;
+    if (!reset && boundProp === this) return;
     var descriptor = {
         set: function (obj) {
             fragment.props = obj;
