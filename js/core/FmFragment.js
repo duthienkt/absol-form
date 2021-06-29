@@ -33,7 +33,7 @@ function FmFragment() {
     this._props = {};
     Object.defineProperty(this, 'props', {
         set: function (value) {
-            Object.assign(this.props);
+            Object.assign(this.props, value);
         },
         get: function () {
             return this._props;
@@ -44,6 +44,7 @@ function FmFragment() {
     this.blocks = [];
     this.lines = [];
     this.entrys = [];
+    this.propsGates = [];
     this.domSignal = null;
     this.onCreate();
     this.buildContentView();
@@ -89,7 +90,19 @@ FmFragment.prototype.buildContentView = function () {
             if (path.node.fragment !== self) {
                 path.skipChildren();
             }
-        })
+        });
+        this.view.pinHandlers = Object.assign({}, this.view.pinHandlers);
+        this.view.pinHandlers.props = {
+            receives: function (value) {
+                self.props = value;
+            },
+            get: function () {
+                return self.props;
+            },
+            descriptor: {
+                type: 'object'
+            }
+        }
     }
     else {
         throw new Error("Invalid Fragment class: layout must not be null!");
@@ -101,6 +114,9 @@ FmFragment.prototype.buildContentView = function () {
             this.blocks.push(block);
             if (block.tag === 'CBEntry') {
                 this.entrys.push(block);
+            }
+            if (block.tag === 'CBPropsGate') {
+                this.propsGates.push(block);
             }
         }
     }
@@ -116,6 +132,7 @@ FmFragment.prototype.buildContentView = function () {
         this.view.domElt.domSignal = new DomSignal(this.view.domElt.$domSignal);
     }
     this.domSignal = this.view.domElt.domSignal;
+    this.domSignal.on('fire_props_pin', this.pinFirePropsChange.bind(this));
     traversal(this.view, function (path) {
         path.node.onFragmentAttached();
         if (path.node.fragment !== self) {
@@ -210,36 +227,22 @@ FmFragment.prototype._bindView = function () {
     visit(this.view);
 };
 
-
-FmFragment.prototype._bindData = function () {
-    var props = {};
-    this._props = props;
-
-    function visit(node, isRoot) {
-        if (node.isFragmentView && !isRoot) {
-            Object.defineProperty(props, node.getAttribute('name'), {
-                enumerable: true,
-                configurable: true,
-                set: function (value) {
-                    Object.assign(node.fragment.props, value);
-                },
-                get: function () {
-                    return node.fragment.props
-                }
-            })
-        }
-        else {
-            if (node.getAttribute('dataBinding'))
-                node.bindDataToObject(props);
-            for (var i = 0; i < node.children.length; ++i) {
-                visit(node.children[i]);
-            }
-        }
-    }
-
-    visit(this.view, true);
+FmFragment.prototype.notifyPropsChange = function () {
+    if (this.domSignal)
+        this.domSignal.emit('fire_props_pin');
 };
 
+FmFragment.prototype.pinFirePropsChange = function () {
+    var frag = this;
+    var parent = frag.parent;
+    this.propsGates.forEach(function (block) {
+        block.pinFire('props');
+    });
+    this.view.pinFire('props');
+    if (!parent && frag.parent && frag.parent.attributes.dataBinding) {
+        frag.parent.pinFirePropsChange();
+    }
+};
 
 Object.defineProperty(FmFragment.prototype, 'domElt', {
     get: function () {
