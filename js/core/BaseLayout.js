@@ -91,12 +91,11 @@ BaseLayout.prototype.bindDataToFragment = function (parentDisembark, reset) {
         get: function () {
             return fragment.props;
         }
-    }
-
+    };
     if (!this.attributes.dataBinding) return;
     var obj = parentFragment.props;
     Object.assign(descriptor, {
-        enumerable: !this.attributes.disembark && parentDisembark,
+        enumerable: !this.attributes.disembark && !parentDisembark,
         configurable: true
     });
     Object.defineProperty(obj, name, descriptor);
