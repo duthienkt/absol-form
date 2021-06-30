@@ -22,6 +22,15 @@ CBPropsGate.prototype.pinHandlers.props = {
     }
 };
 
+CBPropsGate.prototype.pinHandlers.propsChangeInfo = {
+    get: function () {
+        return this.fragment._propsChangeInfo;
+    },
+    descriptor: {
+        type: "object"
+    }
+};
+
 CBPropsGate.prototype.pinHandlers.get = {
     receives: function () {
         this.pinFire('props');
