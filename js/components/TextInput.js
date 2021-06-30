@@ -33,8 +33,10 @@ TextInput.prototype.attributeHandlers.value = {
     set: function (value) {
         var prev = this.domElt.value;
         this.domElt.value = value;
-        if (prev !== this.domElt.value)
+        if (prev !== this.domElt.value) {
             this.pinFire('value');
+            this.notifyChange();
+        }
     },
     get: function () {
         return this.domElt.value;
@@ -104,6 +106,7 @@ TextInput.prototype.onCreated = function () {
             if (this.value !== lastValue) {
                 self.emit('change', this.value, self);
                 self.pinFire('value');
+                self.notifyChange();
             }
         });
 };

@@ -25,6 +25,8 @@ Text.prototype.menuIcon = "span.mdi.mdi-format-color-text";
 
 Text.prototype.attributeHandlers.text = {
     set: function (value) {
+        var ref = arguments[arguments.length - 1];
+        var prev = ref.get();
         value = (value || '') + '';
         switch (this.attributes.textDecode) {
             case 'html':
@@ -35,6 +37,11 @@ Text.prototype.attributeHandlers.text = {
                 break;
             default:
                 this.domElt.clearChild().addChild(_({ text: value }));
+        }
+        ref.set(value);
+        if (prev !== value){
+            this.pinFire('value');
+            this.notifyChange();
         }
         return value;
     },
@@ -79,6 +86,9 @@ Text.prototype.pinHandlers.text = {
     receives: function (value) {
         this.attributes.text = value;
     },
+    get: function () {
+        return this.attributes.text;
+    },
     descriptor: {
         type: 'text'
     }
@@ -106,7 +116,7 @@ Text.prototype.getAcceptsStyleNames = function () {
     return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textAlign', 'textColor']);
 };
 
-Text.prototype.getDataBindingDescriptor = function () {
+Text.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         set: function (value) {

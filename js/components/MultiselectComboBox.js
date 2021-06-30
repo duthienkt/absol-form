@@ -58,6 +58,7 @@ MultiselectComboBox.prototype.onCreated = function () {
     this.domSignal.on('pinFireAll', this.pinFireAll.bind(this));
     this.domElt.on('change', function () {
         self.pinFire('values');
+        self.notifyChange();
     })
 };
 
@@ -74,6 +75,7 @@ MultiselectComboBox.prototype.attributeHandlers.values = {
         this.domElt.values = value;
         if (this.domSignal && !valueListCmp(value, prev)) {
             this.domSignal.emit('pinFireAll');
+            this.notifyChange();
         }
     },
     get: function () {
@@ -121,6 +123,7 @@ MultiselectComboBox.prototype.createDataBindingDescriptor = function () {
     var subObj = {};
     Object.defineProperties(subObj, {
         values: {
+            enumerable: true,
             set: function (value) {
                 thisC.setAttribute('values', value);
             },
@@ -129,6 +132,7 @@ MultiselectComboBox.prototype.createDataBindingDescriptor = function () {
             }
         },
         list: {
+            enumerable: false,
             get: function () {
                 return thisC.getAttribute('list');
             },
