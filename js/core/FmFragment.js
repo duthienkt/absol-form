@@ -227,21 +227,34 @@ FmFragment.prototype._bindView = function () {
     visit(this.view);
 };
 
-FmFragment.prototype.notifyPropsChange = function () {
-    if (this.domSignal)
-        this.domSignal.emit('fire_props_pin');
+FmFragment.prototype.notifyPropsChange = function (info) {
+    if (this.domSignal) {
+        this._propsChangeInfo = this._propsChangeInfo || {};
+        this._propsChangeInfo.names = this._propsChangeInfo.names || [];
+        if (this._propsChangeInfo.names.indexOf(info.name) < 0)
+            this._propsChangeInfo.names.push(info.name);
+        this._propsChangeInfo.path = [];
+        this.domSignal.emit('fire_props_pin', this._propsChangeInfo);
+    }
 };
 
-FmFragment.prototype.pinFirePropsChange = function () {
+FmFragment.prototype.pinFirePropsChange = function (info) {
+    this._propsChangeInfo = info;
     var frag = this;
     var parent = frag.parent;
     this.propsGates.forEach(function (block) {
         block.pinFire('props');
+        if (info)
+            block.pinFire('props_change_info', info);
     });
     this.view.pinFire('props');
     if (!parent && frag.parent && frag.parent.attributes.dataBinding) {
-        frag.parent.pinFirePropsChange();
+        frag.parent.pinFirePropsChange(info && {
+            names: info.names,
+            path: [frag.view.attributes.name].concat(info.path)
+        });
     }
+    this._propsChangeInfo = null;
 };
 
 Object.defineProperty(FmFragment.prototype, 'domElt', {
