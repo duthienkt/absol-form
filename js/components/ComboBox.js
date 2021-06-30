@@ -26,8 +26,10 @@ ComboBox.prototype.attributeHandlers.value = {
     set: function (value) {
         var prev = this.domElt.value;
         this.domElt.value = value;
-        if (prev !== value && this.domSignal)
+        if (prev !== value && this.domSignal) {
             this.domSignal.emit('pinFireAll');
+            this.notifyChange();
+        }
     },
     get: function () {
         return this.domElt.value;
@@ -40,8 +42,10 @@ ComboBox.prototype.attributeHandlers.value = {
 ComboBox.prototype.attributeHandlers.list = {
     set: function (value) {
         this.domElt.items = value;
-        if (this.domSignal)
+        if (this.domSignal) {
             this.domSignal.emit('pinFireAll');
+            this.notifyChange();
+        }
     },
     get: function () {
         return this.domElt.items;
@@ -138,6 +142,7 @@ ComboBox.prototype.onCreated = function () {
         // self.attributes.value = this.value;
         self.emit("change", { type: 'change', value: this.value }, self);
         self.pinFire('value');
+        self.notifyChange();
     });
 };
 
@@ -178,7 +183,7 @@ ComboBox.prototype.createDataBindingDescriptor = function () {
             }
         },
         list: {
-            enumerable: true,
+            enumerable: false,
             configurable: true,
             get: function () {
                 return thisC.getAttribute('list');

@@ -108,6 +108,7 @@ Radio.prototype.onCreated = function () {
                 checked: this.$content.checked,
                 value: this.attributes.value
             });
+            this.notifyChange();
         }
     }.bind(this));
 };
@@ -117,6 +118,18 @@ Radio.prototype.renderContent = function () {
     return _('radiobutton');
 };
 
+
+Radio.prototype.notifyChange = function () {
+    var bounded;
+    if (this.attributes.dataBinding && this.fragment) {
+        bounded = this.fragment.boundProps[this.attributes.name];
+        if (bounded) {
+            if (bounded === this || (bounded.indexOf && bounded.indexOf(this) >= 0)) {
+                this.fragment.notifyPropsChange({ name: this.attributes.groupName });
+            }
+        }
+    }
+};
 
 Radio.prototype.setStyleWidth = function (value) {
     value = value >= 18 ? value : 18;

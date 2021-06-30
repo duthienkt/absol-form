@@ -76,6 +76,7 @@ TreeComboBox.prototype.onCreated = function () {
     this.view.on('change', function () {
         self.emit("change", { type: 'change', value: this.value }, self);
         self.pinFire('value');
+        self.notifyChange();
     });
 };
 
@@ -115,7 +116,7 @@ TreeComboBox.prototype.createDataBindingDescriptor = function () {
             }
         },
         treeList: {
-            enumerable: true,
+            enumerable: false,
             configurable: true,
             get: function () {
                 return thisC.getAttribute('treeList');
