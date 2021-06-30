@@ -186,3 +186,27 @@
 .as-chain-anchor-box.as-disembark {
     display: none;
 }
+
+.as-layout-editor-layout-container .as-linear-anchor-box.as-disembark,
+.as-layout-editor-layout-container .as-relative-anchor-box.as-disembark,
+.as-layout-editor-layout-container .as-linear-anchor-box.as-disembark {
+    display: block;
+}
+
+.as-layout-editor-layout-container .as-chain-anchor-box.as-disembark {
+    display: inline-block;
+}
+
+.as-layout-editor-layout-container .as-linear-anchor-box.as-disembark,
+.as-layout-editor-layout-container .as-relative-anchor-box.as-disembark,
+.as-layout-editor-layout-container .as-linear-anchor-box.as-disembark,
+.as-layout-editor-layout-container .as-chain-anchor-box.as-disembark {
+    background: repeating-linear-gradient(-45deg, white, #adadad 1px, white 2px, white 5px);
+}
+
+.as-layout-editor-layout-container .as-linear-anchor-box.as-disembark>.as-base-component,
+.as-layout-editor-layout-container .as-relative-anchor-box.as-disembark>.as-base-component,
+.as-layout-editor-layout-container .as-linear-anchor-box.as-disembark>.as-base-component,
+.as-layout-editor-layout-container .as-chain-anchor-box.as-disembark >.as-base-component{
+    opacity: 0.8;
+}
