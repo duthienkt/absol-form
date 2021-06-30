@@ -124,7 +124,19 @@ TableInput.prototype.attributeHandlers.records = {
             return ref.get();
         }
     }
-}
+};
+
+TableInput.prototype.pinHandlers.records = {
+    receives: function (value) {
+        this.attributes.records = value;
+    },
+    get: function () {
+        return this.attributes.records;
+    },
+    descriptor: {
+        type: 'object[]'
+    }
+};
 
 
 TableInput.prototype.onCreated = function () {
@@ -158,7 +170,10 @@ TableInput.prototype.onCreated = function () {
     });
     this.setAttribute('propertyNames', ['text', 'number', 'boolean', 'enum']);
     this.setAttribute('records', [{ text: randomSentence(50), number: 4, boolean: true, 'enum': '2' }]);
-
+    this.editor.on('change', function () {
+        this.pinFire('records');
+        this.notifyChange();
+    }.bind(this));
 };
 
 
@@ -174,6 +189,7 @@ TableInput.prototype._verifyTableData = function () {
 
 TableInput.prototype._updateContent = function () {
     if (this._verifyTableData()) {
+        var prevRecords = this.editor.records;
         this.editor.setData({
             propertyNames: this.attributes.propertyNames,
             propertyDescriptors: this.attributes.propertyDescriptors,
@@ -181,6 +197,10 @@ TableInput.prototype._updateContent = function () {
             config: this.attributes.config
         });
         this._dataFlushed = true;
+        if (prevRecords !== this.editor.records) {
+            this.pinFire('records');
+            this.notifyChange();
+        }
     }
 };
 
