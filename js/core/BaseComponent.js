@@ -464,23 +464,32 @@ BaseComponent.prototype.styleHandlers.height = {
             return value;
     },
     descriptor: { type: 'measureSize' }
-}
+};
 
-BaseComponent.prototype.updateEmbark = function () {
+
+BaseComponent.prototype.updateEmbarkStyle = function (){
     var disembark = this.attributes.disembark;
     if (disembark) {
-        this.domElt.addClass('as-disembark');
-        if (this.anchor)
+        if (this.anchor){
             this.anchor.domElt.addClass('as-disembark');
+            this.domElt.removeClass('as-disembark');
+        }
+        else {
+            this.domElt.addClass('as-disembark');
+        }
     }
     else {
         this.domElt.removeClass('as-disembark');
         if (this.anchor)
             this.anchor.domElt.removeClass('as-disembark');
     }
+};
+
+BaseComponent.prototype.updateEmbark = function () {
+    var disembark = this.attributes.disembark;
+    this.updateEmbarkStyle();
     if (!this.fragment || !this.fragment.view) return;
 
-    var self = this;
     var parent = this.parent;
     while (parent && !parent.isFragmentView) {
         if (parent.attributes.disembark)
@@ -496,6 +505,7 @@ BaseComponent.prototype.updateEmbark = function () {
         var pDE = path.path.some(function (node) {
             return node.attributes.disembark;
         });
+        node.updateEmbarkStyle();
         node.bindDataToFragment(disembark || pDE, true);
         if (node.fragment !== fragment) {
             path.skipChildren();
