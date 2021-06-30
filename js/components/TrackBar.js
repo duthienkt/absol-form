@@ -78,7 +78,7 @@ TrackBar.prototype.measureMinSize = function () {
 };
 
 
-TrackBar.prototype.getDataBindingDescriptor = function () {
+TrackBar.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         set: function (value) {

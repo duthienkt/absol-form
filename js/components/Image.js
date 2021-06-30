@@ -70,7 +70,7 @@ Image.prototype.getAcceptsAttributeNames = function () {
 };
 
 
-Image.prototype.getDataBindingDescriptor = function () {
+Image.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         configurable: true,

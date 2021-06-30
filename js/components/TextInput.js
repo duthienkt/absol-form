@@ -136,7 +136,7 @@ TextInput.prototype.getAcceptsEventNames = function () {
 };
 
 
-TextInput.prototype.getDataBindingDescriptor = function () {
+TextInput.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         configurable: true,

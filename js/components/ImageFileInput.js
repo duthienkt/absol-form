@@ -160,7 +160,7 @@ ImageFileInput.prototype.getAcceptsStyleNames = function () {
     return ScalableComponent.prototype.getAcceptsStyleNames.call(this).concat(['previewSize']);
 };
 
-ImageFileInput.prototype.getDataBindingDescriptor = function () {
+ImageFileInput.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
         set: function (value) {
