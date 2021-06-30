@@ -70,6 +70,7 @@ EditableArrayOfFragment.prototype._makeArray = function () {
 
     this._dataArr.push = function () {
         this.splice.apply(this, [this.length, this.length].concat(Array.prototype.slice.apply(arguments)));
+        self.notifyChange();
         return arguments.length;
     }
 
@@ -77,6 +78,7 @@ EditableArrayOfFragment.prototype._makeArray = function () {
     var oUnShift = this._dataArr.unshift;
     this._dataArr.unshift = function () {
         var newItems = Array.prototype.slice.call(arguments);
+        self.notifyChange();
         return oUnShift.apply(this._array, newItems);
     }
 
@@ -85,6 +87,7 @@ EditableArrayOfFragment.prototype._makeArray = function () {
         if (this.length <= 0) return undefined;
         var res = this[this.length - 1];
         this.slice(this.length - 1, this.length);
+        self.notifyChange();
         return res;
     };
 
@@ -93,6 +96,7 @@ EditableArrayOfFragment.prototype._makeArray = function () {
         if (this.length <= 0) return undefined;
         var res = this[0];
         this.slice(0, 1);
+        self.notifyChange();
         return res;
     };
 
@@ -121,16 +125,17 @@ EditableArrayOfFragment.prototype._makeArray = function () {
                 class: className
             });
             frag.props = item;
-            frag.attach(self);
             return frag;
         });
         var endCtnElt = self.fragments[start + deleteCount] && self.fragments[start + deleteCount].domElt.parentElement;
         var removedFragments = self.fragments.splice.apply(self.fragments, [start, deleteCount].concat(newFragments));
         removedFragments.forEach(function (frg) {
+            self.fragment.removeChild(frg);
             frg.domElt.parentElement.remove();
         });
 
         newFragments.forEach(function (frg) {
+            self.fragment.addChild(frg);
             var itemCtn = _({
                 class: 'as-editable-array-of-fragment-item',
                 child: [
@@ -171,15 +176,17 @@ EditableArrayOfFragment.prototype._makeArray = function () {
             if (endCtnElt)
                 self.$list.addChildBefore(itemCtn, endCtnElt);
             else self.$list.addChild(itemCtn);
+
         });
         var newBindItems = newFragments.map(function (frg) {
             return frg.props;
         });
+        self.notifyChange();
         return Array.prototype.splice.apply(this, [start, deleteCount].concat(newBindItems));
     };
 };
 
-EditableArrayOfFragment.prototype.getDataBindingDescriptor = function () {
+EditableArrayOfFragment.prototype.createDataBindingDescriptor = function () {
     var self = this;
     return {
         set: function (value) {

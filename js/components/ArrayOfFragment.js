@@ -92,6 +92,7 @@ ArrayOfFragment.prototype._makeArray = function () {
         if (this.length <= 0) return undefined;
         var res = this[this.length - 1];
         this.slice(this.length - 1, this.length);
+        self.notifyChange();
         return res;
     };
 
@@ -100,6 +101,7 @@ ArrayOfFragment.prototype._makeArray = function () {
         if (this.length <= 0) return undefined;
         var res = this[0];
         this.slice(0, 1);
+        self.notifyChange();
         return res;
     };
 
@@ -126,12 +128,12 @@ ArrayOfFragment.prototype._makeArray = function () {
                 class: className
             });
             frag.props = item;
-            frag.attach(self);
             return frag;
         });
         var endElt = self.fragments[end] && self.fragments[end].domElt;
         var removedFragments = self.fragments.splice.apply(self.fragments, [start, end].concat(newFragments));
         removedFragments.forEach(function (frg) {
+            self.fragment.removeChild(frg);
             frg.domElt.remove();
         });
 
@@ -139,10 +141,12 @@ ArrayOfFragment.prototype._makeArray = function () {
             if (endElt)
                 self.domElt.addChildBefore(frg.domElt, endElt);
             else self.domElt.addChild(frg.domElt);
+            self.fragment.addChild(frg);
         });
         var newBindItems = newFragments.map(function (frg) {
             return frg.props;
         });
+        self.notifyChange();
         return Array.prototype.splice.apply(this, [start, end].concat(newBindItems));
     };
 };
