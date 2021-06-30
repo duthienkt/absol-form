@@ -1,9 +1,11 @@
+import  "../core/Assembler";
 import CBFunction from "./CBFunction";
 import CBSnackBar from "./CBSnackBar";
 import CBFileDownloader from "./CBFileDownloader";
 import CBEntry from "./CBEntry";
 import CBTimer from "./CBTimer";
 import CBRadioGroup from "./CBRadioGroup";
+import CBPropsGate from "./CBPropsGate";
 
 var BlockTreeList = {
     text: 'all',
@@ -13,6 +15,7 @@ var BlockTreeList = {
         CBFileDownloader,
         CBTimer,
         CBRadioGroup,
+        CBPropsGate,
         {
             text: 'message',
             children: [
