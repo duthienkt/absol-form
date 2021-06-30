@@ -132,7 +132,6 @@ FormPreview.prototype.flushDataToView = function () {
         this.previewFrg = new this.PreviewClass();
         this.rootComponent =  this.previewFrg.view;
         this.$content.addChild(this.rootComponent.domElt);
-        this.rootComponent.onAttach();
         this.$widthIp.value = this.rootComponent.getStyle('width', 'px');
         this.$heightIp.value = this.rootComponent.getStyle('height', 'px');
     }
