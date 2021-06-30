@@ -132,7 +132,6 @@ BaseEditor.prototype._isInputSupportedKey = function (target, key){
  * @param {KeyboardEvent}event
  */
 BaseEditor.prototype.ev_cmdKeyDown = function (event) {
-    console.log(event.target);
     var specKeys = [];
     if (event.ctrlKey)
         specKeys.push('Ctrl');
