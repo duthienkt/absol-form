@@ -63,8 +63,12 @@ RelativeLayout.prototype.onRemoveChild = function (child, index) {
  */
 RelativeLayout.prototype.addChildByPosition = function (child, posX, posY) {
     this.addChild(child);
-    posX = Math.max(0, Math.min(this.style.width - child.style.width, posX));
-    posY = Math.max(0, Math.min(this.style.height - child.style.height, posY));
+    var width = this.style.getProperty('width', 'px');
+    var height = this.style.getProperty('height', 'px');
+    var cWidth = child.style.getProperty('width', 'px');
+    var cHeight = child.style.getProperty('height', 'px');
+    posX = Math.max(0, Math.min(width - cWidth, posX));
+    posY = Math.max(0, Math.min(height - cHeight, posY));
     child.setStyle('left', posX);
     child.setStyle('top', posY);
 };
