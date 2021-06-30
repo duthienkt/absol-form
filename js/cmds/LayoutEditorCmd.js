@@ -85,6 +85,7 @@ LayoutEditorCmd.importFromJson = function () {
                             if (data.app == R.APP) {
                                 self.applyData(data);
                                 self.commitHistory("import", 'Import form JSON file');
+                                self.notifyUnsaved();
                             }
                             else {
                                 console.error('Invalid data!');

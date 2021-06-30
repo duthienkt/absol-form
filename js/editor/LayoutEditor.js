@@ -90,7 +90,7 @@ function LayoutEditor() {
                 }).join(', ') + '}');
                 self.commitHistory('edit', compName + '.' + event.name + '');
                 self.notifyUnsaved();
-                if (event.name === 'name'){
+                if (event.name === 'name') {
                     self.componentOtline.updateComponentTree();
                 }
             }
@@ -951,10 +951,12 @@ LayoutEditor.prototype.getActivatedComponents = function () {
 
 
 LayoutEditor.prototype.applyData = function (data) {
+    this._originData = data;
+    var layout = data.layout || data;
     var FmClass = makeFmFragmentClass({
-        tag:'LayoutTest',
-        contentViewData:{
-            layout: data
+        tag: 'LayoutTest',
+        contentViewData: {
+            layout: layout
         }
     });
     this.rootFragment = new FmClass();
@@ -1060,8 +1062,20 @@ LayoutEditor.prototype.getQuickpathFrom = function (layout) {
 };
 
 LayoutEditor.prototype.getData = function () {
-    if (this.rootLayout) return this.rootLayout.getData();
-    return null;
+    var result = null;
+    var layout;
+    var originData = this._originData;
+    if (this.rootLayout) {
+        layout = this.rootLayout.getData();
+        //new version
+        if (originData && originData.layout) {
+            result = Object.assign({}, originData, { layout: layout });
+        }
+        else {
+            result = layout;
+        }
+    }
+    return result;
 };
 
 LayoutEditor.prototype.getComponentTool = function () {
