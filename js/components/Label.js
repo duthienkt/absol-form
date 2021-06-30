@@ -46,12 +46,8 @@ Label.prototype.onCreate = function () {
     this.style.font = undefined;
     this.style.fontStyle = undefined;
     this.style.textSize = 0;
-    this.style.textColor = 'black'
-};
-
-
-Label.prototype.getAcceptsStyleNames = function () {
-    return ContentScalelessComponent.prototype.getAcceptsStyleNames.call(this).concat(['font', 'fontStyle', 'textSize', 'textColor']);
+    this.style.textColor = 'black';
+    this.attributes.dataBinding = false;
 };
 
 
@@ -60,16 +56,9 @@ Label.prototype.renderContent = function () {
 };
 
 
-Label.prototype.setAttributeText = function (value) {
-    this.$content.clearChild().addChild(_({ text: value }));
-    return value;
-};
-
-
-Label.prototype.getDataBindingDescriptor = function () {
+Label.prototype.createDataBindingDescriptor = function () {
     var thisC = this;
     return {
-        configurable: true,
         get: function () {
             return thisC.getAttribute('text');
         },
