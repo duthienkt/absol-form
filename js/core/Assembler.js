@@ -49,7 +49,7 @@ Assembler.prototype.build = function (data, frag) {
     else throw new Error("Can not detect data type!");
 };
 
-Assembler.prototype.buildFragment = function (data, parentFrag) {
+Assembler.prototype.buildFragment = function (data) {
     var constructor;
     if (typeof data.class === 'string') {
         constructor = this.classes[FmFragment.prototype.type][data.class] || data.class.split('.').reduce(function (ac, cr) {
