@@ -5,6 +5,7 @@ import R from "../R";
 import Dom from "absol/src/HTML5/Dom";
 import BaseEditor from "../core/BaseEditor";
 import FormPreviewCmd, { FormPreviewCmdDescriptors } from "../cmds/FormPreviewCmd";
+import {makeFmFragmentClass} from "../core/FmFragment";
 
 
 var _ = Fcore._;
@@ -124,8 +125,13 @@ FormPreview.prototype.flushDataToView = function () {
     if (!this.data) return;
     this.$content.clearChild();
     if (this.data && this.$view) {
-        this.rootComponent = this.build(this.data);
-        this.$content.addChild(this.rootComponent.view);
+        this.PreviewClass = makeFmFragmentClass({
+            tag:'preview',
+            contentViewData: this.data
+        });
+        this.previewFrg = new this.PreviewClass();
+        this.rootComponent =  this.previewFrg.view;
+        this.$content.addChild(this.rootComponent.domElt);
         this.rootComponent.onAttach();
         this.$widthIp.value = this.rootComponent.getStyle('width', 'px');
         this.$heightIp.value = this.rootComponent.getStyle('height', 'px');
