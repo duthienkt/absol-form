@@ -205,7 +205,7 @@ BaseComponent.prototype.pinHandlers.embark = {
 BaseComponent.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
-    this.attributes.embark = true;
+    this.attributes.disembark = false;
     this.attributes.dataBinding = true;
     var self = this;
     extendAttributeNames.forEach(function (name) {
