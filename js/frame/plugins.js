@@ -276,10 +276,25 @@ export function PluginProjectExplore(context) {
     self.$newFormBtn = _({
         tag: 'button',
         child: 'span.mdi.mdi-file-plus-outline',
-        on:{
-            click: function (){
+        on: {
+            click: function () {
                 openNewFormDialog().then(function (result) {
-                    console.log(result);
+                    var accumulator = {};
+                    accumulator.contentArguments = {};
+                    accumulator.contentArguments.fullPath = self.data.projectName+'/form/'+result.name+'.form';
+                    accumulator.name = result.name+'.form';
+                    accumulator.contentArguments.ext = 'form';
+                    accumulator.editor = {
+                        getData: function (){
+                            return {
+                                app: R.APP,
+                                version:R.VERSION,
+                                layout: {tag: result.layoutType}
+                            }
+                        }
+                    };
+                    PluginSaveContentData(accumulator);
+                    setTimeout(context.loadExpTree.bind(context), 1000);
                 });
             }
         }
@@ -343,7 +358,15 @@ export function PluginLoadContentData(accumulator) {
 
 export function PluginSaveContentData(accumulator) {
     if (accumulator.contentArguments.ext == 'form') {
-        var textData = (JSON.stringify(accumulator.editor.getData()));
+        var data = accumulator.editor.getData();
+        var FrgClass = makeFmFragmentClass({
+            tag: accumulator.name.replace('.form', ''),
+            contentViewData: data
+        });
+
+        AssemblerInstance.addClass(FrgClass);
+
+        var textData = (JSON.stringify(data));
         var zip = new JSZip();
         zip.file('data.txt', textData);
         zip.generateAsync({ type: 'base64' }).then(function (b64) {
