@@ -18,7 +18,7 @@ BaseAnchorEditorCmd.delete = function () {
 
 BaseAnchorEditorCmd.layoutEdit = function () {
     //todo
-    if (this.component.isLayout && !this.component.formType){
+    if (this.component.isLayout && !this.component.isFragmentView){
         this.layoutEditor.editLayout(this.component);
     }
 };
