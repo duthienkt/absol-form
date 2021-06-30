@@ -1,9 +1,8 @@
 import ScalableComponent from "../core/ScalableComponent";
-import OOP from "absol/src/HTML5/OOP";
 import {_} from "../core/FCore";
 import {AssemblerInstance} from "../core/Assembler";
-import {inheritComponentClass} from "../core/BaseComponent";
 import "../../css/arrayoffragment.css";
+import inheritComponentClass from "../core/inheritComponentClass";
 
 
 /***
@@ -148,7 +147,7 @@ ArrayOfFragment.prototype._makeArray = function () {
     };
 };
 
-ArrayOfFragment.prototype.getDataBindingDescriptor = function () {
+ArrayOfFragment.prototype.createDataBindingDescriptor = function () {
     var self = this;
     return {
         set: function (value) {
