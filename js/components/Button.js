@@ -50,6 +50,19 @@ Button.prototype.attributeHandlers.icon = {
     }
 };
 
+
+Button.prototype.attributeHandlers.disabled = {
+    set: function (value) {
+        this.domElt.disabled = !!value;
+    },
+    get: function () {
+        return this.domElt.disabled;
+    },
+    descriptor: {
+        type: 'bool'
+    }
+};
+
 Button.prototype.pinHandlers.signal = {
     get: function () {
         return true;
@@ -58,6 +71,16 @@ Button.prototype.pinHandlers.signal = {
         type: "bool"
     }
 };
+
+Button.prototype.pinHandlers.disabled = {
+    receives: function (value) {
+        this.attributes.disabled = value;
+    },
+    descriptor: {
+        type: "bool"
+    }
+};
+
 
 Button.prototype.colorThemeList = ['default', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'];
 
