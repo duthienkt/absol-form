@@ -7,7 +7,7 @@ import TextInput from './js/components/TextInput'
 import RelativeLayout from './js/layouts/RelativeLayout'
 import Assembler, {AssemblerInstance, findComponent, findComponentById, findComponentByName} from './js/core/Assembler'
 import DateInput from './js/components/DateInput'
-import BaseComponent, {inheritComponentClass} from './js/core/BaseComponent'
+import BaseComponent from './js/core/BaseComponent'
 import LayoutEditor from './js/editor/LayoutEditor'
 import Fcore from './js/core/FCore'
 import FormEditor from './js/editor/FormEditor'
@@ -42,6 +42,8 @@ import LayoutEditorCmd from './js/cmds/LayoutEditorCmd';
 import FormPreviewCmd, {FormPreviewCmdDescriptors} from './js/cmds/FormPreviewCmd';
 import FormEditorPreconfig from './js/FormEditorPreconfig';
 import FmFragment, {makeFmFragmentClass} from "./js/core/FmFragment";
+import inheritComponentClass from "./js/core/inheritComponentClass";
+import BlockTreeList from "./js/blocks/BlockTreeList";
 
 export default {
     FormEditorPreconfig: FormEditorPreconfig,
@@ -94,6 +96,6 @@ export default {
     findComponent: findComponent,
     findComponentsById: findComponentById,
     traversal: traversal,
-    inheritComponentClass
+    inheritComponentClass: inheritComponentClass,
+    BlockTreeList: BlockTreeList
 };
-
