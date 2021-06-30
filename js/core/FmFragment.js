@@ -248,8 +248,8 @@ FmFragment.prototype.pinFirePropsChange = function (info) {
             block.pinFire('props_change_info', info);
     });
     this.view.pinFire('props');
-    if (!parent && frag.parent && frag.parent.attributes.dataBinding) {
-        frag.parent.pinFirePropsChange(info && {
+    if (parent && this.view.attributes.dataBinding) {
+        parent.pinFirePropsChange(info && {
             names: info.names,
             path: [frag.view.attributes.name].concat(info.path)
         });
