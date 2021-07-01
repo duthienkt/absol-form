@@ -51,9 +51,32 @@ BaseBlock.prototype.attributeHandlers.id = {
     }
 };
 
+BaseBlock.prototype.attributeHandlers.displayName = {
+    set: function (value) {
+        value = value || '';
+        value += '';
+        return value;
+    },
+    descriptor: {
+        type: 'text',
+        displayName: "name"
+    },
+    export: function (ref) {
+        return ref.get() || undefined;
+    }
+};
+
+BaseBlock.prototype.attributeHandlers.permissions = {
+    descriptor: {
+        type: 'object',
+        hidden: true
+    }
+};
+
 
 BaseBlock.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
+    this.attributes.displayName = '';
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
 };
 
