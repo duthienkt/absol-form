@@ -32,6 +32,7 @@ inheritComponentClass(BaseBlock, EventEmitter, FModel, CCBlock);
 
 BaseBlock.prototype.type = "BLOCK";
 BaseBlock.prototype.tag = "BaseBlock";
+BaseBlock.prototype.menuIcon = 'span.mdi.mdi-cube-outline';
 
 
 BaseBlock.prototype.attributeHandlers.id = {
