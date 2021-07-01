@@ -14,7 +14,9 @@ function PEText() {
 OOP.mixClass(PEText, PEBaseType);
 
 PEText.prototype.reload = function () {
+    this.renewDescriptor();
     this.$input.value = this.getValue();
+    this.$input.disabled = this.descriptor.disabled;
 };
 
 PEText.prototype.attachInput = function () {

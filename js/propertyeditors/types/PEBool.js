@@ -30,10 +30,13 @@ PEBool.prototype.attachInput = function () {
 };
 
 PEBool.prototype.reload = function () {
+    this.renewDescriptor();
     var value = this.getValue() || false;
     if (value !== this.$input.checked) {
         this.$input.checked = value;
     }
+    console.log(this.descriptor)
+    this.$input.disabled = this.descriptor.disabled;
 };
 
 

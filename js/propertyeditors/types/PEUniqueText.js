@@ -35,6 +35,7 @@ PEUniqueText.prototype.attachInput = function () {
 PEUniqueText.prototype.reload = function () {
     this.renewDescriptor();
     this.$input.value = this.getValue();
+    this.$input.disabled = !!this.descriptor.disabled;
     this._verifyDuplicate();
 };
 
