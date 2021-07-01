@@ -108,12 +108,6 @@ TrackBarInput.prototype.onCreated = function () {
 };
 
 
-TrackBarInput.prototype.getAcceptsAttributeNames = function () {
-    return ScalableComponent.prototype.getAcceptsAttributeNames.call(this).concat(['value', 'leftValue', 'rightValue', 'unit'])
-        .concat(InputAttributeNames);
-};
-
-
 TrackBarInput.prototype.measureMinSize = function () {
     return { width: 40, height: 26 };
 };
