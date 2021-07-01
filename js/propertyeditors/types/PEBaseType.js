@@ -23,7 +23,15 @@ PEBaseType.prototype.attachInput = noop;
 PEBaseType.prototype.reload = noop;
 
 PEBaseType.prototype.renewDescriptor = function () {
-    this.descriptor = this.editor.getPropertyDescriptor(this.editor.objects[0], this.pName);
+    this.descriptor = Object.assign({}, this.editor.getPropertyDescriptor(this.editor.objects[0], this.pName));
+    //TODO: check permission
+    var disabled = ['name', 'disembark',
+            'value', 'values', 'list', 'treeList',
+        'disabled', 'text', 'checked', 'textType'].indexOf(this.pName) >=0
+        && this.editor.objects.some(function (obj) {
+            return obj.attributes && obj.attributes.permissions && obj.attributes.permissions.edit_attributes === 'GENERATOR';
+        });
+    this.descriptor.disabled = this.descriptor.disabled || disabled;
     return this.descriptor;
 };
 
