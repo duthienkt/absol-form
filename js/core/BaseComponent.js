@@ -86,7 +86,8 @@ BaseComponent.prototype.attributeHandlers.id = {
     getDescriptor: function () {
         return {
             type: 'const',
-            value: this.id
+            value: this.id,
+            hidden: true
         };
     }
 };
@@ -123,7 +124,8 @@ BaseComponent.prototype.attributeHandlers.name = {
         return {
             type: 'uniqueText',
             others: names,
-            regex: /^[a-zA-Z_0-9]$/
+            regex: /^[a-zA-Z_0-9]$/,
+            displayName: "id"
         };
     }
 }
@@ -204,6 +206,7 @@ BaseComponent.prototype.pinHandlers.embark = {
 
 BaseComponent.prototype.onCreate = function () {
     this.constructor.count = this.constructor.count || 0;
+    this.attributes.displayName = '';
     this.attributes.name = this.tag + "_" + (this.constructor.count++);
     this.attributes.disembark = false;
     this.attributes.dataBinding = true;
@@ -467,10 +470,10 @@ BaseComponent.prototype.styleHandlers.height = {
 };
 
 
-BaseComponent.prototype.updateEmbarkStyle = function (){
+BaseComponent.prototype.updateEmbarkStyle = function () {
     var disembark = this.attributes.disembark;
     if (disembark) {
-        if (this.anchor){
+        if (this.anchor) {
             this.anchor.domElt.addClass('as-disembark');
             this.domElt.removeClass('as-disembark');
         }
