@@ -151,6 +151,8 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
     var object = objects[objects.length - 1];
     this.propertyNames.forEach(function (name) {
         var descriptor = self.getPropertyDescriptor(object, name) || { type: "NoDescriptor" };
+        var displayName = descriptor.displayName || name;
+        if (descriptor.hidden) return;
         var EditorClass = self.type2EditorClass[descriptor.type];
         var functionName = 'load' + camelCaseToPascalCase(descriptor.type) + 'Property';
         var cell = _('td');
@@ -167,7 +169,7 @@ MultiObjectPropertyEditor.prototype.loadAttributes = function () {
             child: [
                 {
                     tag: 'td',
-                    child: { text: name }
+                    child: { text: displayName }
                 },
                 cell
             ]
