@@ -24,11 +24,16 @@ CBFunction.prototype.attributeHandlers.body = {
             this.rebuildFunction();
         }
         return value;
+    },
+    descriptor:{
+        type:'text'
     }
 };
 
 CBFunction.prototype.attributeHandlers.args = {
-
+    descriptor:{
+        type:'text[]'
+    }
 };
 
 CBFunction.prototype.attributeHandlers.defaultArgs = {
