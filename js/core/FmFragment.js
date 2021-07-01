@@ -48,6 +48,7 @@ function FmFragment() {
     this.domSignal = null;
     this.onCreate();
     this.buildContentView();
+    this._bindView();
     this.onCreated();
     this.domSignal.on('request_fragment_auto_start', function () {
         if (!this.parent) this.start();
