@@ -95,6 +95,9 @@ CheckBox.prototype.attributeHandlers.disabled = {
     get: function () {
         return this.$content.disabled;
     },
+    descriptor: {
+        type: "bool"
+    },
     export: function () {
         return this.$content.disabled || undefined;
     }
