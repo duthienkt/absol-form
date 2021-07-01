@@ -125,7 +125,7 @@ BaseComponent.prototype.attributeHandlers.name = {
             type: 'uniqueText',
             others: names,
             regex: /^[a-zA-Z_0-9]$/,
-            displayName: "id"
+            displayName: "ID"
         };
     }
 }
