@@ -230,8 +230,11 @@ FormEditor.prototype.openEditorTab = function (ident, name, desc, editor, accumu
             delete self.editorHolders[ident];
             if (Object.keys(self.editorHolders).length == 0)
                 self.$editorSpaceCtn.addStyle('visibility', 'hidden');
-            self.$componentTabBtb.addClass('as-hidden');
-            self.$outlineTabBtb.addClass('as-hidden');
+            if (self.activeEditorHolder == accumulator){
+                self.$componentTabBtb.addClass('as-hidden');
+                self.$outlineTabBtb.addClass('as-hidden');
+            }
+
             if (self._lastToolTabIdent !== 'tab-explorer') {
                 self.toggleToolTab('tab-explorer');
             }
