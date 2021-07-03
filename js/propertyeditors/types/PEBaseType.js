@@ -25,9 +25,9 @@ PEBaseType.prototype.reload = noop;
 PEBaseType.prototype.renewDescriptor = function () {
     this.descriptor = Object.assign({}, this.editor.getPropertyDescriptor(this.editor.objects[0], this.pName));
     //TODO: check permission
-    var disabled = ['name', 'disembark',
+    var disabled = ['name', 'disembark', 'dataBinding',
             'value', 'values', 'list', 'treeList',
-        'disabled', 'text', 'checked', 'textType'].indexOf(this.pName) >=0
+            'disabled', 'text', 'checked', 'textType'].indexOf(this.pName) >= 0
         && this.editor.objects.some(function (obj) {
             return obj.attributes && obj.attributes.permissions && obj.attributes.permissions.edit_attributes === 'GENERATOR';
         });
