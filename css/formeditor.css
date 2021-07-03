@@ -256,7 +256,7 @@ table.as-form-params > tbody > tr > td > textarea {
 }
 
 .as-form-explorer .absol-drop-panel.show .absol-drop-panel-body {
-    height: calc(100% - 18px);
+    height: calc(100% - 24px);
 }
 
 
